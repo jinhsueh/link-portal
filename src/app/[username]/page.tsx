@@ -7,6 +7,7 @@ import { parseTheme, themeToCSS } from '@/lib/theme'
 import { ShareBar } from '@/components/sharing/ShareBar'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
+import { PasswordGate } from '@/components/ui/PasswordGate'
 
 interface Props {
   params: Promise<{ username: string }>
@@ -45,8 +46,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const themeCSS = themeToCSS(theme)
   const isDark = isColorDark(theme.bgColor)
   const bg = theme.bgType === 'gradient' && theme.bgGradient ? theme.bgGradient : theme.bgColor
+  const hasPassword = !!activePage.password
 
-  return (
+  const pageContent = (
     <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
       <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 16px 64px' }}>
 
@@ -114,6 +116,16 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       </div>
     </div>
   )
+
+  if (hasPassword) {
+    return (
+      <PasswordGate username={username} pageId={activePage.id}>
+        {pageContent}
+      </PasswordGate>
+    )
+  }
+
+  return pageContent
 }
 
 export async function generateMetadata({ params }: Props) {

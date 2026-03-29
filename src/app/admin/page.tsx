@@ -16,12 +16,12 @@ import { EditBlockModal } from '@/components/blocks/EditBlockModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
-  pages: Array<{ id: string; name: string; slug: string; isDefault: boolean
+  pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number }>
   }>
   socialLinks: Array<{ id: string; platform: string; url: string; order: number }>
@@ -154,6 +154,29 @@ export default function AdminPage() {
     await loadUser(pageId)
   }
 
+  const handleTogglePassword = async (pageId: string) => {
+    const page = user?.pages.find(p => p.id === pageId)
+    if (!page) return
+    const currentPw = (page as unknown as { password?: string }).password
+    if (currentPw) {
+      // Remove password
+      if (!confirm('確定移除密碼保護？')) return
+      await fetch(`/api/pages/${pageId}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: '' }),
+      })
+    } else {
+      // Set password
+      const pw = prompt('設定頁面密碼：')
+      if (!pw?.trim()) return
+      await fetch(`/api/pages/${pageId}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw.trim() }),
+      })
+    }
+    await loadUser(pageId)
+  }
+
   const handleDeletePage = async (pageId: string) => {
     if (!confirm('確定刪除此分頁？所有區塊也會一併刪除。')) return
     const res = await fetch(`/api/pages/${pageId}`, { method: 'DELETE' })
@@ -198,11 +221,15 @@ export default function AdminPage() {
                     {p.name}
                     {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
                   </button>
-                  {/* Page actions (rename/delete) */}
+                  {/* Page actions (rename/password/delete) */}
                   <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => handleRenamePage(p.id, p.name)}
                       className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
                       <Pencil size={12} />
+                    </button>
+                    <button onClick={() => handleTogglePassword(p.id)} title={p.password ? '移除密碼' : '設定密碼'}
+                      className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
+                      {p.password ? <Lock size={12} /> : <Unlock size={12} />}
                     </button>
                     {user.pages.length > 1 && (
                       <button onClick={() => handleDeletePage(p.id)}

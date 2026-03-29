@@ -13,9 +13,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const { name, isDefault } = await req.json()
+  const { name, isDefault, password } = await req.json()
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
+  if (password !== undefined) data.password = password || null // empty string = remove password
   if (isDefault === true) {
     // Unset all other defaults first
     await prisma.page.updateMany({

@@ -25,8 +25,29 @@
   --shadow-md:   0 4px 16px rgba(80,144,255,0.12), 0 2px 8px rgba(0,0,0,0.06);
   --shadow-lg:   0 8px 32px rgba(80,144,255,0.15), 0 4px 16px rgba(0,0,0,0.06);
 
+  --color-card:           #FFFFFF;
   --background: var(--color-white);
   --foreground: var(--color-text-primary);
+}
+
+/* Admin dark mode */
+[data-theme="dark"] {
+  --color-primary:        #6BA3FF;
+  --color-primary-hover:  #5090FF;
+  --color-primary-light:  rgba(80,144,255,0.15);
+  --color-white:          #1A1A2E;
+  --color-text-primary:   #E2E8F0;
+  --color-text-secondary: #A0AEC0;
+  --color-text-muted:     #718096;
+  --color-border:         #2D3748;
+  --color-surface:        #111827;
+  --gradient-blue:        linear-gradient(135deg, #5090FF 0%, #3A6FD8 100%);
+  --color-card:          #1E2433;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --background: #0F1117;
+  --foreground: #E2E8F0;
 }
 
 @theme inline {
@@ -93,4 +114,66 @@ body {
 .card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+}
+
+/* ── Landing page utilities ── */
+.text-gradient {
+  background-image: linear-gradient(135deg, #5090FF 0%, #3A6FD8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.phone-frame {
+  background: linear-gradient(145deg, #1A1A2E 0%, #2D2D44 100%);
+  border-radius: 44px;
+  padding: 12px;
+  box-shadow: 0 32px 80px rgba(26,26,46,0.3), 0 0 0 1px rgba(255,255,255,0.1) inset;
+}
+.phone-frame-inner {
+  background: white;
+  border-radius: 34px;
+  overflow: hidden;
+  height: 600px;
+}
+
+.step-connector {
+  position: relative;
+}
+.step-connector::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: calc(50% + 36px);
+  width: calc(100% - 72px);
+  height: 2px;
+  border-top: 2px dashed var(--color-border);
+}
+@media (max-width: 768px) {
+  .step-connector::after { display: none; }
 }

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
-  ShoppingBag, Palette, Menu, X, Mail,
+  ShoppingBag, Palette, Menu, X, Mail, Moon, Sun,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -25,6 +25,27 @@ export function AdminShell({ username, children }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [dark, setDark] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('admin-dark-mode')
+    if (saved === 'true') {
+      setDark(true)
+      document.documentElement.setAttribute('data-theme', 'dark')
+    }
+  }, [])
+
+  const toggleDark = () => {
+    const next = !dark
+    setDark(next)
+    if (next) {
+      document.documentElement.setAttribute('data-theme', 'dark')
+      localStorage.setItem('admin-dark-mode', 'true')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+      localStorage.setItem('admin-dark-mode', 'false')
+    }
+  }
 
   const handleLogout = async () => {
     await fetch('/api/auth', { method: 'DELETE' })
@@ -46,7 +67,7 @@ export function AdminShell({ username, children }: Props) {
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-surface)', fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
       {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
+      <header style={{ background: 'var(--color-card)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -70,6 +91,9 @@ export function AdminShell({ username, children }: Props) {
                 <ExternalLink size={14} /><span className="hidden sm:inline">預覽</span>
               </a>
             )}
+            <button onClick={toggleDark} style={navLinkStyle()} title={dark ? '淺色模式' : '深色模式'}>
+              {dark ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
             <button onClick={handleLogout} style={navLinkStyle()}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E53E3E'; (e.currentTarget as HTMLElement).style.background = '#FFF5F5' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
@@ -90,7 +114,7 @@ export function AdminShell({ username, children }: Props) {
           <div className="absolute inset-0" style={{ background: 'rgba(26,26,46,0.5)' }}
             onClick={() => setMobileOpen(false)} />
           <div className="absolute right-0 top-0 h-full w-64"
-            style={{ background: 'white', boxShadow: 'var(--shadow-lg)' }}>
+            style={{ background: 'var(--color-card)', boxShadow: 'var(--shadow-lg)' }}>
             <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
               <span className="font-bold" style={{ color: 'var(--color-primary)' }}>選單</span>
               <button onClick={() => setMobileOpen(false)}
