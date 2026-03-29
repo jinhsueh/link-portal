@@ -13,11 +13,22 @@ function trackClick(blockId: string, pageId?: string) {
 }
 
 function LinkBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
-  const content = block.content as { url: string }
+  const content = block.content as { url: string; thumbnail?: string }
+  const [favicon, setFavicon] = useState<string | null>(content.thumbnail ?? null)
+
+  useState(() => {
+    if (!favicon && content.url) {
+      try {
+        const domain = new URL(content.url).hostname
+        setFavicon(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`)
+      } catch { /* invalid url */ }
+    }
+  })
+
   return (
     <a href={content.url} target="_blank" rel="noopener noreferrer"
       onClick={() => trackClick(block.id, pageId)}
-      className="flex items-center justify-between w-full transition-all group"
+      className="flex items-center gap-3 w-full transition-all group"
       style={{
         padding: '16px 20px', background: 'white',
         border: '1px solid var(--color-border)', borderRadius: 12,
@@ -31,10 +42,15 @@ function LinkBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
         (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'
         ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'
       }}>
-      <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+      {favicon && (
+        <img src={favicon} alt="" width={20} height={20} className="flex-shrink-0 rounded"
+          style={{ objectFit: 'contain' }}
+          onError={() => setFavicon(null)} />
+      )}
+      <span className="font-semibold text-sm flex-1" style={{ color: 'var(--color-text-primary)' }}>
         {block.title}
       </span>
-      <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
+      <ChevronRight size={16} className="flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
     </a>
   )
 }

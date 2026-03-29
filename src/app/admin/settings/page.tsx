@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Camera, X } from 'lucide-react'
+import { Save, Camera, X, Download, QrCode } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 
 const SOCIAL_PLATFORMS = [
@@ -213,6 +213,13 @@ export default function SettingsPage() {
             })}
           </div>
         </div>
+
+        {/* QR Code section */}
+        <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 28, boxShadow: 'var(--shadow-sm)' }}>
+          <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>QR Code</h2>
+          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>掃描即可直接開啟你的個人頁面</p>
+          <QRCodeSection username={user?.username ?? ''} />
+        </div>
       </div>
     </AdminShell>
   )
@@ -244,6 +251,53 @@ function SocialLinkRow({ platform, label, placeholder, initialUrl, onSave }: {
         style={{ fontSize: 13, padding: '8px 14px', opacity: (saving || url === initialUrl) ? 0.5 : 1 }}>
         {saving ? '...' : '儲存'}
       </button>
+    </div>
+  )
+}
+
+function QRCodeSection({ username }: { username: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [ready, setReady] = useState(false)
+  const pageUrl = `https://link-portal-eight.vercel.app/${username}`
+
+  useEffect(() => {
+    if (!username) return
+    import('qrcode').then(QRCode => {
+      QRCode.toCanvas(canvasRef.current, pageUrl, {
+        width: 200,
+        margin: 2,
+        color: { dark: '#1A1A2E', light: '#FFFFFF' },
+      }, () => setReady(true))
+    })
+  }, [username, pageUrl])
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const link = document.createElement('a')
+    link.download = `${username}-qrcode.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center gap-6">
+      <div className="p-3 rounded-xl" style={{ background: 'white', border: '1px solid var(--color-border)' }}>
+        <canvas ref={canvasRef} style={{ display: 'block', borderRadius: 8 }} />
+      </div>
+      <div className="flex-1 text-center sm:text-left">
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>{pageUrl}</p>
+        <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>
+          下載 QR Code 分享在名片、社群貼文或印刷品上
+        </p>
+        {ready && (
+          <button onClick={handleDownload}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
+            style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid #C3D9FF', cursor: 'pointer' }}>
+            <Download size={14} />下載 PNG
+          </button>
+        )}
+      </div>
     </div>
   )
 }

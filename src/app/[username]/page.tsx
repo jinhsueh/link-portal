@@ -120,18 +120,20 @@ export async function generateMetadata({ params }: Props) {
   const { username } = await params
   const user = await getProfile(username)
   if (!user) return {}
+  const title = `${user.name ?? username} | Link Portal`
+  const description = user.bio ?? `Check out ${username}'s links`
   return {
-    title: `${user.name ?? username} | Link Portal`,
-    description: user.bio ?? `${username}'s link page`,
+    title,
+    description,
     openGraph: {
-      title: `${user.name ?? username} | Link Portal`,
-      description: user.bio ?? `Check out ${username}'s links`,
+      title,
+      description,
       type: 'profile',
     },
     twitter: {
-      card: 'summary',
-      title: `${user.name ?? username} | Link Portal`,
-      description: user.bio ?? `Check out ${username}'s links`,
+      card: 'summary_large_image',
+      title,
+      description,
     },
   }
 }
