@@ -16,7 +16,8 @@ import { EditBlockModal } from '@/components/blocks/EditBlockModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, ExternalLink, Settings, BarChart2, LogOut, Link2, ShoppingBag, Palette, MoreHorizontal, Pencil, Trash2 as TrashIcon } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon } from 'lucide-react'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
@@ -62,11 +63,6 @@ export default function AdminPage() {
   }, [router])
 
   useEffect(() => { loadUser() }, [loadUser])
-
-  const handleLogout = async () => {
-    await fetch('/api/auth', { method: 'DELETE' })
-    router.push('/login')
-  }
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
@@ -169,67 +165,16 @@ export default function AdminPage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
-      <div className="w-8 h-8 rounded-full border-4 animate-spin"
-        style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
-    </div>
+    <AdminShell username={user?.username}>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 animate-spin"
+          style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
+      </div>
+    </AdminShell>
   )
 
-  const navLinkStyle = (active = false) => ({
-    display: 'flex', alignItems: 'center', gap: 6,
-    padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 500,
-    color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-    background: active ? 'var(--color-primary-light)' : 'none',
-    textDecoration: 'none', border: 'none', cursor: 'pointer',
-    transition: 'background 0.15s, color 0.15s',
-  })
-
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-surface)', fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
-
-      {/* Top nav */}
-      <header style={{ background: 'white', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
-                <Link2 size={14} color="white" />
-              </div>
-              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
-            </div>
-            {/* Nav items */}
-            <nav className="hidden sm:flex items-center gap-1">
-              <a href="/admin" style={navLinkStyle(true)}>主頁</a>
-              <a href="/admin/analytics" style={navLinkStyle()}>
-                <BarChart2 size={14} />數據分析
-              </a>
-              <a href="/admin/orders" style={navLinkStyle()}>
-                <ShoppingBag size={14} />訂單管理
-              </a>
-              <a href="/admin/theme" style={navLinkStyle()}>
-                <Palette size={14} />主題外觀
-              </a>
-              <a href="/admin/settings" style={navLinkStyle()}>
-                <Settings size={14} />設定
-              </a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <a href={`/${user?.username}`} target="_blank" rel="noopener noreferrer"
-              style={{ ...navLinkStyle(), display: 'flex' }}>
-              <ExternalLink size={14} />
-              <span className="hidden sm:inline">預覽</span>
-            </a>
-            <button onClick={handleLogout} style={navLinkStyle()}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E53E3E'; (e.currentTarget as HTMLElement).style.background = '#FFF5F5' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
-              <LogOut size={14} />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <AdminShell username={user?.username}>
       <div className="max-w-7xl mx-auto px-4 py-6 flex gap-6">
 
         {/* Left: Editor */}
@@ -330,10 +275,16 @@ export default function AdminPage() {
                 <div style={{ background: 'var(--gradient-hero)', minHeight: '100%', padding: '32px 16px 24px' }}>
                   {/* Avatar */}
                   <div className="flex flex-col items-center text-center mb-5">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
-                      style={{ background: 'var(--gradient-blue)', color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)', fontFamily: 'var(--font-display)' }}>
-                      {(user?.name ?? user?.username ?? 'U').charAt(0).toUpperCase()}
-                    </div>
+                    {user?.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.name ?? user.username}
+                        className="w-16 h-16 rounded-full object-cover mb-3"
+                        style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
+                        style={{ background: 'var(--gradient-blue)', color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)', fontFamily: 'var(--font-display)' }}>
+                        {(user?.name ?? user?.username ?? 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <p className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{user?.name ?? user?.username}</p>
                     {user?.bio && <p className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>{user.bio}</p>}
                   </div>
@@ -356,6 +307,6 @@ export default function AdminPage() {
 
       {showAddModal && <AddBlockModal onAdd={handleAdd} onClose={() => setShowAddModal(false)} />}
       {editingBlock && <EditBlockModal block={editingBlock} onSave={handleSaveEdit} onClose={() => setEditingBlock(null)} />}
-    </div>
+    </AdminShell>
   )
 }

@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Link2, Settings, BarChart2, ExternalLink, LogOut, Save, Plus, Trash2, ArrowLeft, ShoppingBag, Palette } from 'lucide-react'
+import { Save, Camera, X } from 'lucide-react'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 const SOCIAL_PLATFORMS = [
   { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/你的帳號' },
@@ -25,6 +26,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetch('/api/me').then(async res => {
@@ -38,6 +41,40 @@ export default function SettingsPage() {
       setLoading(false)
     })
   }, [router])
+
+  const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        setAvatarUrl(data.url)
+        // Auto-save avatar
+        await fetch('/api/me', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ avatarUrl: data.url }),
+        })
+      }
+    } catch {
+      // Silently fail
+    }
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleRemoveAvatar = async () => {
+    setAvatarUrl('')
+    await fetch('/api/me', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ avatarUrl: '' }),
+    })
+  }
 
   const handleSaveProfile = async () => {
     setSaving(true)
@@ -67,17 +104,12 @@ export default function SettingsPage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
-      <div className="w-8 h-8 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
-    </div>
+    <AdminShell username={user?.username}>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
+      </div>
+    </AdminShell>
   )
-
-  const navLinkStyle = (active = false) => ({
-    display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8,
-    fontSize: 14, fontWeight: 500, textDecoration: 'none', border: 'none', cursor: 'pointer',
-    color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-    background: active ? 'var(--color-primary-light)' : 'none',
-  })
 
   const inputStyle = {
     width: '100%', padding: '11px 14px', fontSize: 14,
@@ -86,45 +118,64 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-surface)', fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
-      {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
-                <Link2 size={14} color="white" />
-              </div>
-              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
-            </div>
-            <nav className="hidden sm:flex items-center gap-1">
-              <a href="/admin" style={navLinkStyle()}>主頁</a>
-              <a href="/admin/analytics" style={navLinkStyle()}><BarChart2 size={14} />數據分析</a>
-              <a href="/admin/orders" style={navLinkStyle()}><ShoppingBag size={14} />訂單管理</a>
-              <a href="/admin/theme" style={navLinkStyle()}><Palette size={14} />主題外觀</a>
-              <a href="/admin/settings" style={navLinkStyle(true)}><Settings size={14} />設定</a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <a href={`/${user?.username}`} target="_blank" rel="noopener noreferrer" style={{ ...navLinkStyle(), display: 'flex' }}>
-              <ExternalLink size={14} /><span className="hidden sm:inline">預覽</span>
-            </a>
-            <button onClick={async () => { await fetch('/api/auth', { method: 'DELETE' }); router.push('/login') }} style={navLinkStyle()}>
-              <LogOut size={14} />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <AdminShell username={user?.username}>
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         {/* Profile section */}
         <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 28, boxShadow: 'var(--shadow-sm)' }}>
           <h2 className="font-bold mb-6" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>個人資料</h2>
+
+          {/* Avatar upload */}
+          <div className="flex items-center gap-5 mb-6">
+            <div className="relative group">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar"
+                  className="w-20 h-20 rounded-full object-cover"
+                  style={{ border: '3px solid var(--color-border)' }} />
+              ) : (
+                <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold"
+                  style={{ background: 'var(--gradient-blue)', color: 'white', border: '3px solid var(--color-border)' }}>
+                  {(name || user?.username || '?').charAt(0).toUpperCase()}
+                </div>
+              )}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: 'rgba(0,0,0,0.5)', cursor: 'pointer', border: 'none' }}>
+                {uploading ? (
+                  <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} />
+                ) : (
+                  <Camera size={20} color="white" />
+                )}
+              </button>
+              {avatarUrl && (
+                <button
+                  onClick={handleRemoveAvatar}
+                  className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: '#EF4444', border: '2px solid white', cursor: 'pointer' }}>
+                  <X size={12} color="white" />
+                </button>
+              )}
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} />
+            </div>
+            <div>
+              <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>大頭照</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                點擊上傳圖片（JPG、PNG、GIF、WebP，最大 4MB）
+              </p>
+              <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                className="mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg"
+                style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: 'none', cursor: 'pointer' }}>
+                {uploading ? '上傳中...' : '選擇圖片'}
+              </button>
+            </div>
+          </div>
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>用戶名稱</label>
               <input value={user?.username ?? ''} disabled style={{ ...inputStyle, background: 'var(--color-surface)', color: 'var(--color-text-muted)' }} />
-              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>用戶名稱建立後無法修改</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>你的頁面網址：link-portal-eight.vercel.app/{user?.username}</p>
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>顯示名稱</label>
@@ -138,12 +189,7 @@ export default function SettingsPage() {
                 style={{ ...inputStyle, resize: 'none' }}
                 onFocus={e => (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-primary)'}
                 onBlur={e => (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-border)'} />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>大頭照網址</label>
-              <input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)} placeholder="https://..." style={inputStyle}
-                onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'var(--color-primary)'}
-                onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'} />
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{bio.length}/200 字元</p>
             </div>
             <button onClick={handleSaveProfile} disabled={saving} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
               <Save size={15} />
@@ -168,7 +214,7 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminShell>
   )
 }
 

@@ -202,19 +202,26 @@ function VideoBlock({ block }: { block: BlockData }) {
   )
 }
 
-function EmailFormBlock({ block }: { block: BlockData }) {
+function EmailFormBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
   const content = block.content as { placeholder?: string; buttonText?: string; webhookUrl?: string }
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Store in DB
+    fetch('/api/subscribers', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, blockId: block.id, pageId: pageId ?? '' }),
+    }).catch(() => {})
+    // Also fire webhook if configured
     if (content.webhookUrl) {
-      await fetch(content.webhookUrl, {
+      fetch(content.webhookUrl, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       }).catch(() => {})
     }
+    trackClick(block.id, pageId)
     setSubmitted(true)
   }
 
@@ -246,7 +253,7 @@ export function BlockRenderer({ block, pageId }: { block: BlockData; pageId?: st
     case 'heading': return <HeadingBlock block={block} />
     case 'product': return <ProductBlock block={block} pageId={pageId} />
     case 'video': return <VideoBlock block={block} />
-    case 'email_form': return <EmailFormBlock block={block} />
+    case 'email_form': return <EmailFormBlock block={block} pageId={pageId} />
     default: return null
   }
 }

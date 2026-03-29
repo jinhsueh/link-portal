@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ShoppingBag, BarChart2, Settings, ExternalLink, LogOut,
-  Link2, TrendingUp, PackageCheck, Clock, XCircle,
-  RotateCcw, RefreshCw,
+  ShoppingBag, TrendingUp, PackageCheck, Clock, XCircle,
+  RotateCcw, RefreshCw, ExternalLink,
 } from 'lucide-react'
+import { AdminShell } from '@/components/admin/AdminShell'
 import { fromStripeAmount } from '@/lib/stripe'
 
 interface Order {
@@ -53,40 +53,36 @@ function formatDate(iso: string) {
 export default function OrdersPage() {
   const router = useRouter()
   const [data, setData] = useState<OrdersResponse | null>(null)
+  const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
   const load = async (quiet = false) => {
     if (!quiet) setLoading(true)
     else setRefreshing(true)
-    const res = await fetch('/api/orders')
-    if (res.status === 401) { router.push('/login'); return }
-    setData(await res.json())
+    const [ordersRes, meRes] = await Promise.all([
+      fetch('/api/orders'),
+      !username ? fetch('/api/me') : Promise.resolve(null),
+    ])
+    if (ordersRes.status === 401) { router.push('/login'); return }
+    setData(await ordersRes.json())
+    if (meRes) {
+      const me = await meRes.json()
+      setUsername(me.username)
+    }
     setLoading(false)
     setRefreshing(false)
   }
 
   useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleLogout = async () => {
-    await fetch('/api/auth', { method: 'DELETE' })
-    router.push('/login')
-  }
-
-  const navLinkStyle = (active = false) => ({
-    display: 'flex', alignItems: 'center', gap: 6,
-    padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 500,
-    color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-    background: active ? 'var(--color-primary-light)' : 'none',
-    textDecoration: 'none', border: 'none', cursor: 'pointer',
-    transition: 'background 0.15s, color 0.15s',
-  })
-
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
-      <div className="w-8 h-8 rounded-full border-4 animate-spin"
-        style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
-    </div>
+    <AdminShell username={username}>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 animate-spin"
+          style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
+      </div>
+    </AdminShell>
   )
 
   const paidOrders = data?.orders.filter(o => o.status === 'paid') ?? []
@@ -94,46 +90,17 @@ export default function OrdersPage() {
     .map(([code, amt]) => formatAmount(amt, code)).join(' · ') || '—'
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
-
-      {/* Top nav */}
-      <header style={{ background: 'white', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
-                <Link2 size={14} color="white" />
-              </div>
-              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
-            </div>
-            <nav className="hidden sm:flex items-center gap-1">
-              <a href="/admin" style={navLinkStyle()}>主頁</a>
-              <a href="/admin/analytics" style={navLinkStyle()}>
-                <BarChart2 size={14} />數據分析
-              </a>
-              <a href="/admin/orders" style={navLinkStyle(true)}>
-                <ShoppingBag size={14} />訂單管理
-              </a>
-              <a href="/admin/settings" style={navLinkStyle()}>
-                <Settings size={14} />設定
-              </a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => load(true)} disabled={refreshing}
-              style={{ ...navLinkStyle(), opacity: refreshing ? 0.6 : 1 }}>
-              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-            </button>
-            <button onClick={handleLogout} style={navLinkStyle()}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E53E3E'; (e.currentTarget as HTMLElement).style.background = '#FFF5F5' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
-              <LogOut size={14} />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <AdminShell username={username}>
       <div className="max-w-6xl mx-auto px-4 py-8">
+
+        {/* Refresh button */}
+        <div className="flex justify-end mb-2">
+          <button onClick={() => load(true)} disabled={refreshing}
+            className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5"
+            style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)', opacity: refreshing ? 0.6 : 1 }}>
+            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+          </button>
+        </div>
 
         {/* Page title */}
         <div className="mb-6">
@@ -253,6 +220,6 @@ export default function OrdersPage() {
           </p>
         </div>
       </div>
-    </div>
+    </AdminShell>
   )
 }

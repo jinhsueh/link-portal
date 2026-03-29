@@ -20,6 +20,7 @@ model User {
   blocks      Block[]
   socialLinks SocialLink[]
   orders      Order[]
+  subscribers Subscriber[]
 }
 
 model Page {
@@ -77,6 +78,19 @@ model Click {
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  userId    String
+  blockId   String?
+  email     String
+  source    String   @default("email_form") // email_form | manual
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email])
 }
 
 model Order {

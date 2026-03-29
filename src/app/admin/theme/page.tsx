@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Link2, Settings, BarChart2, ShoppingBag, ExternalLink, LogOut,
-  Palette, Check,
-} from 'lucide-react'
+import { Check } from 'lucide-react'
+import { AdminShell } from '@/components/admin/AdminShell'
 import { PRESET_THEMES, DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 export default function ThemePage() {
@@ -49,19 +47,13 @@ export default function ThemePage() {
     setTheme(prev => ({ ...prev, ...preset }))
   }
 
-  const navLinkStyle = (active = false) => ({
-    display: 'flex', alignItems: 'center', gap: 6,
-    padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 500,
-    color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-    background: active ? 'var(--color-primary-light)' : 'none',
-    textDecoration: 'none', border: 'none', cursor: 'pointer',
-  })
-
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
-      <div className="w-8 h-8 rounded-full border-4 animate-spin"
-        style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
-    </div>
+    <AdminShell username={user?.username}>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 animate-spin"
+          style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
+      </div>
+    </AdminShell>
   )
 
   // Preview helpers
@@ -71,36 +63,7 @@ export default function ThemePage() {
   const radius = theme.buttonRadius === 'pill' ? 9999 : theme.buttonRadius === 'square' ? 6 : 12
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-surface)' }}>
-      {/* Nav */}
-      <header style={{ background: 'white', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
-                <Link2 size={14} color="white" />
-              </div>
-              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
-            </div>
-            <nav className="hidden sm:flex items-center gap-1">
-              <a href="/admin" style={navLinkStyle()}>主頁</a>
-              <a href="/admin/analytics" style={navLinkStyle()}><BarChart2 size={14} />數據分析</a>
-              <a href="/admin/orders" style={navLinkStyle()}><ShoppingBag size={14} />訂單管理</a>
-              <a href="/admin/theme" style={navLinkStyle(true)}><Palette size={14} />主題外觀</a>
-              <a href="/admin/settings" style={navLinkStyle()}><Settings size={14} />設定</a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <a href={`/${user?.username}`} target="_blank" rel="noopener noreferrer" style={{ ...navLinkStyle(), display: 'flex' }}>
-              <ExternalLink size={14} /><span className="hidden sm:inline">預覽</span>
-            </a>
-            <button onClick={async () => { await fetch('/api/auth', { method: 'DELETE' }); router.push('/login') }} style={navLinkStyle()}>
-              <LogOut size={14} />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <AdminShell username={user?.username}>
       <div className="max-w-7xl mx-auto px-4 py-8 flex gap-8">
         {/* Left: Controls */}
         <div className="flex-1 min-w-0">
@@ -294,7 +257,7 @@ export default function ThemePage() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminShell>
   )
 }
 
