@@ -1,7 +1,7 @@
 'use client'
 
 import { BlockData } from '@/types'
-import { ChevronRight, ShoppingBag } from 'lucide-react'
+import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 function LinkBlock({ block }: { block: BlockData }) {
@@ -53,25 +53,83 @@ function HeadingBlock({ block }: { block: BlockData }) {
 }
 
 function ProductBlock({ block }: { block: BlockData }) {
-  const content = block.content as { price: number; currency: string; description?: string; checkoutUrl: string; imageUrl?: string }
+  const content = block.content as {
+    price?: number; currency?: string; description?: string; imageUrl?: string
+  }
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const displayPrice = content.price ?? 0
+  const displayCurrency = content.currency ?? 'NT$'
+
+  const handleBuy = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blockId: block.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? '結帳失敗，請稍後再試'); setLoading(false); return }
+      window.location.href = data.url
+    } catch {
+      setError('網路錯誤，請稍後再試')
+      setLoading(false)
+    }
+  }
+
   return (
-    <a href={content.checkoutUrl} target="_blank" rel="noopener noreferrer"
-      className="flex items-center gap-4 w-full transition-all"
-      style={{ padding: '16px 20px', background: 'white', border: '1px solid var(--color-border)', borderRadius: 12, textDecoration: 'none', boxShadow: 'var(--shadow-sm)' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)' }}>
+    <div className="w-full" style={{
+      background: 'white', border: '1px solid var(--color-border)',
+      borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
+    }}>
+      {/* Product image */}
       {content.imageUrl && (
-        <img src={content.imageUrl} alt={block.title ?? ''} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+        <img src={content.imageUrl} alt={block.title ?? ''}
+          className="w-full object-cover" style={{ maxHeight: 200 }} />
       )}
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{block.title}</p>
-        {content.description && <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{content.description}</p>}
+
+      <div style={{ padding: '16px 20px' }}>
+        {/* Title + price row */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{block.title}</p>
+            {content.description && (
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+                {content.description}
+              </p>
+            )}
+          </div>
+          <span className="font-bold text-base flex-shrink-0" style={{ color: 'var(--color-primary)' }}>
+            {displayCurrency}{displayPrice.toLocaleString()}
+          </span>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p className="text-xs mt-2" style={{ color: '#E53E3E' }}>{error}</p>
+        )}
+
+        {/* Buy button */}
+        <button
+          onClick={handleBuy}
+          disabled={loading || displayPrice <= 0}
+          className="btn-primary w-full justify-center mt-4"
+          style={{ fontSize: 14, padding: '11px 20px', opacity: (loading || displayPrice <= 0) ? 0.7 : 1 }}>
+          {loading
+            ? <><Loader2 size={15} className="animate-spin" />處理中…</>
+            : <><ShoppingBag size={15} />立即購買</>}
+        </button>
+
+        {displayPrice <= 0 && (
+          <p className="text-center text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+            商品尚未設定價格
+          </p>
+        )}
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="font-bold text-sm" style={{ color: 'var(--color-primary)' }}>{content.currency}{content.price}</span>
-        <ShoppingBag size={16} style={{ color: 'var(--color-primary)' }} />
-      </div>
-    </a>
+    </div>
   )
 }
 

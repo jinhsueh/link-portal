@@ -16,9 +16,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  pages      Page[]
-  blocks     Block[]
+  pages       Page[]
+  blocks      Block[]
   socialLinks SocialLink[]
+  orders      Order[]
 }
 
 model Page {
@@ -51,8 +52,9 @@ model Block {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  page   Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  orders Order[]
 }
 
 model SocialLink {
@@ -74,4 +76,20 @@ model Click {
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  blockId         String
+  stripeSessionId String   @unique
+  customerEmail   String?
+  productTitle    String?
+  amount          Int      // smallest currency unit (e.g. TWD cents = ×100)
+  currency        String   @default("TWD")
+  status          String   @default("pending") // pending | paid | failed | refunded
+  createdAt       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  block Block @relation(fields: [blockId], references: [id], onDelete: Cascade)
 }

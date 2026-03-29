@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Link2, Settings, BarChart2, ExternalLink, LogOut, TrendingUp, Eye, MousePointer, Users } from 'lucide-react'
+import { Link2, Settings, BarChart2, ExternalLink, LogOut, TrendingUp, Eye, MousePointer, Users, ShoppingBag } from 'lucide-react'
 
 interface BlockStat { id: string; title?: string | null; type: string; clicks: number; views: number }
 interface Stats { totalBlocks: number; totalClicks: number; totalViews: number; blocks: BlockStat[] }
@@ -68,6 +68,7 @@ export default function AnalyticsPage() {
             <nav className="hidden sm:flex items-center gap-1">
               <a href="/admin" style={navLinkStyle()}>主頁</a>
               <a href="/admin/analytics" style={navLinkStyle(true)}><BarChart2 size={14} />數據分析</a>
+              <a href="/admin/orders" style={navLinkStyle()}><ShoppingBag size={14} />訂單管理</a>
               <a href="/admin/settings" style={navLinkStyle()}><Settings size={14} />設定</a>
             </nav>
           </div>

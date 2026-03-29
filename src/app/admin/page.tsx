@@ -15,7 +15,7 @@ import { AddBlockModal } from '@/components/blocks/AddBlockModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, ExternalLink, Settings, BarChart2, LogOut, Link2 } from 'lucide-react'
+import { Plus, ExternalLink, Settings, BarChart2, LogOut, Link2, ShoppingBag } from 'lucide-react'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
@@ -138,6 +138,9 @@ export default function AdminPage() {
               <a href="/admin" style={navLinkStyle(true)}>主頁</a>
               <a href="/admin/analytics" style={navLinkStyle()}>
                 <BarChart2 size={14} />數據分析
+              </a>
+              <a href="/admin/orders" style={navLinkStyle()}>
+                <ShoppingBag size={14} />訂單管理
               </a>
               <a href="/admin/settings" style={navLinkStyle()}>
                 <Settings size={14} />設定

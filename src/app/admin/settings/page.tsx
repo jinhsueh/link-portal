@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Link2, Settings, BarChart2, ExternalLink, LogOut, Save, Plus, Trash2, ArrowLeft } from 'lucide-react'
+import { Link2, Settings, BarChart2, ExternalLink, LogOut, Save, Plus, Trash2, ArrowLeft, ShoppingBag } from 'lucide-react'
 
 const SOCIAL_PLATFORMS = [
   { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/你的帳號' },
@@ -100,6 +100,7 @@ export default function SettingsPage() {
             <nav className="hidden sm:flex items-center gap-1">
               <a href="/admin" style={navLinkStyle()}>主頁</a>
               <a href="/admin/analytics" style={navLinkStyle()}><BarChart2 size={14} />數據分析</a>
+              <a href="/admin/orders" style={navLinkStyle()}><ShoppingBag size={14} />訂單管理</a>
               <a href="/admin/settings" style={navLinkStyle(true)}><Settings size={14} />設定</a>
             </nav>
           </div>
