@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { AnimatedBlock } from '@/components/blocks/AnimatedBlock'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { PageTracker } from '@/components/tracking/PageTracker'
 import { parseTheme, themeToCSS } from '@/lib/theme'
@@ -36,11 +37,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     user.pages[0]
   if (!activePage) notFound()
 
-  const blocks: BlockData[] = activePage.blocks.map(b => ({
-    id: b.id, type: b.type as BlockData['type'],
-    title: b.title, content: JSON.parse(b.content),
-    order: b.order, active: b.active, clicks: b.clicks, views: b.views,
-  }))
+  const now = new Date()
+  const blocks: BlockData[] = activePage.blocks
+    .filter(b => {
+      // Filter out scheduled blocks outside their window
+      if (b.scheduleStart && new Date(b.scheduleStart) > now) return false
+      if (b.scheduleEnd && new Date(b.scheduleEnd) < now) return false
+      return true
+    })
+    .map(b => ({
+      id: b.id, type: b.type as BlockData['type'],
+      title: b.title, content: JSON.parse(b.content),
+      order: b.order, active: b.active, clicks: b.clicks, views: b.views,
+    }))
 
   const theme = parseTheme(activePage.theme)
   const themeCSS = themeToCSS(theme)
@@ -103,7 +112,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
         {/* Blocks */}
         <div className="flex flex-col gap-3">
-          {blocks.map(block => <BlockRenderer key={block.id} block={block} pageId={activePage.id} />)}
+          {blocks.map((block, i) => (
+            <AnimatedBlock key={block.id} index={i}>
+              <BlockRenderer block={block} pageId={activePage.id} btnStyle={theme.buttonStyle} />
+            </AnimatedBlock>
+          ))}
         </div>
 
         {/* Watermark */}

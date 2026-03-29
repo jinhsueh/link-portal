@@ -1,0 +1,4 @@
+.env
+.env.local
+dev.db
+prisma/dev.db

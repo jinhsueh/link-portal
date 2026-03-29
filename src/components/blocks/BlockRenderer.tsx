@@ -5,15 +5,21 @@ import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 function trackClick(blockId: string, pageId?: string) {
+  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   fetch('/api/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'click', blockId, pageId: pageId ?? '' }),
+    body: JSON.stringify({
+      type: 'click', blockId, pageId: pageId ?? '',
+      referrer: typeof document !== 'undefined' ? document.referrer || undefined : undefined,
+      utmSource: params?.get('utm_source') || undefined,
+      utmMedium: params?.get('utm_medium') || undefined,
+    }),
   }).catch(() => {})
 }
 
-function LinkBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
-  const content = block.content as { url: string; thumbnail?: string }
+function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; pageId?: string; btnStyle?: string }) {
+  const content = block.content as { url: string; thumbnail?: string; description?: string }
   const [favicon, setFavicon] = useState<string | null>(content.thumbnail ?? null)
 
   useState(() => {
@@ -28,29 +34,49 @@ function LinkBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
   return (
     <a href={content.url} target="_blank" rel="noopener noreferrer"
       onClick={() => trackClick(block.id, pageId)}
-      className="flex items-center gap-3 w-full transition-all group"
+      className="flex items-center gap-3 w-full transition-all group link-block"
       style={{
-        padding: '16px 20px', background: 'white',
-        border: '1px solid var(--color-border)', borderRadius: 12,
-        textDecoration: 'none', boxShadow: 'var(--shadow-sm)',
+        padding: '16px 20px',
+        background: btnStyle === 'filled' ? 'var(--theme-primary, var(--color-primary))'
+          : btnStyle === 'soft' ? 'var(--theme-card-bg, white)'
+          : 'var(--theme-card-bg, white)',
+        color: btnStyle === 'filled' ? 'white' : undefined,
+        border: btnStyle === 'filled' ? 'none' : `1px solid var(--theme-border, var(--color-border))`,
+        borderRadius: 'var(--theme-radius, 12px)',
+        textDecoration: 'none', boxShadow: btnStyle === 'filled' ? 'none' : 'var(--shadow-sm)',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'
-        ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)'
+        if (btnStyle !== 'filled') {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-primary, var(--color-primary))'
+          ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)'
+        } else {
+          (e.currentTarget as HTMLElement).style.opacity = '0.9'
+        }
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'
-        ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'
+        if (btnStyle !== 'filled') {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-border, var(--color-border))'
+          ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'
+        } else {
+          (e.currentTarget as HTMLElement).style.opacity = '1'
+        }
       }}>
       {favicon && (
         <img src={favicon} alt="" width={20} height={20} className="flex-shrink-0 rounded"
           style={{ objectFit: 'contain' }}
           onError={() => setFavicon(null)} />
       )}
-      <span className="font-semibold text-sm flex-1" style={{ color: 'var(--color-text-primary)' }}>
-        {block.title}
-      </span>
-      <ChevronRight size={16} className="flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
+      <div className="flex-1 min-w-0">
+        <span className="font-semibold text-sm block truncate" style={{ color: btnStyle === 'filled' ? 'white' : 'var(--theme-text, var(--color-text-primary))' }}>
+          {block.title}
+        </span>
+        {content.description && (
+          <span className="text-xs block truncate mt-0.5" style={{ color: btnStyle === 'filled' ? 'rgba(255,255,255,0.8)' : 'var(--theme-text-secondary, var(--color-text-secondary))' }}>
+            {content.description}
+          </span>
+        )}
+      </div>
+      <ChevronRight size={16} className="flex-shrink-0" style={{ color: btnStyle === 'filled' ? 'rgba(255,255,255,0.6)' : 'var(--theme-text-muted, var(--color-text-muted))' }} />
     </a>
   )
 }
@@ -205,6 +231,25 @@ function VideoBlock({ block }: { block: BlockData }) {
     )
   }
 
+  if (platform === 'spotify' && embedId) {
+    // embedId is the full path like "track/xxx" or "playlist/xxx"
+    return (
+      <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+        {block.title && (
+          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
+            {block.title}
+          </p>
+        )}
+        <iframe
+          src={`https://open.spotify.com/embed/${embedId}`}
+          title={block.title ?? 'Spotify'}
+          allow="encrypted-media"
+          style={{ width: '100%', height: embedId.startsWith('track') ? 152 : 352, border: 'none' }}
+        />
+      </div>
+    )
+  }
+
   // Fallback: link to original URL
   return (
     <a href={content.url ?? '#'} target="_blank" rel="noopener noreferrer"
@@ -261,15 +306,186 @@ function EmailFormBlock({ block, pageId }: { block: BlockData; pageId?: string }
   )
 }
 
-export function BlockRenderer({ block, pageId }: { block: BlockData; pageId?: string }) {
+function CountdownBlock({ block }: { block: BlockData }) {
+  const content = block.content as { targetDate: string; label?: string; expiredText?: string }
+  const [remaining, setRemaining] = useState('')
+  const [expired, setExpired] = useState(false)
+
+  useState(() => {
+    const update = () => {
+      const target = new Date(content.targetDate).getTime()
+      const now = Date.now()
+      const diff = target - now
+      if (diff <= 0) { setExpired(true); setRemaining(content.expiredText ?? '已結束'); return }
+      const d = Math.floor(diff / 86400000)
+      const h = Math.floor((diff % 86400000) / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setRemaining(`${d > 0 ? d + '天 ' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
+    }
+    update()
+    const id = setInterval(update, 1000)
+    return () => clearInterval(id)
+  })
+
+  return (
+    <div className="w-full text-center" style={{
+      padding: '24px 20px', background: 'var(--theme-card-bg, white)',
+      border: '1px solid var(--theme-border, var(--color-border))', borderRadius: 'var(--theme-radius, 12px)',
+      boxShadow: 'var(--shadow-sm)',
+    }}>
+      {(block.title || content.label) && (
+        <p className="font-semibold text-sm mb-2" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+          {block.title || content.label}
+        </p>
+      )}
+      <p className="font-extrabold text-3xl tabular-nums" style={{
+        color: expired ? 'var(--theme-text-muted, var(--color-text-muted))' : 'var(--theme-primary, var(--color-primary))',
+        fontFamily: 'var(--font-display)',
+      }}>
+        {remaining}
+      </p>
+    </div>
+  )
+}
+
+function FaqBlock({ block }: { block: BlockData }) {
+  const content = block.content as { items: Array<{ question: string; answer: string }> }
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  return (
+    <div className="w-full" style={{
+      border: '1px solid var(--theme-border, var(--color-border))', borderRadius: 'var(--theme-radius, 12px)',
+      overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
+    }}>
+      {block.title && (
+        <p className="font-semibold text-sm px-4 py-3" style={{
+          background: 'var(--theme-card-bg, white)', color: 'var(--theme-text, var(--color-text-primary))',
+          borderBottom: '1px solid var(--theme-border, var(--color-border))',
+        }}>{block.title}</p>
+      )}
+      {(content.items ?? []).map((item, i) => (
+        <div key={i} style={{ borderBottom: i < content.items.length - 1 ? '1px solid var(--theme-border, var(--color-border))' : 'none' }}>
+          <button onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            className="w-full flex items-center justify-between text-left text-sm font-semibold"
+            style={{ padding: '14px 16px', background: 'var(--theme-card-bg, white)', border: 'none', cursor: 'pointer', color: 'var(--theme-text, var(--color-text-primary))' }}>
+            <span>{item.question}</span>
+            <span style={{ transition: 'transform 0.2s', transform: openIndex === i ? 'rotate(180deg)' : 'rotate(0)', color: 'var(--theme-text-muted, var(--color-text-muted))' }}>▾</span>
+          </button>
+          {openIndex === i && (
+            <div className="text-sm" style={{ padding: '0 16px 14px', color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.7 }}>
+              {item.answer}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function CarouselBlock({ block }: { block: BlockData }) {
+  const content = block.content as { images: Array<{ url: string; linkUrl?: string; alt?: string }> }
+  const [current, setCurrent] = useState(0)
+  const images = content.images ?? []
+  if (images.length === 0) return null
+
+  const goTo = (i: number) => setCurrent((i + images.length) % images.length)
+  const img = images[current]
+
+  const inner = (
+    <div className="relative w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+      <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280 }} />
+      {images.length > 1 && (
+        <>
+          <button onClick={() => goTo(current - 1)}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>‹</button>
+          <button onClick={() => goTo(current + 1)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>›</button>
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {images.map((_, i) => (
+              <button key={i} onClick={() => setCurrent(i)}
+                className="w-2 h-2 rounded-full" style={{ background: i === current ? 'white' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', padding: 0 }} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  return img.linkUrl
+    ? <a href={img.linkUrl} target="_blank" rel="noopener noreferrer" className="block w-full">{inner}</a>
+    : <div className="w-full">{inner}</div>
+}
+
+function MapBlock({ block }: { block: BlockData }) {
+  const content = block.content as { query: string; zoom?: number }
+  const q = encodeURIComponent(content.query ?? '')
+  return (
+    <div className="w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+      {block.title && (
+        <p className="text-sm font-semibold px-3 py-2" style={{
+          background: 'var(--theme-card-bg, white)', color: 'var(--theme-text, var(--color-text-primary))',
+          borderBottom: '1px solid var(--theme-border, var(--color-border))',
+        }}>{block.title}</p>
+      )}
+      <iframe
+        src={`https://maps.google.com/maps?q=${q}&z=${content.zoom ?? 15}&output=embed`}
+        title={block.title ?? 'Map'}
+        style={{ width: '100%', height: 200, border: 'none' }}
+        loading="lazy"
+      />
+    </div>
+  )
+}
+
+function EmbedBlock({ block }: { block: BlockData }) {
+  const content = block.content as { html: string; height?: number }
+  return (
+    <div className="w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+      {block.title && (
+        <p className="text-sm font-semibold px-3 py-2" style={{
+          background: 'var(--theme-card-bg, white)', color: 'var(--theme-text, var(--color-text-primary))',
+          borderBottom: '1px solid var(--theme-border, var(--color-border))',
+        }}>{block.title}</p>
+      )}
+      <div
+        style={{ height: content.height ?? 300 }}
+        dangerouslySetInnerHTML={{ __html: sanitizeEmbed(content.html ?? '') }}
+      />
+    </div>
+  )
+}
+
+/** Only allow iframe tags in embed HTML to prevent XSS */
+function sanitizeEmbed(html: string): string {
+  const match = html.match(/<iframe[^>]*src=["']([^"']+)["'][^>]*><\/iframe>/i)
+    || html.match(/<iframe[^>]*src=["']([^"']+)["'][^>]*\/>/i)
+  if (match) {
+    return `<iframe src="${match[1]}" style="width:100%;height:100%;border:none" loading="lazy" allowfullscreen></iframe>`
+  }
+  // If no iframe found, wrap URL in iframe
+  if (html.startsWith('http')) {
+    return `<iframe src="${html}" style="width:100%;height:100%;border:none" loading="lazy"></iframe>`
+  }
+  return ''
+}
+
+export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; pageId?: string; btnStyle?: string }) {
   if (!block.active) return null
   switch (block.type) {
-    case 'link': return <LinkBlock block={block} pageId={pageId} />
+    case 'link': return <LinkBlock block={block} pageId={pageId} btnStyle={btnStyle} />
     case 'banner': return <BannerBlock block={block} />
     case 'heading': return <HeadingBlock block={block} />
     case 'product': return <ProductBlock block={block} pageId={pageId} />
     case 'video': return <VideoBlock block={block} />
     case 'email_form': return <EmailFormBlock block={block} pageId={pageId} />
+    case 'countdown': return <CountdownBlock block={block} />
+    case 'faq': return <FaqBlock block={block} />
+    case 'carousel': return <CarouselBlock block={block} />
+    case 'map': return <MapBlock block={block} />
+    case 'embed': return <EmbedBlock block={block} />
     default: return null
   }
 }

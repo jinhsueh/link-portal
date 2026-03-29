@@ -16,6 +16,7 @@ export default function AnalyticsPage() {
   const [totalClicks, setTotalClicks] = useState(0)
   const [totalViews, setTotalViews] = useState(0)
   const [totalBlocks, setTotalBlocks] = useState(0)
+  const [referrers, setReferrers] = useState<{ source: string; count: number }[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function AnalyticsPage() {
       setDaily(analytics.daily ?? [])
       setTotalClicks(analytics.totalClicks ?? 0)
       setTotalViews(analytics.totalViews ?? 0)
+      setReferrers(analytics.referrers ?? [])
       setLoading(false)
     })
   }, [router])
@@ -105,6 +107,33 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
+
+        {/* Referrer sources */}
+        {referrers.length > 0 && (
+          <div className="mb-8" style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)' }}>
+              <h2 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>流量來源</h2>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>過去 14 天的點擊來源 Top 10</p>
+            </div>
+            <div>
+              {referrers.map((r, i) => {
+                const maxRef = referrers[0]?.count || 1
+                const pct = (r.count / maxRef) * 100
+                return (
+                  <div key={r.source} style={{ padding: '14px 24px', borderBottom: i < referrers.length - 1 ? '1px solid var(--color-border)' : 'none' }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{r.source}</span>
+                      <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>{r.count} 點擊</span>
+                    </div>
+                    <div style={{ height: 4, background: 'var(--color-surface)', borderRadius: 9999 }}>
+                      <div style={{ height: 4, width: `${pct}%`, background: '#38A169', borderRadius: 9999, transition: 'width 0.6s ease' }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Block ranking */}
         <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-sm)' }}>

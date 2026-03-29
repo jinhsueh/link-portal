@@ -6,6 +6,11 @@ export type BlockType =
   | 'product'
   | 'heading'
   | 'social'
+  | 'countdown'
+  | 'faq'
+  | 'carousel'
+  | 'map'
+  | 'embed'
 
 export interface LinkContent {
   url: string
@@ -47,6 +52,30 @@ export interface SocialContent {
   platforms: string[] // references user social links
 }
 
+export interface CountdownContent {
+  targetDate: string // ISO string
+  label?: string
+  expiredText?: string
+}
+
+export interface FaqContent {
+  items: Array<{ question: string; answer: string }>
+}
+
+export interface CarouselContent {
+  images: Array<{ url: string; linkUrl?: string; alt?: string }>
+}
+
+export interface MapContent {
+  query: string // Google Maps search query or place
+  zoom?: number
+}
+
+export interface EmbedContent {
+  html: string // iframe or embed HTML
+  height?: number
+}
+
 export type BlockContent =
   | LinkContent
   | BannerContent
@@ -55,6 +84,11 @@ export type BlockContent =
   | ProductContent
   | HeadingContent
   | SocialContent
+  | CountdownContent
+  | FaqContent
+  | CarouselContent
+  | MapContent
+  | EmbedContent
 
 export interface BlockData {
   id: string
@@ -65,6 +99,8 @@ export interface BlockData {
   active: boolean
   clicks: number
   views: number
+  scheduleStart?: string | null
+  scheduleEnd?: string | null
 }
 
 export interface ProfileData {

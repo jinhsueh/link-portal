@@ -4,15 +4,19 @@ import { useEffect } from 'react'
 
 /**
  * Fires a single "view" event on mount for a given pageId.
- * Placed in the public profile page to track page views.
+ * Also captures referrer and UTM params for analytics.
  */
 export function PageTracker({ pageId }: { pageId: string }) {
   useEffect(() => {
-    // Fire-and-forget. No error handling needed — tracking is best-effort.
+    const params = new URLSearchParams(window.location.search)
+    const referrer = document.referrer || undefined
+    const utmSource = params.get('utm_source') || undefined
+    const utmMedium = params.get('utm_medium') || undefined
+
     fetch('/api/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'view', pageId }),
+      body: JSON.stringify({ type: 'view', pageId, referrer, utmSource, utmMedium }),
     }).catch(() => {})
   }, [pageId])
 

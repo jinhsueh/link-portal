@@ -10,7 +10,7 @@ import { prisma } from '@/lib/prisma'
  */
 export async function POST(req: NextRequest) {
   try {
-    const { type, blockId, pageId } = await req.json()
+    const { type, blockId, pageId, referrer, utmSource, utmMedium } = await req.json()
 
     if (!type || !pageId) {
       return NextResponse.json({ error: 'type and pageId required' }, { status: 400 })
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       })
       // Insert analytics click record
       await prisma.click.create({
-        data: { blockId, pageId, ip, userAgent },
+        data: { blockId, pageId, ip, userAgent, referrer: referrer ?? null, utmSource: utmSource ?? null, utmMedium: utmMedium ?? null },
       })
       return NextResponse.json({ ok: true })
     }

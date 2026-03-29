@@ -3,15 +3,17 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { BlockData, BlockType } from '@/types'
-import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image } from 'lucide-react'
+import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin, Code } from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
   email_form: Mail, product: ShoppingBag, heading: AlignLeft, social: ExternalLink,
+  countdown: Timer, faq: HelpCircle, carousel: Images, map: MapPin, embed: Code,
 }
 const TYPE_LABELS: Record<BlockType, string> = {
   link: '連結按鈕', banner: '橫幅看板', video: '影片',
   email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
+  countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
 }
 
 interface Props {
@@ -20,9 +22,11 @@ interface Props {
   onDelete: (id: string) => void
   onEdit: (block: BlockData) => void
   onDuplicate?: (block: BlockData) => void
+  onSchedule?: (block: BlockData) => void
 }
 
-export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate }: Props) {
+export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule }: Props) {
+  const hasSchedule = !!(block.scheduleStart || block.scheduleEnd)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id })
 
@@ -71,11 +75,21 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate }
         <span>{block.views} 曝光</span>
       </div>
 
+      {/* Schedule badge */}
+      {hasSchedule && (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0"
+          style={{ background: '#FFF7ED', color: '#C2410C', border: '1px solid #FDBA74' }}>
+          <Clock size={11} />
+          <span>排程</span>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex items-center gap-1 flex-shrink-0">
         {[
           { icon: Edit2, onClick: () => onEdit(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
           { icon: Copy, onClick: () => onDuplicate?.(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
+          { icon: Clock, onClick: () => onSchedule?.(block), color: hasSchedule ? '#C2410C' : 'var(--color-text-secondary)', hoverBg: hasSchedule ? '#FFF7ED' : 'var(--color-surface)' },
           { icon: block.active ? Eye : EyeOff, onClick: () => onToggle(block.id, !block.active), color: 'var(--color-text-secondary)', hoverBg: 'var(--color-surface)' },
           { icon: Trash2, onClick: () => onDelete(block.id), color: '#E53E3E', hoverBg: '#FFF5F5' },
         ].map(({ icon: BtnIcon, onClick, color, hoverBg }, i) => (

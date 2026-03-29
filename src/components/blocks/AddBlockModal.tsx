@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
-import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown } from 'lucide-react'
+import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code } from 'lucide-react'
 
 const BLOCK_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
   { type: 'link',       icon: ExternalLink, label: '連結按鈕', description: '加入任意連結' },
@@ -10,7 +10,12 @@ const BLOCK_TYPES: { type: BlockType; icon: React.ElementType; label: string; de
   { type: 'heading',    icon: AlignLeft,    label: '標題文字', description: '分頁標題或說明' },
   { type: 'email_form', icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
   { type: 'product',    icon: ShoppingBag,  label: '數位商品', description: '販售數位產品' },
-  { type: 'video',      icon: Video,        label: '影片',     description: '嵌入 YouTube' },
+  { type: 'video',      icon: Video,        label: '影片',     description: '嵌入 YouTube / Spotify' },
+  { type: 'countdown',  icon: Timer,        label: '倒數計時', description: '活動或限時優惠' },
+  { type: 'faq',        icon: HelpCircle,   label: 'FAQ 問答', description: '常見問題摺疊' },
+  { type: 'carousel',   icon: Images,       label: '圖片輪播', description: '多張圖滑動展示' },
+  { type: 'map',        icon: MapPin,       label: '地圖嵌入', description: 'Google Maps' },
+  { type: 'embed',      icon: Code,         label: 'HTML 嵌入', description: '自訂 iframe / HTML' },
 ]
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
@@ -25,11 +30,31 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
   const [selected, setSelected] = useState<BlockType | null>(null)
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   // product-specific
   const [price, setPrice] = useState('')
   const [currency, setCurrency] = useState('NT$')
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'url' | 'imageUrl') => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        if (target === 'url') setUrl(data.url)
+        else setImageUrl(data.url)
+      }
+    } catch { /* silent */ }
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +65,11 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'heading')    content = { text: title }
     if (selected === 'email_form') content = { placeholder: '輸入你的 Email', buttonText: '訂閱' }
     if (selected === 'video')      content = parseVideoUrl(url)
+    if (selected === 'countdown')  content = { targetDate: url, label: title || '即將開始' }
+    if (selected === 'faq')        content = { items: [{ question: title || '問題？', answer: '答案...' }] }
+    if (selected === 'carousel')   content = { images: url ? [{ url }] : [] }
+    if (selected === 'map')        content = { query: url || title, zoom: 15 }
+    if (selected === 'embed')      content = { html: url, height: 300 }
     if (selected === 'product') {
       content = {
         price: parseFloat(price) || 0,
@@ -149,9 +179,22 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>商品圖片網址（選填）</label>
-                  <input value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-                    placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>商品圖片（選填）</label>
+                  <div className="flex gap-2 items-center">
+                    <input value={imageUrl} onChange={e => setImageUrl(e.target.value)}
+                      placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                    <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                      <Upload size={14} />
+                      {uploading ? '...' : '上傳'}
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={e => handleFileUpload(e, 'imageUrl')} />
+                    </label>
+                  </div>
+                  {imageUrl && (
+                    <img src={imageUrl} alt="Preview" className="mt-2 rounded-lg"
+                      style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                  )}
                 </div>
               </>
             ) : (
@@ -167,13 +210,72 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                       style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}
-                {['link', 'banner', 'video'].includes(selected ?? '') && (
+                {['link', 'video'].includes(selected ?? '') && (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                      {selected === 'banner' ? '圖片網址' : selected === 'video' ? 'YouTube 網址' : '連結網址'}
+                      {selected === 'video' ? 'YouTube / Spotify 網址' : '連結網址'}
                     </label>
                     <input value={url} onChange={e => setUrl(e.target.value)}
                       required placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                )}
+                {selected === 'countdown' && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>目標時間</label>
+                    <input type="datetime-local" value={url} onChange={e => setUrl(e.target.value)}
+                      required style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                )}
+                {selected === 'map' && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>地點或地址</label>
+                    <input value={url} onChange={e => setUrl(e.target.value)}
+                      required placeholder="台北 101、25.0330,121.5654" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                )}
+                {selected === 'embed' && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>HTML / iframe 程式碼</label>
+                    <textarea value={url} onChange={e => setUrl(e.target.value)}
+                      required placeholder='<iframe src="..." />' rows={3}
+                      style={{ ...inputStyle, resize: 'none', fontFamily: 'monospace', fontSize: 12 }}
+                      onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                )}
+                {selected === 'banner' && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
+                      橫幅圖片
+                    </label>
+                    {url ? (
+                      <div className="relative rounded-xl overflow-hidden mb-2" style={{ border: '1px solid var(--color-border)' }}>
+                        <img src={url} alt="Banner preview" style={{ width: '100%', height: 120, objectFit: 'cover' }} />
+                        <button type="button" onClick={() => setUrl('')}
+                          className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer' }}>
+                          <X size={12} color="white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 py-6 rounded-xl"
+                        style={{ border: '2px dashed var(--color-border)', background: 'var(--color-surface)' }}>
+                        <Upload size={24} style={{ color: 'var(--color-text-muted)' }} />
+                        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                          {uploading ? '上傳中...' : '上傳圖片或輸入網址'}
+                        </p>
+                        <div className="flex gap-2">
+                          <label className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                            style={{ background: 'var(--color-primary)', color: 'white', cursor: 'pointer' }}>
+                            選擇圖片
+                            <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+                              onChange={e => handleFileUpload(e, 'url')} />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                    <input value={url} onChange={e => setUrl(e.target.value)}
+                      placeholder="或貼上圖片網址 https://..." style={{ ...inputStyle, marginTop: 8 }}
+                      onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}
               </>

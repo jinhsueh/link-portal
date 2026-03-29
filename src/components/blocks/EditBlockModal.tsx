@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { BlockData, BlockType } from '@/types'
-import { X, ChevronDown } from 'lucide-react'
+import { X, ChevronDown, Upload } from 'lucide-react'
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -20,6 +20,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
 
   // Link
   const [url, setUrl] = useState((content.url as string) ?? '')
+  const [linkDesc, setLinkDesc] = useState((content.description as string) ?? '')
 
   // Banner
   const [imageUrl, setImageUrl] = useState((content.imageUrl as string) ?? '')
@@ -44,13 +45,29 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   // Video
   const [videoUrl, setVideoUrl] = useState((content.url as string) ?? (content.embedId as string) ?? '')
 
+  // Upload
+  const [uploading, setUploading] = useState(false)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (v: string) => void) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) setter(data.url)
+    } catch { /* silent */ }
+    setUploading(false)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     let newContent: Record<string, unknown> = {}
 
     switch (block.type) {
       case 'link':
-        newContent = { url }
+        newContent = { url, ...(linkDesc ? { description: linkDesc } : {}) }
         break
       case 'banner':
         newContent = { imageUrl, ...(linkUrl ? { linkUrl } : {}), ...(alt ? { alt } : {}) }
@@ -72,6 +89,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
       case 'video':
         newContent = parseVideoInput(videoUrl)
         break
+      case 'countdown':
+        newContent = { targetDate, label: countdownLabel || undefined, expiredText: expiredText || undefined }
+        break
+      case 'faq':
+        newContent = { items: faqItems.filter(i => i.question.trim()) }
+        break
+      case 'carousel':
+        newContent = { images: carouselImages.filter(i => i.url.trim()) }
+        break
+      case 'map':
+        newContent = { query: mapQuery, zoom: parseInt(mapZoom) || 15 }
+        break
+      case 'embed':
+        newContent = { html: embedHtml, height: parseInt(embedHeight) || 300 }
+        break
       default:
         newContent = content
     }
@@ -90,9 +122,33 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const focusOut = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     (e.target.style.borderColor = 'var(--color-border)')
 
+  // Countdown
+  const [targetDate, setTargetDate] = useState((content.targetDate as string) ?? '')
+  const [countdownLabel, setCountdownLabel] = useState((content.label as string) ?? '')
+  const [expiredText, setExpiredText] = useState((content.expiredText as string) ?? '')
+
+  // FAQ
+  const [faqItems, setFaqItems] = useState<Array<{ question: string; answer: string }>>(
+    (content.items as Array<{ question: string; answer: string }>) ?? [{ question: '', answer: '' }]
+  )
+
+  // Carousel
+  const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl?: string; alt?: string }>>(
+    (content.images as Array<{ url: string; linkUrl?: string; alt?: string }>) ?? []
+  )
+
+  // Map
+  const [mapQuery, setMapQuery] = useState((content.query as string) ?? '')
+  const [mapZoom, setMapZoom] = useState(String(content.zoom ?? 15))
+
+  // Embed
+  const [embedHtml, setEmbedHtml] = useState((content.html as string) ?? '')
+  const [embedHeight, setEmbedHeight] = useState(String(content.height ?? 300))
+
   const TYPE_LABELS: Record<BlockType, string> = {
     link: '連結按鈕', banner: '橫幅看板', video: '影片',
     email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
+    countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
   }
 
   return (
@@ -126,6 +182,10 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={url} onChange={e => setUrl(e.target.value)} required
                   placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
+              <Field label="描述（選填）">
+                <input value={linkDesc} onChange={e => setLinkDesc(e.target.value)}
+                  placeholder="簡短描述文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
             </>
           )}
 
@@ -136,9 +196,22 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={title} onChange={e => setTitle(e.target.value)}
                   placeholder="橫幅標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="圖片網址">
-                <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} required
-                  placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              <Field label="橫幅圖片">
+                <div className="flex gap-2 items-center">
+                  <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} required
+                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                  <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                    style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                    <Upload size={14} />
+                    {uploading ? '...' : '上傳'}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={e => handleFileUpload(e, setImageUrl)} />
+                  </label>
+                </div>
+                {imageUrl && (
+                  <img src={imageUrl} alt="Preview" className="mt-2 rounded-lg"
+                    style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                )}
               </Field>
               <Field label="點擊連結（選填）">
                 <input value={linkUrl} onChange={e => setLinkUrl(e.target.value)}
@@ -206,9 +279,22 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     onFocus={focusIn} onBlur={focusOut} />
                 </div>
               </Field>
-              <Field label="商品圖片網址（選填）">
-                <input value={productImg} onChange={e => setProductImg(e.target.value)}
-                  placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              <Field label="商品圖片（選填）">
+                <div className="flex gap-2 items-center">
+                  <input value={productImg} onChange={e => setProductImg(e.target.value)}
+                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                  <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                    style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                    <Upload size={14} />
+                    {uploading ? '...' : '上傳'}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={e => handleFileUpload(e, setProductImg)} />
+                  </label>
+                </div>
+                {productImg && (
+                  <img src={productImg} alt="Preview" className="mt-2 rounded-lg"
+                    style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                )}
               </Field>
             </>
           )}
@@ -238,13 +324,130 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={title} onChange={e => setTitle(e.target.value)}
                   placeholder="影片標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="YouTube / TikTok 網址">
+              <Field label="YouTube / TikTok / Spotify 網址">
                 <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} required
                   placeholder="https://youtube.com/watch?v=..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)', marginTop: -8 }}>
-                支援 youtube.com/watch, youtu.be, tiktok.com 連結
+                支援 youtube.com, youtu.be, tiktok.com, open.spotify.com 連結
               </p>
+            </>
+          )}
+
+          {/* ── COUNTDOWN ── */}
+          {block.type === 'countdown' && (
+            <>
+              <Field label="標題">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="倒數標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="目標時間">
+                <input type="datetime-local" value={targetDate} onChange={e => setTargetDate(e.target.value)}
+                  required style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="倒數標籤（選填）">
+                <input value={countdownLabel} onChange={e => setCountdownLabel(e.target.value)}
+                  placeholder="即將開始" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="結束後顯示文字（選填）">
+                <input value={expiredText} onChange={e => setExpiredText(e.target.value)}
+                  placeholder="已結束" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+            </>
+          )}
+
+          {/* ── FAQ ── */}
+          {block.type === 'faq' && (
+            <>
+              <Field label="標題（選填）">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="常見問題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              {faqItems.map((item, i) => (
+                <div key={i} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>問題 {i + 1}</span>
+                    {faqItems.length > 1 && (
+                      <button type="button" onClick={() => setFaqItems(prev => prev.filter((_, j) => j !== i))}
+                        className="text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>刪除</button>
+                    )}
+                  </div>
+                  <input value={item.question} onChange={e => setFaqItems(prev => prev.map((it, j) => j === i ? { ...it, question: e.target.value } : it))}
+                    placeholder="問題" style={{ ...inputStyle, marginBottom: 8 }} onFocus={focusIn} onBlur={focusOut} />
+                  <textarea value={item.answer} onChange={e => setFaqItems(prev => prev.map((it, j) => j === i ? { ...it, answer: e.target.value } : it))}
+                    placeholder="答案" rows={2} style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+              ))}
+              <button type="button" onClick={() => setFaqItems(prev => [...prev, { question: '', answer: '' }])}
+                className="w-full py-2 text-sm font-semibold rounded-lg"
+                style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
+                + 新增問答
+              </button>
+            </>
+          )}
+
+          {/* ── CAROUSEL ── */}
+          {block.type === 'carousel' && (
+            <>
+              <Field label="標題（選填）">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              {carouselImages.map((img, i) => (
+                <div key={i} className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url: e.target.value } : im))}
+                      placeholder="圖片網址" style={{ ...inputStyle, marginBottom: 4 }} onFocus={focusIn} onBlur={focusOut} />
+                    <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
+                      placeholder="連結網址（選填）" style={{ ...inputStyle, fontSize: 12 }} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                  <button type="button" onClick={() => setCarouselImages(prev => prev.filter((_, j) => j !== i))}
+                    className="mt-2 text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                </div>
+              ))}
+              <button type="button" onClick={() => setCarouselImages(prev => [...prev, { url: '' }])}
+                className="w-full py-2 text-sm font-semibold rounded-lg"
+                style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
+                + 新增圖片
+              </button>
+            </>
+          )}
+
+          {/* ── MAP ── */}
+          {block.type === 'map' && (
+            <>
+              <Field label="標題（選填）">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="地點名稱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="地點或地址">
+                <input value={mapQuery} onChange={e => setMapQuery(e.target.value)}
+                  required placeholder="台北 101" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="縮放等級">
+                <input type="number" min="1" max="20" value={mapZoom} onChange={e => setMapZoom(e.target.value)}
+                  style={{ ...inputStyle, width: 100 }} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+            </>
+          )}
+
+          {/* ── EMBED ── */}
+          {block.type === 'embed' && (
+            <>
+              <Field label="標題（選填）">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="嵌入內容" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="HTML / iframe 程式碼">
+                <textarea value={embedHtml} onChange={e => setEmbedHtml(e.target.value)}
+                  required placeholder='<iframe src="..." />' rows={4}
+                  style={{ ...inputStyle, resize: 'none', fontFamily: 'monospace', fontSize: 12 } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="高度 (px)">
+                <input type="number" min="100" max="800" value={embedHeight} onChange={e => setEmbedHeight(e.target.value)}
+                  style={{ ...inputStyle, width: 120 }} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
             </>
           )}
 
@@ -293,6 +496,12 @@ function parseVideoInput(input: string): Record<string, unknown> {
   const ttMatch = trimmed.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)
   if (ttMatch) {
     return { platform: 'tiktok', embedId: ttMatch[1], url: trimmed }
+  }
+
+  // Spotify: open.spotify.com/track/XXX or /playlist/XXX or /album/XXX
+  const spMatch = trimmed.match(/open\.spotify\.com\/(track|playlist|album|episode|show)\/([a-zA-Z0-9]+)/)
+  if (spMatch) {
+    return { platform: 'spotify', embedId: `${spMatch[1]}/${spMatch[2]}`, url: trimmed }
   }
 
   // Fallback: treat as youtube embed ID

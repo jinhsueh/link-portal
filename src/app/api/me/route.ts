@@ -14,21 +14,40 @@ export async function GET() {
     },
   })
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(user)
+
+  // Strip passwordHash, add hasPassword flag
+  const { passwordHash, ...safeUser } = user
+  return NextResponse.json({
+    ...safeUser,
+    hasPassword: !!passwordHash,
+  })
 }
 
 export async function PATCH(req: Request) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { name, bio, avatarUrl } = await req.json()
+  const body = await req.json()
+  const { name, bio, avatarUrl, email, notifyNewSubscriber, notifyNewOrder, notifyWeeklyReport } = body
+
+  // Email format validation
+  if (email !== undefined && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: 'Email 格式不正確' }, { status: 400 })
+  }
+
   const user = await prisma.user.update({
     where: { id: session.id },
     data: {
       ...(name !== undefined && { name }),
       ...(bio !== undefined && { bio }),
       ...(avatarUrl !== undefined && { avatarUrl }),
+      ...(email !== undefined && { email }),
+      ...(notifyNewSubscriber !== undefined && { notifyNewSubscriber }),
+      ...(notifyNewOrder !== undefined && { notifyNewOrder }),
+      ...(notifyWeeklyReport !== undefined && { notifyWeeklyReport }),
     },
   })
-  return NextResponse.json(user)
+
+  const { passwordHash, ...safeUser } = user
+  return NextResponse.json({ ...safeUser, hasPassword: !!passwordHash })
 }

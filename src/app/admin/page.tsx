@@ -13,16 +13,17 @@ import {
 import { SortableBlock } from '@/components/blocks/SortableBlock'
 import { AddBlockModal } from '@/components/blocks/AddBlockModal'
 import { EditBlockModal } from '@/components/blocks/EditBlockModal'
+import { ScheduleModal } from '@/components/blocks/ScheduleModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null
-    blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number }>
+    blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null }>
   }>
   socialLinks: Array<{ id: string; platform: string; url: string; order: number }>
 }
@@ -34,6 +35,9 @@ export default function AdminPage() {
   const [activePageId, setActivePageId] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingBlock, setEditingBlock] = useState<BlockData | null>(null)
+  const [schedulingBlock, setSchedulingBlock] = useState<(BlockData & { scheduleStart?: string | null; scheduleEnd?: string | null }) | null>(null)
+  const [batchMode, setBatchMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
 
   const sensors = useSensors(
@@ -47,6 +51,7 @@ export default function AdminPage() {
       id: b.id, type: b.type as BlockType, title: b.title,
       content: JSON.parse(b.content), order: b.order,
       active: b.active, clicks: b.clicks, views: b.views,
+      scheduleStart: b.scheduleStart ?? null, scheduleEnd: b.scheduleEnd ?? null,
     })))
   }
 
@@ -129,6 +134,69 @@ export default function AdminPage() {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, content }),
     })
+  }
+
+  const handleSchedule = async (id: string, scheduleStart: string | null, scheduleEnd: string | null) => {
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, scheduleStart, scheduleEnd } : b))
+    await fetch(`/api/blocks/${id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scheduleStart, scheduleEnd }),
+    })
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+
+  const handleBatchHide = async () => {
+    const ids = Array.from(selectedIds)
+    setBlocks(prev => prev.map(b => ids.includes(b.id) ? { ...b, active: false } : b))
+    await Promise.all(ids.map(id =>
+      fetch(`/api/blocks/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ active: false }) })
+    ))
+    setSelectedIds(new Set())
+    setBatchMode(false)
+  }
+
+  const handleBatchDelete = async () => {
+    if (!confirm(`確定刪除 ${selectedIds.size} 個區塊？`)) return
+    const ids = Array.from(selectedIds)
+    setBlocks(prev => prev.filter(b => !ids.includes(b.id)))
+    await Promise.all(ids.map(id => fetch(`/api/blocks/${id}`, { method: 'DELETE' })))
+    setSelectedIds(new Set())
+    setBatchMode(false)
+  }
+
+  const handleExport = () => {
+    const data = blocks.map(({ id, ...rest }) => rest)
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `blocks-${activePageId}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user || !activePageId) return
+    const text = await file.text()
+    try {
+      const imported = JSON.parse(text) as Array<{ type: string; title?: string; content: unknown; active?: boolean }>
+      for (const item of imported) {
+        await fetch('/api/blocks', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, pageId: activePageId, type: item.type, title: item.title ?? '', content: item.content }),
+        })
+      }
+      await loadUser(activePageId)
+    } catch { alert('匯入失敗：檔案格式不正確') }
+    e.target.value = ''
   }
 
   const handleAddPage = async () => {
@@ -255,10 +323,52 @@ export default function AdminPage() {
               <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>區塊管理</h1>
               <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>拖曳調整順序，點擊眼睛隱藏區塊</p>
             </div>
-            <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 18px' }}>
-              <Plus size={15} />新增區塊
-            </button>
+            <div className="flex items-center gap-2">
+              {blocks.length > 0 && (
+                <>
+                  <button onClick={() => { setBatchMode(!batchMode); setSelectedIds(new Set()) }}
+                    className="p-2 rounded-lg transition-colors" title="批次操作"
+                    style={{ background: batchMode ? 'var(--color-primary-light)' : 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: batchMode ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
+                    <CheckSquare size={15} />
+                  </button>
+                  <button onClick={handleExport}
+                    className="p-2 rounded-lg transition-colors" title="匯出區塊"
+                    style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                    <Download size={15} />
+                  </button>
+                  <label className="p-2 rounded-lg transition-colors" title="匯入區塊"
+                    style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                    <Upload size={15} />
+                    <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+                  </label>
+                </>
+              )}
+              <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 18px' }}>
+                <Plus size={15} />新增區塊
+              </button>
+            </div>
           </div>
+
+          {/* Batch action bar */}
+          {batchMode && selectedIds.size > 0 && (
+            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl"
+              style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
+              <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>
+                已選取 {selectedIds.size} 個區塊
+              </span>
+              <div className="flex-1" />
+              <button onClick={handleBatchHide}
+                className="flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg"
+                style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                <EyeOff size={13} />隱藏
+              </button>
+              <button onClick={handleBatchDelete}
+                className="flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg"
+                style={{ background: '#FFF5F5', border: '1px solid #FCA5A5', cursor: 'pointer', color: '#E53E3E' }}>
+                <TrashIcon size={13} />刪除
+              </button>
+            </div>
+          )}
 
           {blocks.length === 0 ? (
             <div className="text-center py-16"
@@ -278,9 +388,19 @@ export default function AdminPage() {
               <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex flex-col gap-2">
                   {blocks.map(block => (
-                    <SortableBlock key={block.id} block={block}
-                      onToggle={handleToggle} onDelete={handleDelete}
-                      onEdit={setEditingBlock} onDuplicate={handleDuplicate} />
+                    <div key={block.id} className="flex items-center gap-2">
+                      {batchMode && (
+                        <input type="checkbox" checked={selectedIds.has(block.id)}
+                          onChange={() => toggleSelect(block.id)}
+                          className="w-4 h-4 flex-shrink-0 rounded cursor-pointer" style={{ accentColor: 'var(--color-primary)' }} />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <SortableBlock block={block}
+                          onToggle={handleToggle} onDelete={handleDelete}
+                          onEdit={setEditingBlock} onDuplicate={handleDuplicate}
+                          onSchedule={setSchedulingBlock} />
+                      </div>
+                    </div>
                   ))}
                 </div>
               </SortableContext>
@@ -334,6 +454,7 @@ export default function AdminPage() {
 
       {showAddModal && <AddBlockModal onAdd={handleAdd} onClose={() => setShowAddModal(false)} />}
       {editingBlock && <EditBlockModal block={editingBlock} onSave={handleSaveEdit} onClose={() => setEditingBlock(null)} />}
+      {schedulingBlock && <ScheduleModal block={schedulingBlock} onSave={handleSchedule} onClose={() => setSchedulingBlock(null)} />}
     </AdminShell>
   )
 }

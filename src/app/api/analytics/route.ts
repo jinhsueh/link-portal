@@ -30,7 +30,7 @@ export async function GET() {
       blockId: { in: blockIds },
       createdAt: { gte: since },
     },
-    select: { createdAt: true },
+    select: { createdAt: true, referrer: true, utmSource: true },
   })
 
   // Aggregate by day
@@ -53,9 +53,25 @@ export async function GET() {
     _sum: { clicks: true, views: true },
   })
 
+  // Referrer breakdown
+  const refMap: Record<string, number> = {}
+  for (const c of clicks) {
+    let src = 'Direct'
+    if (c.utmSource) src = c.utmSource
+    else if (c.referrer) {
+      try { src = new URL(c.referrer).hostname } catch { src = c.referrer }
+    }
+    refMap[src] = (refMap[src] ?? 0) + 1
+  }
+  const referrers = Object.entries(refMap)
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+
   return NextResponse.json({
     daily,
     totalClicks: agg._sum.clicks ?? 0,
     totalViews: agg._sum.views ?? 0,
+    referrers,
   })
 }

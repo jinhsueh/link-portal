@@ -7,20 +7,39 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  username  String   @unique
-  bio       String?
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  username     String   @unique
+  bio          String?
+  avatarUrl    String?
+  passwordHash String?
+  notifyNewSubscriber Boolean @default(true)
+  notifyNewOrder      Boolean @default(true)
+  notifyWeeklyReport  Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   pages       Page[]
   blocks      Block[]
   socialLinks SocialLink[]
   orders      Order[]
   subscribers Subscriber[]
+  teamMembers TeamMember[]
+}
+
+model TeamMember {
+  id          String    @id @default(cuid())
+  ownerId     String
+  memberEmail String
+  role        String    @default("viewer") // owner | editor | viewer
+  status      String    @default("active") // pending | active
+  invitedAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerId, memberEmail])
 }
 
 model Page {
@@ -49,11 +68,13 @@ model Block {
   title     String?
   content   String   @default("{}")  // JSON string
   order     Int      @default(0)
-  active    Boolean  @default(true)
-  clicks    Int      @default(0)
-  views     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  active        Boolean   @default(true)
+  scheduleStart DateTime? // If set, block only visible after this time
+  scheduleEnd   DateTime? // If set, block only visible before this time
+  clicks        Int       @default(0)
+  views         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   page   Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
@@ -78,6 +99,9 @@ model Click {
   pageId    String
   ip        String?
   userAgent String?
+  referrer  String?
+  utmSource String?
+  utmMedium String?
   createdAt DateTime @default(now())
 }
 
