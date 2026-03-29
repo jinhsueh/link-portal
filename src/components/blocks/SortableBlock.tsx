@@ -3,7 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { BlockData, BlockType } from '@/types'
-import { GripVertical, Trash2, Eye, EyeOff, Edit2, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image } from 'lucide-react'
+import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image } from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
@@ -19,9 +19,10 @@ interface Props {
   onToggle: (id: string, active: boolean) => void
   onDelete: (id: string) => void
   onEdit: (block: BlockData) => void
+  onDuplicate?: (block: BlockData) => void
 }
 
-export function SortableBlock({ block, onToggle, onDelete, onEdit }: Props) {
+export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id })
 
@@ -73,14 +74,15 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit }: Props) {
       {/* Actions */}
       <div className="flex items-center gap-1 flex-shrink-0">
         {[
-          { icon: Edit2, onClick: () => onEdit(block), color: 'var(--color-primary)' },
-          { icon: block.active ? Eye : EyeOff, onClick: () => onToggle(block.id, !block.active), color: 'var(--color-text-secondary)' },
-          { icon: Trash2, onClick: () => onDelete(block.id), color: '#E53E3E' },
-        ].map(({ icon: BtnIcon, onClick, color }, i) => (
+          { icon: Edit2, onClick: () => onEdit(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
+          { icon: Copy, onClick: () => onDuplicate?.(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
+          { icon: block.active ? Eye : EyeOff, onClick: () => onToggle(block.id, !block.active), color: 'var(--color-text-secondary)', hoverBg: 'var(--color-surface)' },
+          { icon: Trash2, onClick: () => onDelete(block.id), color: '#E53E3E', hoverBg: '#FFF5F5' },
+        ].map(({ icon: BtnIcon, onClick, color, hoverBg }, i) => (
           <button key={i} onClick={onClick}
             className="p-2 rounded-lg transition-colors"
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = color; (e.currentTarget as HTMLElement).style.background = i === 2 ? '#FFF5F5' : 'var(--color-surface)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = color; (e.currentTarget as HTMLElement).style.background = hoverBg }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
             <BtnIcon size={15} />
           </button>

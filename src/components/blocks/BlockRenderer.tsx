@@ -4,10 +4,19 @@ import { BlockData } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
-function LinkBlock({ block }: { block: BlockData }) {
+function trackClick(blockId: string, pageId?: string) {
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'click', blockId, pageId: pageId ?? '' }),
+  }).catch(() => {})
+}
+
+function LinkBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
   const content = block.content as { url: string }
   return (
     <a href={content.url} target="_blank" rel="noopener noreferrer"
+      onClick={() => trackClick(block.id, pageId)}
       className="flex items-center justify-between w-full transition-all group"
       style={{
         padding: '16px 20px', background: 'white',
@@ -52,7 +61,7 @@ function HeadingBlock({ block }: { block: BlockData }) {
   )
 }
 
-function ProductBlock({ block }: { block: BlockData }) {
+function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
   const content = block.content as {
     price?: number; currency?: string; description?: string; imageUrl?: string
   }
@@ -65,6 +74,7 @@ function ProductBlock({ block }: { block: BlockData }) {
   const handleBuy = async () => {
     setLoading(true)
     setError('')
+    trackClick(block.id, pageId)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -133,6 +143,65 @@ function ProductBlock({ block }: { block: BlockData }) {
   )
 }
 
+function VideoBlock({ block }: { block: BlockData }) {
+  const content = block.content as { platform?: string; embedId?: string; url?: string }
+  const platform = content.platform ?? 'youtube'
+  const embedId = content.embedId ?? ''
+
+  if (platform === 'youtube' && embedId) {
+    return (
+      <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+        {block.title && (
+          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
+            {block.title}
+          </p>
+        )}
+        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${embedId}`}
+            title={block.title ?? 'YouTube video'}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  if (platform === 'tiktok' && embedId) {
+    return (
+      <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+        {block.title && (
+          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
+            {block.title}
+          </p>
+        )}
+        <div style={{ position: 'relative', paddingBottom: '177%', height: 0 }}>
+          <iframe
+            src={`https://www.tiktok.com/embed/v2/${embedId}`}
+            title={block.title ?? 'TikTok video'}
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Fallback: link to original URL
+  return (
+    <a href={content.url ?? '#'} target="_blank" rel="noopener noreferrer"
+      className="flex items-center justify-between w-full"
+      style={{ padding: '16px 20px', background: 'white', border: '1px solid var(--color-border)', borderRadius: 12, textDecoration: 'none', boxShadow: 'var(--shadow-sm)' }}>
+      <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+        🎬 {block.title ?? '觀看影片'}
+      </span>
+      <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
+    </a>
+  )
+}
+
 function EmailFormBlock({ block }: { block: BlockData }) {
   const content = block.content as { placeholder?: string; buttonText?: string; webhookUrl?: string }
   const [email, setEmail] = useState('')
@@ -169,13 +238,14 @@ function EmailFormBlock({ block }: { block: BlockData }) {
   )
 }
 
-export function BlockRenderer({ block }: { block: BlockData }) {
+export function BlockRenderer({ block, pageId }: { block: BlockData; pageId?: string }) {
   if (!block.active) return null
   switch (block.type) {
-    case 'link': return <LinkBlock block={block} />
+    case 'link': return <LinkBlock block={block} pageId={pageId} />
     case 'banner': return <BannerBlock block={block} />
     case 'heading': return <HeadingBlock block={block} />
-    case 'product': return <ProductBlock block={block} />
+    case 'product': return <ProductBlock block={block} pageId={pageId} />
+    case 'video': return <VideoBlock block={block} />
     case 'email_form': return <EmailFormBlock block={block} />
     default: return null
   }

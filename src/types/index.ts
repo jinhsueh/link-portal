@@ -22,6 +22,7 @@ export interface BannerContent {
 export interface VideoContent {
   platform: 'youtube' | 'tiktok' | 'spotify'
   embedId: string
+  url?: string // original URL for display
 }
 
 export interface EmailFormContent {
@@ -35,12 +36,15 @@ export interface ProductContent {
   currency: string
   description?: string
   imageUrl?: string
-  checkoutUrl: string
 }
 
 export interface HeadingContent {
   text: string
   size?: 'sm' | 'md' | 'lg'
+}
+
+export interface SocialContent {
+  platforms: string[] // references user social links
 }
 
 export type BlockContent =
@@ -50,6 +54,7 @@ export type BlockContent =
   | EmailFormContent
   | ProductContent
   | HeadingContent
+  | SocialContent
 
 export interface BlockData {
   id: string

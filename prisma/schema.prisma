@@ -29,6 +29,7 @@ model Page {
   slug      String
   order     Int      @default(0)
   isDefault Boolean  @default(false)
+  theme     String   @default("{}") // JSON: { primaryColor, bgType, bgColor, bgGradient, buttonStyle, fontStyle }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

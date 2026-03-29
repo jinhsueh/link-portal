@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
+import { PageTracker } from '@/components/tracking/PageTracker'
+import { parseTheme, themeToCSS } from '@/lib/theme'
+import { ShareBar } from '@/components/sharing/ShareBar'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
 
@@ -38,8 +41,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     order: b.order, active: b.active, clicks: b.clicks, views: b.views,
   }))
 
+  const theme = parseTheme(activePage.theme)
+  const themeCSS = themeToCSS(theme)
+  const isDark = isColorDark(theme.bgColor)
+  const bg = theme.bgType === 'gradient' && theme.bgGradient ? theme.bgGradient : theme.bgColor
+
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-hero)', fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
+    <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
       <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 16px 64px' }}>
 
         {/* Profile header */}
@@ -47,15 +55,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           {user.avatarUrl ? (
             <img src={user.avatarUrl} alt={user.name ?? username}
               className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
-              style={{ border: '4px solid white', boxShadow: 'var(--shadow-md)' }} />
+              style={{ border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }} />
           ) : (
             <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-4"
-              style={{ background: 'var(--gradient-blue)', color: 'white', border: '4px solid white', boxShadow: 'var(--shadow-md)', fontFamily: 'var(--font-display)' }}>
+              style={{ background: theme.primaryColor, color: 'white', border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', fontFamily: 'var(--font-display)' }}>
               {(user.name ?? username).charAt(0).toUpperCase()}
             </div>
           )}
-          <h1 className="font-bold text-xl" style={{ color: 'var(--color-text-primary)' }}>{user.name ?? username}</h1>
-          {user.bio && <p className="mt-2 text-sm max-w-xs mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{user.bio}</p>}
+          <h1 className="font-bold text-xl" style={{ color: isDark ? '#fff' : 'var(--color-text-primary)' }}>{user.name ?? username}</h1>
+          {user.bio && <p className="mt-2 text-sm max-w-xs mx-auto" style={{ color: isDark ? '#CBD5E1' : 'var(--color-text-secondary)', lineHeight: 1.6 }}>{user.bio}</p>}
         </div>
 
         {/* Social icons */}
@@ -83,9 +91,17 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </div>
         )}
 
+        {/* Share tools */}
+        <div className="mb-8">
+          <ShareBar url={`https://link-portal.vercel.app/${username}`} title={`${user.name ?? username} | Link Portal`} />
+        </div>
+
+        {/* View tracking */}
+        <PageTracker pageId={activePage.id} />
+
         {/* Blocks */}
         <div className="flex flex-col gap-3">
-          {blocks.map(block => <BlockRenderer key={block.id} block={block} />)}
+          {blocks.map(block => <BlockRenderer key={block.id} block={block} pageId={activePage.id} />)}
         </div>
 
         {/* Watermark */}
@@ -107,5 +123,24 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${user.name ?? username} | Link Portal`,
     description: user.bio ?? `${username}'s link page`,
+    openGraph: {
+      title: `${user.name ?? username} | Link Portal`,
+      description: user.bio ?? `Check out ${username}'s links`,
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary',
+      title: `${user.name ?? username} | Link Portal`,
+      description: user.bio ?? `Check out ${username}'s links`,
+    },
   }
+}
+
+function isColorDark(hex: string): boolean {
+  const clean = hex.replace('#', '')
+  if (clean.length < 6) return false
+  const r = parseInt(clean.substring(0, 2), 16)
+  const g = parseInt(clean.substring(2, 4), 16)
+  const b = parseInt(clean.substring(4, 6), 16)
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128
 }

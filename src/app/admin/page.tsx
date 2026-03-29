@@ -12,10 +12,11 @@ import {
 } from '@dnd-kit/sortable'
 import { SortableBlock } from '@/components/blocks/SortableBlock'
 import { AddBlockModal } from '@/components/blocks/AddBlockModal'
+import { EditBlockModal } from '@/components/blocks/EditBlockModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, ExternalLink, Settings, BarChart2, LogOut, Link2, ShoppingBag } from 'lucide-react'
+import { Plus, ExternalLink, Settings, BarChart2, LogOut, Link2, ShoppingBag, Palette, MoreHorizontal, Pencil, Trash2 as TrashIcon } from 'lucide-react'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
@@ -31,6 +32,7 @@ export default function AdminPage() {
   const [blocks, setBlocks] = useState<BlockData[]>([])
   const [activePageId, setActivePageId] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingBlock, setEditingBlock] = useState<BlockData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const sensors = useSensors(
@@ -38,20 +40,24 @@ export default function AdminPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const loadUser = useCallback(async () => {
+  const switchToPage = (pageData: UserData['pages'][0]) => {
+    setActivePageId(pageData.id)
+    setBlocks(pageData.blocks.map(b => ({
+      id: b.id, type: b.type as BlockType, title: b.title,
+      content: JSON.parse(b.content), order: b.order,
+      active: b.active, clicks: b.clicks, views: b.views,
+    })))
+  }
+
+  const loadUser = useCallback(async (keepPageId?: string) => {
     const res = await fetch('/api/me')
     if (res.status === 401) { router.push('/login'); return }
     const data: UserData = await res.json()
     setUser(data)
-    const defaultPage = data.pages.find(p => p.isDefault) ?? data.pages[0]
-    if (defaultPage) {
-      setActivePageId(defaultPage.id)
-      setBlocks(defaultPage.blocks.map(b => ({
-        id: b.id, type: b.type as BlockType, title: b.title,
-        content: JSON.parse(b.content), order: b.order,
-        active: b.active, clicks: b.clicks, views: b.views,
-      })))
-    }
+    const targetPage = keepPageId
+      ? data.pages.find(p => p.id === keepPageId)
+      : data.pages.find(p => p.isDefault) ?? data.pages[0]
+    if (targetPage) switchToPage(targetPage)
     setLoading(false)
   }, [router])
 
@@ -103,6 +109,65 @@ export default function AdminPage() {
     }])
   }
 
+  const handleDuplicate = async (block: BlockData) => {
+    if (!user || !activePageId) return
+    const res = await fetch('/api/blocks', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: user.id, pageId: activePageId,
+        type: block.type, title: (block.title ?? '') + '（副本）',
+        content: block.content,
+      }),
+    })
+    const newBlock = await res.json()
+    setBlocks(prev => [...prev, {
+      id: newBlock.id, type: newBlock.type as BlockType, title: newBlock.title,
+      content: JSON.parse(newBlock.content), order: newBlock.order,
+      active: newBlock.active, clicks: 0, views: 0,
+    }])
+  }
+
+  const handleSaveEdit = async (id: string, title: string, content: Record<string, unknown>) => {
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, title, content } : b))
+    await fetch(`/api/blocks/${id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content }),
+    })
+  }
+
+  const handleAddPage = async () => {
+    const name = prompt('新分頁名稱：')
+    if (!name?.trim()) return
+    const res = await fetch('/api/pages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim() }),
+    })
+    if (res.ok) {
+      const page = await res.json()
+      await loadUser(page.id)
+    }
+  }
+
+  const handleRenamePage = async (pageId: string, currentName: string) => {
+    const name = prompt('重新命名分頁：', currentName)
+    if (!name?.trim() || name.trim() === currentName) return
+    await fetch(`/api/pages/${pageId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim() }),
+    })
+    await loadUser(pageId)
+  }
+
+  const handleDeletePage = async (pageId: string) => {
+    if (!confirm('確定刪除此分頁？所有區塊也會一併刪除。')) return
+    const res = await fetch(`/api/pages/${pageId}`, { method: 'DELETE' })
+    if (res.ok) await loadUser()
+    else {
+      const data = await res.json()
+      alert(data.error ?? '刪除失敗')
+    }
+  }
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-surface)' }}>
       <div className="w-8 h-8 rounded-full border-4 animate-spin"
@@ -142,6 +207,9 @@ export default function AdminPage() {
               <a href="/admin/orders" style={navLinkStyle()}>
                 <ShoppingBag size={14} />訂單管理
               </a>
+              <a href="/admin/theme" style={navLinkStyle()}>
+                <Palette size={14} />主題外觀
+              </a>
               <a href="/admin/settings" style={navLinkStyle()}>
                 <Settings size={14} />設定
               </a>
@@ -166,6 +234,50 @@ export default function AdminPage() {
 
         {/* Left: Editor */}
         <div className="flex-1 min-w-0">
+
+          {/* Page tabs */}
+          {user && user.pages.length > 0 && (
+            <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
+              {user.pages.map(p => (
+                <div key={p.id} className="flex items-center gap-1 group" style={{ flexShrink: 0 }}>
+                  <button
+                    onClick={() => switchToPage(p)}
+                    className="px-4 py-2 text-sm font-semibold transition-all"
+                    style={{
+                      background: p.id === activePageId ? 'var(--color-primary)' : 'white',
+                      color: p.id === activePageId ? 'white' : 'var(--color-text-secondary)',
+                      border: `1px solid ${p.id === activePageId ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                    }}>
+                    {p.name}
+                    {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
+                  </button>
+                  {/* Page actions (rename/delete) */}
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => handleRenamePage(p.id, p.name)}
+                      className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                      <Pencil size={12} />
+                    </button>
+                    {user.pages.length > 1 && (
+                      <button onClick={() => handleDeletePage(p.id)}
+                        className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}>
+                        <TrashIcon size={12} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <button onClick={handleAddPage}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors"
+                style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
+                <Plus size={13} />新增分頁
+              </button>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-5">
             <div>
               <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>區塊管理</h1>
@@ -195,7 +307,8 @@ export default function AdminPage() {
                 <div className="flex flex-col gap-2">
                   {blocks.map(block => (
                     <SortableBlock key={block.id} block={block}
-                      onToggle={handleToggle} onDelete={handleDelete} onEdit={() => {}} />
+                      onToggle={handleToggle} onDelete={handleDelete}
+                      onEdit={setEditingBlock} onDuplicate={handleDuplicate} />
                   ))}
                 </div>
               </SortableContext>
@@ -242,6 +355,7 @@ export default function AdminPage() {
       </div>
 
       {showAddModal && <AddBlockModal onAdd={handleAdd} onClose={() => setShowAddModal(false)} />}
+      {editingBlock && <EditBlockModal block={editingBlock} onSave={handleSaveEdit} onClose={() => setEditingBlock(null)} />}
     </div>
   )
 }

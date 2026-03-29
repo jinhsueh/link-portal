@@ -39,7 +39,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'banner')     content = { imageUrl: url }
     if (selected === 'heading')    content = { text: title }
     if (selected === 'email_form') content = { placeholder: '輸入你的 Email', buttonText: '訂閱' }
-    if (selected === 'video')      content = { platform: 'youtube', embedId: url }
+    if (selected === 'video')      content = parseVideoUrl(url)
     if (selected === 'product') {
       content = {
         price: parseFloat(price) || 0,
@@ -195,4 +195,17 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
       </div>
     </div>
   )
+}
+
+function parseVideoUrl(input: string): Record<string, unknown> {
+  const trimmed = input.trim()
+  const ytMatch = trimmed.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  )
+  if (ytMatch) return { platform: 'youtube', embedId: ytMatch[1], url: trimmed }
+
+  const ttMatch = trimmed.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)
+  if (ttMatch) return { platform: 'tiktok', embedId: ttMatch[1], url: trimmed }
+
+  return { platform: 'youtube', embedId: trimmed, url: trimmed }
 }
