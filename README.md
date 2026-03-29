@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Link Portal
 
-## Getting Started
+> 專屬創作者的 Link-in-Bio 平台，仿 Portaly 設計，採用 Cresclab 設計系統。
 
-First, run the development server:
+## 功能
+
+- **個人公開頁面** `/{username}` — 連結按鈕、橫幅、商品、Email 表單、標題區塊
+- **拖曳區塊編輯器** — dnd-kit 排序、即時切換顯示/隱藏、手機預覽
+- **社群連結管理** — Instagram、YouTube、TikTok、Threads、Facebook、Spotify
+- **個人資料設定** — 名稱、簡介、大頭照
+- **數據分析** — 點擊數、曝光數、CTR、區塊排行
+- **設計系統** — Cresclab 品牌設計（`#5090FF` 主色、Inter/Outfit 字型、膠囊按鈕）
+
+## 快速開始
 
 ```bash
+# 安裝依賴
+npm install
+
+# 初始化資料庫
+npm run db:migrate
+
+# 填入範例資料
+npm run db:seed
+
+# 啟動開發伺服器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+開啟 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 頁面結構
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 路徑 | 說明 |
+|---|---|
+| `/` | Landing page |
+| `/login` | 登入 / 註冊 |
+| `/admin` | 後台 — 區塊編輯器 |
+| `/admin/analytics` | 數據分析 |
+| `/admin/settings` | 個人資料 + 社群連結 |
+| `/{username}` | 公開個人頁面 |
 
-## Learn More
+## API Routes
 
-To learn more about Next.js, take a look at the following resources:
+| Method | Path | 說明 |
+|---|---|---|
+| GET | `/api/me` | 取得目前登入用戶 |
+| PATCH | `/api/me` | 更新個人資料 |
+| POST | `/api/auth` | 登入 / 註冊 |
+| DELETE | `/api/auth` | 登出 |
+| GET/POST | `/api/blocks` | 區塊列表 / 新增 |
+| PATCH/DELETE | `/api/blocks/[id]` | 更新 / 刪除 |
+| POST | `/api/blocks/reorder` | 重新排序 |
+| GET/POST/DELETE | `/api/social` | 社群連結管理 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 技術棧
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **前端**: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4
+- **資料庫**: SQLite + Prisma 7 (better-sqlite3 adapter)
+- **拖曳**: @dnd-kit/core + @dnd-kit/sortable
+- **設計**: Cresclab Design System (`#5090FF` blue, Inter/Outfit fonts, pill buttons)
 
-## Deploy on Vercel
+## 下一步
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] 認證升級（NextAuth + OAuth）
+- [ ] 遷移至 PostgreSQL（Neon）+ 部署 Vercel
+- [ ] 點擊追蹤 API
+- [ ] 數位商品金流（Stripe）
+- [ ] 自訂主題色
