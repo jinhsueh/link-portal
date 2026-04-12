@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import {
-  Link2, BarChart2, ShoppingBag, Mail, ArrowRight, Users, Zap,
-  Layers, Palette, FileStack, UserPlus, Plus, Share2, Check, Play, Globe,
-  Video, Headphones, PenTool, Mic, Star, Crown, TrendingUp
+  Link2, BarChart2, ShoppingBag, Mail, ArrowRight, Zap,
+  Layers, Palette, FileStack, UserPlus, Plus, Share2, Check, Play,
+  Video, Headphones
 } from 'lucide-react'
 
 const FEATURES = [
@@ -83,29 +83,6 @@ const USE_CASES = [
   },
 ]
 
-const TESTIMONIALS = [
-  {
-    name: 'Mia Chen',
-    role: 'YouTuber / 10 萬訂閱',
-    quote: '終於不用一直換 Bio 連結了，粉絲可以在一個頁面找到我所有的內容和課程。',
-    avatar: 'M',
-    metric: '連結點擊率提升 3 倍',
-  },
-  {
-    name: 'Alex Wang',
-    role: '自由設計師',
-    quote: '用 Link Portal 賣設計模板，不用另外架站，收款直接入帳超方便。',
-    avatar: 'A',
-    metric: '月銷售額 NT$ 45,000+',
-  },
-  {
-    name: 'Sarah Lin',
-    role: 'Podcast 主持人',
-    quote: '主題客製功能超讚，調出來的頁面完全符合我的品牌風格，而且免費！',
-    avatar: 'S',
-    metric: 'Email 名單成長 200%',
-  },
-]
 
 export default function LandingPage() {
   return (
@@ -136,8 +113,8 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-sm font-semibold animate-fade-in-up"
             style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-            <Users size={14} />
-            超過 10,000 位創作者使用
+            <Zap size={14} />
+            免費 Link in Bio 工具
           </div>
           <h1 className="font-extrabold mb-6 leading-tight animate-fade-in-up"
             style={{ fontSize: 'clamp(40px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)', animationDelay: '0.1s' }}>
@@ -321,42 +298,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Testimonials ─── */}
-      <section style={{ padding: '100px 24px', background: 'white' }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs"
-              style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>TESTIMONIALS</span>
-            <h2 className="font-bold" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)' }}>
-              創作者怎麼說
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(({ name, role, quote, avatar, metric }) => (
-              <div key={name} className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold self-start"
-                  style={{ background: 'rgba(80,200,120,0.1)', color: 'rgb(34,139,34)' }}>
-                  <TrendingUp size={12} />
-                  {metric}
-                </div>
-                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: 15, flex: 1 }}>
-                  &ldquo;{quote}&rdquo;
-                </p>
-                <div className="flex items-center gap-3" style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-                    style={{ background: 'var(--gradient-blue)', color: 'white' }}>
-                    {avatar}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{name}</p>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ─── Pricing ─── */}
       <section style={{ padding: '100px 24px', background: 'var(--color-surface)' }}>
@@ -398,17 +339,16 @@ export default function LandingPage() {
                 免費開始
               </Link>
             </div>
-            {/* Pro Plan */}
-            <div className="card" style={{ padding: 32, border: '2px solid var(--color-primary)', position: 'relative' }}>
+            {/* Pro Plan — coming soon */}
+            <div className="card" style={{ padding: 32, border: '2px solid var(--color-border)', position: 'relative', opacity: 0.8 }}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
-                style={{ background: 'var(--gradient-blue)', color: 'white' }}>
-                <Crown size={12} />
-                最受歡迎
+                style={{ background: 'var(--color-text-muted)', color: 'white' }}>
+                即將推出
               </div>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-text-primary)' }}>Pro</h3>
               <p className="mb-6" style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>適合認真經營的創作者</p>
-              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-                $199 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 月 (TWD)</span>
+              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-muted)', fontFamily: 'var(--font-display)' }}>
+                敬請期待
               </p>
               <div className="flex flex-col gap-3 mb-8">
                 {[
@@ -420,15 +360,14 @@ export default function LandingPage() {
                   '移除 Link Portal 品牌標示',
                 ].map(item => (
                   <div key={item} className="flex items-center gap-2">
-                    <Check size={16} style={{ color: 'var(--color-primary)' }} />
-                    <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
+                    <Check size={16} style={{ color: 'var(--color-text-muted)' }} />
+                    <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/login" className="btn-primary w-full justify-center" style={{ padding: '12px 24px' }}>
-                免費試用 14 天
-                <ArrowRight size={16} />
-              </Link>
+              <button disabled className="btn-ghost w-full justify-center" style={{ padding: '12px 24px', opacity: 0.5, cursor: 'not-allowed' }}>
+                即將推出
+              </button>
             </div>
           </div>
         </div>
@@ -439,8 +378,8 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             {[
-              { value: '10,000+', label: '活躍創作者' },
-              { value: '500萬+', label: '每月瀏覽量' },
+              { value: '12 種', label: '區塊類型' },
+              { value: '8 款', label: '預設主題' },
               { value: '< 1s', label: '頁面載入' },
               { value: '永久免費', label: '基礎方案' },
             ].map(({ value, label }) => (

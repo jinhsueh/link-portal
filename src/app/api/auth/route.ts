@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { SESSION_COOKIE } from '@/lib/session'
+import { SESSION_COOKIE, signSession } from '@/lib/session'
 import bcrypt from 'bcryptjs'
 
 // POST /api/auth — login or register with password
@@ -70,9 +70,10 @@ export async function POST(req: NextRequest) {
 
 function setSessionAndRespond(user: { id: string; username: string; name: string | null }) {
   const res = NextResponse.json({ ok: true, user: { id: user.id, username: user.username, name: user.name } })
-  res.cookies.set(SESSION_COOKIE, user.username, {
+  res.cookies.set(SESSION_COOKIE, signSession(user.username), {
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: 60 * 60 * 24 * 30,
   })

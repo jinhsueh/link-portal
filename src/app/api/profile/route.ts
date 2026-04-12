@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/session'
 
-// GET /api/profile?username=xxx — fetch full profile for admin
+// GET /api/profile?username=xxx — fetch public profile (used by public pages)
 export async function GET(req: NextRequest) {
   const username = req.nextUrl.searchParams.get('username')
   if (!username) return NextResponse.json({ error: 'username required' }, { status: 400 })
@@ -21,31 +22,21 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(user)
 }
 
-// POST /api/profile — create or update profile
+// POST /api/profile — update own profile (authenticated)
 export async function POST(req: NextRequest) {
+  const session = await getSession()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const body = await req.json()
-  const { username, name, bio, avatarUrl } = body
+  const { name, bio, avatarUrl } = body
 
-  if (!username) return NextResponse.json({ error: 'username required' }, { status: 400 })
-
-  const user = await prisma.user.upsert({
-    where: { username },
-    create: {
-      username,
-      email: body.email ?? `${username}@placeholder.local`,
-      name,
-      bio,
-      avatarUrl,
-      pages: {
-        create: {
-          name: '主頁',
-          slug: 'home',
-          isDefault: true,
-          order: 0,
-        },
-      },
+  const user = await prisma.user.update({
+    where: { id: session.id },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(bio !== undefined && { bio }),
+      ...(avatarUrl !== undefined && { avatarUrl }),
     },
-    update: { name, bio, avatarUrl },
   })
 
   return NextResponse.json(user)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 /** PATCH: rename a page or change default */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -16,7 +17,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { name, isDefault, password } = await req.json()
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
-  if (password !== undefined) data.password = password || null // empty string = remove password
+  if (password !== undefined) {
+    data.password = password ? await bcrypt.hash(password, 10) : null // empty string = remove password
+  }
   if (isDefault === true) {
     // Unset all other defaults first
     await prisma.page.updateMany({

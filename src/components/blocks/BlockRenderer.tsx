@@ -3,6 +3,7 @@
 import { BlockData } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { SocialIcon } from '@/components/ui/SocialIcon'
 
 function trackClick(blockId: string, pageId?: string) {
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
@@ -458,18 +459,34 @@ function EmbedBlock({ block }: { block: BlockData }) {
   )
 }
 
-/** Only allow iframe tags in embed HTML to prevent XSS */
+/** Only allow iframe tags with https:// src to prevent XSS */
 function sanitizeEmbed(html: string): string {
   const match = html.match(/<iframe[^>]*src=["']([^"']+)["'][^>]*><\/iframe>/i)
     || html.match(/<iframe[^>]*src=["']([^"']+)["'][^>]*\/>/i)
   if (match) {
-    return `<iframe src="${match[1]}" style="width:100%;height:100%;border:none" loading="lazy" allowfullscreen></iframe>`
+    const src = match[1]
+    if (!src.startsWith('https://')) return ''
+    return `<iframe src="${encodeURI(src)}" style="width:100%;height:100%;border:none" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups"></iframe>`
   }
-  // If no iframe found, wrap URL in iframe
-  if (html.startsWith('http')) {
-    return `<iframe src="${html}" style="width:100%;height:100%;border:none" loading="lazy"></iframe>`
+  // If plain URL provided, only allow https://
+  if (html.startsWith('https://')) {
+    return `<iframe src="${encodeURI(html)}" style="width:100%;height:100%;border:none" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>`
   }
   return ''
+}
+
+function SocialBlock({ block }: { block: BlockData }) {
+  const content = block.content as { platforms?: string[]; socialLinks?: Array<{ platform: string; url: string }> }
+  const links = content.socialLinks ?? []
+  if (links.length === 0) return null
+
+  return (
+    <div className="w-full flex justify-center gap-3 py-2">
+      {links.map(link => (
+        <SocialIcon key={link.platform} platform={link.platform} url={link.url} />
+      ))}
+    </div>
+  )
 }
 
 export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; pageId?: string; btnStyle?: string }) {
@@ -486,6 +503,7 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'carousel': return <CarouselBlock block={block} />
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
+    case 'social': return <SocialBlock block={block} />
     default: return null
   }
 }
