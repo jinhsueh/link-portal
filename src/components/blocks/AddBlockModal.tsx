@@ -4,12 +4,15 @@ import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
 import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code } from 'lucide-react'
 
-const BLOCK_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
-  { type: 'link',       icon: ExternalLink, label: '連結按鈕', description: '加入任意連結' },
+const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
+  { type: 'link',       icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
+  { type: 'product',    icon: ShoppingBag,  label: '數位商品', description: '販售課程、模板等產品' },
+  { type: 'email_form', icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
+]
+
+const MORE_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
   { type: 'banner',     icon: Image,        label: '橫幅看板', description: '圖片橫幅區塊' },
   { type: 'heading',    icon: AlignLeft,    label: '標題文字', description: '分頁標題或說明' },
-  { type: 'email_form', icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
-  { type: 'product',    icon: ShoppingBag,  label: '數位商品', description: '販售數位產品' },
   { type: 'video',      icon: Video,        label: '影片',     description: '嵌入 YouTube / Spotify' },
   { type: 'countdown',  icon: Timer,        label: '倒數計時', description: '活動或限時優惠' },
   { type: 'faq',        icon: HelpCircle,   label: 'FAQ 問答', description: '常見問題摺疊' },
@@ -17,6 +20,8 @@ const BLOCK_TYPES: { type: BlockType; icon: React.ElementType; label: string; de
   { type: 'map',        icon: MapPin,       label: '地圖嵌入', description: 'Google Maps' },
   { type: 'embed',      icon: Code,         label: 'HTML 嵌入', description: '自訂 iframe / HTML' },
 ]
+
+const BLOCK_TYPES = [...RECOMMENDED_TYPES, ...MORE_TYPES]
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -112,21 +117,49 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
         </div>
 
         {step === 'pick' ? (
-          <div style={{ padding: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            {BLOCK_TYPES.map(({ type, icon: Icon, label, description }) => (
-              <button key={type} onClick={() => { setSelected(type); setStep('fill') }}
-                className="flex flex-col items-center gap-2 text-center transition-all"
-                style={{ padding: 16, borderRadius: 12, border: '1px solid var(--color-border)', background: 'white', cursor: 'pointer' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.background = 'var(--color-primary-light)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.background = 'white' }}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: 'var(--gradient-blue)' }}>
-                  <Icon size={18} color="white" />
-                </div>
-                <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
-                <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{description}</span>
-              </button>
-            ))}
+          <div style={{ padding: 16 }}>
+            {/* Recommended */}
+            <p className="text-xs font-bold uppercase tracking-wider mb-3 px-1"
+              style={{ color: 'var(--color-primary)' }}>
+              推薦
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+              {RECOMMENDED_TYPES.map(({ type, icon: Icon, label, description }) => (
+                <button key={type} onClick={() => { setSelected(type); setStep('fill') }}
+                  className="flex flex-col items-center gap-2 text-center transition-all"
+                  style={{ padding: 16, borderRadius: 12, border: '2px solid var(--color-primary)', background: 'var(--color-primary-light)', cursor: 'pointer' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#dbeafe' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-primary-light)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'var(--gradient-blue)' }}>
+                    <Icon size={18} color="white" />
+                  </div>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{description}</span>
+                </button>
+              ))}
+            </div>
+            {/* More block types */}
+            <p className="text-xs font-bold uppercase tracking-wider mb-3 px-1"
+              style={{ color: 'var(--color-text-muted)' }}>
+              更多區塊
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {MORE_TYPES.map(({ type, icon: Icon, label, description }) => (
+                <button key={type} onClick={() => { setSelected(type); setStep('fill') }}
+                  className="flex flex-col items-center gap-2 text-center transition-all"
+                  style={{ padding: 16, borderRadius: 12, border: '1px solid var(--color-border)', background: 'white', cursor: 'pointer' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.background = 'var(--color-primary-light)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.background = 'white' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'var(--gradient-blue)' }}>
+                    <Icon size={18} color="white" />
+                  </div>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{description}</span>
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>

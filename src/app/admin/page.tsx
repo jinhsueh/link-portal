@@ -17,8 +17,9 @@ import { ScheduleModal } from '@/components/blocks/ScheduleModal'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { BlockData, BlockType } from '@/types'
-import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload, Copy, Check, Link2 } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
@@ -39,6 +40,14 @@ export default function AdminPage() {
   const [batchMode, setBatchMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
+  const [linkCopied, setLinkCopied] = useState(false)
+
+  const handleCopyLink = async () => {
+    if (!user) return
+    await navigator.clipboard.writeText(`${window.location.origin}/${user.username}`)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -316,6 +325,37 @@ export default function AdminPage() {
                 <Plus size={13} />新增分頁
               </button>
             </div>
+          )}
+
+          {/* Copy link bar */}
+          {user && (
+            <div className="flex items-center gap-2 mb-5 px-4 py-3 rounded-xl"
+              style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
+              <Link2 size={14} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
+              <span className="text-sm font-medium truncate" style={{ color: 'var(--color-text-secondary)' }}>
+                {window.location.origin}/{user.username}
+              </span>
+              <button onClick={handleCopyLink}
+                className="flex items-center gap-1 ml-auto text-xs font-bold px-3 py-1.5 rounded-lg flex-shrink-0"
+                style={{
+                  background: linkCopied ? '#22C55E' : 'var(--color-primary)',
+                  color: 'white', border: 'none', cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}>
+                {linkCopied ? <><Check size={12} />已複製</> : <><Copy size={12} />複製連結</>}
+              </button>
+            </div>
+          )}
+
+          {/* Onboarding checklist */}
+          {user && (
+            <OnboardingChecklist
+              hasBlocks={blocks.length > 0}
+              hasProfile={!!(user.avatarUrl || user.bio)}
+              username={user.username}
+              onAddBlock={() => setShowAddModal(true)}
+              onGoToSettings={() => router.push('/admin/settings')}
+            />
           )}
 
           <div className="flex items-center justify-between mb-5">

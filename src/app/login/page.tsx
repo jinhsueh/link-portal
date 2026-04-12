@@ -137,14 +137,6 @@ export default function LoginPage() {
                     required minLength={6} placeholder="至少 6 個字元" style={inputStyle} />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    顯示名稱 <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>（選填，新用戶）</span>
-                  </label>
-                  <input type="text" value={name} onChange={e => setName(e.target.value)}
-                    placeholder="你的名字" maxLength={50} style={inputStyle} />
-                </div>
-
                 {error && (
                   <p className="text-sm px-4 py-3 rounded-xl" style={{ color: '#E53E3E', background: '#FFF5F5', border: '1px solid #FED7D7' }}>{error}</p>
                 )}
