@@ -3,9 +3,30 @@ import { prisma } from '@/lib/prisma'
 import { SESSION_COOKIE, signSession } from '@/lib/session'
 import bcrypt from 'bcryptjs'
 
+// Rate limiting: max 5 login attempts per IP per 60 seconds
+const AUTH_WINDOW_MS = 60_000
+const AUTH_MAX_ATTEMPTS = 5
+const authAttempts = new Map<string, { count: number; resetAt: number }>()
+
+function isAuthRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = authAttempts.get(ip)
+  if (!entry || now > entry.resetAt) {
+    authAttempts.set(ip, { count: 1, resetAt: now + AUTH_WINDOW_MS })
+    return false
+  }
+  entry.count++
+  return entry.count > AUTH_MAX_ATTEMPTS
+}
+
 // POST /api/auth — login or register with password
 export async function POST(req: NextRequest) {
-  const { username, name, password, setPassword } = await req.json()
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (isAuthRateLimited(ip)) {
+    return NextResponse.json({ error: '嘗試次數過多，請稍後再試' }, { status: 429 })
+  }
+
+  const { username, name, email, password, setPassword } = await req.json()
 
   if (!username || !/^[a-zA-Z0-9_-]{3,30}$/.test(username)) {
     return NextResponse.json({ error: '用戶名需為 3-30 個英數字或底線' }, { status: 400 })
@@ -55,7 +76,7 @@ export async function POST(req: NextRequest) {
   const user = await prisma.user.create({
     data: {
       username,
-      email: `${username}@placeholder.local`,
+      email: email || `${username}@placeholder.local`,
       name: name || username,
       passwordHash: hash,
       pages: {

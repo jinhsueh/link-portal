@@ -8,6 +8,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -39,7 +40,7 @@ export default function LoginPage() {
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, name, password }),
+      body: JSON.stringify({ username, name, email: email || undefined, password }),
     })
     const data = await res.json()
 
@@ -127,6 +128,14 @@ export default function LoginPage() {
                       className="flex-1 px-3 py-3 text-sm focus:outline-none"
                       style={{ background: 'white', color: 'var(--color-text-primary)' }} />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
+                    Email <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>（註冊用，登入可略）</span>
+                  </label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder="you@example.com" style={inputStyle} />
                 </div>
 
                 <div>

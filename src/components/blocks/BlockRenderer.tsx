@@ -2,7 +2,7 @@
 
 import { BlockData } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 
 function trackClick(blockId: string, pageId?: string) {
@@ -23,14 +23,14 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
   const content = block.content as { url: string; thumbnail?: string; description?: string }
   const [favicon, setFavicon] = useState<string | null>(content.thumbnail ?? null)
 
-  useState(() => {
+  useEffect(() => {
     if (!favicon && content.url) {
       try {
         const domain = new URL(content.url).hostname
         setFavicon(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`)
       } catch { /* invalid url */ }
     }
-  })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <a href={content.url} target="_blank" rel="noopener noreferrer"
@@ -312,7 +312,7 @@ function CountdownBlock({ block }: { block: BlockData }) {
   const [remaining, setRemaining] = useState('')
   const [expired, setExpired] = useState(false)
 
-  useState(() => {
+  useEffect(() => {
     const update = () => {
       const target = new Date(content.targetDate).getTime()
       const now = Date.now()
@@ -327,7 +327,7 @@ function CountdownBlock({ block }: { block: BlockData }) {
     update()
     const id = setInterval(update, 1000)
     return () => clearInterval(id)
-  })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="w-full text-center" style={{
