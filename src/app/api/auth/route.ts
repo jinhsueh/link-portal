@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
       email: email || `${username}@placeholder.local`,
       name: name || username,
       passwordHash: hash,
+      plan: 'pro_trial',
+      trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       pages: {
         create: { name: '主頁', slug: 'home', isDefault: true, order: 0 },
       },

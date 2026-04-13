@@ -339,16 +339,16 @@ export default function LandingPage() {
                 免費開始
               </Link>
             </div>
-            {/* Pro Plan — coming soon */}
-            <div className="card" style={{ padding: 32, border: '2px solid var(--color-border)', position: 'relative', opacity: 0.8 }}>
+            {/* Pro Plan */}
+            <div className="card" style={{ padding: 32, border: '2px solid var(--color-primary)', position: 'relative' }}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
-                style={{ background: 'var(--color-text-muted)', color: 'white' }}>
-                即將推出
+                style={{ background: 'var(--gradient-blue)', color: 'white' }}>
+                14 天免費試用
               </div>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-text-primary)' }}>Pro</h3>
               <p className="mb-6" style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>適合認真經營的創作者</p>
-              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-muted)', fontFamily: 'var(--font-display)' }}>
-                敬請期待
+              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+                NT$99 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 月</span>
               </p>
               <div className="flex flex-col gap-3 mb-8">
                 {[
@@ -360,14 +360,14 @@ export default function LandingPage() {
                   '移除 Link Portal 品牌標示',
                 ].map(item => (
                   <div key={item} className="flex items-center gap-2">
-                    <Check size={16} style={{ color: 'var(--color-text-muted)' }} />
-                    <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{item}</span>
+                    <Check size={16} style={{ color: 'var(--color-primary)' }} />
+                    <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <button disabled className="btn-ghost w-full justify-center" style={{ padding: '12px 24px', opacity: 0.5, cursor: 'not-allowed' }}>
-                即將推出
-              </button>
+              <Link href="/login" className="btn-primary w-full justify-center" style={{ padding: '12px 24px' }}>
+                開始 14 天免費試用
+              </Link>
             </div>
           </div>
         </div>

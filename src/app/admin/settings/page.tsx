@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown } from 'lucide-react'
+import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 
 const SOCIAL_PLATFORMS = [
@@ -16,6 +16,7 @@ const SOCIAL_PLATFORMS = [
 
 const TABS = [
   { id: 'account',       label: '帳號資訊', icon: User },
+  { id: 'billing',       label: '方案與帳單', icon: CreditCard },
   { id: 'password',      label: '密碼管理', icon: Lock },
   { id: 'notifications', label: '通知偏好', icon: Bell },
   { id: 'danger',        label: '危險區域', icon: AlertTriangle },
@@ -28,6 +29,7 @@ interface TeamMember { id: string; memberEmail: string; role: string; status: st
 interface UserData {
   id: string; username: string; email: string; name?: string; bio?: string; avatarUrl?: string
   createdAt: string; hasPassword: boolean
+  plan: string; effectivePlan: 'free' | 'pro'; trialEndsAt?: string; trialDaysLeft: number
   notifyNewSubscriber: boolean; notifyNewOrder: boolean; notifyWeeklyReport: boolean
   socialLinks: SocialLink[]
 }
@@ -100,6 +102,7 @@ export default function SettingsPage() {
           {/* Right: Content */}
           <div className="flex-1 min-w-0">
             {activeTab === 'account' && user && <AccountTab user={user} onUpdate={setUser} />}
+            {activeTab === 'billing' && user && <BillingTab user={user} />}
             {activeTab === 'password' && user && <PasswordTab hasPassword={user.hasPassword} />}
 
             {activeTab === 'notifications' && <NotificationsTab />}
@@ -566,6 +569,93 @@ function NotificationsTab() {
 }
 
 // ─── Tab 5: Danger Zone ───
+// ─── Tab: Billing ───
+function BillingTab({ user }: { user: UserData }) {
+  const [upgrading, setUpgrading] = useState(false)
+
+  const handleUpgrade = async () => {
+    setUpgrading(true)
+    try {
+      const res = await fetch('/api/stripe/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else { alert(data.error || '發生錯誤'); setUpgrading(false) }
+    } catch { setUpgrading(false) }
+  }
+
+  const planLabel = user.effectivePlan === 'pro'
+    ? (user.plan === 'pro_trial' ? 'Pro（試用中）' : 'Pro')
+    : 'Free'
+
+  const planColor = user.effectivePlan === 'pro' ? 'var(--color-primary)' : 'var(--color-text-muted)'
+
+  return (
+    <div className="space-y-6">
+      {/* Current plan */}
+      <div style={cardStyle}>
+        <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>目前方案</h2>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold"
+            style={{ background: user.effectivePlan === 'pro' ? 'var(--color-primary-light)' : '#F3F4F6', color: planColor }}>
+            <Sparkles size={14} />
+            {planLabel}
+          </div>
+        </div>
+
+        {/* Trial info */}
+        {user.plan === 'pro_trial' && user.trialDaysLeft > 0 && (
+          <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+            <p className="text-sm" style={{ color: '#92400E' }}>
+              試用剩餘 <strong>{user.trialDaysLeft} 天</strong>，到期後將自動降為 Free 方案。升級 Pro 可保留所有進階功能。
+            </p>
+          </div>
+        )}
+
+        {/* Trial expired */}
+        {user.plan === 'pro_trial' && user.trialDaysLeft === 0 && (
+          <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#FFF5F5', border: '1px solid #FED7D7' }}>
+            <p className="text-sm" style={{ color: '#E53E3E' }}>
+              試用已到期。升級 Pro 方案以重新啟用進階功能。
+            </p>
+          </div>
+        )}
+
+        {/* Pro features list */}
+        <div className="mb-6">
+          <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Pro 方案包含：</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {['自訂色彩與按鈕風格', '進階數據分析 + UTM', '無限分頁', '數位商品販售', '移除品牌標示'].map(f => (
+              <div key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <Sparkles size={12} style={{ color: 'var(--color-primary)' }} />
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Upgrade button */}
+        {user.plan !== 'pro' && (
+          <button onClick={handleUpgrade} disabled={upgrading}
+            className="btn-primary inline-flex items-center gap-2"
+            style={{ padding: '12px 28px', opacity: upgrading ? 0.5 : 1 }}>
+            <CreditCard size={16} />
+            {upgrading ? '跳轉中...' : '升級 Pro — NT$99/月'}
+          </button>
+        )}
+
+        {user.plan === 'pro' && (
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            如需取消訂閱或管理付款方式，請聯繫 support@linkportal.cc
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function DangerTab({ username }: { username: string }) {
   const router = useRouter()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)

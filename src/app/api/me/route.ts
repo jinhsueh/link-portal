@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
+import { getEffectivePlan, getTrialDaysLeft } from '@/lib/plan'
 
 export async function GET() {
   const session = await getSession()
@@ -15,11 +16,13 @@ export async function GET() {
   })
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  // Strip passwordHash, add hasPassword flag
+  // Strip passwordHash, add hasPassword flag + plan info
   const { passwordHash, ...safeUser } = user
   return NextResponse.json({
     ...safeUser,
     hasPassword: !!passwordHash,
+    effectivePlan: getEffectivePlan(user),
+    trialDaysLeft: getTrialDaysLeft(user.trialEndsAt),
   })
 }
 

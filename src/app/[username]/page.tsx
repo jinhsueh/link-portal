@@ -9,6 +9,7 @@ import { ShareBar } from '@/components/sharing/ShareBar'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
 import { PasswordGate } from '@/components/ui/PasswordGate'
+import { getEffectivePlan } from '@/lib/plan'
 
 interface Props {
   params: Promise<{ username: string }>
@@ -119,13 +120,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           ))}
         </div>
 
-        {/* Watermark */}
-        <div className="mt-12 text-center">
-          <a href="/" className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
-            <Link2 size={12} />
-            Link Portal
-          </a>
-        </div>
+        {/* Watermark — hidden for Pro users */}
+        {getEffectivePlan(user) !== 'pro' && (
+          <div className="mt-12 text-center">
+            <a href="/" className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
+              <Link2 size={12} />
+              Link Portal
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )
