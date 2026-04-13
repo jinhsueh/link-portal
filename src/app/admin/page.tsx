@@ -50,6 +50,7 @@ export default function AdminPage() {
   const [editorMode, setEditorMode] = useState<EditorMode>('content')
   const [previewTheme, setPreviewTheme] = useState<PageTheme>(DEFAULT_THEME)
   const [previewProfile, setPreviewProfile] = useState<{ name: string; bio: string; avatarUrl: string } | null>(null)
+  const [previewSocialLinks, setPreviewSocialLinks] = useState<UserData['socialLinks'] | null>(null)
 
   const handleCopyLink = async () => {
     if (!user) return
@@ -86,6 +87,7 @@ export default function AdminPage() {
       : data.pages.find(p => p.isDefault) ?? data.pages[0]
     if (targetPage) switchToPage(targetPage)
     setPreviewProfile(null)
+    setPreviewSocialLinks(null)
     setLoading(false)
   }, [router])
 
@@ -397,6 +399,7 @@ export default function AdminPage() {
                   }}
                   onUpdate={() => loadUser(activePageId ?? undefined)}
                   onLiveChange={setPreviewProfile}
+                  onSocialLinksChange={setPreviewSocialLinks}
                   defaultExpanded={!user.bio && !user.avatarUrl && user.socialLinks.length === 0}
                 />
               )}
@@ -558,11 +561,14 @@ export default function AdminPage() {
                     )}
                   </div>
                   {/* Social */}
-                  {user?.socialLinks && user.socialLinks.length > 0 && (
-                    <div className="flex justify-center gap-2 mb-4">
-                      {user.socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} />)}
-                    </div>
-                  )}
+                  {(() => {
+                    const socialLinks = previewSocialLinks ?? user?.socialLinks
+                    return socialLinks && socialLinks.length > 0 ? (
+                      <div className="flex justify-center gap-2 mb-4">
+                        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} />)}
+                      </div>
+                    ) : null
+                  })()}
                   {/* Blocks preview */}
                   {editorMode === 'appearance' ? (
                     /* Theme preview: use real blocks with themed styles */

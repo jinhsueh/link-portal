@@ -20,9 +20,10 @@ interface SocialLinkItem {
 interface Props {
   links: SocialLinkItem[]
   onSave: () => void
+  onLinksChange?: (links: SocialLinkItem[]) => void
 }
 
-export function SocialLinksEditor({ links, onSave }: Props) {
+export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
   const [editing, setEditing] = useState(false)
   const [localLinks, setLocalLinks] = useState<SocialLinkItem[]>(links)
   const [newUrl, setNewUrl] = useState('')
@@ -50,19 +51,27 @@ export function SocialLinksEditor({ links, onSave }: Props) {
     // Check duplicate
     if (localLinks.some(l => l.url === url)) return
     const platform = detectPlatform(url)
-    setLocalLinks(prev => [...prev, {
-      id: `temp-${Date.now()}`,
-      platform,
-      url,
-      label: platform === 'custom' ? newLabel.trim() || undefined : undefined,
-      order: prev.length,
-    }])
+    setLocalLinks(prev => {
+      const next = [...prev, {
+        id: `temp-${Date.now()}`,
+        platform,
+        url,
+        label: platform === 'custom' ? newLabel.trim() || undefined : undefined,
+        order: prev.length,
+      }]
+      onLinksChange?.(next)
+      return next
+    })
     setNewUrl('')
     setNewLabel('')
   }
 
   const handleRemove = (url: string) => {
-    setLocalLinks(prev => prev.filter(l => l.url !== url))
+    setLocalLinks(prev => {
+      const next = prev.filter(l => l.url !== url)
+      onLinksChange?.(next)
+      return next
+    })
   }
 
   const handleSaveAll = async () => {

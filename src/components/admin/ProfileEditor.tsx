@@ -24,10 +24,11 @@ interface Props {
   profile: ProfileData
   onUpdate: () => void
   onLiveChange?: (data: { name: string; bio: string; avatarUrl: string }) => void
+  onSocialLinksChange?: (links: SocialLinkItem[]) => void
   defaultExpanded?: boolean
 }
 
-export function ProfileEditor({ profile, onUpdate, onLiveChange, defaultExpanded = false }: Props) {
+export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksChange, defaultExpanded = false }: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [name, setName] = useState(profile.name ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
@@ -200,7 +201,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, defaultExpanded
           {/* Social Links */}
           <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>社群連結</label>
-            <SocialLinksEditor links={profile.socialLinks} onSave={onUpdate} />
+            <SocialLinksEditor links={profile.socialLinks} onSave={onUpdate} onLinksChange={onSocialLinksChange} />
           </div>
         </div>
       )}
