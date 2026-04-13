@@ -37,6 +37,10 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
   const [url, setUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  // email_form-specific
+  const [placeholder, setPlaceholder] = useState('輸入你的 Email')
+  const [buttonText, setButtonText] = useState('訂閱')
+  const [webhookUrl, setWebhookUrl] = useState('')
   // product-specific
   const [price, setPrice] = useState('')
   const [currency, setCurrency] = useState('NT$')
@@ -68,7 +72,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'link')       content = { url }
     if (selected === 'banner')     content = { imageUrl: url }
     if (selected === 'heading')    content = { text: title }
-    if (selected === 'email_form') content = { placeholder: '輸入你的 Email', buttonText: '訂閱' }
+    if (selected === 'email_form') content = { placeholder, buttonText, ...(webhookUrl ? { webhookUrl } : {}) }
     if (selected === 'video')      content = parseVideoUrl(url)
     if (selected === 'countdown')  content = { targetDate: url, label: title || '即將開始' }
     if (selected === 'faq')        content = { items: [{ question: title || '問題？', answer: '答案...' }] }
@@ -233,7 +237,31 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
             ) : (
               <>
                 {/* ── All other blocks ── */}
-                {selected !== 'email_form' && (
+                {selected === 'email_form' ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>標題</label>
+                      <input value={title} onChange={e => setTitle(e.target.value)}
+                        placeholder="Email 訂閱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>輸入框 placeholder</label>
+                      <input value={placeholder} onChange={e => setPlaceholder(e.target.value)}
+                        placeholder="輸入你的 Email" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>按鈕文字</label>
+                      <input value={buttonText} onChange={e => setButtonText(e.target.value)}
+                        placeholder="訂閱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>Webhook 網址（選填）</label>
+                      <input value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)}
+                        placeholder="https://hooks.zapier.com/..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>收到訂閱時會 POST 到此網址</p>
+                    </div>
+                  </>
+                ) : (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
                       {selected === 'heading' ? '文字內容' : '標題'}
