@@ -16,6 +16,9 @@ export default function SubscribersPage() {
   const router = useRouter()
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [username, setUsername] = useState('')
+  const [role, setRole] = useState('')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -29,7 +32,7 @@ export default function SubscribersPage() {
       ])
       if (meRes.status === 401) { router.push('/login'); return }
       const me = await meRes.json()
-      setUsername(me.username)
+      setUsername(me.username); setRole(me.role); setEffectivePlan(me.effectivePlan); setTrialDaysLeft(me.trialDaysLeft)
       const data = await subRes.json()
       setSubscribers(data.subscribers ?? [])
     } catch { /* */ }
@@ -61,7 +64,7 @@ export default function SubscribersPage() {
   }
 
   if (loading) return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
       </div>
@@ -69,7 +72,7 @@ export default function SubscribersPage() {
   )
 
   return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

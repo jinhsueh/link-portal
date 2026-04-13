@@ -11,7 +11,7 @@ export default function ThemePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [user, setUser] = useState<{ username: string } | null>(null)
+  const [user, setUser] = useState<{ username: string; role?: string; effectivePlan?: 'free' | 'pro'; trialDaysLeft?: number } | null>(null)
   const [pageId, setPageId] = useState<string | null>(null)
   const [theme, setTheme] = useState<PageTheme>(DEFAULT_THEME)
 
@@ -19,7 +19,7 @@ export default function ThemePage() {
     fetch('/api/me').then(async res => {
       if (res.status === 401) { router.push('/login'); return }
       const data = await res.json()
-      setUser({ username: data.username })
+      setUser({ username: data.username, role: data.role, effectivePlan: data.effectivePlan, trialDaysLeft: data.trialDaysLeft })
       const defaultPage = data.pages?.find((p: { isDefault: boolean }) => p.isDefault) ?? data.pages?.[0]
       if (defaultPage) {
         setPageId(defaultPage.id)
@@ -48,7 +48,7 @@ export default function ThemePage() {
   }
 
   if (loading) return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin"
           style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
@@ -63,7 +63,7 @@ export default function ThemePage() {
   const radius = theme.buttonRadius === 'pill' ? 9999 : theme.buttonRadius === 'square' ? 6 : 12
 
   return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="max-w-7xl mx-auto px-4 py-8 flex gap-8">
         {/* Left: Controls */}
         <div className="flex-1 min-w-0">

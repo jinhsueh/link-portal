@@ -28,7 +28,7 @@ interface SocialLink { id: string; platform: string; url: string }
 interface TeamMember { id: string; memberEmail: string; role: string; status: string; invitedAt: string }
 interface UserData {
   id: string; username: string; email: string; name?: string; bio?: string; avatarUrl?: string
-  createdAt: string; hasPassword: boolean
+  createdAt: string; hasPassword: boolean; role: string
   plan: string; effectivePlan: 'free' | 'pro'; trialEndsAt?: string; trialDaysLeft: number
   notifyNewSubscriber: boolean; notifyNewOrder: boolean; notifyWeeklyReport: boolean
   socialLinks: SocialLink[]
@@ -50,7 +50,7 @@ export default function SettingsPage() {
   }, [router])
 
   if (loading) return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
       </div>
@@ -58,7 +58,7 @@ export default function SettingsPage() {
   )
 
   return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>帳號設定</h1>
 

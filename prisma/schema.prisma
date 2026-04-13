@@ -14,10 +14,14 @@ model User {
   bio          String?
   avatarUrl    String?
   passwordHash String?
+  role             String    @default("user")   // "user" | "admin"
   plan             String    @default("free")   // "free" | "pro_trial" | "pro"
   trialEndsAt      DateTime?
   stripeCustomerId String?   @unique
   stripeSubId      String?
+  banned           Boolean   @default(false)
+  bannedAt         DateTime?
+  bannedReason     String?
   notifyNewSubscriber Boolean @default(true)
   notifyNewOrder      Boolean @default(true)
   notifyWeeklyReport  Boolean @default(false)

@@ -38,12 +38,19 @@ export async function getSession() {
 
   const user = await prisma.user.findUnique({
     where: { username },
-    select: { id: true, username: true, name: true, bio: true, avatarUrl: true },
+    select: { id: true, username: true, name: true, bio: true, avatarUrl: true, role: true, banned: true },
   })
+  if (!user || user.banned) return null
   return user
 }
 
 export async function requireSession() {
   const session = await getSession()
+  return session
+}
+
+export async function requireAdmin() {
+  const session = await getSession()
+  if (!session || session.role !== 'admin') return null
   return session
 }

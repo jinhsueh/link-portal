@@ -54,6 +54,9 @@ export default function OrdersPage() {
   const router = useRouter()
   const [data, setData] = useState<OrdersResponse | null>(null)
   const [username, setUsername] = useState('')
+  const [role, setRole] = useState('')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -68,7 +71,7 @@ export default function OrdersPage() {
     setData(await ordersRes.json())
     if (meRes) {
       const me = await meRes.json()
-      setUsername(me.username)
+      setUsername(me.username); setRole(me.role); setEffectivePlan(me.effectivePlan); setTrialDaysLeft(me.trialDaysLeft)
     }
     setLoading(false)
     setRefreshing(false)
@@ -77,7 +80,7 @@ export default function OrdersPage() {
   useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin"
           style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
@@ -90,7 +93,7 @@ export default function OrdersPage() {
     .map(([code, amt]) => formatAmount(amt, code)).join(' · ') || '—'
 
   return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="max-w-6xl mx-auto px-4 py-8">
 
         {/* Refresh button */}

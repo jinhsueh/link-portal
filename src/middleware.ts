@@ -13,8 +13,8 @@ const PUBLIC_API_ROUTES = [
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Admin pages: require session cookie
-  if (pathname.startsWith('/admin')) {
+  // Admin + Super Admin pages: require session cookie
+  if (pathname.startsWith('/admin') || pathname.startsWith('/super-admin')) {
     const session = req.cookies.get('lp_session')
     if (!session?.value) {
       return NextResponse.redirect(new URL('/login', req.url))
@@ -38,5 +38,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/:path*'],
+  matcher: ['/admin/:path*', '/super-admin/:path*', '/api/:path*'],
 }

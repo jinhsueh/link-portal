@@ -11,6 +11,9 @@ interface DailyPoint { date: string; clicks: number }
 export default function AnalyticsPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
+  const [role, setRole] = useState('')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [blocks, setBlocks] = useState<BlockStat[]>([])
   const [daily, setDaily] = useState<DailyPoint[]>([])
   const [totalClicks, setTotalClicks] = useState(0)
@@ -26,7 +29,7 @@ export default function AnalyticsPage() {
     ]).then(async ([meRes, analyticsRes]) => {
       if (meRes.status === 401) { router.push('/login'); return }
       const me = await meRes.json()
-      setUsername(me.username)
+      setUsername(me.username); setRole(me.role); setEffectivePlan(me.effectivePlan); setTrialDaysLeft(me.trialDaysLeft)
       const allBlocks: BlockStat[] = me.pages.flatMap((p: { blocks: BlockStat[] }) => p.blocks)
       setBlocks(allBlocks.sort((a, b) => b.clicks - a.clicks))
       setTotalBlocks(allBlocks.length)
@@ -41,7 +44,7 @@ export default function AnalyticsPage() {
   }, [router])
 
   if (loading) return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
       </div>
@@ -60,7 +63,7 @@ export default function AnalyticsPage() {
   const maxDaily = Math.max(...daily.map(d => d.clicks), 1)
 
   return (
-    <AdminShell username={username}>
+    <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="font-bold text-lg mb-6" style={{ color: 'var(--color-text-primary)' }}>數據分析</h1>
 

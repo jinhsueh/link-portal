@@ -23,6 +23,7 @@ import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
+  role: string; effectivePlan: 'free' | 'pro'; trialDaysLeft: number
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null }>
   }>
@@ -265,7 +266,7 @@ export default function AdminPage() {
   }
 
   if (loading) return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-4 animate-spin"
           style={{ borderColor: 'var(--color-primary-light)', borderTopColor: 'var(--color-primary)' }} />
@@ -274,7 +275,7 @@ export default function AdminPage() {
   )
 
   return (
-    <AdminShell username={user?.username}>
+    <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="max-w-7xl mx-auto px-4 py-6 flex gap-6">
 
         {/* Left: Editor */}

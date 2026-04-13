@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
-  ShoppingBag, Palette, Menu, X, Mail, Moon, Sun,
+  ShoppingBag, Palette, Menu, X, Mail, Moon, Sun, Shield, Sparkles,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -18,10 +18,13 @@ const NAV_ITEMS = [
 
 interface Props {
   username?: string
+  role?: string
+  effectivePlan?: 'free' | 'pro'
+  trialDaysLeft?: number
   children: React.ReactNode
 }
 
-export function AdminShell({ username, children }: Props) {
+export function AdminShell({ username, role, effectivePlan, trialDaysLeft, children }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -85,6 +88,26 @@ export function AdminShell({ username, children }: Props) {
             </nav>
           </div>
           <div className="flex items-center gap-2">
+            {/* Plan badge */}
+            {effectivePlan && (
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold"
+                style={{
+                  background: effectivePlan === 'pro' ? 'var(--color-primary-light)' : '#F3F4F6',
+                  color: effectivePlan === 'pro' ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                }}>
+                <Sparkles size={10} />
+                {effectivePlan === 'pro'
+                  ? (trialDaysLeft && trialDaysLeft > 0 ? `Pro Trial ${trialDaysLeft}天` : 'Pro')
+                  : 'Free'
+                }
+              </span>
+            )}
+            {/* Super Admin link */}
+            {role === 'admin' && (
+              <a href="/super-admin" style={{ ...navLinkStyle(), display: 'flex' }} title="Super Admin">
+                <Shield size={14} style={{ color: '#ED8936' }} />
+              </a>
+            )}
             {username && (
               <a href={`/${username}`} target="_blank" rel="noopener noreferrer"
                 style={{ ...navLinkStyle(), display: 'flex' }}>
