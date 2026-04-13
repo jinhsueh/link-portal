@@ -48,10 +48,6 @@ export interface HeadingContent {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export interface SocialContent {
-  platforms: string[] // references user social links
-}
-
 export interface CountdownContent {
   targetDate: string // ISO string
   label?: string
@@ -83,7 +79,6 @@ export type BlockContent =
   | EmailFormContent
   | ProductContent
   | HeadingContent
-  | SocialContent
   | CountdownContent
   | FaqContent
   | CarouselContent

@@ -2,17 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
+import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles, ArrowRight } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
-
-const SOCIAL_PLATFORMS = [
-  { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/你的帳號' },
-  { id: 'youtube',   label: 'YouTube',   placeholder: 'https://youtube.com/@你的頻道' },
-  { id: 'tiktok',    label: 'TikTok',    placeholder: 'https://tiktok.com/@你的帳號' },
-  { id: 'threads',   label: 'Threads',   placeholder: 'https://threads.net/@你的帳號' },
-  { id: 'facebook',  label: 'Facebook',  placeholder: 'https://facebook.com/你的主頁' },
-  { id: 'spotify',   label: 'Spotify',   placeholder: 'https://open.spotify.com/artist/...' },
-]
 
 const TABS = [
   { id: 'account',       label: '帳號資訊', icon: User },
@@ -24,14 +15,12 @@ const TABS = [
 
 type TabId = typeof TABS[number]['id']
 
-interface SocialLink { id: string; platform: string; url: string }
 interface TeamMember { id: string; memberEmail: string; role: string; status: string; invitedAt: string }
 interface UserData {
   id: string; username: string; email: string; name?: string; bio?: string; avatarUrl?: string
   createdAt: string; hasPassword: boolean; role: string
   plan: string; effectivePlan: 'free' | 'pro'; trialEndsAt?: string; trialDaysLeft: number
   notifyNewSubscriber: boolean; notifyNewOrder: boolean; notifyWeeklyReport: boolean
-  socialLinks: SocialLink[]
 }
 
 export default function SettingsPage() {
@@ -131,15 +120,9 @@ const focusOut = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =
 
 // ─── Tab 1: Account ───
 function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData) => void }) {
-  const [name, setName] = useState(user.name ?? '')
-  const [bio, setBio] = useState(user.bio ?? '')
   const [email, setEmail] = useState(user.email ?? '')
-  const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl ?? '')
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(user.socialLinks ?? [])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [qrReady, setQrReady] = useState(false)
   const pageUrl = `https://link-portal-eight.vercel.app/${user.username}`
@@ -153,56 +136,16 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
     })
   }, [user.username, pageUrl])
 
-  const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (data.url) {
-        setAvatarUrl(data.url)
-        await fetch('/api/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ avatarUrl: data.url }) })
-      }
-    } catch { /* silent */ }
-    setUploading(false)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
-
-  const handleRemoveAvatar = async () => {
-    setAvatarUrl('')
-    await fetch('/api/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ avatarUrl: '' }) })
-  }
-
   const handleSave = async () => {
     setSaving(true)
     const res = await fetch('/api/me', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, bio, email, avatarUrl }),
+      body: JSON.stringify({ email }),
     })
     const updated = await res.json()
     onUpdate(updated)
     setSaving(false); setSaved(true)
     setTimeout(() => setSaved(false), 2000)
-  }
-
-  const handleSaveSocial = async (platform: string, url: string) => {
-    if (!url.trim()) {
-      await fetch(`/api/social?platform=${platform}`, { method: 'DELETE' })
-      setSocialLinks(prev => prev.filter(l => l.platform !== platform))
-    } else {
-      const res = await fetch('/api/social', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platform, url }),
-      })
-      const link = await res.json()
-      setSocialLinks(prev => {
-        const exists = prev.find(l => l.platform === platform)
-        return exists ? prev.map(l => l.platform === platform ? link : l) : [...prev, link]
-      })
-    }
   }
 
   return (
@@ -225,68 +168,20 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
           <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"
             style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
         </div>
+        <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
+          <Save size={15} />{saved ? '已儲存 ✓' : saving ? '儲存中...' : '儲存信箱'}
+        </button>
       </div>
 
-      {/* Profile */}
-      <div style={cardStyle}>
-        <h2 className="font-bold mb-5" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>個人資料</h2>
-        <div className="flex items-center gap-5 mb-6">
-          <div className="relative group">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar" className="w-20 h-20 rounded-full object-cover" style={{ border: '3px solid var(--color-border)' }} />
-            ) : (
-              <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold"
-                style={{ background: 'var(--gradient-blue)', color: 'white', border: '3px solid var(--color-border)' }}>
-                {(name || user.username || '?').charAt(0).toUpperCase()}
-              </div>
-            )}
-            <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-              className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ background: 'rgba(0,0,0,0.5)', cursor: 'pointer', border: 'none' }}>
-              {uploading ? <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} /> : <Camera size={20} color="white" />}
-            </button>
-            {avatarUrl && (
-              <button onClick={handleRemoveAvatar}
-                className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: '#EF4444', border: '2px solid white', cursor: 'pointer' }}>
-                <X size={12} color="white" />
-              </button>
-            )}
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} />
-          </div>
-          <div>
-            <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>大頭照</p>
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>JPG、PNG、GIF、WebP，最大 4MB</p>
-          </div>
+      {/* Profile redirect note */}
+      <a href="/admin" className="flex items-center gap-3 p-4 rounded-2xl transition-all"
+        style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', textDecoration: 'none' }}>
+        <div className="flex-1">
+          <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>個人資料與社群連結</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>已搬移至主頁編輯器，點擊前往設定</p>
         </div>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>顯示名稱</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="你的名字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>個人簡介</label>
-            <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="介紹自己..." rows={3}
-              style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{bio.length}/200 字元</p>
-          </div>
-          <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-            <Save size={15} />{saved ? '已儲存 ✓' : saving ? '儲存中...' : '儲存變更'}
-          </button>
-        </div>
-      </div>
-
-      {/* Social links */}
-      <div style={cardStyle}>
-        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>社群連結</h2>
-        <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>填入後會顯示在頁面上，清空並儲存即可刪除</p>
-        <div className="space-y-3">
-          {SOCIAL_PLATFORMS.map(({ id, label, placeholder }) => {
-            const existing = socialLinks.find(l => l.platform === id)
-            return <SocialLinkRow key={id} platform={id} label={label} placeholder={placeholder} initialUrl={existing?.url ?? ''} onSave={url => handleSaveSocial(id, url)} />
-          })}
-        </div>
-      </div>
+        <ArrowRight size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
+      </a>
 
       {/* QR Code */}
       <div style={cardStyle}>
@@ -315,27 +210,6 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function SocialLinkRow({ platform, label, placeholder, initialUrl, onSave }: {
-  platform: string; label: string; placeholder: string; initialUrl: string; onSave: (url: string) => void
-}) {
-  const [url, setUrl] = useState(initialUrl)
-  const [saving, setSaving] = useState(false)
-  const handleSave = async () => { setSaving(true); await onSave(url); setSaving(false) }
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-20 text-sm font-semibold flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>{label}</div>
-      <input value={url} onChange={e => setUrl(e.target.value)} placeholder={placeholder}
-        className="flex-1 text-sm px-3 py-2.5 focus:outline-none"
-        style={{ border: '1px solid var(--color-border)', borderRadius: 10, color: 'var(--color-text-primary)' }}
-        onFocus={focusIn} onBlur={focusOut} />
-      <button onClick={handleSave} disabled={saving || url === initialUrl}
-        className="btn-primary flex-shrink-0" style={{ fontSize: 13, padding: '8px 14px', opacity: (saving || url === initialUrl) ? 0.5 : 1 }}>
-        {saving ? '...' : '儲存'}
-      </button>
     </div>
   )
 }

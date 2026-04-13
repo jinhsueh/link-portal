@@ -90,15 +90,16 @@ model Block {
 }
 
 model SocialLink {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   userId   String
-  platform String // instagram | youtube | tiktok | threads | spotify | facebook
+  platform String  // instagram | youtube | tiktok | twitter | threads | facebook | spotify | line | linkedin | pinterest | telegram | whatsapp | custom
   url      String
-  order    Int    @default(0)
+  label    String?
+  order    Int     @default(0)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, platform])
+  @@unique([userId, url])
 }
 
 model Click {

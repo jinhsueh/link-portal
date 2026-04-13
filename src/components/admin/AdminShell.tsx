@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
-  ShoppingBag, Palette, Menu, X, Mail, Moon, Sun, Shield, Sparkles,
+  ShoppingBag, Menu, X, Mail, Moon, Sun, Shield, Sparkles,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { href: '/admin/analytics', label: '數據分析', icon: BarChart2 },
   { href: '/admin/orders', label: '訂單管理', icon: ShoppingBag },
   { href: '/admin/subscribers', label: '訂閱名單', icon: Mail },
-  { href: '/admin/theme', label: '主題外觀', icon: Palette },
   { href: '/admin/settings', label: '設定', icon: Settings },
 ]
 

@@ -3,7 +3,7 @@
 import { BlockData } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { SocialIcon } from '@/components/ui/SocialIcon'
+
 
 function trackClick(blockId: string, pageId?: string) {
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
@@ -475,20 +475,6 @@ function sanitizeEmbed(html: string): string {
   return ''
 }
 
-function SocialBlock({ block }: { block: BlockData }) {
-  const content = block.content as { platforms?: string[]; socialLinks?: Array<{ platform: string; url: string }> }
-  const links = content.socialLinks ?? []
-  if (links.length === 0) return null
-
-  return (
-    <div className="w-full flex justify-center gap-3 py-2">
-      {links.map(link => (
-        <SocialIcon key={link.platform} platform={link.platform} url={link.url} />
-      ))}
-    </div>
-  )
-}
-
 export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; pageId?: string; btnStyle?: string }) {
   if (!block.active) return null
   switch (block.type) {
@@ -503,7 +489,6 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'carousel': return <CarouselBlock block={block} />
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
-    case 'social': return <SocialBlock block={block} />
     default: return null
   }
 }
