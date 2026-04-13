@@ -23,10 +23,11 @@ interface ProfileData {
 interface Props {
   profile: ProfileData
   onUpdate: () => void
+  onLiveChange?: (data: { name: string; bio: string; avatarUrl: string }) => void
   defaultExpanded?: boolean
 }
 
-export function ProfileEditor({ profile, onUpdate, defaultExpanded = false }: Props) {
+export function ProfileEditor({ profile, onUpdate, onLiveChange, defaultExpanded = false }: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [name, setName] = useState(profile.name ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
@@ -47,6 +48,7 @@ export function ProfileEditor({ profile, onUpdate, defaultExpanded = false }: Pr
       const data = await res.json()
       if (data.url) {
         setAvatarUrl(data.url)
+        onLiveChange?.({ name, bio, avatarUrl: data.url })
         await fetch('/api/me', {
           method: 'PATCH', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ avatarUrl: data.url }),
@@ -60,6 +62,7 @@ export function ProfileEditor({ profile, onUpdate, defaultExpanded = false }: Pr
 
   const handleRemoveAvatar = async () => {
     setAvatarUrl('')
+    onLiveChange?.({ name, bio, avatarUrl: '' })
     await fetch('/api/me', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ avatarUrl: '' }),
@@ -162,7 +165,7 @@ export function ProfileEditor({ profile, onUpdate, defaultExpanded = false }: Pr
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>顯示名稱</label>
-              <input value={name} onChange={e => setName(e.target.value)} placeholder="你的名字"
+              <input value={name} onChange={e => { setName(e.target.value); onLiveChange?.({ name: e.target.value, bio, avatarUrl }) }} placeholder="你的名字"
                 style={{
                   width: '100%', padding: '10px 14px', fontSize: 14,
                   border: '1px solid var(--color-border)', borderRadius: 10,
@@ -173,7 +176,7 @@ export function ProfileEditor({ profile, onUpdate, defaultExpanded = false }: Pr
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>個人簡介</label>
-              <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="介紹自己..." rows={2}
+              <textarea value={bio} onChange={e => { setBio(e.target.value); onLiveChange?.({ name, bio: e.target.value, avatarUrl }) }} placeholder="介紹自己..." rows={2}
                 style={{
                   width: '100%', padding: '10px 14px', fontSize: 14, resize: 'none',
                   border: '1px solid var(--color-border)', borderRadius: 10,

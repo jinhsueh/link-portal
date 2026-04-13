@@ -49,6 +49,7 @@ export default function AdminPage() {
   const [linkCopied, setLinkCopied] = useState(false)
   const [editorMode, setEditorMode] = useState<EditorMode>('content')
   const [previewTheme, setPreviewTheme] = useState<PageTheme>(DEFAULT_THEME)
+  const [previewProfile, setPreviewProfile] = useState<{ name: string; bio: string; avatarUrl: string } | null>(null)
 
   const handleCopyLink = async () => {
     if (!user) return
@@ -84,6 +85,7 @@ export default function AdminPage() {
       ? data.pages.find(p => p.id === keepPageId)
       : data.pages.find(p => p.isDefault) ?? data.pages[0]
     if (targetPage) switchToPage(targetPage)
+    setPreviewProfile(null)
     setLoading(false)
   }, [router])
 
@@ -394,6 +396,7 @@ export default function AdminPage() {
                     socialLinks: user.socialLinks,
                   }}
                   onUpdate={() => loadUser(activePageId ?? undefined)}
+                  onLiveChange={setPreviewProfile}
                   defaultExpanded={!user.bio && !user.avatarUrl && user.socialLinks.length === 0}
                 />
               )}
@@ -531,8 +534,8 @@ export default function AdminPage() {
                 }}>
                   {/* Avatar */}
                   <div className="flex flex-col items-center text-center mb-5">
-                    {user?.avatarUrl ? (
-                      <img src={user.avatarUrl} alt={user.name ?? user.username}
+                    {(previewProfile?.avatarUrl ?? user?.avatarUrl) ? (
+                      <img src={(previewProfile?.avatarUrl ?? user?.avatarUrl)!} alt={(previewProfile?.name ?? user?.name ?? user?.username) || ''}
                         className="w-16 h-16 rounded-full object-cover mb-3"
                         style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
                     ) : (
@@ -542,15 +545,15 @@ export default function AdminPage() {
                           color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)',
                           fontFamily: 'var(--font-display)',
                         }}>
-                        {(user?.name ?? user?.username ?? 'U').charAt(0).toUpperCase()}
+                        {(previewProfile?.name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
                       </div>
                     )}
                     <p className="font-bold text-sm" style={{ color: editorMode === 'appearance' ? previewTextColor : 'var(--color-text-primary)' }}>
-                      {user?.name ?? user?.username}
+                      {previewProfile?.name || user?.name || user?.username}
                     </p>
-                    {user?.bio && (
+                    {(previewProfile?.bio ?? user?.bio) && (
                       <p className="text-xs mt-1" style={{ color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)' }}>
-                        {user.bio}
+                        {previewProfile?.bio ?? user?.bio}
                       </p>
                     )}
                   </div>
