@@ -2,8 +2,9 @@ import Link from 'next/link'
 import {
   Link2, BarChart2, ShoppingBag, Mail, ArrowRight, Zap,
   Layers, Palette, FileStack, UserPlus, Plus, Share2, Check, Play,
-  Video, Headphones
+  Video, Headphones, Sparkles
 } from 'lucide-react'
+import { PLAN_PRICING } from '@/lib/plan'
 
 const FEATURES = [
   {
@@ -97,7 +98,10 @@ export default function LandingPage() {
             </div>
             <span className="font-bold text-lg" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <Link href="/pricing" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hover:opacity-70 transition-opacity">
+              定價
+            </Link>
             <Link href="/login" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hover:opacity-70 transition-opacity">
               登入
             </Link>
@@ -301,74 +305,112 @@ export default function LandingPage() {
 
       {/* ─── Pricing ─── */}
       <section style={{ padding: '100px 24px', background: 'var(--color-surface)' }}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs"
               style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>PRICING</span>
             <h2 className="font-bold" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)' }}>
-              簡單透明的方案
+              成長到哪，方案跟到哪
             </h2>
             <p className="mt-4 max-w-lg mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-              免費方案已能滿足大多數創作者，需要更多功能再升級
+              全方案皆可販售商品，抽成隨方案遞減：10% → 5% → 2%
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Free Plan */}
-            <div className="card" style={{ padding: 32 }}>
+            <div className="card" style={{ padding: 28 }}>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-text-primary)' }}>Free</h3>
-              <p className="mb-6" style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>永久免費，不需信用卡</p>
-              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-                $0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 永久</span>
+              <p className="mb-5" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>新手創作者入門</p>
+              <p className="font-extrabold mb-5" style={{ fontSize: 36, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+                NT$0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 永久</span>
               </p>
-              <div className="flex flex-col gap-3 mb-8">
+              <div className="flex flex-col gap-2.5 mb-6">
                 {[
-                  '無限連結區塊',
-                  '8 款預設主題',
-                  '基礎數據追蹤',
-                  '1 個分頁',
-                  'Email 訂閱表單',
+                  '1 個分頁、12 區塊',
+                  '30 天數據分析',
+                  '基本 6 種區塊類型',
+                  '商品販售（10% 抽成）',
                   'Link Portal 品牌標示',
                 ].map(item => (
                   <div key={item} className="flex items-center gap-2">
-                    <Check size={16} style={{ color: 'var(--color-primary)' }} />
+                    <Check size={14} style={{ color: 'var(--color-primary)' }} />
                     <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/login" className="btn-ghost w-full justify-center" style={{ padding: '12px 24px' }}>
+              <Link href="/login" className="btn-ghost w-full justify-center" style={{ padding: '10px 20px', fontSize: 14 }}>
                 免費開始
               </Link>
             </div>
-            {/* Pro Plan */}
-            <div className="card" style={{ padding: 32, border: '2px solid var(--color-primary)', position: 'relative' }}>
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
+
+            {/* Pro Plan (highlighted) */}
+            <div className="card" style={{ padding: 28, border: '2px solid var(--color-primary)', position: 'relative', background: 'white' }}>
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap"
                 style={{ background: 'var(--gradient-blue)', color: 'white' }}>
-                14 天免費試用
+                <Sparkles size={11} /> 最受歡迎
               </div>
-              <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-text-primary)' }}>Pro</h3>
-              <p className="mb-6" style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>適合認真經營的創作者</p>
-              <p className="font-extrabold mb-6" style={{ fontSize: 40, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-                NT$99 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 月</span>
+              <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-primary)' }}>Pro</h3>
+              <p className="mb-5" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>個人創作者 / KOL</p>
+              <p className="font-extrabold mb-1" style={{ fontSize: 36, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+                NT${PLAN_PRICING.pro.monthly} <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 月</span>
               </p>
-              <div className="flex flex-col gap-3 mb-8">
+              <p className="mb-5 text-xs" style={{ color: 'var(--color-text-muted)' }}>年繳均 NT${PLAN_PRICING.pro.annual} / 月</p>
+              <div className="flex flex-col gap-2.5 mb-6">
                 {[
-                  'Free 方案所有功能',
-                  '自訂色彩 / 漸層 / 按鈕風格',
-                  '進階數據分析 + UTM 追蹤',
-                  '無限分頁',
-                  '數位商品販售',
-                  '移除 Link Portal 品牌標示',
+                  '10 個分頁、每頁 20 區塊',
+                  '90 天數據分析',
+                  '所有 11 種區塊類型',
+                  '商品抽成降為 5%',
+                  '3 位團隊成員',
+                  '移除品牌標示',
                 ].map(item => (
                   <div key={item} className="flex items-center gap-2">
-                    <Check size={16} style={{ color: 'var(--color-primary)' }} />
+                    <Check size={14} style={{ color: 'var(--color-primary)' }} />
                     <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/login" className="btn-primary w-full justify-center" style={{ padding: '12px 24px' }}>
-                開始 14 天免費試用
+              <Link href="/login" className="btn-primary w-full justify-center" style={{ padding: '10px 20px', fontSize: 14 }}>
+                升級 Pro
               </Link>
             </div>
+
+            {/* Premium Plan */}
+            <div className="card" style={{ padding: 28, background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', border: '2px solid #1A202C', color: 'white' }}>
+              <h3 className="font-bold mb-1" style={{ fontSize: 22, color: '#F6E05E' }}>Premium</h3>
+              <p className="mb-5" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>小型品牌 / 工作室</p>
+              <p className="font-extrabold mb-1" style={{ fontSize: 36, color: 'white', fontFamily: 'var(--font-display)' }}>
+                NT${PLAN_PRICING.premium.monthly} <span className="font-normal text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>/ 月</span>
+              </p>
+              <p className="mb-5 text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>年繳均 NT${PLAN_PRICING.premium.annual} / 月</p>
+              <div className="flex flex-col gap-2.5 mb-6">
+                {[
+                  '無限分頁與區塊',
+                  '無限數據保留',
+                  '商品抽成降為 2%',
+                  '無限團隊成員',
+                  '自訂網域 / favicon / CSS',
+                  '優先客服',
+                ].map(item => (
+                  <div key={item} className="flex items-center gap-2">
+                    <Check size={14} style={{ color: '#F6E05E' }} />
+                    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/login" className="w-full inline-flex items-center justify-center rounded-lg font-bold"
+                style={{ background: '#F6E05E', color: '#1A202C', padding: '10px 20px', fontSize: 14, textDecoration: 'none' }}>
+                升級 Premium
+              </Link>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold"
+              style={{ color: 'var(--color-primary)' }}>
+              查看完整功能比較與抽成試算
+              <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>
@@ -378,10 +420,10 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             {[
-              { value: '12 種', label: '區塊類型' },
-              { value: '8 款', label: '預設主題' },
+              { value: '11 種', label: '區塊類型' },
+              { value: '低至 2%', label: '商品抽成' },
               { value: '< 1s', label: '頁面載入' },
-              { value: '永久免費', label: '基礎方案' },
+              { value: '永久免費', label: '入門方案' },
             ].map(({ value, label }) => (
               <div key={label}>
                 <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>{value}</p>
