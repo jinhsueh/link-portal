@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 import {
   Shield, Users, DollarSign, FileText, LogOut,
   Menu, X, Moon, Sun, ArrowLeft,
@@ -18,12 +19,13 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('admin-dark-mode') === 'true'
+    return false
+  })
 
   useEffect(() => {
-    const saved = localStorage.getItem('admin-dark-mode')
-    if (saved === 'true') {
-      setDark(true)
+    if (dark) {
       document.documentElement.setAttribute('data-theme', 'dark')
     }
   }, [])
@@ -77,9 +79,9 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
           <div className="flex items-center gap-2">
-            <a href="/admin" style={{ ...navStyle(), fontSize: 13 }}>
+            <Link href="/admin" style={{ ...navStyle(), fontSize: 13 }}>
               <ArrowLeft size={14} />用戶後台
-            </a>
+            </Link>
             <button onClick={toggleDark} style={navStyle()} title={dark ? '淺色模式' : '深色模式'}>
               {dark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
@@ -118,10 +120,10 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                   <Icon size={16} />{label}
                 </a>
               ))}
-              <a href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium"
+              <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium"
                 style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
                 <ArrowLeft size={16} />返回用戶後台
-              </a>
+              </Link>
             </nav>
           </div>
         </div>

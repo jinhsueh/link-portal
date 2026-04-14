@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Check, Link2, User, Share2, X, Sparkles } from 'lucide-react'
 
 interface Props {
@@ -12,16 +12,15 @@ interface Props {
 }
 
 export function OnboardingChecklist({ hasBlocks, hasProfile, username, onAddBlock, onGoToSettings }: Props) {
-  const [dismissed, setDismissed] = useState(false)
+  const [dismissed, setDismissed] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('onboarding-dismissed') === 'true'
+    return false
+  })
   const [linkCopied, setLinkCopied] = useState(false)
-  const [hasShared, setHasShared] = useState(false)
-
-  useEffect(() => {
-    const d = localStorage.getItem('onboarding-dismissed')
-    if (d === 'true') setDismissed(true)
-    const s = localStorage.getItem('onboarding-shared')
-    if (s === 'true') setHasShared(true)
-  }, [])
+  const [hasShared, setHasShared] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('onboarding-shared') === 'true'
+    return false
+  })
 
   const handleDismiss = () => {
     setDismissed(true)

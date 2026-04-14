@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles, ArrowRight } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 
@@ -174,14 +175,14 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
       </div>
 
       {/* Profile redirect note */}
-      <a href="/admin" className="flex items-center gap-3 p-4 rounded-2xl transition-all"
+      <Link href="/admin" className="flex items-center gap-3 p-4 rounded-2xl transition-all"
         style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', textDecoration: 'none' }}>
         <div className="flex-1">
           <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>個人資料與社群連結</p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>已搬移至主頁編輯器，點擊前往設定</p>
         </div>
         <ArrowRight size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
-      </a>
+      </Link>
 
       {/* QR Code */}
       <div style={cardStyle}>

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
-import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code } from 'lucide-react'
+import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2 } from 'lucide-react'
 
 const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
   { type: 'link',       icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
@@ -46,6 +46,8 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
   const [currency, setCurrency] = useState('NT$')
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  // carousel-specific
+  const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl: string }>>([{ url: '', linkUrl: '' }])
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'url' | 'imageUrl') => {
     const file = e.target.files?.[0]
@@ -65,6 +67,22 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
+  const handleCarouselUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        setCarouselImages(prev => prev.map((img, i) => i === index ? { ...img, url: data.url } : img))
+      }
+    } catch { /* silent */ }
+    setUploading(false)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selected) return
@@ -76,7 +94,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'video')      content = parseVideoUrl(url)
     if (selected === 'countdown')  content = { targetDate: url, label: title || '即將開始' }
     if (selected === 'faq')        content = { items: [{ question: title || '問題？', answer: '答案...' }] }
-    if (selected === 'carousel')   content = { images: url ? [{ url }] : [] }
+    if (selected === 'carousel')   content = { images: carouselImages.filter(i => i.url.trim()).map(i => ({ url: i.url, ...(i.linkUrl ? { linkUrl: i.linkUrl } : {}) })) }
     if (selected === 'map')        content = { query: url || title, zoom: 15 }
     if (selected === 'embed')      content = { html: url, height: 300 }
     if (selected === 'product') {
@@ -106,7 +124,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
       style={{ background: 'rgba(26,26,46,0.5)', backdropFilter: 'blur(4px)' }}>
       <div style={{
         background: 'white', borderRadius: 20, width: '100%',
-        maxWidth: selected === 'product' ? 480 : 420,
+        maxWidth: (selected === 'product' || selected === 'carousel') ? 480 : 420,
         boxShadow: 'var(--shadow-lg)', maxHeight: '90vh', overflowY: 'auto',
       }}>
 
@@ -168,8 +186,57 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
         ) : (
           <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-            {/* ── PRODUCT block ── */}
-            {selected === 'product' ? (
+            {/* ── CAROUSEL block ── */}
+            {selected === 'carousel' ? (
+              <>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>標題（選填）</label>
+                  <input value={title} onChange={e => setTitle(e.target.value)}
+                    placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>圖片</label>
+                  <div className="space-y-3">
+                    {carouselImages.map((img, index) => (
+                      <div key={index} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>#{index + 1}</span>
+                          <div className="flex gap-2 flex-1">
+                            <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, i) => i === index ? { ...im, url: e.target.value } : im))}
+                              placeholder="圖片網址" style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                            <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
+                              style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                              <Upload size={12} />
+                              {uploading ? '...' : '上傳'}
+                              <input type="file" accept="image/*" className="hidden"
+                                onChange={e => handleCarouselUpload(e, index)} />
+                            </label>
+                          </div>
+                          {carouselImages.length > 1 && (
+                            <button type="button" onClick={() => setCarouselImages(prev => prev.filter((_, i) => i !== index))}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--color-text-muted)' }}>
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+                        <input value={img.linkUrl} onChange={e => setCarouselImages(prev => prev.map((im, i) => i === index ? { ...im, linkUrl: e.target.value } : im))}
+                          placeholder="點擊連結（選填）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                        {img.url && (
+                          <img src={img.url} alt={`Preview ${index + 1}`} className="mt-2 rounded-lg"
+                            style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button type="button" onClick={() => setCarouselImages(prev => [...prev, { url: '', linkUrl: '' }])}
+                    className="flex items-center gap-1.5 mt-2 text-xs font-semibold px-3 py-2 rounded-lg"
+                    style={{ color: 'var(--color-primary)', background: 'var(--color-primary-light)', border: 'none', cursor: 'pointer' }}>
+                    <Plus size={14} /> 新增圖片
+                  </button>
+                </div>
+              </>
+            ) : selected === 'product' ? (
               <>
                 {/* Stripe notice banner */}
                 <div className="flex items-start gap-3 rounded-xl p-3"

@@ -91,7 +91,7 @@ export default function AdminPage() {
     setLoading(false)
   }, [router])
 
-  useEffect(() => { loadUser() }, [loadUser])
+  useEffect(() => { loadUser() }, [loadUser]) // eslint-disable-line react-hooks/set-state-in-effect
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event

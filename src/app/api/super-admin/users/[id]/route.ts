@@ -41,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json()
   const { plan, banned, bannedReason, role } = body
 
-  const data: any = {}
+  const data: Record<string, unknown> = {}
   if (plan !== undefined) data.plan = plan
   if (role !== undefined) data.role = role
   if (banned !== undefined) {

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit')) || 20))
   const status = url.searchParams.get('status') || ''
 
-  const where: any = {}
+  const where: Record<string, unknown> = {}
   if (status) where.status = status
 
   const [orders, total, paidOrders, planBreakdown, topSellersRaw] = await Promise.all([

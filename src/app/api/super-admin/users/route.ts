@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const search = url.searchParams.get('search') || ''
   const planFilter = url.searchParams.get('plan') || ''
 
-  const where: any = {}
+  const where: Record<string, unknown> = {}
   if (search) {
     where.OR = [
       { username: { contains: search } },

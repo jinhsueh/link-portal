@@ -1,6 +1,7 @@
 'use client'
 
 import { Link2 } from 'lucide-react'
+import Link from 'next/link'
 
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
@@ -21,9 +22,9 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
           <button onClick={reset} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
             重試
           </button>
-          <a href="/" className="btn-ghost" style={{ padding: '10px 24px', fontSize: 14 }}>
+          <Link href="/" className="btn-ghost" style={{ padding: '10px 24px', fontSize: 14 }}>
             回首頁
-          </a>
+          </Link>
         </div>
       </div>
     </div>

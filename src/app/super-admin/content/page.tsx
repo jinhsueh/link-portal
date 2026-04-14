@@ -18,6 +18,7 @@ interface PageItem {
 export default function ContentPage() {
   const router = useRouter()
   const [type, setType] = useState<'blocks' | 'pages'>('blocks')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- items are BlockItem[] or PageItem[] depending on `type`, cast at render
   const [items, setItems] = useState<any[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)

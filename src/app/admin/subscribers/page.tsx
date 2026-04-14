@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { Mail, Download, Trash2, Users, RefreshCw } from 'lucide-react'
 
@@ -40,7 +41,7 @@ export default function SubscribersPage() {
     setRefreshing(false)
   }
 
-  useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
 
   const handleDelete = async (id: string) => {
     if (!confirm('確定刪除此訂閱者？')) return
@@ -138,9 +139,9 @@ export default function SubscribersPage() {
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               在頁面中加入「Email 表單」區塊開始蒐集粉絲名單
             </p>
-            <a href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
+            <Link href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
               去新增區塊
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="rounded-2xl overflow-hidden" style={{ background: 'white', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)' }}>

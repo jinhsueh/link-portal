@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const search = url.searchParams.get('search') || ''
 
   if (type === 'pages') {
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (search) where.name = { contains: search }
 
     const [pages, total] = await Promise.all([
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Default: blocks
-  const where: any = {}
+  const where: Record<string, unknown> = {}
   if (search) {
     where.OR = [
       { title: { contains: search } },

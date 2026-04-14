@@ -21,16 +21,16 @@ function trackClick(blockId: string, pageId?: string) {
 
 function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; pageId?: string; btnStyle?: string }) {
   const content = block.content as { url: string; thumbnail?: string; description?: string }
-  const [favicon, setFavicon] = useState<string | null>(content.thumbnail ?? null)
-
-  useEffect(() => {
-    if (!favicon && content.url) {
+  const [favicon, setFavicon] = useState<string | null>(() => {
+    if (content.thumbnail) return content.thumbnail
+    if (content.url) {
       try {
         const domain = new URL(content.url).hostname
-        setFavicon(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`)
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
       } catch { /* invalid url */ }
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    return null
+  })
 
   return (
     <a href={content.url} target="_blank" rel="noopener noreferrer"

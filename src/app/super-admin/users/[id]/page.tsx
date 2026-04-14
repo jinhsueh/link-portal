@@ -33,7 +33,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
   useEffect(() => { fetchUser() }, []) // eslint-disable-line
 
-  const updateUser = async (data: Record<string, any>) => {
+  const updateUser = async (data: Record<string, unknown>) => {
     setSaving(true)
     await fetch(`/api/super-admin/users/${id}`, {
       method: 'PATCH',
