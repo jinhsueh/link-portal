@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
-import { DollarSign, ChevronLeft, ChevronRight } from 'lucide-react'
+import { DollarSign, ChevronLeft, ChevronRight, ExternalLink, ShoppingBag, TrendingUp } from 'lucide-react'
 import { fromStripeAmount, formatAmount } from '@/lib/stripe'
 
 interface Order {
@@ -24,6 +24,7 @@ export default function RevenuePage() {
   const [totalPages, setTotalPages] = useState(1)
   const [revenueByCurrency, setRevenueByCurrency] = useState<Record<string, number>>({})
   const [planBreakdown, setPlanBreakdown] = useState<{ plan: string; count: number }[]>([])
+  const [topSellers, setTopSellers] = useState<{ username: string; email: string; orderCount: number; totalAmount: number }[]>([])
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -41,6 +42,7 @@ export default function RevenuePage() {
     setTotalPages(data.totalPages)
     setRevenueByCurrency(data.revenueByCurrency)
     setPlanBreakdown(data.planBreakdown)
+    setTopSellers(data.topSellers ?? [])
     setLoading(false)
   }
 
@@ -81,6 +83,37 @@ export default function RevenuePage() {
             ))}
           </div>
         </div>
+
+        {/* Top sellers */}
+        {topSellers.length > 0 && (
+          <div className="card mb-6" style={{ padding: 20 }}>
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp size={16} style={{ color: '#F59E0B' }} />
+              <h3 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>用戶銷售排行</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    {['排名', '用戶', '訂單數', '總金額'].map(h => (
+                      <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {topSellers.map((s, i) => (
+                    <tr key={s.username} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '10px 12px', color: 'var(--color-text-muted)', fontWeight: 600 }}>{i + 1}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--color-text-primary)', fontWeight: 500 }}>@{s.username}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--color-text-secondary)' }}>{s.orderCount}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--color-text-primary)', fontWeight: 600 }}>{formatAmount(s.totalAmount, 'twd')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Filter */}
         <div className="flex items-center gap-2 mb-4">
@@ -141,6 +174,18 @@ export default function RevenuePage() {
               </div>
             </div>
           )}
+        </div>
+        {/* Stripe dashboard link */}
+        <div className="mt-6 flex items-center gap-3 p-4 rounded-xl"
+          style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
+          <ShoppingBag size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
+          <p className="text-sm" style={{ color: 'var(--color-primary)' }}>
+            查看詳細付款記錄與退款操作，請前往
+            <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer"
+              className="font-bold underline ml-1 inline-flex items-center gap-1">
+              Stripe Dashboard <ExternalLink size={12} />
+            </a>
+          </p>
         </div>
       </div>
     </SuperAdminShell>

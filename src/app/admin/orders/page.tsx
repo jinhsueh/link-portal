@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ShoppingBag, TrendingUp, PackageCheck, Clock, XCircle,
-  RotateCcw, RefreshCw, ExternalLink,
+  RotateCcw, RefreshCw,
 } from 'lucide-react'
+import Link from 'next/link'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { fromStripeAmount } from '@/lib/stripe'
 
@@ -142,9 +143,9 @@ export default function OrdersPage() {
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               在頁面中加入「數位商品」區塊，訪客購買後訂單會顯示在這裡
             </p>
-            <a href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
+            <Link href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
               去新增商品
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="rounded-2xl overflow-hidden" style={{ background: 'white', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)' }}>
@@ -210,18 +211,6 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {/* Stripe dashboard link */}
-        <div className="mt-6 flex items-center gap-3 p-4 rounded-xl"
-          style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
-          <ShoppingBag size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
-          <p className="text-sm" style={{ color: 'var(--color-primary)' }}>
-            查看詳細付款記錄與退款操作，請前往
-            <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer"
-              className="font-bold underline ml-1 inline-flex items-center gap-1">
-              Stripe Dashboard <ExternalLink size={12} />
-            </a>
-          </p>
-        </div>
       </div>
     </AdminShell>
   )

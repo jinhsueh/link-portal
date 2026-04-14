@@ -8,6 +8,7 @@ import { parseTheme, themeToCSS } from '@/lib/theme'
 import { ShareBar } from '@/components/sharing/ShareBar'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
+import Link from 'next/link'
 import { PasswordGate } from '@/components/ui/PasswordGate'
 import { getEffectivePlan } from '@/lib/plan'
 
@@ -123,10 +124,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* Watermark — hidden for Pro users */}
         {getEffectivePlan(user) !== 'pro' && (
           <div className="mt-12 text-center">
-            <a href="/" className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
+            <Link href="/" className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
               <Link2 size={12} />
               Link Portal
-            </a>
+            </Link>
           </div>
         )}
       </div>

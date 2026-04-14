@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
   ShoppingBag, Menu, X, Mail, Moon, Sun, Shield, Sparkles,
@@ -27,12 +28,13 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('admin-dark-mode') === 'true'
+    return false
+  })
 
   useEffect(() => {
-    const saved = localStorage.getItem('admin-dark-mode')
-    if (saved === 'true') {
-      setDark(true)
+    if (dark) {
       document.documentElement.setAttribute('data-theme', 'dark')
     }
   }, [])
@@ -103,9 +105,9 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
             )}
             {/* Super Admin link */}
             {role === 'admin' && (
-              <a href="/super-admin" style={{ ...navLinkStyle(), display: 'flex' }} title="Super Admin">
+              <Link href="/super-admin" style={{ ...navLinkStyle(), display: 'flex' }} title="Super Admin">
                 <Shield size={14} style={{ color: '#ED8936' }} />
-              </a>
+              </Link>
             )}
             {username && (
               <a href={`/${username}`} target="_blank" rel="noopener noreferrer"
