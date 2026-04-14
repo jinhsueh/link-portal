@@ -394,15 +394,31 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               {carouselImages.map((img, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <div className="flex-1">
-                    <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url: e.target.value } : im))}
-                      placeholder="圖片網址" style={{ ...inputStyle, marginBottom: 4 }} onFocus={focusIn} onBlur={focusOut} />
-                    <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
-                      placeholder="連結網址（選填）" style={{ ...inputStyle, fontSize: 12 }} onFocus={focusIn} onBlur={focusOut} />
+                <div key={i} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>#{i + 1}</span>
+                    <div className="flex gap-2 flex-1">
+                      <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url: e.target.value } : im))}
+                        placeholder="圖片網址" style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                      <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
+                        style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                        <Upload size={12} />
+                        {uploading ? '...' : '上傳'}
+                        <input type="file" accept="image/*" className="hidden"
+                          onChange={e => handleFileUpload(e, (url) => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url } : im)))} />
+                      </label>
+                    </div>
+                    {carouselImages.length > 1 && (
+                      <button type="button" onClick={() => setCarouselImages(prev => prev.filter((_, j) => j !== i))}
+                        className="text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                    )}
                   </div>
-                  <button type="button" onClick={() => setCarouselImages(prev => prev.filter((_, j) => j !== i))}
-                    className="mt-2 text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                  <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
+                    placeholder="點擊連結（選填）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                  {img.url && (
+                    <img src={img.url} alt={`Preview ${i + 1}`} className="mt-2 rounded-lg"
+                      style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                  )}
                 </div>
               ))}
               <button type="button" onClick={() => setCarouselImages(prev => [...prev, { url: '' }])}
