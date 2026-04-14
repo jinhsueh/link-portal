@@ -42,50 +42,62 @@ export function ShareBar({ url, title }: Props) {
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=1A1A2E&margin=16`
 
+  // Compact icon-only buttons that never wrap into vertical text on narrow viewports
+  const iconBtnStyle: React.CSSProperties = {
+    width: 38,
+    height: 38,
+    borderRadius: '50%',
+    background: 'rgba(255,255,255,0.9)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255,255,255,0.5)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#1A1A2E',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease',
+  }
+
   return (
     <>
-      <div className="flex justify-center gap-3">
+      <div className="flex justify-center" style={{ gap: 10 }}>
         {/* Copy URL */}
-        <button onClick={handleCopy}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
+        <button
+          onClick={handleCopy}
+          aria-label={copied ? '已複製連結' : '複製連結'}
+          title="複製連結"
           style={{
-            background: copied ? '#C6F6D5' : 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.3)',
-            borderRadius: 9999,
-            cursor: 'pointer',
-            color: copied ? '#22543D' : 'inherit',
-          }}>
-          {copied ? <Check size={14} /> : <Copy size={14} />}
-          {copied ? '已複製' : '複製連結'}
+            ...iconBtnStyle,
+            background: copied ? '#C6F6D5' : iconBtnStyle.background,
+            color: copied ? '#22543D' : iconBtnStyle.color,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.10)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}>
+          {copied ? <Check size={16} /> : <Copy size={16} />}
         </button>
 
         {/* QR Code */}
-        <button onClick={() => setShowQR(true)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-          style={{
-            background: 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.3)',
-            borderRadius: 9999,
-            cursor: 'pointer',
-          }}>
-          <QrCode size={14} />
-          QR Code
+        <button
+          onClick={() => setShowQR(true)}
+          aria-label="顯示 QR Code"
+          title="QR Code"
+          style={iconBtnStyle}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.10)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <QrCode size={16} />
         </button>
 
         {/* Share */}
-        <button onClick={handleNativeShare}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-          style={{
-            background: 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.3)',
-            borderRadius: 9999,
-            cursor: 'pointer',
-          }}>
-          <Share2 size={14} />
-          分享
+        <button
+          onClick={handleNativeShare}
+          aria-label="分享頁面"
+          title="分享"
+          style={iconBtnStyle}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.10)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <Share2 size={16} />
         </button>
       </div>
 

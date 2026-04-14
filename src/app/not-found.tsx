@@ -19,12 +19,12 @@ export default function NotFound() {
         <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)' }}>
           這個網址還沒有人使用，趕快來搶佔吧！
         </p>
-        <div className="flex gap-3 justify-center">
-          <Link href="/login" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <Link href="/login" className="btn-primary whitespace-nowrap w-full sm:w-auto justify-center" style={{ padding: '10px 24px', fontSize: 14 }}>
             免費註冊
             <ArrowRight size={16} />
           </Link>
-          <Link href="/" className="btn-ghost" style={{ padding: '10px 24px', fontSize: 14 }}>
+          <Link href="/" className="btn-ghost whitespace-nowrap w-full sm:w-auto justify-center" style={{ padding: '10px 24px', fontSize: 14 }}>
             回首頁
           </Link>
         </div>

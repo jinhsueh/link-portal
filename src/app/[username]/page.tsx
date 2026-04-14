@@ -59,53 +59,82 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const bg = theme.bgType === 'gradient' && theme.bgGradient ? theme.bgGradient : theme.bgColor
   const hasPassword = !!activePage.password
 
+  // Subtle gradient halo behind avatar — derived from theme primary color
+  const haloGradient = `radial-gradient(circle at center, ${theme.primaryColor}33 0%, ${theme.primaryColor}00 70%)`
+
   const pageContent = (
     <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 16px 64px' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '40px 20px 64px' }}>
 
         {/* Profile header */}
-        <div className="text-center mb-8">
-          {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={user.name ?? username}
-              className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
-              style={{ border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }} />
-          ) : (
-            <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-4"
-              style={{ background: theme.primaryColor, color: 'white', border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', fontFamily: 'var(--font-display)' }}>
-              {(user.name ?? username).charAt(0).toUpperCase()}
-            </div>
+        <div className="text-center mb-7">
+          {/* Avatar with gradient halo */}
+          <div className="relative mx-auto mb-5" style={{ width: 112, height: 112 }}>
+            <div aria-hidden className="absolute inset-0 rounded-full"
+              style={{ background: haloGradient, transform: 'scale(1.6)', filter: 'blur(8px)', pointerEvents: 'none' }} />
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user.name ?? username}
+                className="relative w-full h-full rounded-full object-cover"
+                style={{
+                  border: '4px solid white',
+                  boxShadow: `0 8px 28px ${theme.primaryColor}40, 0 2px 8px rgba(0,0,0,0.08)`,
+                }} />
+            ) : (
+              <div className="relative w-full h-full rounded-full flex items-center justify-center font-bold"
+                style={{
+                  background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}cc)`,
+                  color: 'white',
+                  fontSize: 40,
+                  border: '4px solid white',
+                  boxShadow: `0 8px 28px ${theme.primaryColor}40, 0 2px 8px rgba(0,0,0,0.08)`,
+                  fontFamily: 'var(--font-display)',
+                }}>
+                {(user.name ?? username).charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <h1 className="font-bold" style={{ fontSize: 22, color: isDark ? '#fff' : 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>{user.name ?? username}</h1>
+          {user.bio && (
+            <p className="mt-2.5 text-sm mx-auto"
+              style={{ color: isDark ? 'rgba(255,255,255,0.78)' : 'var(--color-text-secondary)', lineHeight: 1.65, maxWidth: 320 }}>
+              {user.bio}
+            </p>
           )}
-          <h1 className="font-bold text-xl" style={{ color: isDark ? '#fff' : 'var(--color-text-primary)' }}>{user.name ?? username}</h1>
-          {user.bio && <p className="mt-2 text-sm max-w-xs mx-auto" style={{ color: isDark ? '#CBD5E1' : 'var(--color-text-secondary)', lineHeight: 1.6 }}>{user.bio}</p>}
         </div>
 
         {/* Social icons */}
         {user.socialLinks.length > 0 && (
-          <div className="flex justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-2.5 mb-7">
             {user.socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} />)}
           </div>
         )}
 
         {/* Page tabs */}
         {user.pages.length > 1 && (
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-            {user.pages.map(p => (
-              <a key={p.id} href={`/${username}?page=${p.slug}`}
-                className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors"
-                style={{
-                  background: p.id === activePage.id ? 'var(--color-primary)' : 'white',
-                  color: p.id === activePage.id ? 'white' : 'var(--color-text-secondary)',
-                  border: `1px solid ${p.id === activePage.id ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  textDecoration: 'none',
-                }}>
-                {p.name}
-              </a>
-            ))}
+          <div className="flex justify-center gap-2 mb-6 overflow-x-auto pb-1 -mx-2 px-2">
+            {user.pages.map(p => {
+              const active = p.id === activePage.id
+              return (
+                <a key={p.id} href={`/${username}?page=${p.slug}`}
+                  className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0"
+                  style={{
+                    background: active ? theme.primaryColor : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)'),
+                    color: active ? 'white' : (isDark ? 'rgba(255,255,255,0.85)' : 'var(--color-text-secondary)'),
+                    border: active ? `1px solid ${theme.primaryColor}` : `1px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.06)'}`,
+                    boxShadow: active ? `0 4px 12px ${theme.primaryColor}40` : '0 1px 3px rgba(0,0,0,0.04)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    textDecoration: 'none',
+                  }}>
+                  {p.name}
+                </a>
+              )
+            })}
           </div>
         )}
 
         {/* Share tools */}
-        <div className="mb-8">
+        <div className="mb-7">
           <ShareBar url={`https://link-portal.vercel.app/${username}`} title={`${user.name ?? username} | Link Portal`} />
         </div>
 
@@ -121,10 +150,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           ))}
         </div>
 
-        {/* Watermark — hidden for Pro users */}
-        {getEffectivePlan(user) !== 'pro' && (
+        {/* Watermark — hidden for Pro and Premium users */}
+        {getEffectivePlan(user) === 'free' && (
           <div className="mt-12 text-center">
-            <Link href="/" className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
+            <Link href="/" className="inline-flex items-center gap-1.5 text-xs"
+              style={{
+                color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--color-text-muted)',
+                textDecoration: 'none',
+              }}>
               <Link2 size={12} />
               Link Portal
             </Link>
