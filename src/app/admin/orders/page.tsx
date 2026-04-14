@@ -19,6 +19,8 @@ interface Order {
   amount: number
   currency: string
   status: string
+  commissionRate: number
+  commissionAmount: number
   createdAt: string
 }
 
@@ -26,6 +28,7 @@ interface OrdersResponse {
   orders: Order[]
   total: number
   revenueByCode: Record<string, number>
+  commissionByCode: Record<string, number>
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
@@ -56,7 +59,7 @@ export default function OrdersPage() {
   const [data, setData] = useState<OrdersResponse | null>(null)
   const [username, setUsername] = useState('')
   const [role, setRole] = useState('')
-  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro' | 'premium'>('free')
   const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -92,6 +95,18 @@ export default function OrdersPage() {
   const paidOrders = data?.orders.filter(o => o.status === 'paid') ?? []
   const totalRevenue = Object.entries(data?.revenueByCode ?? {})
     .map(([code, amt]) => formatAmount(amt, code)).join(' · ') || '—'
+  const totalCommission = Object.entries(data?.commissionByCode ?? {})
+    .map(([code, amt]) => formatAmount(amt, code)).join(' · ') || '—'
+
+  // Upsell math: if Pro is paying more than $249/mo equivalent in commission,
+  // they'd save money by switching to Premium. Premium fee = 249/mo.
+  const twdCommission = data?.commissionByCode?.twd ?? 0
+  const showPremiumUpsell =
+    effectivePlan === 'pro' &&
+    twdCommission > 0 &&
+    // Pro pays 5%, Premium 2% → premium would charge 0.02/0.05 = 0.4× the same revenue
+    // savings = commission * 0.6, breakeven when savings > $249 → commission > $415
+    twdCommission > 415 * 100
 
   return (
     <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
@@ -112,12 +127,33 @@ export default function OrdersPage() {
           <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>所有透過 Stripe 金流產生的訂單記錄</p>
         </div>
 
+        {/* Premium upsell banner */}
+        {showPremiumUpsell && (
+          <div className="rounded-2xl p-5 mb-6"
+            style={{ background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', border: '1px solid #4A5568', color: 'white' }}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-bold text-base mb-1">升級 Premium 可省更多抽成</p>
+                <p className="text-sm opacity-80">
+                  目前 Pro 抽成 5%，本期已扣 {totalCommission}。升級 Premium 抽成降至 2%，月銷售 NT$8,300+ 即可回本。
+                </p>
+              </div>
+              <Link href="/admin/settings?tab=billing&upgrade=premium"
+                className="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap"
+                style={{ background: '#F6E05E', color: '#1A202C' }}>
+                升級 Premium
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Summary cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
             { label: '總訂單', value: String(data?.total ?? 0), icon: ShoppingBag, color: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
             { label: '成功付款', value: String(paidOrders.length), icon: PackageCheck, color: '#22543D', bg: '#C6F6D5' },
             { label: '總收入', value: totalRevenue, icon: TrendingUp, color: '#22543D', bg: '#C6F6D5' },
+            { label: '已扣抽成', value: totalCommission, icon: TrendingUp, color: '#744210', bg: '#FEFCBF' },
           ].map(({ label, value, icon: Icon, color, bg }) => (
             <div key={label} className="rounded-2xl p-5" style={{ background: 'white', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)' }}>
               <div className="flex items-center gap-3 mb-3">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe, toStripeAmount, toCurrencyCode } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
+import { getPlanLimits } from '@/lib/plan'
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,6 +48,12 @@ export async function POST(req: NextRequest) {
       metadata: { blockId, userId: block.userId },
     })
 
+    // Snapshot the seller's commission rate at order time so historical
+    // accounting isn't disturbed by later plan changes.
+    const sellerLimits = getPlanLimits(block.user)
+    const stripeAmount = toStripeAmount(price)
+    const commissionAmount = Math.round(stripeAmount * sellerLimits.commissionRate)
+
     // Create a pending order record
     await prisma.order.create({
       data: {
@@ -54,9 +61,11 @@ export async function POST(req: NextRequest) {
         blockId,
         stripeSessionId: session.id,
         productTitle: title,
-        amount: toStripeAmount(price),
+        amount: stripeAmount,
         currency,
         status: 'pending',
+        commissionRate: sellerLimits.commissionRate,
+        commissionAmount,
       },
     })
 

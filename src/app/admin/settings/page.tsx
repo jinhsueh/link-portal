@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles, ArrowRight } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { PLAN_PRICING } from '@/lib/plan'
 
 const TABS = [
   { id: 'account',       label: '帳號資訊', icon: User },
@@ -20,7 +21,7 @@ interface TeamMember { id: string; memberEmail: string; role: string; status: st
 interface UserData {
   id: string; username: string; email: string; name?: string; bio?: string; avatarUrl?: string
   createdAt: string; hasPassword: boolean; role: string
-  plan: string; effectivePlan: 'free' | 'pro'; trialEndsAt?: string; trialDaysLeft: number
+  plan: string; effectivePlan: 'free' | 'pro' | 'premium'; trialEndsAt?: string; trialDaysLeft: number
   notifyNewSubscriber: boolean; notifyNewOrder: boolean; notifyWeeklyReport: boolean
 }
 
@@ -443,29 +444,52 @@ function NotificationsTab() {
   )
 }
 
-// ─── Tab 5: Danger Zone ───
 // ─── Tab: Billing ───
 function BillingTab({ user }: { user: UserData }) {
-  const [upgrading, setUpgrading] = useState(false)
+  const searchParams = useSearchParams()
+  const [upgrading, setUpgrading] = useState<'pro' | 'premium' | null>(null)
+  const [interval, setIntervalState] = useState<'monthly' | 'annual'>('monthly')
 
-  const handleUpgrade = async () => {
-    setUpgrading(true)
+  const handleUpgrade = async (tier: 'pro' | 'premium') => {
+    setUpgrading(tier)
     try {
       const res = await fetch('/api/stripe/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier, interval }),
       })
       const data = await res.json()
       if (data.url) window.location.href = data.url
-      else { alert(data.error || '發生錯誤'); setUpgrading(false) }
-    } catch { setUpgrading(false) }
+      else { alert(data.error || '發生錯誤'); setUpgrading(null) }
+    } catch { setUpgrading(null) }
   }
 
-  const planLabel = user.effectivePlan === 'pro'
-    ? (user.plan === 'pro_trial' ? 'Pro（試用中）' : 'Pro')
+  // Auto-trigger from ?upgrade=pro|premium querystring
+  const upgradeParam = searchParams?.get('upgrade')
+  useEffect(() => {
+    if (upgradeParam === 'pro' && user.effectivePlan === 'free') handleUpgrade('pro')
+    if (upgradeParam === 'premium' && user.effectivePlan !== 'premium') handleUpgrade('premium')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upgradeParam])
+
+  const planLabel =
+    user.effectivePlan === 'premium' ? 'Premium'
+    : user.effectivePlan === 'pro' ? (user.plan === 'pro_trial' ? 'Pro（試用中）' : 'Pro')
     : 'Free'
 
-  const planColor = user.effectivePlan === 'pro' ? 'var(--color-primary)' : 'var(--color-text-muted)'
+  const planBadgeStyle = {
+    background:
+      user.effectivePlan === 'premium' ? 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)' :
+      user.effectivePlan === 'pro' ? 'var(--color-primary-light)' :
+      '#F3F4F6',
+    color:
+      user.effectivePlan === 'premium' ? '#F6E05E' :
+      user.effectivePlan === 'pro' ? 'var(--color-primary)' :
+      'var(--color-text-muted)',
+  } as const
+
+  const proPrice = interval === 'monthly' ? PLAN_PRICING.pro.monthly : PLAN_PRICING.pro.annual
+  const premiumPrice = interval === 'monthly' ? PLAN_PRICING.premium.monthly : PLAN_PRICING.premium.annual
 
   return (
     <div className="space-y-6">
@@ -474,7 +498,7 @@ function BillingTab({ user }: { user: UserData }) {
         <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>目前方案</h2>
         <div className="flex items-center gap-3 mb-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold"
-            style={{ background: user.effectivePlan === 'pro' ? 'var(--color-primary-light)' : '#F3F4F6', color: planColor }}>
+            style={planBadgeStyle}>
             <Sparkles size={14} />
             {planLabel}
           </div>
@@ -484,49 +508,101 @@ function BillingTab({ user }: { user: UserData }) {
         {user.plan === 'pro_trial' && user.trialDaysLeft > 0 && (
           <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
             <p className="text-sm" style={{ color: '#92400E' }}>
-              試用剩餘 <strong>{user.trialDaysLeft} 天</strong>，到期後將自動降為 Free 方案。升級 Pro 可保留所有進階功能。
+              試用剩餘 <strong>{user.trialDaysLeft} 天</strong>，到期後將自動降為 Free 方案。
             </p>
           </div>
         )}
 
-        {/* Trial expired */}
-        {user.plan === 'pro_trial' && user.trialDaysLeft === 0 && (
-          <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#FFF5F5', border: '1px solid #FED7D7' }}>
-            <p className="text-sm" style={{ color: '#E53E3E' }}>
-              試用已到期。升級 Pro 方案以重新啟用進階功能。
-            </p>
-          </div>
-        )}
-
-        {/* Pro features list */}
-        <div className="mb-6">
-          <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Pro 方案包含：</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {['自訂色彩與按鈕風格', '進階數據分析 + UTM', '無限分頁', '數位商品販售', '移除品牌標示'].map(f => (
-              <div key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                <Sparkles size={12} style={{ color: 'var(--color-primary)' }} />
-                {f}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Upgrade button */}
-        {user.plan !== 'pro' && (
-          <button onClick={handleUpgrade} disabled={upgrading}
-            className="btn-primary inline-flex items-center gap-2"
-            style={{ padding: '12px 28px', opacity: upgrading ? 0.5 : 1 }}>
-            <CreditCard size={16} />
-            {upgrading ? '跳轉中...' : '升級 Pro — NT$99/月'}
-          </button>
-        )}
-
-        {user.plan === 'pro' && (
+        {user.effectivePlan === 'premium' && (
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             如需取消訂閱或管理付款方式，請聯繫 support@linkportal.cc
           </p>
         )}
       </div>
+
+      {/* Plan picker (hide if already premium) */}
+      {user.effectivePlan !== 'premium' && (
+        <div style={cardStyle}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>升級方案</h2>
+            <div className="inline-flex rounded-lg p-1" style={{ background: '#F3F4F6' }}>
+              <button onClick={() => setIntervalState('monthly')}
+                className="px-3 py-1.5 rounded-md text-xs font-semibold"
+                style={{
+                  background: interval === 'monthly' ? 'white' : 'transparent',
+                  color: interval === 'monthly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                  boxShadow: interval === 'monthly' ? 'var(--shadow-sm)' : 'none',
+                  cursor: 'pointer',
+                }}>月繳</button>
+              <button onClick={() => setIntervalState('annual')}
+                className="px-3 py-1.5 rounded-md text-xs font-semibold"
+                style={{
+                  background: interval === 'annual' ? 'white' : 'transparent',
+                  color: interval === 'annual' ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                  boxShadow: interval === 'annual' ? 'var(--shadow-sm)' : 'none',
+                  cursor: 'pointer',
+                }}>年繳 <span style={{ color: '#22543D' }}>省 12%</span></button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Pro card */}
+            {user.effectivePlan !== 'pro' && (
+              <div className="rounded-xl p-5" style={{ border: '2px solid var(--color-primary)', background: 'var(--color-primary-light)' }}>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="font-bold text-2xl" style={{ color: 'var(--color-primary)' }}>Pro</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--color-primary)' }}>個人創作者</span>
+                </div>
+                <div className="mb-3">
+                  <span className="font-bold text-3xl" style={{ color: 'var(--color-text-primary)' }}>NT${proPrice}</span>
+                  <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}> /月</span>
+                </div>
+                <ul className="space-y-1.5 text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>
+                  <li>10 個分頁、每頁 20 區塊</li>
+                  <li>90 天分析資料</li>
+                  <li>抽成降為 5%</li>
+                  <li>3 位團隊成員</li>
+                  <li>所有區塊類型</li>
+                </ul>
+                <button onClick={() => handleUpgrade('pro')} disabled={upgrading !== null}
+                  className="w-full rounded-lg py-2.5 font-bold text-sm"
+                  style={{ background: 'var(--color-primary)', color: 'white', border: 'none', cursor: 'pointer', opacity: upgrading ? 0.5 : 1 }}>
+                  {upgrading === 'pro' ? '跳轉中...' : `升級 Pro — NT$${proPrice}/月`}
+                </button>
+              </div>
+            )}
+
+            {/* Premium card */}
+            <div className="rounded-xl p-5" style={{ border: '2px solid #1A202C', background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', color: 'white' }}>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="font-bold text-2xl" style={{ color: '#F6E05E' }}>Premium</span>
+                <span className="text-xs font-semibold opacity-70">小型品牌</span>
+              </div>
+              <div className="mb-3">
+                <span className="font-bold text-3xl">NT${premiumPrice}</span>
+                <span className="text-sm opacity-70"> /月</span>
+              </div>
+              <ul className="space-y-1.5 text-sm mb-5 opacity-90">
+                <li>無限分頁與區塊</li>
+                <li>無限分析資料</li>
+                <li>抽成降為 2%</li>
+                <li>無限團隊成員</li>
+                <li>自訂網域 / favicon / CSS</li>
+                <li>優先客服</li>
+              </ul>
+              <button onClick={() => handleUpgrade('premium')} disabled={upgrading !== null}
+                className="w-full rounded-lg py-2.5 font-bold text-sm"
+                style={{ background: '#F6E05E', color: '#1A202C', border: 'none', cursor: 'pointer', opacity: upgrading ? 0.5 : 1 }}>
+                {upgrading === 'premium' ? '跳轉中...' : `升級 Premium — NT$${premiumPrice}/月`}
+              </button>
+            </div>
+          </div>
+
+          <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+            想看完整功能比較？查看 <Link href="/pricing" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>定價頁</Link>
+          </p>
+        </div>
+      )}
     </div>
   )
 }

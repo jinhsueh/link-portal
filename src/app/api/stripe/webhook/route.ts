@@ -3,6 +3,22 @@ import { getStripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import type Stripe from 'stripe'
 
+/**
+ * Determine which plan a Stripe subscription maps to, based on its price ID.
+ * Falls back to 'pro' if we can't tell (legacy behavior).
+ */
+function planFromSubscription(sub: Stripe.Subscription): 'pro' | 'premium' {
+  const premiumIds = [
+    process.env.STRIPE_PREMIUM_PRICE_ID,
+    process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
+  ].filter(Boolean)
+  const items = sub.items?.data ?? []
+  for (const item of items) {
+    if (item.price?.id && premiumIds.includes(item.price.id)) return 'premium'
+  }
+  return 'pro'
+}
+
 export async function POST(req: NextRequest) {
   const sig = req.headers.get('stripe-signature')
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -26,14 +42,20 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        await prisma.order.update({
-          where: { stripeSessionId: session.id },
-          data: {
-            status: 'paid',
-            customerEmail: session.customer_details?.email ?? null,
-          },
-        })
-        console.log(`[stripe/webhook] Order paid: ${session.id}`)
+
+        // Product purchase (one-time payment)
+        if (session.mode === 'payment') {
+          await prisma.order.update({
+            where: { stripeSessionId: session.id },
+            data: {
+              status: 'paid',
+              customerEmail: session.customer_details?.email ?? null,
+            },
+          }).catch(() => {/* not our order */})
+          console.log(`[stripe/webhook] Order paid: ${session.id}`)
+        }
+
+        // Subscription checkout — handled by customer.subscription.* events
         break
       }
 
@@ -65,17 +87,18 @@ export async function POST(req: NextRequest) {
         break
       }
 
-      // ─── Subscription events (Pro plan) ───
+      // ─── Subscription events (Pro / Premium plan) ───
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const sub = event.data.object as Stripe.Subscription
         const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
         if (sub.status === 'active' || sub.status === 'trialing') {
+          const plan = planFromSubscription(sub)
           await prisma.user.updateMany({
             where: { stripeCustomerId: customerId },
-            data: { plan: 'pro', stripeSubId: sub.id },
+            data: { plan, stripeSubId: sub.id },
           })
-          console.log(`[stripe/webhook] User upgraded to Pro: customer=${customerId}`)
+          console.log(`[stripe/webhook] User upgraded to ${plan}: customer=${customerId}`)
         }
         break
       }

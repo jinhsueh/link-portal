@@ -12,7 +12,7 @@ export default function AnalyticsPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [role, setRole] = useState('')
-  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro' | 'premium'>('free')
   const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [blocks, setBlocks] = useState<BlockStat[]>([])
   const [daily, setDaily] = useState<DailyPoint[]>([])

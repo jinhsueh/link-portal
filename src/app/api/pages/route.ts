@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
-import { getEffectivePlan, FREE_LIMITS } from '@/lib/plan'
+import { getPlanLimits } from '@/lib/plan'
 
 /** GET: list all pages for current user */
 export async function GET() {
@@ -42,12 +42,12 @@ export async function POST(req: NextRequest) {
     where: { id: session.id },
     select: { plan: true, trialEndsAt: true },
   })
-  const effectivePlan = getEffectivePlan(user!)
-  if (effectivePlan === 'free' && count >= FREE_LIMITS.maxPages) {
-    return NextResponse.json(
-      { error: '免費方案最多 1 個分頁，請升級 Pro', upgrade: true },
-      { status: 403 }
-    )
+  const limits = getPlanLimits(user!)
+  if (count >= limits.maxPages) {
+    const msg = limits.maxPages === 1
+      ? '免費方案最多 1 個分頁，請升級 Pro'
+      : `目前方案最多 ${limits.maxPages} 個分頁，請升級 Premium 解除限制`
+    return NextResponse.json({ error: msg, upgrade: true }, { status: 403 })
   }
 
   const page = await prisma.page.create({

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   // Revenue aggregates
   const paidOrders = await prisma.order.findMany({
     where: { userId: session.id, status: 'paid' },
-    select: { amount: true, currency: true },
+    select: { amount: true, currency: true, commissionAmount: true },
   })
 
   const revenueByCode = paidOrders.reduce<Record<string, number>>((acc, o) => {
@@ -32,5 +32,10 @@ export async function GET(req: NextRequest) {
     return acc
   }, {})
 
-  return NextResponse.json({ orders, total, page, limit, revenueByCode })
+  const commissionByCode = paidOrders.reduce<Record<string, number>>((acc, o) => {
+    acc[o.currency] = (acc[o.currency] ?? 0) + (o.commissionAmount ?? 0)
+    return acc
+  }, {})
+
+  return NextResponse.json({ orders, total, page, limit, revenueByCode, commissionByCode })
 }

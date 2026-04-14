@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 interface Props {
   username?: string
   role?: string
-  effectivePlan?: 'free' | 'pro'
+  effectivePlan?: 'free' | 'pro' | 'premium'
   trialDaysLeft?: number
   children: React.ReactNode
 }
@@ -93,13 +93,21 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
             {effectivePlan && (
               <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold"
                 style={{
-                  background: effectivePlan === 'pro' ? 'var(--color-primary-light)' : '#F3F4F6',
-                  color: effectivePlan === 'pro' ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                  background:
+                    effectivePlan === 'premium' ? 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)' :
+                    effectivePlan === 'pro' ? 'var(--color-primary-light)' :
+                    '#F3F4F6',
+                  color:
+                    effectivePlan === 'premium' ? '#F6E05E' :
+                    effectivePlan === 'pro' ? 'var(--color-primary)' :
+                    'var(--color-text-muted)',
                 }}>
                 <Sparkles size={10} />
-                {effectivePlan === 'pro'
-                  ? (trialDaysLeft && trialDaysLeft > 0 ? `Pro Trial ${trialDaysLeft}天` : 'Pro')
-                  : 'Free'
+                {effectivePlan === 'premium'
+                  ? 'Premium'
+                  : effectivePlan === 'pro'
+                    ? (trialDaysLeft && trialDaysLeft > 0 ? `Pro Trial ${trialDaysLeft}天` : 'Pro')
+                    : 'Free'
                 }
               </span>
             )}

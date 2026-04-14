@@ -26,7 +26,7 @@ import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string
-  role: string; effectivePlan: 'free' | 'pro'; trialDaysLeft: number
+  role: string; effectivePlan: 'free' | 'pro' | 'premium'; trialDaysLeft: number
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null; theme?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null }>
   }>

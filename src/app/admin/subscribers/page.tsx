@@ -18,7 +18,7 @@ export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [username, setUsername] = useState('')
   const [role, setRole] = useState('')
-  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro'>('free')
+  const [effectivePlan, setEffectivePlan] = useState<'free' | 'pro' | 'premium'>('free')
   const [trialDaysLeft, setTrialDaysLeft] = useState(0)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)

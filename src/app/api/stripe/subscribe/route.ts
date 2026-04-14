@@ -5,16 +5,29 @@ import { prisma } from '@/lib/prisma'
 
 /**
  * POST /api/stripe/subscribe
- * Creates a Stripe Checkout session for Pro subscription.
+ * Creates a Stripe Checkout session for Pro or Premium subscription.
+ * Body: { tier: 'pro' | 'premium', interval?: 'monthly' | 'annual' }
  */
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const priceId = process.env.STRIPE_PRO_PRICE_ID
+    const body = await req.json().catch(() => ({}))
+    const tier: 'pro' | 'premium' = body.tier === 'premium' ? 'premium' : 'pro'
+    const interval: 'monthly' | 'annual' = body.interval === 'annual' ? 'annual' : 'monthly'
+
+    const priceEnv = {
+      pro_monthly: process.env.STRIPE_PRO_PRICE_ID,
+      pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+      premium_monthly: process.env.STRIPE_PREMIUM_PRICE_ID,
+      premium_annual: process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
+    }
+    const key = `${tier}_${interval}` as keyof typeof priceEnv
+    const priceId = priceEnv[key] ?? priceEnv[`${tier}_monthly` as keyof typeof priceEnv]
+
     if (!priceId) {
-      return NextResponse.json({ error: 'Stripe Pro price not configured' }, { status: 500 })
+      return NextResponse.json({ error: `Stripe ${tier} price not configured` }, { status: 500 })
     }
 
     const user = await prisma.user.findUnique({
@@ -23,8 +36,11 @@ export async function POST(req: NextRequest) {
     })
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    if (user.plan === 'pro') {
+    if (tier === 'pro' && user.plan === 'pro') {
       return NextResponse.json({ error: '你已經是 Pro 會員' }, { status: 400 })
+    }
+    if (tier === 'premium' && user.plan === 'premium') {
+      return NextResponse.json({ error: '你已經是 Premium 會員' }, { status: 400 })
     }
 
     const stripe = getStripe()
@@ -48,9 +64,9 @@ export async function POST(req: NextRequest) {
       customer: customerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/admin/settings?tab=billing&upgraded=1`,
+      success_url: `${origin}/admin/settings?tab=billing&upgraded=${tier}`,
       cancel_url: `${origin}/admin/settings?tab=billing`,
-      metadata: { userId: user.id },
+      metadata: { userId: user.id, tier },
     })
 
     return NextResponse.json({ url: checkoutSession.url })

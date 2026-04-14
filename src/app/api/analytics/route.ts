@@ -1,13 +1,26 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
+import { getPlanLimits } from '@/lib/plan'
 
 /**
- * GET /api/analytics — returns daily click counts for the last 14 days
+ * GET /api/analytics — returns daily click counts capped to the user's plan retention
  */
 export async function GET() {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Determine retention window from user's plan
+  const user = await prisma.user.findUnique({
+    where: { id: session.id },
+    select: { plan: true, trialEndsAt: true },
+  })
+  const limits = getPlanLimits(user!)
+  // Cap chart at 90 days max for performance, even for premium
+  const chartDays = Math.min(
+    limits.analyticsRetentionDays === Infinity ? 90 : limits.analyticsRetentionDays,
+    90
+  )
 
   // Get all block IDs for this user
   const blocks = await prisma.block.findMany({
@@ -17,12 +30,12 @@ export async function GET() {
   const blockIds = blocks.map(b => b.id)
 
   if (blockIds.length === 0) {
-    return NextResponse.json({ daily: [], totalClicks: 0, totalViews: 0 })
+    return NextResponse.json({ daily: [], totalClicks: 0, totalViews: 0, retentionDays: chartDays })
   }
 
-  // Get clicks from the last 14 days
+  // Get clicks within retention window
   const since = new Date()
-  since.setDate(since.getDate() - 13)
+  since.setDate(since.getDate() - (chartDays - 1))
   since.setHours(0, 0, 0, 0)
 
   const clicks = await prisma.click.findMany({
@@ -35,7 +48,7 @@ export async function GET() {
 
   // Aggregate by day
   const dayMap: Record<string, number> = {}
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < chartDays; i++) {
     const d = new Date(since)
     d.setDate(d.getDate() + i)
     dayMap[d.toISOString().slice(0, 10)] = 0
@@ -73,5 +86,6 @@ export async function GET() {
     totalClicks: agg._sum.clicks ?? 0,
     totalViews: agg._sum.views ?? 0,
     referrers,
+    retentionDays: chartDays,
   })
 }

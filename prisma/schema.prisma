@@ -137,6 +137,11 @@ model Order {
   amount          Int      // smallest currency unit (e.g. TWD cents = ×100)
   currency        String   @default("TWD")
   status          String   @default("pending") // pending | paid | failed | refunded
+  // Platform commission snapshot at order time (smallest currency unit).
+  // Fixed when the order is created so later plan changes don't retroactively
+  // alter historical commission accounting.
+  commissionRate  Float    @default(0.10) // 0.10 / 0.05 / 0.02
+  commissionAmount Int     @default(0)    // = round(amount * commissionRate)
   createdAt       DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
