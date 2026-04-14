@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
+import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL } from '@/lib/site'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,17 +18,37 @@ const outfit = Outfit({
 })
 
 export const metadata: Metadata = {
-  title: 'Link Portal — 免費 Link in Bio 工具｜整合 IG、YouTube、商品連結的創作者頁面',
-  description: '免費建立你的 Link in Bio 頁面，一個連結整合 Instagram、YouTube、Podcast、數位商品與粉絲名單蒐集。10,000+ 創作者都在用的社群連結整合工具。',
-  keywords: ['link in bio', 'link in bio 工具', '創作者連結頁面', 'IG 連結整合', '社群連結整合', 'bio 連結', '個人品牌', '數位商品販售'],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Link Portal — 免費 Link in Bio 工具｜整合 IG、YouTube、商品連結的創作者頁面',
+    template: '%s｜Link Portal',
+  },
+  description:
+    '免費建立你的 Link in Bio 頁面，一個連結整合 Instagram、YouTube、Podcast、數位商品與粉絲名單蒐集。專為中文創作者打造的 Linktree 替代方案。',
+  keywords: [
+    'link in bio',
+    'link in bio 工具',
+    '創作者連結頁面',
+    'IG 連結整合',
+    '社群連結整合',
+    'bio 連結',
+    '個人品牌',
+    '數位商品販售',
+    'Linktree 替代',
+    '中文 link in bio',
+  ],
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   alternates: {
-    canonical: 'https://link-portal-eight.vercel.app',
+    canonical: '/',
   },
   openGraph: {
     title: 'Link Portal — 免費 Link in Bio 工具｜創作者社群連結整合',
     description: '一個連結整合所有社群、商品、名單蒐集。免費建立，30 秒上線。',
-    url: 'https://link-portal-eight.vercel.app',
-    siteName: 'Link Portal',
+    url: '/',
+    siteName: SITE_NAME,
     locale: 'zh_TW',
     type: 'website',
   },
@@ -39,6 +60,18 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
 }
 
@@ -54,17 +87,39 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               '@graph': [
                 {
                   '@type': 'SoftwareApplication',
-                  name: 'Link Portal',
+                  '@id': `${SITE_URL}/#software`,
+                  name: SITE_NAME,
                   applicationCategory: 'WebApplication',
+                  applicationSubCategory: 'Link in Bio Tool',
                   operatingSystem: 'Web',
-                  description: '免費 Link in Bio 工具，一個連結整合 IG、YouTube、Podcast、數位商品與粉絲名單蒐集。',
-                  url: 'https://link-portal-eight.vercel.app',
-                  offers: {
-                    '@type': 'Offer',
-                    price: '0',
-                    priceCurrency: 'TWD',
-                    description: '永久免費基礎方案',
-                  },
+                  description:
+                    '免費 Link in Bio 工具，一個連結整合 IG、YouTube、Podcast、數位商品與粉絲名單蒐集。',
+                  url: SITE_URL,
+                  inLanguage: 'zh-TW',
+                  publisher: { '@id': `${SITE_URL}/#organization` },
+                  offers: [
+                    {
+                      '@type': 'Offer',
+                      name: 'Free',
+                      price: '0',
+                      priceCurrency: 'TWD',
+                      description: '永久免費基礎方案，1 個頁面、12 個區塊',
+                    },
+                    {
+                      '@type': 'Offer',
+                      name: 'Pro',
+                      price: '159',
+                      priceCurrency: 'TWD',
+                      description: 'Pro 方案月繳，10 個頁面、20 區塊、移除浮水印',
+                    },
+                    {
+                      '@type': 'Offer',
+                      name: 'Premium',
+                      price: '249',
+                      priceCurrency: 'TWD',
+                      description: 'Premium 方案月繳，無限頁面與區塊、自訂網域',
+                    },
+                  ],
                   featureList: [
                     '多元區塊類型（連結、橫幅、影片、商品、表單）',
                     '主題自訂與品牌風格設定',
@@ -113,8 +168,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
                 {
                   '@type': 'Organization',
-                  name: 'Link Portal',
-                  url: 'https://link-portal-eight.vercel.app',
+                  '@id': `${SITE_URL}/#organization`,
+                  name: SITE_NAME,
+                  url: SITE_URL,
+                  logo: {
+                    '@type': 'ImageObject',
+                    url: `${SITE_URL}/icon.png`,
+                  },
+                  description:
+                    '專為中文創作者打造的 Link in Bio 工具，整合社群連結、數位商品販售與名單蒐集。',
+                  sameAs: SOCIAL_LINKS,
+                  contactPoint: {
+                    '@type': 'ContactPoint',
+                    contactType: 'customer support',
+                    email: CONTACT_EMAIL,
+                    availableLanguage: ['zh-Hant', 'en'],
+                  },
+                },
+                {
+                  '@type': 'WebSite',
+                  '@id': `${SITE_URL}/#website`,
+                  url: SITE_URL,
+                  name: SITE_NAME,
+                  inLanguage: 'zh-TW',
+                  publisher: { '@id': `${SITE_URL}/#organization` },
                 },
               ],
             }),

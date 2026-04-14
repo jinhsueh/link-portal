@@ -91,21 +91,21 @@ export default function LandingPage() {
 
       {/* ─── Navbar ─── */}
       <nav style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }} className="sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0 min-w-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-blue)' }}>
               <Link2 size={16} color="white" />
             </div>
-            <span className="font-bold text-lg" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/pricing" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hover:opacity-70 transition-opacity">
+            <span className="font-bold text-base sm:text-lg whitespace-nowrap" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
+          </Link>
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            <Link href="/pricing" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hidden sm:inline-block whitespace-nowrap hover:opacity-70 transition-opacity">
               定價
             </Link>
-            <Link href="/login" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hover:opacity-70 transition-opacity">
+            <Link href="/login" style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 500 }} className="hidden sm:inline-block whitespace-nowrap hover:opacity-70 transition-opacity">
               登入
             </Link>
-            <Link href="/login" className="btn-primary" style={{ padding: '10px 20px', fontSize: 14 }}>
+            <Link href="/login" className="btn-primary whitespace-nowrap flex-shrink-0" style={{ padding: '9px 16px', fontSize: 13 }}>
               免費開始
             </Link>
           </div>
@@ -113,19 +113,19 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── Hero ─── */}
-      <section style={{ background: 'var(--gradient-hero)', padding: '100px 24px 60px', textAlign: 'center', overflow: 'hidden' }}>
-        <div className="max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-sm font-semibold animate-fade-in-up"
+      <section className="pt-14 pb-12 sm:pt-24 sm:pb-16" style={{ background: 'var(--gradient-hero)', textAlign: 'center', overflow: 'hidden' }}>
+        <div className="max-w-3xl mx-auto px-5 sm:px-6">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 sm:mb-8 text-xs sm:text-sm font-semibold animate-fade-in-up"
             style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
             <Zap size={14} />
             免費 Link in Bio 工具
           </div>
-          <h1 className="font-extrabold mb-6 leading-tight animate-fade-in-up"
-            style={{ fontSize: 'clamp(40px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)', animationDelay: '0.1s' }}>
-            一個連結整合所有社群<br />
+          <h1 className="font-extrabold mb-5 sm:mb-6 leading-tight animate-fade-in-up"
+            style={{ fontSize: 'clamp(28px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)', animationDelay: '0.1s', wordBreak: 'keep-all' }}>
+            一個連結整合所有社群{' '}
             <span className="text-gradient">創作者的 Link in Bio 工具</span>
           </h1>
-          <p className="mb-10 max-w-xl mx-auto animate-fade-in-up" style={{ fontSize: 18, color: 'var(--color-text-secondary)', lineHeight: 1.7, animationDelay: '0.2s' }}>
+          <p className="mb-8 sm:mb-10 max-w-xl mx-auto animate-fade-in-up" style={{ fontSize: 'clamp(15px, 1.6vw, 18px)', color: 'var(--color-text-secondary)', lineHeight: 1.7, animationDelay: '0.2s' }}>
             把 IG Bio、YouTube、Podcast、數位商品、粉絲名單<br className="hidden sm:block" />
             全部整合在一個頁面。讓粉絲找到你，讓流量變現金。
           </p>
@@ -142,8 +142,8 @@ export default function LandingPage() {
         </div>
 
         {/* Hero phone mockup */}
-        <div className="mt-16 flex justify-center animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-          <div className="animate-float phone-frame" style={{ width: 280 }}>
+        <div className="mt-12 sm:mt-16 flex justify-center animate-fade-in-up px-4" style={{ animationDelay: '0.5s' }}>
+          <div className="animate-float phone-frame" style={{ width: '100%', maxWidth: 280 }}>
             <div className="phone-frame-inner" style={{ height: 520 }}>
               <iframe
                 src="/demo"
@@ -321,7 +321,7 @@ export default function LandingPage() {
             <div className="card" style={{ padding: 28 }}>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-text-primary)' }}>Free</h3>
               <p className="mb-5" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>新手創作者入門</p>
-              <p className="font-extrabold mb-5" style={{ fontSize: 36, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+              <p className="font-extrabold mb-5 whitespace-nowrap" style={{ fontSize: 'clamp(28px, 3.5vw, 36px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
                 NT$0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 永久</span>
               </p>
               <div className="flex flex-col gap-2.5 mb-6">
@@ -351,7 +351,7 @@ export default function LandingPage() {
               </div>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: 'var(--color-primary)' }}>Pro</h3>
               <p className="mb-5" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>個人創作者 / KOL</p>
-              <p className="font-extrabold mb-1" style={{ fontSize: 36, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+              <p className="font-extrabold mb-1 whitespace-nowrap" style={{ fontSize: 'clamp(28px, 3.5vw, 36px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
                 NT${PLAN_PRICING.pro.monthly} <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 月</span>
               </p>
               <p className="mb-5 text-xs" style={{ color: 'var(--color-text-muted)' }}>年繳均 NT${PLAN_PRICING.pro.annual} / 月</p>
@@ -379,7 +379,7 @@ export default function LandingPage() {
             <div className="card" style={{ padding: 28, background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', border: '2px solid #1A202C', color: 'white' }}>
               <h3 className="font-bold mb-1" style={{ fontSize: 22, color: '#F6E05E' }}>Premium</h3>
               <p className="mb-5" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>小型品牌 / 工作室</p>
-              <p className="font-extrabold mb-1" style={{ fontSize: 36, color: 'white', fontFamily: 'var(--font-display)' }}>
+              <p className="font-extrabold mb-1 whitespace-nowrap" style={{ fontSize: 'clamp(28px, 3.5vw, 36px)', color: 'white', fontFamily: 'var(--font-display)' }}>
                 NT${PLAN_PRICING.premium.monthly} <span className="font-normal text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>/ 月</span>
               </p>
               <p className="mb-5 text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>年繳均 NT${PLAN_PRICING.premium.annual} / 月</p>
@@ -483,10 +483,14 @@ export default function LandingPage() {
             </div>
             <span className="font-bold text-sm" style={{ color: 'var(--color-primary)' }}>Link Portal</span>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/demo" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>範例</Link>
+          <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link href="/pricing" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>定價</Link>
+            <Link href="/about" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>關於我們</Link>
+            <Link href="/contact" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>聯絡</Link>
+            <Link href="/privacy" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>隱私權</Link>
+            <Link href="/terms" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>服務條款</Link>
             <Link href="/login" className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text-muted)' }}>登入</Link>
-          </div>
+          </nav>
           <p style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>&copy; 2026 Link Portal. All rights reserved.</p>
         </div>
       </footer>
