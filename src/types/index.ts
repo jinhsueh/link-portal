@@ -11,6 +11,7 @@ export type BlockType =
   | 'carousel'
   | 'map'
   | 'embed'
+  | 'calendar_event'
 
 export interface LinkContent {
   url: string
@@ -72,6 +73,17 @@ export interface EmbedContent {
   height?: number
 }
 
+export interface CalendarEventContent {
+  eventTitle?: string          // falls back to block.title
+  startDate: string            // ISO 8601 UTC (e.g. 2026-05-01T02:00:00.000Z)
+  endDate?: string             // ISO 8601 UTC, defaults to start + 1h
+  timezone: string             // IANA tz name, e.g. "Asia/Taipei"
+  allDay?: boolean
+  location?: string
+  description?: string
+  url?: string                 // event details page
+}
+
 export type BlockContent =
   | LinkContent
   | BannerContent
@@ -84,6 +96,7 @@ export type BlockContent =
   | CarouselContent
   | MapContent
   | EmbedContent
+  | CalendarEventContent
 
 export interface BlockData {
   id: string

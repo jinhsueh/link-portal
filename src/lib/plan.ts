@@ -19,7 +19,7 @@ export function getTrialDaysLeft(trialEndsAt: Date | null): number {
 /** Basic block types available to all plans */
 export const BASIC_BLOCK_TYPES = ['link', 'banner', 'heading', 'video', 'faq', 'countdown'] as const
 /** Advanced block types, Pro+ only */
-export const ADVANCED_BLOCK_TYPES = ['product', 'email_form', 'carousel', 'map', 'embed'] as const
+export const ADVANCED_BLOCK_TYPES = ['product', 'email_form', 'carousel', 'map', 'embed', 'calendar_event'] as const
 
 export interface PlanLimits {
   maxPages: number           // Infinity for unlimited

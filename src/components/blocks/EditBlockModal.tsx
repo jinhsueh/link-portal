@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { BlockData, BlockType } from '@/types'
 import { X, ChevronDown, Upload } from 'lucide-react'
+import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso, utcIsoToLocal } from '@/lib/calendar'
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -104,6 +105,20 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
       case 'embed':
         newContent = { html: embedHtml, height: parseInt(embedHeight) || 300 }
         break
+      case 'calendar_event': {
+        const startUtc = localToUtcIso(calStart, calTimezone)
+        const endUtc = calEnd ? localToUtcIso(calEnd, calTimezone) : undefined
+        newContent = {
+          startDate: startUtc,
+          ...(endUtc ? { endDate: endUtc } : {}),
+          timezone: calTimezone,
+          ...(calAllDay ? { allDay: true } : {}),
+          ...(calLocation ? { location: calLocation } : {}),
+          ...(calDescription ? { description: calDescription } : {}),
+          ...(calUrl ? { url: calUrl } : {}),
+        }
+        break
+      }
       default:
         newContent = content
     }
@@ -145,10 +160,25 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [embedHtml, setEmbedHtml] = useState((content.html as string) ?? '')
   const [embedHeight, setEmbedHeight] = useState(String(content.height ?? 300))
 
+  // Calendar event
+  const initialTz = (content.timezone as string) || detectBrowserTimezone()
+  const [calTimezone, setCalTimezone] = useState(initialTz)
+  const [calAllDay, setCalAllDay] = useState(Boolean(content.allDay))
+  const [calStart, setCalStart] = useState(
+    content.startDate ? utcIsoToLocal(content.startDate as string, initialTz) : ''
+  )
+  const [calEnd, setCalEnd] = useState(
+    content.endDate ? utcIsoToLocal(content.endDate as string, initialTz) : ''
+  )
+  const [calLocation, setCalLocation] = useState((content.location as string) ?? '')
+  const [calDescription, setCalDescription] = useState((content.description as string) ?? '')
+  const [calUrl, setCalUrl] = useState((content.url as string) ?? '')
+
   const TYPE_LABELS: Record<BlockType, string> = {
     link: '連結按鈕', banner: '橫幅看板', video: '影片',
     email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
     countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
+    calendar_event: '加入日曆',
   }
 
   return (
@@ -443,6 +473,62 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <Field label="縮放等級">
                 <input type="number" min="1" max="20" value={mapZoom} onChange={e => setMapZoom(e.target.value)}
                   style={{ ...inputStyle, width: 100 }} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+            </>
+          )}
+
+          {/* ── CALENDAR EVENT ── */}
+          {block.type === 'calendar_event' && (
+            <>
+              <Field label="活動名稱">
+                <input value={title} onChange={e => setTitle(e.target.value)} required
+                  placeholder="例：春季快閃店開張" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <div className="flex items-center gap-2" style={{ padding: '0 2px' }}>
+                <input type="checkbox" id="edit-cal-allday" checked={calAllDay}
+                  onChange={e => setCalAllDay(e.target.checked)}
+                  style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                <label htmlFor="edit-cal-allday" className="text-sm" style={{ color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
+                  全天事件
+                </label>
+              </div>
+              <Field label="開始時間">
+                <input type={calAllDay ? 'date' : 'datetime-local'} value={calStart}
+                  onChange={e => setCalStart(e.target.value)} required
+                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="結束時間（選填，預設 +1 小時）">
+                <input type={calAllDay ? 'date' : 'datetime-local'} value={calEnd}
+                  onChange={e => setCalEnd(e.target.value)}
+                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="時區">
+                <div className="relative">
+                  <select value={calTimezone} onChange={e => setCalTimezone(e.target.value)}
+                    style={{ ...inputStyle, appearance: 'none', paddingRight: 36, cursor: 'pointer' } as React.CSSProperties}
+                    onFocus={focusIn} onBlur={focusOut}>
+                    {!POPULAR_TIMEZONES.some(t => t.id === calTimezone) && (
+                      <option value={calTimezone}>{calTimezone}</option>
+                    )}
+                    {POPULAR_TIMEZONES.map(t => (
+                      <option key={t.id} value={t.id}>{t.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--color-text-muted)' }} />
+                </div>
+              </Field>
+              <Field label="地點（選填）">
+                <input value={calLocation} onChange={e => setCalLocation(e.target.value)}
+                  placeholder="台北 101、IG Live、Zoom 連結…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="描述（選填）">
+                <textarea value={calDescription} onChange={e => setCalDescription(e.target.value)}
+                  placeholder="活動重點、注意事項…" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="活動連結（選填）">
+                <input value={calUrl} onChange={e => setCalUrl(e.target.value)}
+                  placeholder="https://…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
             </>
           )}

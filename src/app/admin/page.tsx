@@ -22,6 +22,8 @@ import { BlockData, BlockType } from '@/types'
 import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload, Copy, Check, Link2, LayoutDashboard, Palette } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
+import { ImportModal } from '@/components/admin/ImportModal'
+import { DownloadCloud } from 'lucide-react'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface UserData {
@@ -41,6 +43,7 @@ export default function AdminPage() {
   const [blocks, setBlocks] = useState<BlockData[]>([])
   const [activePageId, setActivePageId] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [editingBlock, setEditingBlock] = useState<BlockData | null>(null)
   const [schedulingBlock, setSchedulingBlock] = useState<(BlockData & { scheduleStart?: string | null; scheduleEnd?: string | null }) | null>(null)
   const [batchMode, setBatchMode] = useState(false)
@@ -421,6 +424,11 @@ export default function AdminPage() {
                   <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>拖曳調整順序，點擊眼睛隱藏區塊</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button onClick={() => setShowImportModal(true)}
+                    className="p-2 rounded-lg transition-colors" title="從 Linktree / Portaly 匯入"
+                    style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                    <DownloadCloud size={15} />
+                  </button>
                   {blocks.length > 0 && (
                     <>
                       <button onClick={() => { setBatchMode(!batchMode); setSelectedIds(new Set()) }}
@@ -476,9 +484,16 @@ export default function AdminPage() {
                   </div>
                   <p className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>還沒有任何區塊</p>
                   <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>新增第一個區塊，開始建立你的頁面</p>
-                  <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-                    <Plus size={15} />新增區塊
-                  </button>
+                  <div className="flex items-center justify-center gap-2">
+                    <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
+                      <Plus size={15} />新增區塊
+                    </button>
+                    <button onClick={() => setShowImportModal(true)}
+                      className="text-sm font-semibold px-4 py-2.5 rounded-lg"
+                      style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                      <DownloadCloud size={15} className="inline mr-1" />從 Linktree 匯入
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -624,6 +639,13 @@ export default function AdminPage() {
       {showAddModal && <AddBlockModal onAdd={handleAdd} onClose={() => setShowAddModal(false)} />}
       {editingBlock && <EditBlockModal block={editingBlock} onSave={handleSaveEdit} onClose={() => setEditingBlock(null)} />}
       {schedulingBlock && <ScheduleModal block={schedulingBlock} onSave={handleSchedule} onClose={() => setSchedulingBlock(null)} />}
+      {showImportModal && (
+        <ImportModal
+          pageId={activePageId}
+          onClose={() => setShowImportModal(false)}
+          onImported={() => loadUser(activePageId ?? undefined)}
+        />
+      )}
     </AdminShell>
   )
 }

@@ -3,17 +3,19 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { BlockData, BlockType } from '@/types'
-import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin, Code } from 'lucide-react'
+import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin, Code, CalendarPlus } from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
   email_form: Mail, product: ShoppingBag, heading: AlignLeft, social: ExternalLink,
   countdown: Timer, faq: HelpCircle, carousel: Images, map: MapPin, embed: Code,
+  calendar_event: CalendarPlus,
 }
 const TYPE_LABELS: Record<BlockType, string> = {
   link: '連結按鈕', banner: '橫幅看板', video: '影片',
   email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
   countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
+  calendar_event: '加入日曆',
 }
 
 interface Props {

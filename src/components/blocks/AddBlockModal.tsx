@@ -2,12 +2,16 @@
 
 import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
-import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2 } from 'lucide-react'
+import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2, CalendarPlus } from 'lucide-react'
+import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
+import { PLATFORM_ICONS } from '@/components/ui/SocialIcon'
+import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso } from '@/lib/calendar'
 
 const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
-  { type: 'link',       icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
-  { type: 'product',    icon: ShoppingBag,  label: '數位商品', description: '販售課程、模板等產品' },
-  { type: 'email_form', icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
+  { type: 'link',           icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
+  { type: 'product',        icon: ShoppingBag,  label: '數位商品', description: '販售課程、模板等產品' },
+  { type: 'calendar_event', icon: CalendarPlus, label: '加入日曆', description: '快閃、直播、團購結單' },
+  { type: 'email_form',     icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
 ]
 
 const MORE_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
@@ -48,6 +52,14 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
   const [imageUrl, setImageUrl] = useState('')
   // carousel-specific
   const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl: string }>>([{ url: '', linkUrl: '' }])
+  // calendar_event-specific
+  const [calStart, setCalStart] = useState('')
+  const [calEnd, setCalEnd] = useState('')
+  const [calTimezone, setCalTimezone] = useState(() => detectBrowserTimezone())
+  const [calLocation, setCalLocation] = useState('')
+  const [calDescription, setCalDescription] = useState('')
+  const [calUrl, setCalUrl] = useState('')
+  const [calAllDay, setCalAllDay] = useState(false)
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'url' | 'imageUrl') => {
     const file = e.target.files?.[0]
@@ -103,6 +115,19 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
         currency,
         ...(description ? { description } : {}),
         ...(imageUrl ? { imageUrl } : {}),
+      }
+    }
+    if (selected === 'calendar_event') {
+      const startUtc = localToUtcIso(calStart, calTimezone)
+      const endUtc = calEnd ? localToUtcIso(calEnd, calTimezone) : undefined
+      content = {
+        startDate: startUtc,
+        ...(endUtc ? { endDate: endUtc } : {}),
+        timezone: calTimezone,
+        ...(calAllDay ? { allDay: true } : {}),
+        ...(calLocation ? { location: calLocation } : {}),
+        ...(calDescription ? { description: calDescription } : {}),
+        ...(calUrl ? { url: calUrl } : {}),
       }
     }
     onAdd(selected, title, content)
@@ -187,7 +212,67 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
           <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* ── CAROUSEL block ── */}
-            {selected === 'carousel' ? (
+            {selected === 'calendar_event' ? (
+              <>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>活動名稱 *</label>
+                  <input value={title} onChange={e => setTitle(e.target.value)} required
+                    placeholder="例：春季快閃店開張" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+                <div className="flex items-center gap-2" style={{ padding: '0 2px' }}>
+                  <input type="checkbox" id="add-cal-allday" checked={calAllDay}
+                    onChange={e => setCalAllDay(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                  <label htmlFor="add-cal-allday" className="text-sm" style={{ color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
+                    全天事件
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>開始時間 *</label>
+                  <input type={calAllDay ? 'date' : 'datetime-local'} value={calStart}
+                    onChange={e => setCalStart(e.target.value)} required
+                    style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>結束時間（選填，預設 +1 小時）</label>
+                  <input type={calAllDay ? 'date' : 'datetime-local'} value={calEnd}
+                    onChange={e => setCalEnd(e.target.value)}
+                    style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>時區</label>
+                  <div className="relative">
+                    <select value={calTimezone} onChange={e => setCalTimezone(e.target.value)}
+                      style={{ ...inputStyle, appearance: 'none', paddingRight: 36, cursor: 'pointer' }}
+                      onFocus={focusIn} onBlur={focusOut}>
+                      {POPULAR_TIMEZONES.some(t => t.id === calTimezone)
+                        ? null
+                        : <option value={calTimezone}>{calTimezone}</option>}
+                      {POPULAR_TIMEZONES.map(t => (
+                        <option key={t.id} value={t.id}>{t.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={14} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--color-text-muted)' }} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>地點（選填）</label>
+                  <input value={calLocation} onChange={e => setCalLocation(e.target.value)}
+                    placeholder="台北 101、IG Live、Zoom 連結…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>描述（選填）</label>
+                  <textarea value={calDescription} onChange={e => setCalDescription(e.target.value)}
+                    placeholder="活動重點、注意事項…" rows={2}
+                    style={{ ...inputStyle, resize: 'none' }} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>活動連結（選填）</label>
+                  <input value={calUrl} onChange={e => setCalUrl(e.target.value)}
+                    placeholder="https://…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                </div>
+              </>
+            ) : selected === 'carousel' ? (
               <>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>標題（選填）</label>
@@ -341,10 +426,41 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 {['link', 'video'].includes(selected ?? '') && (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                      {selected === 'video' ? 'YouTube / Spotify 網址' : '連結網址'}
+                      {selected === 'video' ? 'YouTube / TikTok / Spotify 網址' : '連結網址'}
                     </label>
-                    <input value={url} onChange={e => setUrl(e.target.value)}
-                      required placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    <div style={{ position: 'relative' }}>
+                      <input value={url} onChange={e => setUrl(e.target.value)}
+                        required placeholder="https://..."
+                        style={{ ...inputStyle, paddingLeft: url && selected === 'link' ? 42 : 16 }}
+                        onFocus={focusIn} onBlur={focusOut} />
+                      {selected === 'link' && url && (() => {
+                        const platform = detectPlatform(url)
+                        const cfg = getPlatformConfig(platform)
+                        if (!cfg) return null
+                        const Icon = PLATFORM_ICONS[platform] ?? ExternalLink
+                        return (
+                          <div style={{
+                            position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)',
+                            width: 22, height: 22, borderRadius: 6,
+                            background: `${cfg.color}15`, color: cfg.color,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            pointerEvents: 'none',
+                          }}>
+                            <Icon size={13} />
+                          </div>
+                        )
+                      })()}
+                    </div>
+                    {selected === 'link' && url && (() => {
+                      const platform = detectPlatform(url)
+                      const cfg = getPlatformConfig(platform)
+                      if (!cfg || platform === 'custom') return null
+                      return (
+                        <p className="text-xs mt-1.5" style={{ color: cfg.color, fontWeight: 600 }}>
+                          ✓ 偵測到 {cfg.label}
+                        </p>
+                      )
+                    })()}
                   </div>
                 )}
                 {selected === 'countdown' && (
@@ -436,6 +552,9 @@ function parseVideoUrl(input: string): Record<string, unknown> {
 
   const ttMatch = trimmed.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)
   if (ttMatch) return { platform: 'tiktok', embedId: ttMatch[1], url: trimmed }
+
+  const spMatch = trimmed.match(/open\.spotify\.com\/(track|playlist|album|episode|show)\/([a-zA-Z0-9]+)/)
+  if (spMatch) return { platform: 'spotify', embedId: `${spMatch[1]}/${spMatch[2]}`, url: trimmed }
 
   return { platform: 'youtube', embedId: trimmed, url: trimmed }
 }

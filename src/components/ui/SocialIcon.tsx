@@ -3,30 +3,34 @@
 import {
   Camera, PlayCircle, Music, AtSign, MessageCircle, Globe,
   Headphones, MessageSquare, Briefcase, MapPin, Send, Phone,
+  Heart, Tv, Hash,
   ExternalLink,
 } from 'lucide-react'
 import { getPlatformConfig } from '@/lib/social-platforms'
 
-const ICONS: Record<string, React.ElementType> = {
-  instagram:  Camera,
-  youtube:    PlayCircle,
-  tiktok:     Music,
-  twitter:    AtSign,
-  threads:    MessageCircle,
-  facebook:   Globe,
-  spotify:    Headphones,
-  line:       MessageSquare,
-  linkedin:   Briefcase,
-  pinterest:  MapPin,
-  telegram:   Send,
-  whatsapp:   Phone,
+export const PLATFORM_ICONS: Record<string, React.ElementType> = {
+  instagram:   Camera,
+  youtube:     PlayCircle,
+  tiktok:      Music,
+  twitter:     AtSign,
+  threads:     MessageCircle,
+  facebook:    Globe,
+  spotify:     Headphones,
+  line:        MessageSquare,
+  linkedin:    Briefcase,
+  pinterest:   MapPin,
+  telegram:    Send,
+  whatsapp:    Phone,
+  xiaohongshu: Heart,
+  bilibili:    Tv,
+  discord:     Hash,
 }
 
 export function SocialIcon({ platform, url }: { platform: string; url: string }) {
   const config = getPlatformConfig(platform)
   const label = config?.label ?? platform
   const color = config?.color ?? 'var(--color-text-muted)'
-  const Icon = ICONS[platform] ?? ExternalLink
+  const Icon = PLATFORM_ICONS[platform] ?? ExternalLink
 
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" aria-label={label}

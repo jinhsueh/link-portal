@@ -1,8 +1,9 @@
 'use client'
 
-import { BlockData } from '@/types'
-import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
+import { BlockData, CalendarEventContent } from '@/types'
+import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
 
 
 function ensureUrl(url: string): string {
@@ -481,6 +482,92 @@ function sanitizeEmbed(html: string): string {
   return ''
 }
 
+function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
+  const content = block.content as CalendarEventContent
+  if (!content?.startDate || !content?.timezone) return null
+
+  const startText = formatEventDisplay(content.startDate, content.timezone, content.allDay)
+  const endText = content.endDate ? formatEventDisplay(content.endDate, content.timezone, content.allDay) : null
+  const sameDay = content.endDate
+    ? content.startDate.slice(0, 10) === content.endDate.slice(0, 10)
+    : true
+
+  const handleGoogle = () => {
+    trackClick(block.id, pageId)
+    const url = buildGoogleCalendarUrl(content, block.title ?? undefined)
+    if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener,noreferrer')
+  }
+  const handleIcs = () => {
+    trackClick(block.id, pageId)
+    downloadIcs(content, block.title ?? undefined)
+  }
+
+  return (
+    <div className="w-full" style={{
+      background: 'var(--theme-card-bg, white)',
+      border: '1px solid var(--theme-border, var(--color-border))',
+      borderRadius: 'var(--theme-radius, 12px)',
+      boxShadow: 'var(--shadow-sm)',
+      padding: '18px 20px',
+      display: 'flex', flexDirection: 'column', gap: 12,
+    }}>
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 rounded-xl flex flex-col items-center justify-center font-bold"
+          style={{
+            width: 52, height: 52,
+            background: 'var(--theme-primary, var(--color-primary))',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+          }}>
+          <CalendarPlus size={22} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-sm" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+            {content.eventTitle || block.title || 'Event'}
+          </p>
+          <p className="text-xs mt-1" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))' }}>
+            {startText}
+            {endText && !sameDay && ` → ${endText}`}
+          </p>
+          {content.location && (
+            <p className="text-xs mt-1 flex items-center gap-1" style={{ color: 'var(--theme-text-muted, var(--color-text-muted))' }}>
+              <MapPinIcon size={11} />{content.location}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {content.description && (
+        <p className="text-xs" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.6 }}>
+          {content.description}
+        </p>
+      )}
+
+      <div className="flex gap-2">
+        <button onClick={handleGoogle}
+          className="btn-primary flex-1 justify-center"
+          style={{ borderRadius: 10, padding: '10px 14px', fontSize: 13 }}>
+          <CalendarPlus size={14} />
+          加入 Google 日曆
+        </button>
+        <button onClick={handleIcs}
+          className="flex-shrink-0 flex items-center gap-1.5 justify-center font-semibold"
+          style={{
+            padding: '10px 14px', borderRadius: 10, fontSize: 13,
+            border: '1px solid var(--theme-border, var(--color-border))',
+            background: 'var(--theme-card-bg, white)',
+            color: 'var(--theme-text, var(--color-text-primary))',
+            cursor: 'pointer',
+          }}
+          title="下載 .ics 給 Apple / Outlook">
+          <Download size={14} />
+          .ics
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; pageId?: string; btnStyle?: string }) {
   if (!block.active) return null
   switch (block.type) {
@@ -495,6 +582,7 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'carousel': return <CarouselBlock block={block} />
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
+    case 'calendar_event': return <CalendarEventBlock block={block} pageId={pageId} />
     default: return null
   }
 }
