@@ -63,10 +63,14 @@ export async function POST(req: NextRequest) {
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
+      payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/admin/settings?tab=billing&upgraded=${tier}`,
       cancel_url: `${origin}/admin/settings?tab=billing`,
       metadata: { userId: user.id, tier },
+      subscription_data: {
+        metadata: { userId: user.id, tier },
+      },
     })
 
     return NextResponse.json({ url: checkoutSession.url })
