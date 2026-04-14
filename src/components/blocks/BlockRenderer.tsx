@@ -5,6 +5,12 @@ import { ChevronRight, ShoppingBag, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 
+function ensureUrl(url: string): string {
+  if (!url) return url
+  if (/^https?:\/\//i.test(url) || url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('#') || url.startsWith('/')) return url
+  return `https://${url}`
+}
+
 function trackClick(blockId: string, pageId?: string) {
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   fetch('/api/track', {
@@ -33,7 +39,7 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
   })
 
   return (
-    <a href={content.url} target="_blank" rel="noopener noreferrer"
+    <a href={ensureUrl(content.url)} target="_blank" rel="noopener noreferrer"
       onClick={() => trackClick(block.id, pageId)}
       className="flex items-center gap-3 w-full transition-all group link-block"
       style={{
@@ -89,7 +95,7 @@ function BannerBlock({ block }: { block: BlockData }) {
       className="w-full object-cover" style={{ borderRadius: 12 }} />
   )
   return content.linkUrl
-    ? <a href={content.linkUrl} target="_blank" rel="noopener noreferrer" className="block">{inner}</a>
+    ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block">{inner}</a>
     : <div>{inner}</div>
 }
 
@@ -253,7 +259,7 @@ function VideoBlock({ block }: { block: BlockData }) {
 
   // Fallback: link to original URL
   return (
-    <a href={content.url ?? '#'} target="_blank" rel="noopener noreferrer"
+    <a href={ensureUrl(content.url ?? '#')} target="_blank" rel="noopener noreferrer"
       className="flex items-center justify-between w-full"
       style={{ padding: '16px 20px', background: 'white', border: '1px solid var(--color-border)', borderRadius: 12, textDecoration: 'none', boxShadow: 'var(--shadow-sm)' }}>
       <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
@@ -398,15 +404,15 @@ function CarouselBlock({ block }: { block: BlockData }) {
       <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280 }} />
       {images.length > 1 && (
         <>
-          <button onClick={() => goTo(current - 1)}
+          <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current - 1) }}
             className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>‹</button>
-          <button onClick={() => goTo(current + 1)}
+          <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current + 1) }}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>›</button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
             {images.map((_, i) => (
-              <button key={i} onClick={() => setCurrent(i)}
+              <button key={i} onClick={e => { e.preventDefault(); e.stopPropagation(); setCurrent(i) }}
                 className="w-2 h-2 rounded-full" style={{ background: i === current ? 'white' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', padding: 0 }} />
             ))}
           </div>
@@ -416,7 +422,7 @@ function CarouselBlock({ block }: { block: BlockData }) {
   )
 
   return img.linkUrl
-    ? <a href={img.linkUrl} target="_blank" rel="noopener noreferrer" className="block w-full">{inner}</a>
+    ? <a href={ensureUrl(img.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full">{inner}</a>
     : <div className="w-full">{inner}</div>
 }
 
