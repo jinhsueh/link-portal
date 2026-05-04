@@ -25,7 +25,9 @@ export default function LoginPage() {
     if (mode !== 'login') return
     const u = username.trim().toLowerCase()
     if (!u) { setUsernameStatus('idle'); return }
-    if (!/^[a-z0-9_-]{3,30}$/.test(u)) { setUsernameStatus('invalid'); return }
+    if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(u) || u.length < 3 || u.length > 30) {
+      setUsernameStatus('invalid'); return
+    }
 
     setUsernameStatus('checking')
     const t = setTimeout(async () => {
@@ -141,7 +143,7 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    用戶名稱 <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>（英數字）</span>
+                    用戶名稱 <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>(英數字、底線、減號、點)</span>
                   </label>
                   <div className="flex items-center overflow-hidden" style={{
                     border: `1px solid ${
@@ -155,7 +157,7 @@ export default function LoginPage() {
                       beam.io/
                     </span>
                     <input type="text" value={username}
-                      onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+                      onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}
                       required minLength={3} maxLength={30} placeholder="username"
                       className="flex-1 px-3 py-3 text-sm focus:outline-none"
                       style={{ background: 'white', color: 'var(--color-text-primary)' }} />
@@ -178,7 +180,7 @@ export default function LoginPage() {
                     <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>此用戶名為系統保留,請換一個</p>
                   )}
                   {usernameStatus === 'invalid' && username.length >= 3 && (
-                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>只能使用英數、底線、減號,3-30 字</p>
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>只能使用英數、底線、減號、點,3-30 字。點不能在開頭/結尾或連續</p>
                   )}
                   {usernameStatus === 'available' && (
                     <p className="text-xs mt-1.5" style={{ color: '#10B981' }}>✓ 可以使用</p>

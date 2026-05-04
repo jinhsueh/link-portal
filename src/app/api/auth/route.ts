@@ -28,8 +28,11 @@ export async function POST(req: NextRequest) {
 
   const { username, name, email, password, setPassword } = await req.json()
 
-  if (!username || !/^[a-zA-Z0-9_-]{3,30}$/.test(username)) {
-    return NextResponse.json({ error: '用戶名需為 3-30 個英數字或底線' }, { status: 400 })
+  // Username allows letters / digits / dot / underscore / hyphen, IG-style.
+  // Dots are allowed inside but not at boundaries or consecutive (to avoid
+  // weird URLs and confusion with file extensions).
+  if (!username || !/^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*$/.test(username) || username.length < 3 || username.length > 30) {
+    return NextResponse.json({ error: '用戶名需為 3-30 字,可用英數字、底線、減號、點' }, { status: 400 })
   }
 
   const existing = await prisma.user.findUnique({

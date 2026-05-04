@@ -129,6 +129,14 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
   const [qrReady, setQrReady] = useState(false)
   const pageUrl = `https://link-portal-eight.vercel.app/${user.username}`
 
+  // Username editing — kept separate from email save because changing the
+  // URL has bigger consequences (old links 404, share images cached).
+  const [editingUsername, setEditingUsername] = useState(false)
+  const [newUsername, setNewUsername] = useState(user.username)
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'reserved' | 'same'>('idle')
+  const [usernameSaving, setUsernameSaving] = useState(false)
+  const [usernameError, setUsernameError] = useState('')
+
   useEffect(() => {
     if (!user.username) return
     import('qrcode').then(QRCode => {
@@ -137,6 +145,55 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
       }, () => setQrReady(true))
     })
   }, [user.username, pageUrl])
+
+  // Live availability check while editing username.
+  useEffect(() => {
+    if (!editingUsername) return
+    const u = newUsername.trim().toLowerCase()
+    if (u === user.username) { setUsernameStatus('same'); return }
+    if (!u) { setUsernameStatus('idle'); return }
+    if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(u) || u.length < 3 || u.length > 30) {
+      setUsernameStatus('invalid'); return
+    }
+    setUsernameStatus('checking')
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(u)}`)
+        const data = await res.json()
+        if (data.available) setUsernameStatus('available')
+        else if (data.reason === 'reserved') setUsernameStatus('reserved')
+        else setUsernameStatus('taken')
+      } catch { setUsernameStatus('idle') }
+    }, 350)
+    return () => clearTimeout(t)
+  }, [newUsername, editingUsername, user.username])
+
+  const handleSaveUsername = async () => {
+    const u = newUsername.trim().toLowerCase()
+    if (u === user.username) { setEditingUsername(false); return }
+    if (!confirm(
+      `確定要把用戶名從「${user.username}」改成「${u}」嗎?\n\n` +
+      `舊網址 beam.io/${user.username} 會失效,任何已分享的舊連結都會 404。`
+    )) return
+    setUsernameSaving(true)
+    setUsernameError('')
+    try {
+      const res = await fetch('/api/me', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u }),
+      })
+      const updated = await res.json()
+      if (!res.ok) {
+        setUsernameError(updated.error ?? '更改失敗')
+      } else {
+        onUpdate(updated)
+        setEditingUsername(false)
+      }
+    } catch (err) {
+      setUsernameError(err instanceof Error ? err.message : '網路錯誤')
+    }
+    setUsernameSaving(false)
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -162,7 +219,78 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
           </div>
           <div>
             <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>用戶名稱</label>
-            <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{user.username}</p>
+            {!editingUsername ? (
+              <div className="flex items-center gap-2">
+                <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{user.username}</p>
+                <button onClick={() => { setEditingUsername(true); setNewUsername(user.username); setUsernameError(''); setUsernameStatus('same') }}
+                  className="text-xs font-semibold"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
+                  更改
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center overflow-hidden" style={{
+                  border: `1px solid ${
+                    usernameStatus === 'available' ? '#10B981'
+                    : ['taken', 'invalid', 'reserved'].includes(usernameStatus) ? '#EF4444'
+                    : 'var(--color-border)'
+                  }`,
+                  borderRadius: 8,
+                }}>
+                  <span className="px-2 py-1.5 text-xs border-r"
+                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
+                    beam.io/
+                  </span>
+                  <input value={newUsername}
+                    onChange={e => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}
+                    minLength={3} maxLength={30}
+                    className="flex-1 px-2 py-1.5 text-xs focus:outline-none"
+                    style={{ background: 'white', color: 'var(--color-text-primary)' }} />
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={handleSaveUsername}
+                    disabled={usernameSaving || !['available', 'same'].includes(usernameStatus)}
+                    className="text-xs font-bold px-3 py-1.5 rounded-lg"
+                    style={{
+                      background: ['available', 'same'].includes(usernameStatus) ? 'var(--color-primary)' : '#E5E7EB',
+                      color: 'white', border: 'none',
+                      cursor: ['available', 'same'].includes(usernameStatus) && !usernameSaving ? 'pointer' : 'default',
+                      opacity: usernameSaving ? 0.6 : 1,
+                    }}>
+                    {usernameSaving ? '儲存中…' : '儲存'}
+                  </button>
+                  <button onClick={() => { setEditingUsername(false); setUsernameError('') }}
+                    className="text-xs font-semibold"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                    取消
+                  </button>
+                </div>
+                {usernameStatus === 'checking' && (
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>檢查中…</p>
+                )}
+                {usernameStatus === 'available' && (
+                  <p className="text-xs" style={{ color: '#10B981' }}>✓ 可用</p>
+                )}
+                {usernameStatus === 'taken' && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>此用戶名已被使用</p>
+                )}
+                {usernameStatus === 'reserved' && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>系統保留,無法使用</p>
+                )}
+                {usernameStatus === 'invalid' && newUsername.length >= 3 && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>格式不正確(英數、底線、減號、點;點不可在開頭/結尾)</p>
+                )}
+                {usernameError && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>{usernameError}</p>
+                )}
+                {newUsername !== user.username && usernameStatus === 'available' && (
+                  <p className="text-xs" style={{ color: '#B45309', background: '#FEF3C7', border: '1px solid #FCD34D', padding: '6px 8px', borderRadius: 6 }}>
+                    ⚠ 改名後舊網址 beam.io/{user.username} 將失效
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="mb-4">
