@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Link2, ArrowRight, Lock } from 'lucide-react'
+import { Link2, ArrowRight, Lock, Check, X } from 'lucide-react'
+
+type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'reserved'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -14,6 +16,29 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [mode, setMode] = useState<'login' | 'setPassword'>('login')
+  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>('idle')
+
+  // Live availability check — debounced 350ms after the user stops typing.
+  // Only useful for signup (i.e. login mode); shows whether the entered
+  // username is free, taken, invalid, or reserved.
+  useEffect(() => {
+    if (mode !== 'login') return
+    const u = username.trim().toLowerCase()
+    if (!u) { setUsernameStatus('idle'); return }
+    if (!/^[a-z0-9_-]{3,30}$/.test(u)) { setUsernameStatus('invalid'); return }
+
+    setUsernameStatus('checking')
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(u)}`)
+        const data = await res.json()
+        if (data.available) setUsernameStatus('available')
+        else if (data.reason === 'reserved') setUsernameStatus('reserved')
+        else setUsernameStatus('taken')
+      } catch { setUsernameStatus('idle') }
+    }, 350)
+    return () => clearTimeout(t)
+  }, [username, mode])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -118,7 +143,14 @@ export default function LoginPage() {
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
                     用戶名稱 <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>（英數字）</span>
                   </label>
-                  <div className="flex items-center overflow-hidden" style={{ border: '1px solid var(--color-border)', borderRadius: 12 }}>
+                  <div className="flex items-center overflow-hidden" style={{
+                    border: `1px solid ${
+                      usernameStatus === 'available' ? '#10B981'
+                      : usernameStatus === 'taken' || usernameStatus === 'invalid' || usernameStatus === 'reserved' ? '#EF4444'
+                      : 'var(--color-border)'
+                    }`,
+                    borderRadius: 12,
+                  }}>
                     <span className="px-3 py-3 text-xs border-r" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
                       beam.io/
                     </span>
@@ -127,7 +159,30 @@ export default function LoginPage() {
                       required minLength={3} maxLength={30} placeholder="username"
                       className="flex-1 px-3 py-3 text-sm focus:outline-none"
                       style={{ background: 'white', color: 'var(--color-text-primary)' }} />
+                    {usernameStatus === 'checking' && (
+                      <span className="px-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>檢查中…</span>
+                    )}
+                    {usernameStatus === 'available' && (
+                      <Check size={16} className="mr-3" style={{ color: '#10B981' }} />
+                    )}
+                    {(usernameStatus === 'taken' || usernameStatus === 'invalid' || usernameStatus === 'reserved') && (
+                      <X size={16} className="mr-3" style={{ color: '#EF4444' }} />
+                    )}
                   </div>
+                  {usernameStatus === 'taken' && (
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>
+                      此用戶名已被使用 — 若是你的帳號,可繼續登入;否則請換一個
+                    </p>
+                  )}
+                  {usernameStatus === 'reserved' && (
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>此用戶名為系統保留,請換一個</p>
+                  )}
+                  {usernameStatus === 'invalid' && username.length >= 3 && (
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>只能使用英數、底線、減號,3-30 字</p>
+                  )}
+                  {usernameStatus === 'available' && (
+                    <p className="text-xs mt-1.5" style={{ color: '#10B981' }}>✓ 可以使用</p>
+                  )}
                 </div>
 
                 <div>

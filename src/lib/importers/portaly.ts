@@ -18,6 +18,29 @@ import type { ImportedProfile, ImportedBlock, ImportedSocialLink } from './types
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 
+/**
+ * Pull `<meta property="og:title">` / `og:description` / `og:image` tags out
+ * of the HTML head as a last-resort fallback. When client-rendered Portaly
+ * pages give us nothing else, at least the OG meta is server-rendered so we
+ * can populate name + bio + avatar.
+ */
+function extractOgMeta(html: string): { title?: string; description?: string; image?: string } {
+  const grab = (prop: string): string | undefined => {
+    const m = html.match(new RegExp(`<meta\\s+(?:property|name)=["']${prop}["']\\s+content=["']([^"']+)["']`, 'i'))
+      || html.match(new RegExp(`<meta\\s+content=["']([^"']+)["']\\s+(?:property|name)=["']${prop}["']`, 'i'))
+    return m?.[1]?.trim() || undefined
+  }
+  // Skip generic Portaly/site OG tags (404 fallback) — only return when the
+  // OG appears to be profile-specific.
+  const t = grab('og:title') || grab('twitter:title')
+  if (t && /^(?:404|portaly)$/i.test(t)) return {}
+  return {
+    title: t && !/portaly/i.test(t) ? t : undefined,
+    description: grab('og:description') || grab('twitter:description'),
+    image: grab('og:image') || grab('twitter:image'),
+  }
+}
+
 function extractNextData(html: string): unknown {
   const match = html.match(/<script[^>]+id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/)
   if (!match) return null
@@ -191,8 +214,18 @@ export async function importFromPortaly(sourceUrl: string): Promise<ImportedProf
     blocks = fallbackExtractAnchors(html, normalized)
   }
 
-  if (blocks.length === 0) {
-    throw new Error('無法解析 Portaly 頁面，可能是連結錯誤或 Portaly 已更新結構')
+  // ── Final fallback: at least pull OG meta tags so the user gets *something*
+  // (profile name + avatar) instead of a hard-fail. Portaly is moving to fully
+  // client-side rendered profiles so this is becoming the typical case.
+  if (!name || !bio || !avatarUrl) {
+    const ogMeta = extractOgMeta(html)
+    name = name || ogMeta.title
+    bio = bio || ogMeta.description
+    avatarUrl = avatarUrl || ogMeta.image
+  }
+
+  if (blocks.length === 0 && !name && !bio && !avatarUrl) {
+    throw new Error('無法解析 Portaly 頁面,可能是連結錯誤或 Portaly 已更新結構')
   }
 
   // Split out social-platform URLs from regular blocks

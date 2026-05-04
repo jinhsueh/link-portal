@@ -23,6 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(body.order !== undefined && { order: body.order }),
       ...(body.scheduleStart !== undefined && { scheduleStart: body.scheduleStart ? new Date(body.scheduleStart) : null }),
       ...(body.scheduleEnd !== undefined && { scheduleEnd: body.scheduleEnd ? new Date(body.scheduleEnd) : null }),
+      ...(body.pinned !== undefined && { pinned: !!body.pinned }),
     },
   })
 

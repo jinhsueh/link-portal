@@ -13,7 +13,7 @@
  */
 
 import { useState } from 'react'
-import { X, Link2, Loader2, Download as DownloadIcon, Check, AlertTriangle, ExternalLink } from 'lucide-react'
+import { X, Link2, Loader2, Download as DownloadIcon, Check, AlertTriangle, ExternalLink, Eye, Palette, Share2 } from 'lucide-react'
 import type { ImportedProfile, ImportedBlock, ImportedSocialLink } from '@/lib/importers/types'
 
 interface Props {
@@ -31,6 +31,7 @@ interface ApplyResult {
   skippedByType: number
   truncated: number
   maxBlocksPerPage: number
+  targetUsername?: string
 }
 
 export function ImportModal({ pageId, onClose, onImported }: Props) {
@@ -179,6 +180,35 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                   <p className="text-xs" style={{ color: '#991B1B' }}>{error}</p>
                 </div>
               )}
+
+              {/* Cleanup escape hatch — Portaly imports done on older versions of
+                  the importer leaked CSS into block titles. This lets users
+                  scrub their own DB rows without needing to ping support. */}
+              <details className="rounded-lg p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                <summary className="cursor-pointer text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                  之前匯入結果不對?清理舊資料
+                </summary>
+                <p className="text-xs mt-2 mb-2" style={{ color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                  早期版本匯入 Portaly 時可能把 CSS 樣式抓進 block 標題。點下方按鈕可一鍵清除受影響的 block。
+                </p>
+                <button onClick={async () => {
+                    try {
+                      const res = await fetch('/api/account/cleanup-imports', { method: 'POST' })
+                      const data = await res.json()
+                      if (res.ok) {
+                        alert(`已清理 ${data.fixed} 個、刪除 ${data.deleted} 個受影響的 block`)
+                      } else {
+                        alert(`清理失敗:${data.error ?? '未知錯誤'}`)
+                      }
+                    } catch (err) {
+                      alert(`清理失敗:${err instanceof Error ? err.message : '網路錯誤'}`)
+                    }
+                  }}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                  style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-primary)' }}>
+                  一鍵清理
+                </button>
+              </details>
             </div>
           )}
 
@@ -318,22 +348,50 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
 
           {/* ── Step 5: done ── */}
           {step === 'done' && result && (
-            <div className="py-8 flex flex-col items-center text-center">
+            <div className="py-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: '#DCFCE7' }}>
                 <Check size={24} style={{ color: '#16A34A' }} />
               </div>
               <h3 className="font-bold text-base mb-1" style={{ color: 'var(--color-text-primary)' }}>匯入完成!</h3>
-              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>
                 已新增 <b>{result.blocksCreated}</b> 個區塊、<b>{result.socialsCreated}</b> 個社群連結
               </p>
               {(result.skippedByType > 0 || result.truncated > 0) && (
-                <div className="mt-3 p-3 rounded-lg text-xs text-left" style={{ background: '#FEF3C7', border: '1px solid #FCD34D', color: '#92400E' }}>
+                <div className="p-3 rounded-lg text-xs text-left mb-4" style={{ background: '#FEF3C7', border: '1px solid #FCD34D', color: '#92400E' }}>
                   {result.skippedByType > 0 && <div>· {result.skippedByType} 個區塊因方案限制被略過</div>}
                   {result.truncated > 0 && (
                     <div>· {result.truncated} 個區塊超過頁面上限 ({result.maxBlocksPerPage})。升級 Pro 可匯入更多。</div>
                   )}
                 </div>
               )}
+
+              {/* Next-step CTAs — give users a clear path forward instead of
+                  ending on a dead "完成" button. */}
+              <div className="grid grid-cols-3 gap-2 w-full mt-2">
+                <a href={result.targetUsername ? `/${result.targetUsername}` : '/'} target="_blank" rel="noopener noreferrer"
+                  className="flex flex-col items-center gap-1 rounded-xl p-3 transition-colors"
+                  style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', color: 'var(--color-primary)', textDecoration: 'none' }}>
+                  <Eye size={16} />
+                  <span className="text-xs font-bold">看公開頁</span>
+                </a>
+                <button onClick={() => { onClose() }}
+                  className="flex flex-col items-center gap-1 rounded-xl p-3"
+                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                  <Palette size={16} />
+                  <span className="text-xs font-bold">調整外觀</span>
+                </button>
+                <button onClick={async () => {
+                    if (typeof window !== 'undefined') {
+                      const url = `${window.location.origin}/${result.targetUsername ?? ''}`
+                      try { await navigator.clipboard.writeText(url) } catch { /* silent */ }
+                    }
+                  }}
+                  className="flex flex-col items-center gap-1 rounded-xl p-3"
+                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                  <Share2 size={16} />
+                  <span className="text-xs font-bold">複製連結</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

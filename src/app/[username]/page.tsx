@@ -49,6 +49,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         active: b.active,
         clicks: b.clicks,
         views: b.views,
+        pinned: b.pinned,
       })),
   }))
 

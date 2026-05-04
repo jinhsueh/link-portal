@@ -14,6 +14,19 @@ export interface PageTheme {
    * on the page background (current default, backward-compatible).
    */
   bgPanel?: boolean
+
+  /**
+   * Public-page block layout preset. Two orthogonal axes baked into 4 variants:
+   *   - 直式 stacked   = single column, narrow container (default)
+   *   - 橫式 horizontal= 2-column grid, narrow container
+   *   - 滿版 fullwidth = single column, wide container
+   *   - 小卡 cards     = 2-column grid, wide container
+   *
+   * "Rich" blocks (banner, video, carousel, calendar, embed, map, faq) always
+   * span both columns in grid layouts — only compact types (link, heading,
+   * email_form, product, countdown) actually go side-by-side.
+   */
+  layout?: 'stacked' | 'horizontal' | 'fullwidth' | 'cards'
 }
 
 export const DEFAULT_THEME: PageTheme = {
@@ -25,6 +38,7 @@ export const DEFAULT_THEME: PageTheme = {
   buttonRadius: 'rounded',
   fontStyle: 'default',
   bgPanel: false,
+  layout: 'stacked',
 }
 
 export const PRESET_THEMES: { name: string; theme: Partial<PageTheme> }[] = [
@@ -106,6 +120,23 @@ export function themeToCSS(theme: PageTheme): React.CSSProperties {
     '--theme-btn-style': theme.buttonStyle,
   } as React.CSSProperties
 }
+
+/**
+ * Block types that always span the full available width in grid layouts
+ * (`horizontal` / `cards`). These are "rich" content blocks where halving the
+ * width destroys the experience — e.g. a YouTube embed at 50% is unwatchable,
+ * a carousel at 50% loses the navigation arrows. Everything else is allowed
+ * to sit side-by-side.
+ */
+export const RICH_BLOCK_TYPES: ReadonlySet<string> = new Set([
+  'banner',
+  'video',
+  'carousel',
+  'calendar_event',
+  'embed',
+  'map',
+  'faq',
+])
 
 function isColorDark(hex: string): boolean {
   const clean = hex.replace('#', '')

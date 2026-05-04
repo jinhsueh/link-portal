@@ -46,7 +46,9 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
   const [pendingIcon, setPendingIcon] = useState<{ linkId: string; file: File } | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    // 8px distance prevents accidental drags on touch — same threshold as
+    // the admin block list for consistency.
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 

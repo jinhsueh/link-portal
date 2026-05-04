@@ -24,6 +24,11 @@ function trackClick(blockId: string, pageId?: string) {
       utmMedium: params?.get('utm_medium') || undefined,
     }),
   }).catch(() => {})
+  // Subtle haptic confirmation on supported phones — feels premium without
+  // being intrusive. Vibrate is a no-op on desktop / unsupported browsers.
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try { navigator.vibrate(8) } catch { /* silent */ }
+  }
 }
 
 function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; pageId?: string; btnStyle?: string }) {
@@ -459,7 +464,11 @@ function CarouselBlock({ block }: { block: BlockData }) {
 
   const goTo = (i: number) => setCurrent((i + images.length) % images.length)
   const img = images[current]
-  const hasText = !!(block.title || content.caption)
+  // Resolved caption for the *current* slide — per-image overrides the carousel-
+  // level caption, falling back to the carousel default if a slide doesn't have
+  // its own. This is what makes per-slide narratives possible.
+  const activeCaption = img.caption || content.caption
+  const hasText = !!(block.title || activeCaption)
 
   const carouselInner = (
     <div className="relative w-full" style={{
@@ -502,9 +511,9 @@ function CarouselBlock({ block }: { block: BlockData }) {
             {block.title}
           </p>
         )}
-        {content.caption && (
+        {activeCaption && (
           <p className="text-xs mt-1" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
-            {content.caption}
+            {activeCaption}
           </p>
         )}
       </div>

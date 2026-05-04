@@ -70,8 +70,14 @@ export interface FaqContent {
 }
 
 export interface CarouselContent {
-  images: Array<{ url: string; linkUrl?: string; alt?: string }>
-  /** Caption text shown below the carousel on public profiles. */
+  images: Array<{
+    url: string
+    linkUrl?: string
+    alt?: string
+    /** Per-slide caption — overrides the carousel-level caption when present. */
+    caption?: string
+  }>
+  /** Carousel-level caption (fallback when a slide has no per-image caption). */
   caption?: string
 }
 
@@ -123,6 +129,8 @@ export interface BlockData {
   views: number
   scheduleStart?: string | null
   scheduleEnd?: string | null
+  /** Pinned blocks render first (above-the-fold spotlight) regardless of order. */
+  pinned?: boolean
 }
 
 export interface ProfileData {

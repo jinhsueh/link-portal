@@ -77,6 +77,7 @@ model Block {
   title     String?
   content   String   @default("{}")  // JSON string
   order     Int      @default(0)
+  pinned    Boolean  @default(false) // If true, render before all other blocks (above-the-fold spotlight)
   active        Boolean   @default(true)
   scheduleStart DateTime? // If set, block only visible after this time
   scheduleEnd   DateTime? // If set, block only visible before this time

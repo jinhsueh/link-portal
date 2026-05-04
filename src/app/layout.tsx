@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
 import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL } from '@/lib/site'
+import { ToastHost } from '@/components/ui/Toast'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -73,6 +74,8 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  manifest: '/manifest.json',
+  themeColor: '#5090FF',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -198,6 +201,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         {children}
+        <ToastHost />
       </body>
     </html>
   )

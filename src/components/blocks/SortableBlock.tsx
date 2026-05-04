@@ -1,9 +1,14 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { BlockData, BlockType } from '@/types'
-import { GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag, Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin, Code, CalendarPlus } from 'lucide-react'
+import {
+  GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag,
+  Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin,
+  Code, CalendarPlus, MoreHorizontal, Star,
+} from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
@@ -25,9 +30,10 @@ interface Props {
   onEdit: (block: BlockData) => void
   onDuplicate?: (block: BlockData) => void
   onSchedule?: (block: BlockData) => void
+  onPin?: (id: string, pinned: boolean) => void
 }
 
-export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule }: Props) {
+export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule, onPin }: Props) {
   const hasSchedule = !!(block.scheduleStart || block.scheduleEnd)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id })
@@ -64,27 +70,32 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
       </div>
 
       {/* Info */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEdit(block)}>
         <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>
           {block.title || TYPE_LABELS[block.type]}
         </p>
-        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{TYPE_LABELS[block.type]}</p>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+          {TYPE_LABELS[block.type]}
+          {block.views > 0 && (
+            <span className="ml-2 cursor-help"
+              title={`看過 ${block.views} 次 / 點過 ${block.clicks} 次\n資料即時更新,訪客動作後約 1 秒同步`}>
+              · 看過 {block.views} · 點過 {block.clicks}
+            </span>
+          )}
+        </p>
       </div>
 
-      {/* Stats — tooltip explains the counters because users keep asking
-          "are these realtime?" / "what does 曝光 mean?". Both counts are
-          captured by /api/track on every public page view & link click,
-          updated in near-realtime (~1 second after the visitor action).
-          Compact pill on mobile so it stays useful on phone-width admin. */}
-      <div
-        className="flex sm:flex-col flex-row items-end gap-1 sm:gap-0 text-xs flex-shrink-0 cursor-help leading-tight"
-        style={{ color: 'var(--color-text-muted)' }}
-        title={`點擊:粉絲實際點按此區塊的次數\n曝光:此區塊在公開頁被看到的次數\n\n資料來自即時追蹤,訪客動作後約 1 秒同步。`}>
-        <span className="whitespace-nowrap">{block.clicks} 點擊</span>
-        <span className="whitespace-nowrap">{block.views} 曝光</span>
-      </div>
+      {/* Pinned badge — shows first to signal "this block is the headline". */}
+      {block.pinned && (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0"
+          title="主推:此區塊會顯示在公開頁最上方"
+          style={{ background: '#FEF3C7', color: '#B45309', border: '1px solid #FCD34D' }}>
+          <Star size={11} fill="currentColor" />
+          <span>主推</span>
+        </div>
+      )}
 
-      {/* Schedule badge */}
+      {/* Schedule badge — kept as inline pill since it's a status, not an action */}
       {hasSchedule && (
         <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0"
           style={{ background: '#FFF7ED', color: '#C2410C', border: '1px solid #FDBA74' }}>
@@ -93,24 +104,78 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {[
-          { icon: Edit2, onClick: () => onEdit(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
-          { icon: Copy, onClick: () => onDuplicate?.(block), color: 'var(--color-primary)', hoverBg: 'var(--color-surface)' },
-          { icon: Clock, onClick: () => onSchedule?.(block), color: hasSchedule ? '#C2410C' : 'var(--color-text-secondary)', hoverBg: hasSchedule ? '#FFF7ED' : 'var(--color-surface)' },
-          { icon: block.active ? Eye : EyeOff, onClick: () => onToggle(block.id, !block.active), color: 'var(--color-text-secondary)', hoverBg: 'var(--color-surface)' },
-          { icon: Trash2, onClick: () => onDelete(block.id), color: '#E53E3E', hoverBg: '#FFF5F5' },
-        ].map(({ icon: BtnIcon, onClick, color, hoverBg }, i) => (
-          <button key={i} onClick={onClick}
-            className="p-2 rounded-lg transition-colors"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = color; (e.currentTarget as HTMLElement).style.background = hoverBg }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
-            <BtnIcon size={15} />
-          </button>
-        ))}
-      </div>
+      {/* Quick toggle (eye) — most-used action stays primary */}
+      <button onClick={() => onToggle(block.id, !block.active)}
+        title={block.active ? '隱藏' : '顯示'}
+        className="p-2 rounded-lg flex-shrink-0"
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+        {block.active ? <Eye size={15} /> : <EyeOff size={15} />}
+      </button>
+
+      {/* Kebab menu — collapses edit/pin/duplicate/schedule/delete (less-used actions) */}
+      <KebabMenu
+        items={[
+          { label: '編輯',     icon: Edit2, onClick: () => onEdit(block) },
+          { label: block.pinned ? '取消主推' : '設為主推', icon: Star, onClick: () => onPin?.(block.id, !block.pinned) },
+          { label: '複製',     icon: Copy, onClick: () => onDuplicate?.(block) },
+          { label: hasSchedule ? '修改排程' : '排程顯示', icon: Clock, onClick: () => onSchedule?.(block) },
+          { label: '刪除',     icon: Trash2, onClick: () => onDelete(block.id), danger: true },
+        ]}
+      />
+    </div>
+  )
+}
+
+interface KebabItem {
+  label: string
+  icon: React.ElementType
+  onClick: () => void
+  danger?: boolean
+}
+
+function KebabMenu({ items }: { items: KebabItem[] }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <button onClick={() => setOpen(o => !o)}
+        title="更多操作"
+        className="p-2 rounded-lg"
+        style={{ background: open ? 'var(--color-surface)' : 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+        <MoreHorizontal size={15} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-10 rounded-xl py-1 min-w-[140px]"
+          style={{ background: 'white', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-lg)' }}>
+          {items.map(({ label, icon: Icon, onClick, danger }) => (
+            <button key={label}
+              onClick={() => { setOpen(false); onClick() }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: danger ? '#E53E3E' : 'var(--color-text-secondary)',
+                textAlign: 'left',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = danger ? '#FFF5F5' : 'var(--color-surface)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+              <Icon size={13} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { BlockData, BlockType } from '@/types'
-import { X, ChevronDown, Upload } from 'lucide-react'
+import { X, ChevronDown, Upload, Eye } from 'lucide-react'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso, utcIsoToLocal } from '@/lib/calendar'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
+import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { toast } from '@/components/ui/Toast'
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -89,6 +91,37 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     setUploading(false)
   }
 
+  // Block-level content images (banner / product / carousel). All free-aspect
+  // (3:1 default) since these are content shots, not square logos. The crop
+  // step is optional for power users who want to control framing — they can
+  // also paste a URL or upload without cropping.
+  type BlockImageTarget =
+    | { kind: 'banner'; file: File }
+    | { kind: 'product'; file: File }
+    | { kind: 'carousel'; index: number; file: File }
+  const [pendingBlockImage, setPendingBlockImage] = useState<BlockImageTarget | null>(null)
+  const uploadCroppedBlockImage = async (cropped: File) => {
+    if (!pendingBlockImage) return
+    const target = pendingBlockImage
+    setPendingBlockImage(null)
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', cropped)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        if (target.kind === 'banner') setImageUrl(data.url)
+        else if (target.kind === 'product') setProductImg(data.url)
+        else if (target.kind === 'carousel') {
+          const idx = target.index
+          setCarouselImages(prev => prev.map((im, j) => j === idx ? { ...im, url: data.url } : im))
+        }
+      }
+    } catch { /* silent */ }
+    setUploading(false)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     let newContent: Record<string, unknown> = {}
@@ -168,6 +201,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     }
 
     onSave(block.id, block.type === 'heading' ? text : title, newContent)
+    toast.success('已儲存')
     onClose()
   }
 
@@ -192,8 +226,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   )
 
   // Carousel
-  const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl?: string; alt?: string }>>(
-    (content.images as Array<{ url: string; linkUrl?: string; alt?: string }>) ?? []
+  const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl?: string; alt?: string; caption?: string }>>(
+    (content.images as Array<{ url: string; linkUrl?: string; alt?: string; caption?: string }>) ?? []
   )
   const [carouselCaption, setCarouselCaption] = useState((content.caption as string) ?? '')
 
@@ -227,6 +261,97 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     calendar_event: '加入日曆',
   }
 
+  // ── Inline preview ──
+  // Mirror the same content shape that handleSubmit would generate, so the
+  // rendered preview matches what saves. Only compute for block types where
+  // preview is genuinely useful — for static types (heading/email/etc) the
+  // form fields ARE the preview.
+  const previewBlock: BlockData | null = useMemo(() => {
+    const baseTitle = block.type === 'heading' ? text : title
+    let previewContent: Record<string, unknown> | null = null
+    switch (block.type) {
+      case 'link':
+        previewContent = {
+          url: url || '#',
+          ...(linkDesc ? { description: linkDesc } : {}),
+          ...(linkHideIcon ? { hideIcon: true } : {}),
+          ...(linkBgColor ? { bgColor: linkBgColor } : {}),
+          ...(linkTextColor ? { textColor: linkTextColor } : {}),
+        }
+        break
+      case 'banner':
+        if (imageUrl) previewContent = {
+          imageUrl,
+          ...(linkUrl ? { linkUrl } : {}),
+          ...(alt ? { alt } : {}),
+          ...(bannerCaption ? { caption: bannerCaption } : {}),
+        }
+        break
+      case 'heading':
+        previewContent = { text: text || '標題預覽', size }
+        break
+      case 'video':
+        if (videoUrl) {
+          previewContent = { ...parseVideoInput(videoUrl), ...(videoDescription ? { description: videoDescription } : {}) }
+        }
+        break
+      case 'product':
+        previewContent = {
+          price: parseFloat(price) || 0,
+          currency,
+          ...(productDesc ? { description: productDesc } : {}),
+          ...(productImg ? { imageUrl: productImg } : {}),
+        }
+        break
+      case 'countdown':
+        if (targetDate) previewContent = { targetDate: new Date(targetDate).toISOString(), label: countdownLabel || undefined }
+        break
+      case 'calendar_event':
+        if (calStart) {
+          try {
+            previewContent = {
+              startDate: localToUtcIso(calStart, calTimezone),
+              ...(calEnd ? { endDate: localToUtcIso(calEnd, calTimezone) } : {}),
+              timezone: calTimezone,
+              ...(calAllDay ? { allDay: true } : {}),
+              ...(calLocation ? { location: calLocation } : {}),
+              ...(calDescription ? { description: calDescription } : {}),
+              ...(calIconUrl ? { iconUrl: calIconUrl } : {}),
+            }
+          } catch { previewContent = null }
+        }
+        break
+      case 'carousel':
+        if (carouselImages.some(i => i.url)) {
+          previewContent = {
+            images: carouselImages.filter(i => i.url),
+            ...(carouselCaption ? { caption: carouselCaption } : {}),
+          }
+        }
+        break
+    }
+    if (!previewContent) return null
+    return {
+      id: block.id,
+      type: block.type,
+      title: baseTitle,
+      content: previewContent as never,
+      order: block.order,
+      active: true,
+      clicks: 0,
+      views: 0,
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    block.type, title, text, size, url, linkDesc, linkHideIcon, linkBgColor, linkTextColor,
+    imageUrl, linkUrl, alt, bannerCaption,
+    videoUrl, videoDescription,
+    price, currency, productDesc, productImg,
+    targetDate, countdownLabel,
+    calStart, calEnd, calTimezone, calAllDay, calLocation, calDescription, calIconUrl,
+    carouselImages, carouselCaption,
+  ])
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
       style={{ background: 'rgba(26,26,46,0.5)', backdropFilter: 'blur(4px)' }}>
@@ -247,6 +372,22 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
 
         <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
+          {/* ── Live preview ──
+              Renders the exact same component as the public profile would, so
+              users see colour / icon / caption / description changes as they
+              type, instead of needing to save+refresh to verify. */}
+          {previewBlock && (
+            <div className="rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="flex items-center gap-1.5 mb-3 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', letterSpacing: '0.1em' }}>
+                <Eye size={11} />
+                即時預覽
+              </div>
+              <div className="pointer-events-none select-none">
+                <BlockRenderer block={previewBlock} btnStyle="outline" />
+              </div>
+            </div>
+          )}
+
           {/* ── LINK ── */}
           {block.type === 'link' && (
             <>
@@ -263,60 +404,55 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   placeholder="簡短描述文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
 
-              {/* Advanced styling — disclosure */}
-              <details className="rounded-xl" style={{ border: '1px solid var(--color-border)' }}>
-                <summary className="cursor-pointer text-sm font-semibold flex items-center justify-between"
-                  style={{ padding: '10px 14px', color: 'var(--color-text-secondary)' }}>
-                  進階樣式
-                  <ChevronDown size={14} />
-                </summary>
-                <div className="space-y-3" style={{ padding: '0 14px 14px' }}>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={linkHideIcon}
-                      onChange={e => setLinkHideIcon(e.target.checked)}
-                      style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
-                    <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                      隱藏左側 icon
-                    </span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                        按鈕背景色
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <input type="color" value={linkBgColor || '#FFFFFF'}
-                          onChange={e => setLinkBgColor(e.target.value)}
-                          style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
-                        <input value={linkBgColor} onChange={e => setLinkBgColor(e.target.value)}
-                          placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
-                          onFocus={focusIn} onBlur={focusOut} />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                        文字色
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <input type="color" value={linkTextColor || '#1A1A2E'}
-                          onChange={e => setLinkTextColor(e.target.value)}
-                          style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
-                        <input value={linkTextColor} onChange={e => setLinkTextColor(e.target.value)}
-                          placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
-                          onFocus={focusIn} onBlur={focusOut} />
-                      </div>
+              {/* Customization — flat instead of hidden in <details> because
+                  these are core decisions: many users want them and burying
+                  hides the feature entirely. */}
+              <div className="space-y-3 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={linkHideIcon}
+                    onChange={e => setLinkHideIcon(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                  <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                    隱藏左側 icon
+                  </span>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      按鈕背景色
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={linkBgColor || '#FFFFFF'}
+                        onChange={e => setLinkBgColor(e.target.value)}
+                        style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                      <input value={linkBgColor} onChange={e => setLinkBgColor(e.target.value)}
+                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        onFocus={focusIn} onBlur={focusOut} />
                     </div>
                   </div>
-                  {(linkBgColor || linkTextColor) && (
-                    <button type="button"
-                      onClick={() => { setLinkBgColor(''); setLinkTextColor('') }}
-                      className="text-xs font-semibold"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
-                      重設為主題預設色
-                    </button>
-                  )}
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      文字色
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={linkTextColor || '#1A1A2E'}
+                        onChange={e => setLinkTextColor(e.target.value)}
+                        style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                      <input value={linkTextColor} onChange={e => setLinkTextColor(e.target.value)}
+                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        onFocus={focusIn} onBlur={focusOut} />
+                    </div>
+                  </div>
                 </div>
-              </details>
+                {(linkBgColor || linkTextColor) && (
+                  <button type="button"
+                    onClick={() => { setLinkBgColor(''); setLinkTextColor('') }}
+                    className="text-xs font-semibold"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
+                    重設為主題預設色
+                  </button>
+                )}
+              </div>
             </>
           )}
 
@@ -336,7 +472,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     <Upload size={14} />
                     {uploading ? '...' : '上傳'}
                     <input type="file" accept="image/*" className="hidden"
-                      onChange={e => handleFileUpload(e, setImageUrl)} />
+                      onChange={e => {
+                        const f = e.target.files?.[0]
+                        if (f) setPendingBlockImage({ kind: 'banner', file: f })
+                        e.target.value = ''
+                      }} />
                   </label>
                 </div>
                 {imageUrl && (
@@ -425,7 +565,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     <Upload size={14} />
                     {uploading ? '...' : '上傳'}
                     <input type="file" accept="image/*" className="hidden"
-                      onChange={e => handleFileUpload(e, setProductImg)} />
+                      onChange={e => {
+                        const f = e.target.files?.[0]
+                        if (f) setPendingBlockImage({ kind: 'product', file: f })
+                        e.target.value = ''
+                      }} />
                   </label>
                 </div>
                 {productImg && (
@@ -543,8 +687,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
               {carouselImages.map((img, i) => (
-                <div key={i} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
-                  <div className="flex items-center gap-2 mb-2">
+                <div key={i} className="rounded-xl p-3 space-y-2" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                  <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>#{i + 1}</span>
                     <div className="flex gap-2 flex-1">
                       <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url: e.target.value } : im))}
@@ -554,7 +698,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         <Upload size={12} />
                         {uploading ? '...' : '上傳'}
                         <input type="file" accept="image/*" className="hidden"
-                          onChange={e => handleFileUpload(e, (url) => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url } : im)))} />
+                          onChange={e => {
+                            const f = e.target.files?.[0]
+                            if (f) setPendingBlockImage({ kind: 'carousel', index: i, file: f })
+                            e.target.value = ''
+                          }} />
                       </label>
                     </div>
                     {carouselImages.length > 1 && (
@@ -564,8 +712,10 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   </div>
                   <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
                     placeholder="點擊連結（選填）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                  <input value={img.caption ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, caption: e.target.value } : im))}
+                    placeholder="此張圖片說明（選填,優先於整體說明）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                   {img.url && (
-                    <img src={img.url} alt={`Preview ${i + 1}`} className="mt-2 rounded-lg"
+                    <img src={img.url} alt={`Preview ${i + 1}`} className="rounded-lg"
                       style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
                   )}
                 </div>
@@ -717,6 +867,28 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           title="裁切活動圖示"
           onComplete={uploadCroppedCalIcon}
           onCancel={() => setPendingCalIcon(null)}
+        />
+      )}
+
+      {/* Block content images — banner / product / carousel slides. Free-aspect
+          (3:1 default for banner, 1:1 for product, 16:9 for carousel) so users
+          can frame content shots however they like. */}
+      {pendingBlockImage && (
+        <ImageCropperModal
+          file={pendingBlockImage.file}
+          aspect={
+            pendingBlockImage.kind === 'banner' ? 3
+            : pendingBlockImage.kind === 'product' ? 1
+            : 16 / 9
+          }
+          cropShape="rect"
+          title={
+            pendingBlockImage.kind === 'banner' ? '裁切橫幅圖片'
+            : pendingBlockImage.kind === 'product' ? '裁切商品圖片'
+            : `裁切第 ${pendingBlockImage.index + 1} 張圖片`
+          }
+          onComplete={uploadCroppedBlockImage}
+          onCancel={() => setPendingBlockImage(null)}
         />
       )}
     </div>

@@ -23,14 +23,16 @@ import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckS
 import { AdminShell } from '@/components/admin/AdminShell'
 import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
-import { DownloadCloud } from 'lucide-react'
+import { DownloadCloud, Sparkles } from 'lucide-react'
+import { PAGE_TEMPLATES } from '@/lib/block-templates'
+import { toast } from '@/components/ui/Toast'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string; bannerUrl?: string
   role: string; effectivePlan: 'free' | 'pro' | 'premium'; trialDaysLeft: number
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null; theme?: string | null
-    blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null }>
+    blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null; pinned?: boolean }>
   }>
   socialLinks: Array<{ id: string; platform: string; url: string; label?: string; order: number; iconUrl?: string | null }>
 }
@@ -63,7 +65,10 @@ export default function AdminPage() {
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    // Require 8px drag distance to activate — keeps `tap` and `click` on the
+    // row (especially the title click → edit) from accidentally triggering
+    // a drag on mobile and trackpads.
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
@@ -74,6 +79,7 @@ export default function AdminPage() {
       content: JSON.parse(b.content), order: b.order,
       active: b.active, clicks: b.clicks, views: b.views,
       scheduleStart: b.scheduleStart ?? null, scheduleEnd: b.scheduleEnd ?? null,
+      pinned: b.pinned ?? false,
     })))
     // Load page theme
     const existing = JSON.parse(pageData.theme || '{}')
@@ -137,6 +143,18 @@ export default function AdminPage() {
     }])
   }
 
+  /** Apply a starter template — fires off block creates in sequence so the UI
+   *  reflects each new block as it lands. Used by the empty-state CTA. */
+  const handleApplyTemplate = async (templateId: string) => {
+    if (!user || !activePageId) return
+    const tpl = PAGE_TEMPLATES.find(t => t.id === templateId)
+    if (!tpl) return
+    for (const b of tpl.blocks) {
+      await handleAdd(b.type, b.title, b.content)
+    }
+    toast.success(`已套用「${tpl.name}」範本`)
+  }
+
   const handleDuplicate = async (block: BlockData) => {
     if (!user || !activePageId) return
     const res = await fetch('/api/blocks', {
@@ -161,6 +179,15 @@ export default function AdminPage() {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, content }),
     })
+  }
+
+  const handlePin = async (id: string, pinned: boolean) => {
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, pinned } : b))
+    await fetch(`/api/blocks/${id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pinned }),
+    })
+    toast.success(pinned ? '已設為主推' : '已取消主推')
   }
 
   const handleSchedule = async (id: string, scheduleStart: string | null, scheduleEnd: string | null) => {
@@ -477,22 +504,59 @@ export default function AdminPage() {
               )}
 
               {blocks.length === 0 ? (
-                <div className="text-center py-16"
-                  style={{ border: '2px dashed var(--color-border)', borderRadius: 16, background: 'white' }}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-                    style={{ background: 'var(--color-primary-light)' }}>
-                    <Plus size={22} style={{ color: 'var(--color-primary)' }} />
+                <div className="rounded-2xl p-6"
+                  style={{ border: '2px dashed var(--color-border)', background: 'white' }}>
+                  <div className="text-center mb-5">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
+                      style={{ background: 'var(--color-primary-light)' }}>
+                      <Sparkles size={22} style={{ color: 'var(--color-primary)' }} />
+                    </div>
+                    <p className="font-bold mb-1" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>30 秒上線你的頁面</p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>選一個範本快速開始 — 之後想改什麼都可以</p>
                   </div>
-                  <p className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>還沒有任何區塊</p>
-                  <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>新增第一個區塊，開始建立你的頁面</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-                      <Plus size={15} />新增區塊
+
+                  {/* Template chooser */}
+                  <div className="grid sm:grid-cols-3 gap-3 mb-5">
+                    {PAGE_TEMPLATES.map(tpl => (
+                      <button key={tpl.id}
+                        onClick={() => handleApplyTemplate(tpl.id)}
+                        className="text-left rounded-xl p-4 transition-all"
+                        style={{
+                          background: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          cursor: 'pointer',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+                          (e.currentTarget as HTMLElement).style.background = 'var(--color-primary-light)';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                          (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)';
+                        }}>
+                        <div className="text-2xl mb-2">{tpl.emoji}</div>
+                        <p className="font-bold text-sm mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                          {tpl.name}
+                        </p>
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                          {tpl.description}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Manual / import alternatives */}
+                  <div className="flex items-center justify-center gap-2 pt-4" style={{ borderTop: '1px dashed var(--color-border)' }}>
+                    <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>或</span>
+                    <button onClick={() => setShowAddModal(true)}
+                      className="text-sm font-semibold px-3 py-2 rounded-lg"
+                      style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                      <Plus size={13} className="inline mr-1" />從零開始
                     </button>
                     <button onClick={() => setShowImportModal(true)}
-                      className="text-sm font-semibold px-4 py-2.5 rounded-lg"
-                      style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                      <DownloadCloud size={15} className="inline mr-1" />從 Linktree 匯入
+                      className="text-sm font-semibold px-3 py-2 rounded-lg"
+                      style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+                      <DownloadCloud size={13} className="inline mr-1" />從 Linktree 匯入
                     </button>
                   </div>
                 </div>
@@ -511,7 +575,8 @@ export default function AdminPage() {
                             <SortableBlock block={block}
                               onToggle={handleToggle} onDelete={handleDelete}
                               onEdit={setEditingBlock} onDuplicate={handleDuplicate}
-                              onSchedule={setSchedulingBlock} />
+                              onSchedule={setSchedulingBlock}
+                              onPin={handlePin} />
                           </div>
                         </div>
                       ))}
