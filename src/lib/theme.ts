@@ -9,11 +9,26 @@ export interface PageTheme {
   buttonRadius: 'rounded' | 'pill' | 'square'
   fontStyle: 'default' | 'serif' | 'mono'
   /**
-   * "底版" — when true, profile content is wrapped in a soft white card so the
-   * page background frames it (Portaly-like). When false, content sits directly
-   * on the page background (current default, backward-compatible).
+   * "底版" — frame the profile content in a card. Five modes ("Preset + Custom"):
+   *   none           — no card, content sits on page bg (default)
+   *   frosted-light  — translucent white + blur (Apple style, classic light)
+   *   frosted-dark   — translucent dark + blur (for dark page backgrounds)
+   *   brand          — primaryColor at 8% opacity + blur (auto brand-tinted)
+   *   custom         — user-controlled color + opacity + border + shadow
+   *
+   * Legacy boolean values are migrated in `parseTheme`:
+   *   true  → 'frosted-light'
+   *   false → 'none'
    */
-  bgPanel?: boolean
+  bgPanel?: 'none' | 'frosted-light' | 'frosted-dark' | 'brand' | 'custom' | boolean
+
+  /** Only meaningful when bgPanel === 'custom'. */
+  bgPanelCustom?: {
+    color: string        // hex, e.g. "#FFFFFF"
+    opacity: number      // 5-95, clamped at render
+    showBorder: boolean
+    showShadow: boolean
+  }
 
   /**
    * Public-page block layout preset. Two orthogonal axes baked into 4 variants:
@@ -37,7 +52,7 @@ export const DEFAULT_THEME: PageTheme = {
   buttonStyle: 'outline',
   buttonRadius: 'rounded',
   fontStyle: 'default',
-  bgPanel: false,
+  bgPanel: 'none',
   layout: 'stacked',
 }
 
@@ -81,10 +96,102 @@ export function parseTheme(json: string | null | undefined): PageTheme {
   if (!json) return DEFAULT_THEME
   try {
     const parsed = JSON.parse(json)
+    // Legacy: bgPanel was a boolean before D-plan rewrite. Migrate at read time
+    // so existing themes don't change visually after the upgrade:
+    //   true  → 'frosted-light' (matches the old visual)
+    //   false → 'none'
+    if (typeof parsed.bgPanel === 'boolean') {
+      parsed.bgPanel = parsed.bgPanel ? 'frosted-light' : 'none'
+    }
     return { ...DEFAULT_THEME, ...parsed }
   } catch {
     return DEFAULT_THEME
   }
+}
+
+/**
+ * Convert hex color + opacity (0-100) to an rgba() string.
+ * Handles 3- and 6-digit hex.
+ */
+function hexToRgba(hex: string, opacity: number): string {
+  const clean = hex.replace('#', '')
+  const expanded = clean.length === 3
+    ? clean.split('').map(c => c + c).join('')
+    : clean.padEnd(6, '0').slice(0, 6)
+  const r = parseInt(expanded.substring(0, 2), 16)
+  const g = parseInt(expanded.substring(2, 4), 16)
+  const b = parseInt(expanded.substring(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, opacity / 100))})`
+}
+
+/**
+ * Compute the CSS style for the profile bg panel based on theme.bgPanel mode.
+ * Returns an empty object when no panel is shown (mode === 'none' or undefined).
+ *
+ * Centralised here so ProfileView and any preview UI render identically.
+ */
+export function computeBgPanelStyle(theme: PageTheme): React.CSSProperties {
+  const mode = typeof theme.bgPanel === 'boolean'
+    ? (theme.bgPanel ? 'frosted-light' : 'none')
+    : theme.bgPanel ?? 'none'
+
+  if (mode === 'none') return {}
+
+  switch (mode) {
+    case 'frosted-light':
+      return {
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 12px 40px rgba(80,144,255,0.10)',
+      }
+
+    case 'frosted-dark':
+      return {
+        background: 'rgba(0,0,0,0.35)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
+      }
+
+    case 'brand': {
+      // primaryColor at ~8% with brand-tinted shadow. Auto-derives so users
+      // don't have to manually pick a colour that matches their brand —
+      // changing primaryColor cascades to the bg panel.
+      const tint = hexToRgba(theme.primaryColor, 8)
+      const border = hexToRgba(theme.primaryColor, 18)
+      const shadow = hexToRgba(theme.primaryColor, 18)
+      return {
+        background: tint,
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        border: `1px solid ${border}`,
+        boxShadow: `0 12px 40px ${shadow}`,
+      }
+    }
+
+    case 'custom': {
+      const c = theme.bgPanelCustom
+      if (!c?.color) return {}
+      // Clamp opacity to 5-95 so users can't pick fully transparent (invisible
+      // panel = bug surface) or fully opaque (loses the blur character).
+      const opacity = Math.max(5, Math.min(95, c.opacity))
+      return {
+        background: hexToRgba(c.color, opacity),
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        ...(c.showBorder ? {
+          border: `1px solid ${isColorDark(c.color) ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
+        } : {}),
+        ...(c.showShadow ? {
+          boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        } : {}),
+      }
+    }
+  }
+  return {}
 }
 
 /** Generate CSS custom properties from theme */

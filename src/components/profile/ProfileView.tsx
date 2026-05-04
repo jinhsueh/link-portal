@@ -4,7 +4,7 @@ import { SocialIcon } from '@/components/ui/SocialIcon'
 import { PageTracker } from '@/components/tracking/PageTracker'
 import { ShareBar } from '@/components/sharing/ShareBar'
 import { VisitorShareButton } from '@/components/profile/VisitorShareButton'
-import { parseTheme, themeToCSS, RICH_BLOCK_TYPES } from '@/lib/theme'
+import { parseTheme, themeToCSS, RICH_BLOCK_TYPES, computeBgPanelStyle } from '@/lib/theme'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
 import Link from 'next/link'
@@ -120,20 +120,20 @@ export function ProfileView({
           padding: bannerUrl ? '0 20px 64px' : '40px 20px 64px',
           marginTop: bannerUrl ? -56 : 0,
           position: 'relative',
-          // 底版 — wrap profile content in a soft white card so the page bg frames it.
-          // Only kicks in when theme.bgPanel is enabled; otherwise content sits flat
-          // on the page background (current default).
-          ...(theme.bgPanel ? {
-            background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: 24,
-            border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)'}`,
-            boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.35)' : '0 12px 40px rgba(80,144,255,0.10)',
-            padding: bannerUrl ? '70px 24px 48px' : '40px 24px 48px',
-            marginTop: bannerUrl ? -28 : 24,
-            marginBottom: 24,
-          } : {}),
+          // 底版 — D-plan 5-mode design: none / frosted-light / frosted-dark /
+          // brand / custom. Visual properties are computed in theme.ts so the
+          // ThemeEditor preview matches the public render exactly. Layout
+          // properties (radius / padding / margin offsets) stay here because
+          // they depend on the banner state.
+          ...((typeof theme.bgPanel === 'boolean' ? theme.bgPanel : theme.bgPanel && theme.bgPanel !== 'none')
+            ? {
+                ...computeBgPanelStyle(theme),
+                borderRadius: 24,
+                padding: bannerUrl ? '70px 24px 48px' : '40px 24px 48px',
+                marginTop: bannerUrl ? -28 : 24,
+                marginBottom: 24,
+              }
+            : {}),
         }}>
 
         {/* ─── Left column (mobile: top stack / desktop: sticky sidebar) ─── */}

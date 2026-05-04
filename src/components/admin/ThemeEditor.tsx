@@ -166,28 +166,10 @@ export function ThemeEditor({ pageId, initialTheme, onThemeChange }: Props) {
           })}
         </div>
 
-        {/* Bg panel toggle */}
-        <div className="flex gap-3">
-          {([
-            { value: false, label: '無底版', desc: '內容直接在背景上' },
-            { value: true,  label: '底版',   desc: '白色卡片框住內容' },
-          ] as const).map(({ value, label, desc }) => {
-            const active = !!theme.bgPanel === value
-            return (
-              <button key={String(value)} onClick={() => updateTheme({ bgPanel: value })}
-                className="flex-1 py-3 px-3 rounded-xl text-sm transition-all text-left"
-                style={{
-                  background: active ? theme.primaryColor : 'white',
-                  color: active ? 'white' : 'var(--color-text-secondary)',
-                  border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
-                  cursor: 'pointer',
-                }}>
-                <div className="font-semibold">{label}</div>
-                <div className="text-xs mt-0.5" style={{ opacity: active ? 0.85 : 0.7 }}>{desc}</div>
-              </button>
-            )
-          })}
-        </div>
+        {/* Bg panel — 5 modes: 4 presets + custom. Boolean legacy values are
+            normalised to strings via parseTheme, but updateTheme always writes
+            string values from here on. */}
+        <BgPanelControls theme={theme} updateTheme={updateTheme} />
       </Section>
 
       {/* Button Style */}
@@ -240,5 +222,118 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h3 className="font-bold text-sm mb-4" style={{ color: 'var(--color-text-primary)' }}>{title}</h3>
       {children}
     </div>
+  )
+}
+
+/**
+ * Bg panel mode picker. 4 preset cards + 5th "custom" card that expands to
+ * reveal color picker / opacity slider / border / shadow toggles. Each preset
+ * shows a tiny visual swatch so users see what they're picking before
+ * committing — the right column phone-mockup also reflects choices live.
+ */
+function BgPanelControls({ theme, updateTheme }: { theme: PageTheme; updateTheme: (p: Partial<PageTheme>) => void }) {
+  const mode: PageTheme['bgPanel'] = typeof theme.bgPanel === 'boolean'
+    ? (theme.bgPanel ? 'frosted-light' : 'none')
+    : theme.bgPanel ?? 'none'
+
+  const presets = [
+    { value: 'none' as const,           label: '無底版',  desc: '內容直接在背景上' },
+    { value: 'frosted-light' as const,  label: '霧白',    desc: '白色霧面玻璃' },
+    { value: 'frosted-dark' as const,   label: '霧深',    desc: '深色霧面玻璃' },
+    { value: 'brand' as const,          label: '品牌色',  desc: '主色 8% 暈染' },
+    { value: 'custom' as const,         label: '自訂',    desc: '完全自訂顏色' },
+  ]
+
+  // Mini preview swatch — visualises each preset using the actual theme primary.
+  const swatchFor = (val: PageTheme['bgPanel']): React.CSSProperties => {
+    if (val === 'none') return { background: 'transparent', border: '1px dashed currentColor' }
+    if (val === 'frosted-light') return { background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.08)' }
+    if (val === 'frosted-dark') return { background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.18)' }
+    if (val === 'brand') return { background: theme.primaryColor + '14', border: `1px solid ${theme.primaryColor}33` }
+    if (val === 'custom') {
+      const c = theme.bgPanelCustom?.color ?? '#FFFFFF'
+      return { background: c, border: '1px solid rgba(0,0,0,0.08)' }
+    }
+    return {}
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-5 gap-2">
+        {presets.map(({ value, label, desc }) => {
+          const active = mode === value
+          return (
+            <button key={value}
+              onClick={() => updateTheme({ bgPanel: value })}
+              className="rounded-xl p-2.5 text-center transition-all"
+              style={{
+                background: active ? theme.primaryColor : 'white',
+                color: active ? 'white' : 'var(--color-text-secondary)',
+                border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
+                cursor: 'pointer',
+              }}
+              title={desc}>
+              {/* Swatch */}
+              <div className="rounded-md mx-auto mb-1.5"
+                style={{ width: 36, height: 24, ...swatchFor(value) }} />
+              <div className="text-xs font-semibold whitespace-nowrap">{label}</div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Custom controls — only render when 'custom' is the active mode. */}
+      {mode === 'custom' && (
+        <div className="rounded-xl p-4 space-y-3" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <CustomBgPanelEditor theme={theme} updateTheme={updateTheme} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CustomBgPanelEditor({ theme, updateTheme }: { theme: PageTheme; updateTheme: (p: Partial<PageTheme>) => void }) {
+  const c = theme.bgPanelCustom ?? { color: '#FFFFFF', opacity: 70, showBorder: true, showShadow: true }
+  const set = (patch: Partial<typeof c>) => updateTheme({ bgPanelCustom: { ...c, ...patch } })
+
+  return (
+    <>
+      <div>
+        <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>顏色</label>
+        <div className="flex items-center gap-2">
+          <input type="color" value={c.color}
+            onChange={e => set({ color: e.target.value })}
+            style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+          <input value={c.color}
+            onChange={e => set({ color: e.target.value })}
+            placeholder="#FFFFFF"
+            style={{ padding: '8px 10px', fontSize: 12, border: '1px solid var(--color-border)', borderRadius: 8, fontFamily: 'monospace', flex: 1, background: 'white', outline: 'none' }} />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
+          不透明度 <span style={{ color: 'var(--color-text-secondary)' }}>{c.opacity}%</span>
+        </label>
+        <input type="range" min={5} max={95} step={1} value={c.opacity}
+          onChange={e => set({ opacity: Number(e.target.value) })}
+          className="w-full" style={{ accentColor: 'var(--color-primary)' }} />
+      </div>
+
+      <div className="flex gap-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={c.showBorder}
+            onChange={e => set({ showBorder: e.target.checked })}
+            style={{ width: 14, height: 14, accentColor: 'var(--color-primary)' }} />
+          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>細邊</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={c.showShadow}
+            onChange={e => set({ showShadow: e.target.checked })}
+            style={{ width: 14, height: 14, accentColor: 'var(--color-primary)' }} />
+          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>浮起陰影</span>
+        </label>
+      </div>
+    </>
   )
 }
