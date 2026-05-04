@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
 import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL } from '@/lib/site'
@@ -75,6 +75,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   manifest: '/manifest.json',
+}
+
+export const viewport: Viewport = {
   themeColor: '#5090FF',
 }
 

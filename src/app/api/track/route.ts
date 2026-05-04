@@ -25,6 +25,24 @@ setInterval(() => {
   }
 }, 5 * 60_000)
 
+function visibleBlockWhere(now: Date) {
+  return {
+    active: true,
+    OR: [
+      { scheduleStart: null },
+      { scheduleStart: { lte: now } },
+    ],
+    AND: [
+      {
+        OR: [
+          { scheduleEnd: null },
+          { scheduleEnd: { gte: now } },
+        ],
+      },
+    ],
+  }
+}
+
 /**
  * POST /api/track
  * Body: { type: 'click' | 'view', blockId?: string, pageId: string }
@@ -48,21 +66,26 @@ export async function POST(req: NextRequest) {
 
     const userAgent = req.headers.get('user-agent') ?? null
 
+    const now = new Date()
+
     if (type === 'view') {
-      // Increment views for all active blocks on the page
+      // Increment views for blocks that are actually visible on the page.
       await prisma.block.updateMany({
-        where: { pageId, active: true },
+        where: { pageId, ...visibleBlockWhere(now) },
         data: { views: { increment: 1 } },
       })
       return NextResponse.json({ ok: true })
     }
 
     if (type === 'click' && blockId) {
-      // Increment clicks on the block
-      await prisma.block.update({
-        where: { id: blockId },
+      const result = await prisma.block.updateMany({
+        where: { id: blockId, pageId, ...visibleBlockWhere(now) },
         data: { clicks: { increment: 1 } },
       })
+      if (result.count === 0) {
+        return NextResponse.json({ error: 'Block not found' }, { status: 404 })
+      }
+
       // Insert analytics click record
       await prisma.click.create({
         data: { blockId, pageId, ip, userAgent, referrer: referrer ?? null, utmSource: utmSource ?? null, utmMedium: utmMedium ?? null },

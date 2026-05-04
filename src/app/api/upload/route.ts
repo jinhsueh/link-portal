@@ -11,9 +11,9 @@ export async function POST(req: NextRequest) {
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
   // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
   if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: 'Invalid file type. Allowed: jpg, png, gif, webp, svg' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid file type. Allowed: jpg, png, gif, webp' }, { status: 400 })
   }
 
   // Validate file size (max 4MB)
@@ -21,11 +21,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'File too large. Max 4MB.' }, { status: 400 })
   }
 
-  const ext = file.name.split('.').pop() || 'png'
+  const extByType: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+  }
+  const ext = extByType[file.type] ?? 'png'
   const filename = `${session.username}/${Date.now()}.${ext}`
 
-  // If BLOB_READ_WRITE_TOKEN is not set, fall back to base64 data URL
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Upload storage is not configured' }, { status: 500 })
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer())
     const dataUrl = `data:${file.type};base64,${buffer.toString('base64')}`
     return NextResponse.json({ url: dataUrl })

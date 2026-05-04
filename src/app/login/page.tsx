@@ -9,7 +9,6 @@ type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 
 export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -22,15 +21,23 @@ export default function LoginPage() {
   // Only useful for signup (i.e. login mode); shows whether the entered
   // username is free, taken, invalid, or reserved.
   useEffect(() => {
-    if (mode !== 'login') return
-    const u = username.trim().toLowerCase()
-    if (!u) { setUsernameStatus('idle'); return }
-    if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(u) || u.length < 3 || u.length > 30) {
-      setUsernameStatus('invalid'); return
-    }
-
-    setUsernameStatus('checking')
     const t = setTimeout(async () => {
+      if (mode !== 'login') {
+        setUsernameStatus('idle')
+        return
+      }
+
+      const u = username.trim().toLowerCase()
+      if (!u) {
+        setUsernameStatus('idle')
+        return
+      }
+      if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(u) || u.length < 3 || u.length > 30) {
+        setUsernameStatus('invalid')
+        return
+      }
+
+      setUsernameStatus('checking')
       try {
         const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(u)}`)
         const data = await res.json()
@@ -67,7 +74,7 @@ export default function LoginPage() {
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, name, email: email || undefined, password }),
+      body: JSON.stringify({ username, email: email || undefined, password }),
     })
     const data = await res.json()
 

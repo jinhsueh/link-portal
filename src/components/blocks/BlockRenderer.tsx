@@ -257,7 +257,7 @@ function VideoBlock({ block }: { block: BlockData }) {
 
   // Shared header: title (bold sm) + description (xs muted) — separate sizes
   // so the heading no longer dominates the embed.
-  const Header = () => (block.title || content.description) ? (
+  const renderHeader = () => (block.title || content.description) ? (
     <div className="px-3 py-2.5" style={{
       background: 'var(--theme-card-bg, white)',
       borderBottom: '1px solid var(--theme-border, var(--color-border))',
@@ -278,7 +278,7 @@ function VideoBlock({ block }: { block: BlockData }) {
   if (platform === 'youtube' && embedId) {
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        <Header />
+        {renderHeader()}
         <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
           <iframe
             src={`https://www.youtube.com/embed/${embedId}`}
@@ -295,7 +295,7 @@ function VideoBlock({ block }: { block: BlockData }) {
   if (platform === 'tiktok' && embedId) {
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        <Header />
+        {renderHeader()}
         <div style={{ position: 'relative', paddingBottom: '177%', height: 0 }}>
           <iframe
             src={`https://www.tiktok.com/embed/v2/${embedId}`}
@@ -312,7 +312,7 @@ function VideoBlock({ block }: { block: BlockData }) {
     // embedId is the full path like "track/xxx" or "playlist/xxx"
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        <Header />
+        {renderHeader()}
         <iframe
           src={`https://open.spotify.com/embed/${embedId}`}
           title={block.title ?? 'Spotify'}

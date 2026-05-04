@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStripe, toStripeAmount, toCurrencyCode } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { getPlanLimits } from '@/lib/plan'
+import { SITE_URL } from '@/lib/site'
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,6 +16,12 @@ export async function POST(req: NextRequest) {
     })
     if (!block) return NextResponse.json({ error: 'Block not found' }, { status: 404 })
     if (block.type !== 'product') return NextResponse.json({ error: 'Block is not a product' }, { status: 400 })
+    if (!block.active || block.user.banned) return NextResponse.json({ error: 'Product is not available' }, { status: 404 })
+
+    const now = new Date()
+    if ((block.scheduleStart && block.scheduleStart > now) || (block.scheduleEnd && block.scheduleEnd < now)) {
+      return NextResponse.json({ error: 'Product is not available' }, { status: 404 })
+    }
 
     const content = JSON.parse(block.content ?? '{}') as {
       price?: number; currency?: string; description?: string; imageUrl?: string
@@ -26,7 +33,6 @@ export async function POST(req: NextRequest) {
     if (price <= 0) return NextResponse.json({ error: '商品金額必須大於 0' }, { status: 400 })
 
     const stripe = getStripe()
-    const origin = req.headers.get('origin') ?? `https://${req.headers.get('host')}`
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -43,8 +49,8 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${origin}/${block.user.username}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/${block.user.username}`,
+      success_url: `${SITE_URL}/${block.user.username}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${SITE_URL}/${block.user.username}`,
       metadata: { blockId, userId: block.userId },
     })
 

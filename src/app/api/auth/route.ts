@@ -7,6 +7,11 @@ import bcrypt from 'bcryptjs'
 const AUTH_WINDOW_MS = 60_000
 const AUTH_MAX_ATTEMPTS = 5
 const authAttempts = new Map<string, { count: number; resetAt: number }>()
+const RESERVED_USERNAMES = new Set([
+  'admin', 'api', 'login', 'logout', 'signup', 'register',
+  'about', 'contact', 'pricing', 'privacy', 'terms', 'demo',
+  'super-admin', 'en', 'settings', 'dashboard',
+])
 
 function isAuthRateLimited(ip: string): boolean {
   const now = Date.now()
@@ -26,13 +31,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '嘗試次數過多，請稍後再試' }, { status: 429 })
   }
 
-  const { username, name, email, password, setPassword } = await req.json()
+  const { username: rawUsername, name, email, password, setPassword } = await req.json()
+  const username = typeof rawUsername === 'string' ? rawUsername.trim().toLowerCase() : ''
 
   // Username allows letters / digits / dot / underscore / hyphen, IG-style.
   // Dots are allowed inside but not at boundaries or consecutive (to avoid
   // weird URLs and confusion with file extensions).
   if (!username || !/^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*$/.test(username) || username.length < 3 || username.length > 30) {
     return NextResponse.json({ error: '用戶名需為 3-30 字,可用英數字、底線、減號、點' }, { status: 400 })
+  }
+  if (RESERVED_USERNAMES.has(username)) {
+    return NextResponse.json({ error: '此用戶名為系統保留' }, { status: 400 })
   }
 
   const existing = await prisma.user.findUnique({

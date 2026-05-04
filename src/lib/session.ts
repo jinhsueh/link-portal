@@ -24,6 +24,7 @@ export function verifySession(token: string): string | null {
   const username = token.slice(0, dotIndex)
   const sig = token.slice(dotIndex + 1)
   const expected = crypto.createHmac('sha256', getSecret()).update(username).digest('hex')
+  if (sig.length !== expected.length) return null
   if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null
   return username
 }
