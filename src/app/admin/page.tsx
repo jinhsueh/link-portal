@@ -54,8 +54,13 @@ export default function AdminPage() {
   const [linkCopied, setLinkCopied] = useState(false)
   const [editorMode, setEditorMode] = useState<EditorMode>('content')
   const [previewTheme, setPreviewTheme] = useState<PageTheme>(DEFAULT_THEME)
-  const [previewProfile, setPreviewProfile] = useState<{ name: string; bio: string; avatarUrl: string } | null>(null)
+  const [previewProfile, setPreviewProfile] = useState<{ name: string; bio: string; avatarUrl: string; bannerUrl?: string } | null>(null)
   const [previewSocialLinks, setPreviewSocialLinks] = useState<UserData['socialLinks'] | null>(null)
+  // Device mode for the right-side preview. Mobile shows the existing inline
+  // mini-mock (live state); Desktop widens the preview canvas so the user
+  // sees how blocks behave at wider viewports + a link to open the real
+  // desktop 2-column layout in a new tab.
+  const [deviceMode, setDeviceMode] = useState<'mobile' | 'desktop'>('mobile')
 
   const handleCopyLink = async () => {
     if (!user) return
@@ -313,6 +318,55 @@ export default function AdminPage() {
   const previewBg = previewTheme.bgType === 'gradient' && previewTheme.bgGradient ? previewTheme.bgGradient : previewTheme.bgColor
   const radius = previewTheme.buttonRadius === 'pill' ? 9999 : previewTheme.buttonRadius === 'square' ? 6 : 12
 
+  /** Page tabs row — switch active page, rename, password-protect, delete.
+   *  Pulled out as a closure so it can be rendered both after ProfileEditor
+   *  (content mode) and above ThemeEditor (appearance mode) without
+   *  duplicating ~40 lines of JSX. */
+  const PageTabs = () => user ? (
+    <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
+      {user.pages.map(p => (
+        <div key={p.id} className="flex items-center gap-1 group" style={{ flexShrink: 0 }}>
+          <button
+            onClick={() => switchToPage(p)}
+            className="px-4 py-2 text-sm font-semibold transition-all"
+            style={{
+              background: p.id === activePageId ? 'var(--color-primary)' : 'white',
+              color: p.id === activePageId ? 'white' : 'var(--color-text-secondary)',
+              border: `1px solid ${p.id === activePageId ? 'var(--color-primary)' : 'var(--color-border)'}`,
+              borderRadius: 8,
+              cursor: 'pointer',
+            }}>
+            {p.name}
+            {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
+          </button>
+          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={() => handleRenamePage(p.id, p.name)}
+              className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+              <Pencil size={12} />
+            </button>
+            <button onClick={() => handleTogglePassword(p.id)} title={p.password ? '移除密碼' : '設定密碼'}
+              className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
+              {p.password ? <Lock size={12} /> : <Unlock size={12} />}
+            </button>
+            {user.pages.length > 1 && (
+              <button onClick={() => handleDeletePage(p.id)}
+                className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}>
+                <TrashIcon size={12} />
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+      <button onClick={handleAddPage}
+        className="flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors"
+        style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
+        <Plus size={13} />新增分頁
+      </button>
+    </div>
+  ) : null
+
   if (loading) return (
     <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -328,52 +382,6 @@ export default function AdminPage() {
 
         {/* Left: Editor */}
         <div className="flex-1 min-w-0">
-
-          {/* Page tabs */}
-          {user && user.pages.length > 0 && (
-            <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
-              {user.pages.map(p => (
-                <div key={p.id} className="flex items-center gap-1 group" style={{ flexShrink: 0 }}>
-                  <button
-                    onClick={() => switchToPage(p)}
-                    className="px-4 py-2 text-sm font-semibold transition-all"
-                    style={{
-                      background: p.id === activePageId ? 'var(--color-primary)' : 'white',
-                      color: p.id === activePageId ? 'white' : 'var(--color-text-secondary)',
-                      border: `1px solid ${p.id === activePageId ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                      borderRadius: 8,
-                      cursor: 'pointer',
-                    }}>
-                    {p.name}
-                    {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
-                  </button>
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => handleRenamePage(p.id, p.name)}
-                      className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-                      <Pencil size={12} />
-                    </button>
-                    <button onClick={() => handleTogglePassword(p.id)} title={p.password ? '移除密碼' : '設定密碼'}
-                      className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
-                      {p.password ? <Lock size={12} /> : <Unlock size={12} />}
-                    </button>
-                    {user.pages.length > 1 && (
-                      <button onClick={() => handleDeletePage(p.id)}
-                        className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}>
-                        <TrashIcon size={12} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <button onClick={handleAddPage}
-                className="flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors"
-                style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
-                <Plus size={13} />新增分頁
-              </button>
-            </div>
-          )}
 
           {/* Copy link bar */}
           {user && (
@@ -417,7 +425,7 @@ export default function AdminPage() {
           {/* ═══ Content Mode ═══ */}
           {editorMode === 'content' && (
             <>
-              {/* Profile Editor */}
+              {/* Profile Editor (account-level — same across all pages) */}
               {user && (
                 <ProfileEditor
                   profile={{
@@ -434,6 +442,12 @@ export default function AdminPage() {
                   defaultExpanded={!user.bio && !user.avatarUrl && user.socialLinks.length === 0}
                 />
               )}
+
+              {/* Page tabs — moved below profile editor since profile is global
+                  but pages organize blocks. Was at the very top of the screen
+                  which felt confusing — users need to set up their identity
+                  first, then think about page organisation. */}
+              {user && user.pages.length > 0 && <PageTabs />}
 
               {/* Onboarding checklist */}
               {user && (
@@ -589,32 +603,90 @@ export default function AdminPage() {
 
           {/* ═══ Appearance Mode ═══ */}
           {editorMode === 'appearance' && (
-            <ThemeEditor
-              pageId={activePageId}
-              initialTheme={previewTheme}
-              username={user?.username}
-              onThemeChange={setPreviewTheme}
-            />
+            <>
+              {/* Page tabs first — picking which page's theme to edit comes
+                  before tweaking the theme itself. */}
+              {user && user.pages.length > 0 && <PageTabs />}
+              <ThemeEditor
+                pageId={activePageId}
+                initialTheme={previewTheme}
+                username={user?.username}
+                onThemeChange={setPreviewTheme}
+              />
+            </>
           )}
         </div>
 
-        {/* Right: Phone preview */}
-        <div className="hidden lg:block flex-shrink-0" style={{ width: 280 }}>
+        {/* Right: Live preview — adaptive width based on deviceMode.
+            Mobile (default) = 320px phone-sized canvas, blocks render at near-
+            real-mobile dimensions so email forms and calendar cards don't get
+            squished. Desktop = 520px wider canvas so users can see how content
+            breathes at larger viewports + an "open in new tab" link to the
+            real desktop 2-column layout (since we can't fit 1024px in here). */}
+        <div className="hidden lg:block flex-shrink-0" style={{ width: deviceMode === 'mobile' ? 320 : 520, transition: 'width 0.25s ease' }}>
           <div style={{ position: 'sticky', top: 80 }}>
-            <p className="text-center text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--color-text-muted)' }}>
-              即時預覽
-            </p>
+            {/* Device toggle */}
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                即時預覽
+              </p>
+              <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                {(['mobile', 'desktop'] as const).map(mode => (
+                  <button key={mode}
+                    onClick={() => setDeviceMode(mode)}
+                    title={mode === 'mobile' ? '手機' : '桌面'}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                    style={{
+                      background: deviceMode === mode ? 'white' : 'transparent',
+                      color: deviceMode === mode ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                      boxShadow: deviceMode === mode ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                      border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                    {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Frame — phone bezel for mobile, soft monitor frame for desktop */}
             <div style={{
-              background: '#1A1A2E', borderRadius: 40, padding: 10,
-              boxShadow: '0 24px 64px rgba(26,26,46,0.25)', width: 260,
+              background: '#1A1A2E',
+              borderRadius: deviceMode === 'mobile' ? 40 : 16,
+              padding: 10,
+              boxShadow: '0 24px 64px rgba(26,26,46,0.25)',
+              width: deviceMode === 'mobile' ? 300 : 500,
+              transition: 'width 0.25s ease, border-radius 0.25s ease',
             }}>
               <div style={{
                 background: editorMode === 'appearance' ? previewBg : 'white',
-                borderRadius: 32, overflow: 'hidden', height: 560, overflowY: 'auto',
+                borderRadius: deviceMode === 'mobile' ? 32 : 8,
+                overflow: 'hidden',
+                height: deviceMode === 'mobile' ? 600 : 720,
+                overflowY: 'auto',
+                transition: 'height 0.25s ease',
               }}>
+                {/* Banner — same hero treatment as the public profile, with the
+                    bottom 40% fading into the page bg so the avatar overlap is
+                    soft. Only renders when bannerUrl exists. */}
+                {(previewProfile?.bannerUrl ?? user?.bannerUrl) && (
+                  <div style={{ width: '100%', maxHeight: 140, overflow: 'hidden', position: 'relative' }}>
+                    <img src={(previewProfile?.bannerUrl ?? user?.bannerUrl)!}
+                      alt=""
+                      style={{ width: '100%', height: 'auto', maxHeight: 140, objectFit: 'cover', display: 'block' }} />
+                    <div aria-hidden style={{
+                      position: 'absolute', left: 0, right: 0, bottom: 0,
+                      height: '40%',
+                      background: `linear-gradient(to bottom, transparent 0%, ${editorMode === 'appearance' ? previewBg : '#fff'} 100%)`,
+                    }} />
+                  </div>
+                )}
                 <div style={{
                   background: editorMode === 'appearance' ? 'transparent' : 'var(--gradient-hero)',
-                  minHeight: '100%', padding: '32px 16px 24px',
+                  minHeight: '100%',
+                  padding: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? '0 16px 24px' : '32px 16px 24px',
+                  marginTop: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? -36 : 0,
+                  position: 'relative',
                 }}>
                   {/* Avatar */}
                   <div className="flex flex-col items-center text-center mb-5">
@@ -636,7 +708,15 @@ export default function AdminPage() {
                       {previewProfile?.name || user?.name || user?.username}
                     </p>
                     {(previewProfile?.bio ?? user?.bio) && (
-                      <p className="text-xs mt-1" style={{ color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)' }}>
+                      <p className="text-xs mt-1"
+                        style={{
+                          color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)',
+                          // Honor newlines so multi-paragraph bios match the
+                          // public profile rendering exactly (added pre-line).
+                          whiteSpace: 'pre-line',
+                          maxWidth: 280,
+                          margin: '4px auto 0',
+                        }}>
                         {previewProfile?.bio ?? user?.bio}
                       </p>
                     )}
@@ -645,7 +725,7 @@ export default function AdminPage() {
                   {(() => {
                     const socialLinks = previewSocialLinks ?? user?.socialLinks
                     return socialLinks && socialLinks.length > 0 ? (
-                      <div className="flex justify-center gap-2 mb-4">
+                      <div className="flex justify-center gap-2 mb-4 flex-wrap">
                         {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
                       </div>
                     ) : null
@@ -698,6 +778,19 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+
+            {/* Open in new tab — gives users access to the *real* live page
+                (with full desktop 2-column at >= 1024px) since we can't fit
+                that scale in the side panel. */}
+            {user?.username && (
+              <div className="text-center mt-3">
+                <a href={`/${user.username}`} target="_blank" rel="noopener noreferrer"
+                  className="text-xs font-semibold inline-flex items-center gap-1"
+                  style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
+                  ↗ 在新分頁開啟完整頁面
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

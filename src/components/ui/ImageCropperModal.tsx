@@ -156,10 +156,19 @@ export function ImageCropperModal({
 }
 
 /**
- * Apply the crop area + rotation against the source data URL, return a PNG File.
- * Implementation borrows from the canonical react-easy-crop docs:
- * https://github.com/ValentinH/react-easy-crop/tree/master/docs#examples
+ * Apply the crop area + rotation against the source data URL, return a JPEG File.
+ *
+ * Output is **capped at 1600px on the longest side** and encoded as JPEG
+ * (quality 0.9) so a typical icon upload is well under 1MB. This prevents the
+ * 4 MB upload-size 400 we were hitting when the user picked a 4000×4000 source
+ * and the cropped PNG ballooned to 8-10 MB.
+ *
+ * For SVG-style flat logos PNG would be lossless-better, but the upload limit
+ * trumps that — we'd rather succeed with 95% quality than fail with 100%.
  */
+const MAX_OUTPUT_PX = 1600
+const JPEG_QUALITY = 0.9
+
 async function cropToFile(
   imageSrc: string,
   pixelArea: Area,
@@ -181,23 +190,43 @@ async function cropToFile(
   sctx.translate(-image.width / 2, -image.height / 2)
   sctx.drawImage(image, 0, 0)
 
-  // Now extract the crop region from the staged canvas.
+  // Compute output size — scale down if either dimension exceeds the cap.
+  const longest = Math.max(pixelArea.width, pixelArea.height)
+  const scale = longest > MAX_OUTPUT_PX ? MAX_OUTPUT_PX / longest : 1
+  const outW = Math.round(pixelArea.width * scale)
+  const outH = Math.round(pixelArea.height * scale)
+
+  // Two-canvas pipeline: first extract crop at native resolution, then scale
+  // into the output canvas. Avoids putImageData scaling artefacts.
+  const cropCanvas = document.createElement('canvas')
+  cropCanvas.width = pixelArea.width
+  cropCanvas.height = pixelArea.height
+  const cctx = cropCanvas.getContext('2d')!
   const data = sctx.getImageData(0, 0, safeArea, safeArea)
-  const out = document.createElement('canvas')
-  out.width = pixelArea.width
-  out.height = pixelArea.height
-  const octx = out.getContext('2d')!
-  octx.putImageData(
+  cctx.putImageData(
     data,
     Math.round(0 - safeArea / 2 + image.width / 2 - pixelArea.x),
     Math.round(0 - safeArea / 2 + image.height / 2 - pixelArea.y),
   )
 
-  const blob = await new Promise<Blob | null>(resolve => out.toBlob(resolve, 'image/png'))
+  const out = document.createElement('canvas')
+  out.width = outW
+  out.height = outH
+  const octx = out.getContext('2d')!
+  octx.imageSmoothingEnabled = true
+  octx.imageSmoothingQuality = 'high'
+  // Fill white so JPEG transparent backgrounds become white instead of black.
+  octx.fillStyle = '#FFFFFF'
+  octx.fillRect(0, 0, outW, outH)
+  octx.drawImage(cropCanvas, 0, 0, outW, outH)
+
+  const blob = await new Promise<Blob | null>(resolve =>
+    out.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
+  )
   if (!blob) throw new Error('Failed to crop image')
 
   const stem = origName.replace(/\.[^.]+$/, '')
-  return new File([blob], `${stem}-cropped.png`, { type: 'image/png' })
+  return new File([blob], `${stem}-cropped.jpg`, { type: 'image/jpeg' })
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {

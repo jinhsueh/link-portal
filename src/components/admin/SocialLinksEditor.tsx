@@ -18,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
+import { toast } from '@/components/ui/Toast'
 
 interface SocialLinkItem {
   id: string
@@ -123,14 +124,21 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
       const data = await res.json()
-      if (data.url) {
+      if (!res.ok) {
+        // Surface upload failures (e.g. 4 MB limit, type rejection) instead of
+        // silently swallowing them — users were assuming the feature was broken.
+        toast.error(data.error ?? '上傳失敗,請再試一次')
+      } else if (data.url) {
         setLocalLinks(prev => {
           const next = prev.map(l => l.id === linkId ? { ...l, iconUrl: data.url } : l)
           onLinksChange?.(next)
           return next
         })
+        toast.success('圖示已上傳,記得按「全部儲存」才會生效')
       }
-    } catch { /* silent */ }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : '網路錯誤,上傳失敗')
+    }
     setUploadingId(null)
   }
 
