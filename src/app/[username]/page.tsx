@@ -66,6 +66,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       name={user.name}
       bio={user.bio}
       avatarUrl={user.avatarUrl}
+      bannerUrl={user.bannerUrl}
       pages={pages}
       socialLinks={user.socialLinks}
       activePageSlug={pageSlug}
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }: Props) {
   const { username } = await params
   const user = await getProfile(username)
   if (!user) return {}
-  const title = `${user.name ?? username} | Link Portal`
+  const title = `${user.name ?? username} | Beam`
   const description = user.bio ?? `Check out ${username}'s links`
   return {
     title,

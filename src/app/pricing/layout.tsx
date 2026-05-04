@@ -5,10 +5,10 @@ import { PLAN_PRICING } from '@/lib/plan'
 export const metadata: Metadata = {
   title: '定價方案｜Free / Pro / Premium',
   description:
-    'Link Portal 提供永久免費的基礎方案，Pro NT$159/月、Premium NT$249/月。比較三個方案的功能差異，選擇適合你的 Link in Bio 工具。',
+    'Beam 提供永久免費的基礎方案，Pro NT$159/月、Premium NT$249/月。比較三個方案的功能差異，選擇適合你的 Link in Bio 工具。',
   alternates: { canonical: '/pricing' },
   openGraph: {
-    title: 'Link Portal 定價方案 — 永久免費起',
+    title: 'Beam 定價方案 — 永久免費起',
     description: 'Free / Pro NT$159 / Premium NT$249，比較三個方案功能選擇最適合的。',
     url: '/pricing',
     type: 'website',
@@ -41,7 +41,7 @@ export default function PricingLayout({ children }: { children: React.ReactNode 
         '@id': `${SITE_URL}/pricing#product`,
         name: `${SITE_NAME} 訂閱方案`,
         description:
-          'Link Portal 提供 Free、Pro、Premium 三種方案，滿足從入門創作者到品牌團隊的需求。',
+          'Beam 提供 Free、Pro、Premium 三種方案，滿足從入門創作者到品牌團隊的需求。',
         brand: { '@type': 'Brand', name: SITE_NAME },
         offers: {
           '@type': 'AggregateOffer',

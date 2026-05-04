@@ -13,6 +13,7 @@ model User {
   username     String   @unique
   bio          String?
   avatarUrl    String?
+  bannerUrl    String?  // Optional header image displayed at the top of the public profile
   passwordHash String?
   role             String    @default("user")   // "user" | "admin"
   plan             String    @default("free")   // "free" | "pro_trial" | "pro"
@@ -95,6 +96,7 @@ model SocialLink {
   platform String  // instagram | youtube | tiktok | twitter | threads | facebook | spotify | line | linkedin | pinterest | telegram | whatsapp | custom
   url      String
   label    String?
+  iconUrl  String? // Optional uploaded icon — overrides platform's default lucide icon
   order    Int     @default(0)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

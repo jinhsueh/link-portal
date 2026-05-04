@@ -8,6 +8,12 @@ export interface PageTheme {
   buttonStyle: 'filled' | 'outline' | 'soft'
   buttonRadius: 'rounded' | 'pill' | 'square'
   fontStyle: 'default' | 'serif' | 'mono'
+  /**
+   * "底版" — when true, profile content is wrapped in a soft white card so the
+   * page background frames it (Portaly-like). When false, content sits directly
+   * on the page background (current default, backward-compatible).
+   */
+  bgPanel?: boolean
 }
 
 export const DEFAULT_THEME: PageTheme = {
@@ -18,6 +24,7 @@ export const DEFAULT_THEME: PageTheme = {
   buttonStyle: 'outline',
   buttonRadius: 'rounded',
   fontStyle: 'default',
+  bgPanel: false,
 }
 
 export const PRESET_THEMES: { name: string; theme: Partial<PageTheme> }[] = [

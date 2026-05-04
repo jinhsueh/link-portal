@@ -515,7 +515,7 @@ function BillingTab({ user }: { user: UserData }) {
 
         {user.effectivePlan === 'premium' && (
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            如需取消訂閱或管理付款方式，請聯繫 support@linkportal.cc
+            如需取消訂閱或管理付款方式，請聯繫 hello@beam.io
           </p>
         )}
       </div>

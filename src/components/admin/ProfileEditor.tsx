@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Camera, X, Save, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { SocialLinksEditor } from '@/components/admin/SocialLinksEditor'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 interface SocialLinkItem {
   id: string
@@ -10,6 +11,7 @@ interface SocialLinkItem {
   url: string
   label?: string
   order: number
+  iconUrl?: string | null
 }
 
 interface ProfileData {
@@ -17,13 +19,14 @@ interface ProfileData {
   name?: string
   bio?: string
   avatarUrl?: string
+  bannerUrl?: string
   socialLinks: SocialLinkItem[]
 }
 
 interface Props {
   profile: ProfileData
   onUpdate: () => void
-  onLiveChange?: (data: { name: string; bio: string; avatarUrl: string }) => void
+  onLiveChange?: (data: { name: string; bio: string; avatarUrl: string; bannerUrl?: string }) => void
   onSocialLinksChange?: (links: SocialLinkItem[]) => void
   defaultExpanded?: boolean
 }
@@ -33,17 +36,24 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
   const [name, setName] = useState(profile.name ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl ?? '')
+  const [bannerUrl, setBannerUrl] = useState(profile.bannerUrl ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadingBanner, setUploadingBanner] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
 
-  const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  // Pending files awaiting crop confirmation. Setting one of these opens the
+  // ImageCropperModal; on confirm we upload the cropped result.
+  const [pendingAvatar, setPendingAvatar] = useState<File | null>(null)
+  const [pendingBanner, setPendingBanner] = useState<File | null>(null)
+
+  const uploadCroppedAvatar = async (cropped: File) => {
+    setPendingAvatar(null)
     setUploading(true)
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', cropped)
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
       const data = await res.json()
@@ -59,6 +69,48 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
     } catch { /* silent */ }
     setUploading(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const uploadCroppedBanner = async (cropped: File) => {
+    setPendingBanner(null)
+    setUploadingBanner(true)
+    const formData = new FormData()
+    formData.append('file', cropped)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        setBannerUrl(data.url)
+        onLiveChange?.({ name, bio, avatarUrl, bannerUrl: data.url })
+        await fetch('/api/me', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bannerUrl: data.url }),
+        })
+        onUpdate()
+      }
+    } catch { /* silent */ }
+    setUploadingBanner(false)
+    if (bannerInputRef.current) bannerInputRef.current.value = ''
+  }
+
+  const handlePickAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setPendingAvatar(file)
+  }
+
+  const handlePickBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setPendingBanner(file)
+  }
+
+  const handleRemoveBanner = async () => {
+    setBannerUrl('')
+    onLiveChange?.({ name, bio, avatarUrl, bannerUrl: '' })
+    await fetch('/api/me', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bannerUrl: '' }),
+    })
+    onUpdate()
   }
 
   const handleRemoveAvatar = async () => {
@@ -128,6 +180,43 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
       {/* Expanded content */}
       {expanded && (
         <div className="px-5 pb-5 space-y-5" style={{ borderTop: '1px solid var(--color-border)' }}>
+          {/* Banner */}
+          <div className="pt-4">
+            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>頁面橫幅(選填)</p>
+            <div className="relative group rounded-xl overflow-hidden" style={{
+              border: '1px solid var(--color-border)',
+              background: bannerUrl ? 'transparent' : 'var(--color-surface)',
+              aspectRatio: '3 / 1',
+            }}>
+              {bannerUrl ? (
+                <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs"
+                  style={{ color: 'var(--color-text-muted)' }}>
+                  尚未上傳橫幅
+                </div>
+              )}
+              <button onClick={() => bannerInputRef.current?.click()} disabled={uploadingBanner}
+                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: 'rgba(0,0,0,0.5)', cursor: 'pointer', border: 'none' }}>
+                {uploadingBanner
+                  ? <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} />
+                  : <Camera size={20} color="white" />}
+              </button>
+              {bannerUrl && (
+                <button onClick={handleRemoveBanner}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(239, 68, 68, 0.9)', border: '2px solid white', cursor: 'pointer' }}>
+                  <X size={12} color="white" />
+                </button>
+              )}
+              <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handlePickBanner} />
+            </div>
+            <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+              建議尺寸 1200×400(3:1 寬比),會顯示在公開頁最上方。
+            </p>
+          </div>
+
           {/* Avatar */}
           <div className="flex items-center gap-4 pt-4">
             <div className="relative group">
@@ -154,7 +243,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
                   <X size={10} color="white" />
                 </button>
               )}
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePickAvatar} />
             </div>
             <div>
               <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>大頭照</p>
@@ -204,6 +293,33 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
             <SocialLinksEditor links={profile.socialLinks} onSave={onUpdate} onLinksChange={onSocialLinksChange} />
           </div>
         </div>
+      )}
+
+      {/* ── Crop modals — opened when a file is picked, closed on confirm/cancel ── */}
+      {pendingAvatar && (
+        <ImageCropperModal
+          file={pendingAvatar}
+          aspect={1}
+          cropShape="round"
+          title="裁切大頭照"
+          onComplete={uploadCroppedAvatar}
+          onCancel={() => {
+            setPendingAvatar(null)
+            if (fileInputRef.current) fileInputRef.current.value = ''
+          }}
+        />
+      )}
+      {pendingBanner && (
+        <ImageCropperModal
+          file={pendingBanner}
+          aspect={3}
+          title="裁切橫幅(3:1)"
+          onComplete={uploadCroppedBanner}
+          onCancel={() => {
+            setPendingBanner(null)
+            if (bannerInputRef.current) bannerInputRef.current.value = ''
+          }}
+        />
       )}
     </div>
   )

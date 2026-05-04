@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { BlockData, BlockType } from '@/types'
 import { X, ChevronDown, Upload } from 'lucide-react'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso, utcIsoToLocal } from '@/lib/calendar'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -22,11 +23,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   // Link
   const [url, setUrl] = useState((content.url as string) ?? '')
   const [linkDesc, setLinkDesc] = useState((content.description as string) ?? '')
+  const [linkHideIcon, setLinkHideIcon] = useState(Boolean(content.hideIcon))
+  const [linkBgColor, setLinkBgColor] = useState((content.bgColor as string) ?? '')
+  const [linkTextColor, setLinkTextColor] = useState((content.textColor as string) ?? '')
 
   // Banner
   const [imageUrl, setImageUrl] = useState((content.imageUrl as string) ?? '')
   const [linkUrl, setLinkUrl] = useState((content.linkUrl as string) ?? '')
   const [alt, setAlt] = useState((content.alt as string) ?? '')
+  const [bannerCaption, setBannerCaption] = useState((content.caption as string) ?? '')
 
   // Heading
   const [text, setText] = useState((content.text as string) ?? '')
@@ -45,6 +50,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
 
   // Video
   const [videoUrl, setVideoUrl] = useState((content.url as string) ?? (content.embedId as string) ?? '')
+  const [videoDescription, setVideoDescription] = useState((content.description as string) ?? '')
 
   // Upload
   const [uploading, setUploading] = useState(false)
@@ -62,16 +68,48 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     setUploading(false)
   }
 
+  // Calendar event icon — goes through the cropper (1:1) before uploading,
+  // so brand assets fit cleanly in the 52×52 tile without manual presizing.
+  const [pendingCalIcon, setPendingCalIcon] = useState<File | null>(null)
+  const handleCalIconPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setPendingCalIcon(file)
+    e.target.value = ''
+  }
+  const uploadCroppedCalIcon = async (cropped: File) => {
+    setPendingCalIcon(null)
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', cropped)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) setCalIconUrl(data.url)
+    } catch { /* silent */ }
+    setUploading(false)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     let newContent: Record<string, unknown> = {}
 
     switch (block.type) {
       case 'link':
-        newContent = { url, ...(linkDesc ? { description: linkDesc } : {}) }
+        newContent = {
+          url,
+          ...(linkDesc ? { description: linkDesc } : {}),
+          ...(linkHideIcon ? { hideIcon: true } : {}),
+          ...(linkBgColor ? { bgColor: linkBgColor } : {}),
+          ...(linkTextColor ? { textColor: linkTextColor } : {}),
+        }
         break
       case 'banner':
-        newContent = { imageUrl, ...(linkUrl ? { linkUrl } : {}), ...(alt ? { alt } : {}) }
+        newContent = {
+          imageUrl,
+          ...(linkUrl ? { linkUrl } : {}),
+          ...(alt ? { alt } : {}),
+          ...(bannerCaption ? { caption: bannerCaption } : {}),
+        }
         break
       case 'heading':
         newContent = { text, size }
@@ -87,9 +125,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
       case 'email_form':
         newContent = { placeholder, buttonText, ...(webhookUrl ? { webhookUrl } : {}) }
         break
-      case 'video':
-        newContent = parseVideoInput(videoUrl)
+      case 'video': {
+        const parsed = parseVideoInput(videoUrl)
+        newContent = { ...parsed, ...(videoDescription ? { description: videoDescription } : {}) }
         break
+      }
       case 'countdown':
         newContent = { targetDate, label: countdownLabel || undefined, expiredText: expiredText || undefined }
         break
@@ -97,7 +137,10 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         newContent = { items: faqItems.filter(i => i.question.trim()) }
         break
       case 'carousel':
-        newContent = { images: carouselImages.filter(i => i.url.trim()) }
+        newContent = {
+          images: carouselImages.filter(i => i.url.trim()),
+          ...(carouselCaption ? { caption: carouselCaption } : {}),
+        }
         break
       case 'map':
         newContent = { query: mapQuery, zoom: parseInt(mapZoom) || 15 }
@@ -116,6 +159,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(calLocation ? { location: calLocation } : {}),
           ...(calDescription ? { description: calDescription } : {}),
           ...(calUrl ? { url: calUrl } : {}),
+          ...(calIconUrl ? { iconUrl: calIconUrl } : {}),
         }
         break
       }
@@ -151,6 +195,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [carouselImages, setCarouselImages] = useState<Array<{ url: string; linkUrl?: string; alt?: string }>>(
     (content.images as Array<{ url: string; linkUrl?: string; alt?: string }>) ?? []
   )
+  const [carouselCaption, setCarouselCaption] = useState((content.caption as string) ?? '')
 
   // Map
   const [mapQuery, setMapQuery] = useState((content.query as string) ?? '')
@@ -173,6 +218,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [calLocation, setCalLocation] = useState((content.location as string) ?? '')
   const [calDescription, setCalDescription] = useState((content.description as string) ?? '')
   const [calUrl, setCalUrl] = useState((content.url as string) ?? '')
+  const [calIconUrl, setCalIconUrl] = useState((content.iconUrl as string) ?? '')
 
   const TYPE_LABELS: Record<BlockType, string> = {
     link: '連結按鈕', banner: '橫幅看板', video: '影片',
@@ -216,6 +262,61 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={linkDesc} onChange={e => setLinkDesc(e.target.value)}
                   placeholder="簡短描述文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
+
+              {/* Advanced styling — disclosure */}
+              <details className="rounded-xl" style={{ border: '1px solid var(--color-border)' }}>
+                <summary className="cursor-pointer text-sm font-semibold flex items-center justify-between"
+                  style={{ padding: '10px 14px', color: 'var(--color-text-secondary)' }}>
+                  進階樣式
+                  <ChevronDown size={14} />
+                </summary>
+                <div className="space-y-3" style={{ padding: '0 14px 14px' }}>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={linkHideIcon}
+                      onChange={e => setLinkHideIcon(e.target.checked)}
+                      style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                    <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      隱藏左側 icon
+                    </span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                        按鈕背景色
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={linkBgColor || '#FFFFFF'}
+                          onChange={e => setLinkBgColor(e.target.value)}
+                          style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                        <input value={linkBgColor} onChange={e => setLinkBgColor(e.target.value)}
+                          placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                          onFocus={focusIn} onBlur={focusOut} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                        文字色
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={linkTextColor || '#1A1A2E'}
+                          onChange={e => setLinkTextColor(e.target.value)}
+                          style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                        <input value={linkTextColor} onChange={e => setLinkTextColor(e.target.value)}
+                          placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                          onFocus={focusIn} onBlur={focusOut} />
+                      </div>
+                    </div>
+                  </div>
+                  {(linkBgColor || linkTextColor) && (
+                    <button type="button"
+                      onClick={() => { setLinkBgColor(''); setLinkTextColor('') }}
+                      className="text-xs font-semibold"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
+                      重設為主題預設色
+                    </button>
+                  )}
+                </div>
+              </details>
             </>
           )}
 
@@ -250,6 +351,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <Field label="Alt 文字（選填）">
                 <input value={alt} onChange={e => setAlt(e.target.value)}
                   placeholder="圖片替代文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="說明文字（選填）">
+                <textarea value={bannerCaption} onChange={e => setBannerCaption(e.target.value)}
+                  placeholder="會顯示在公開頁的圖片下方,支援換行" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
               </Field>
             </>
           )}
@@ -361,6 +468,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <p className="text-xs" style={{ color: 'var(--color-text-muted)', marginTop: -8 }}>
                 支援 youtube.com, youtu.be, tiktok.com, open.spotify.com 連結
               </p>
+              <Field label="說明文字（選填）">
+                <textarea value={videoDescription} onChange={e => setVideoDescription(e.target.value)}
+                  placeholder="顯示在標題下方的小字說明" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
+              </Field>
             </>
           )}
 
@@ -422,6 +535,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <Field label="標題（選填）">
                 <input value={title} onChange={e => setTitle(e.target.value)}
                   placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="說明文字（選填）">
+                <textarea value={carouselCaption} onChange={e => setCarouselCaption(e.target.value)}
+                  placeholder="顯示在輪播下方的說明,支援換行" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
               </Field>
               {carouselImages.map((img, i) => (
                 <div key={i} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
@@ -530,6 +649,26 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={calUrl} onChange={e => setCalUrl(e.target.value)}
                   placeholder="https://…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
+              <Field label="活動圖示（選填,取代預設日曆 icon）">
+                <div className="flex gap-2 items-center">
+                  <input value={calIconUrl} onChange={e => setCalIconUrl(e.target.value)}
+                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                  <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                    style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                    <Upload size={14} />
+                    {uploading ? '...' : '上傳'}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={handleCalIconPick} />
+                  </label>
+                </div>
+                {calIconUrl && (
+                  <img src={calIconUrl} alt="Icon preview" className="mt-2 rounded-xl"
+                    style={{ width: 52, height: 52, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                )}
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                  上傳後會跳出裁切視窗(1:1 正方形)
+                </p>
+              </Field>
             </>
           )}
 
@@ -567,6 +706,19 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           </div>
         </form>
       </div>
+
+      {/* Calendar event icon crop modal — 1:1 because the public renderer uses
+          a 52×52 square tile. Opens when a file is picked, closes on confirm/cancel. */}
+      {pendingCalIcon && (
+        <ImageCropperModal
+          file={pendingCalIcon}
+          aspect={1}
+          cropShape="rect"
+          title="裁切活動圖示"
+          onComplete={uploadCroppedCalIcon}
+          onCancel={() => setPendingCalIcon(null)}
+        />
+      )}
     </div>
   )
 }

@@ -1,40 +1,45 @@
-# Link Portal
+# Beam
 
-> 免費的 Link in Bio 工具，專為中文創作者打造。一個連結整合 Instagram、YouTube、Podcast、數位商品販售與粉絲名單蒐集，30 秒即可上線。
+> One link for every fan touchpoint. The link-in-bio platform built for creators worldwide. Unite Instagram, YouTube, podcasts, digital products, and email list capture on one page — in 30 seconds.
 
-Link Portal 是 Linktree 的中文替代方案，除了社群連結整合之外，還支援：
-- 多元區塊類型（連結、橫幅、影片、商品、FAQ、倒數、表單）
-- 內建 Stripe 金流，可直接販售課程、電子書、模板等數位商品
-- Email 表單蒐集粉絲名單
-- 主題與品牌色彩自訂
-- 即時點擊 / CTR / 來源分析
-- 多分頁管理（Pro 方案以上）
+Beam is a global Linktree alternative for creators, with an opinionated focus on conversion and creator income:
+- 12 block types (link, banner, heading, video, product, email form, countdown, FAQ, carousel, map, HTML embed, add-to-calendar)
+- Stripe-powered checkout — sell courses, e-books, and templates directly from your page
+- Email capture forms to grow and own your audience
+- Theme and brand-color customization
+- Real-time click / CTR / referrer analytics
+- Multi-page management (Pro and above)
+- One-click import from Linktree and Portaly
 
 ## Pricing
 
-- Free：永久免費，1 個頁面、12 個區塊、平台抽成 10%
-- Pro：NT$159 / 月（年繳 NT$139），10 個頁面、20 區塊、抽成 5%、移除浮水印
-- Premium：NT$249 / 月（年繳 NT$219），無限頁面與區塊、抽成 2%、自訂網域與 CSS
+- Free: free forever, 1 page, 12 blocks, 10% platform fee on sales
+- Pro: NT$159 / month (NT$139 annual), 10 pages, 20 blocks each, 5% platform fee, branding removal
+- Premium: NT$249 / month (NT$219 annual), unlimited pages & blocks, 2% platform fee, custom domain + CSS
 
 ## Key pages
 
-- [首頁](/): 產品介紹與主要功能
-- [定價](/pricing): 三個方案的完整功能比較
-- [關於我們](/about): 產品願景與團隊
-- [聯絡](/contact): 聯絡方式
-- [隱私權政策](/privacy)
-- [服務條款](/terms)
+- [Home (English)](/en): English landing
+- [Home (中文)](/): Chinese landing
+- [Pricing](/pricing): Full feature comparison across plans
+- [About](/about): Product vision and team
+- [Contact](/contact)
+- [Privacy](/privacy)
+- [Terms](/terms)
 
 ## FAQ
 
-### Link Portal 是什麼？
-Link Portal 是一款免費的 Link in Bio 工具，讓創作者用一個連結整合所有社群平台、數位商品販售和粉絲名單蒐集。
+### What is Beam?
+Beam is a link-in-bio platform that lets creators put their entire online presence — socials, video, podcast, digital products, and email signup — behind a single short URL.
 
-### Link Portal 是免費的嗎？
-是，Link Portal 提供永久免費的基礎方案，不需要信用卡即可註冊使用，30 秒內即可建立你的頁面。
+### Is Beam free?
+Yes. Beam has a free-forever plan: 1 page, 12 blocks, and product sales with a 10% platform fee. No credit card required.
 
-### 可以在 Link Portal 上賣東西嗎？
-可以，Link Portal 內建 Stripe 金流串接，你可以直接在頁面上販售課程、電子書、設計模板等數位商品。
+### Can I sell digital products on Beam?
+Yes, on every plan. Stripe powers checkout. Free pages charge a 10% platform fee, Pro is 5%, Premium is 2%.
 
-### Link Portal 和 Linktree 有什麼不同？
-Link Portal 專為中文創作者打造，除了連結整合外還支援數位商品販售、粉絲名單蒐集、多分頁管理等進階功能，基礎方案永久免費，且平台介面與客服皆為繁體中文。
+### How is Beam different from Linktree?
+Beam ships features Linktree doesn't have at comparable plan tiers — product sales on the free plan, email capture on the free plan, the Add-to-Calendar block, native Linktree/Portaly import, and multi-page support. Built mobile-first with sub-1s page loads globally.
+
+### Can I import my existing Linktree?
+Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls over your links, social icons, profile name, bio, and avatar in about 30 seconds.

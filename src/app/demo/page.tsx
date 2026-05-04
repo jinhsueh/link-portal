@@ -7,8 +7,8 @@ import { BlockData } from '@/types'
 // To preview a real, dynamic profile, log in and visit /<your-username>.
 
 export const metadata: Metadata = {
-  title: 'Mia 米亞 | Link Portal Demo',
-  description: '一頁展示 Link Portal 能做的所有事 — 連結、商品、影片、表單、Podcast、合作邀約。',
+  title: 'Mia 米亞 | Beam Demo',
+  description: '一頁展示 Beam 能做的所有事 — 連結、商品、影片、表單、Podcast、合作邀約。',
   robots: { index: false, follow: true },
 }
 

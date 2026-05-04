@@ -5,10 +5,10 @@ import { SITE_URL, SITE_NAME } from '@/lib/site'
 export const metadata: Metadata = {
   title: '關於我們',
   description:
-    'Link Portal 是專為中文創作者打造的 Link in Bio 工具。我們相信每位創作者都值得擁有一個能整合社群、販售商品、經營粉絲關係的專屬頁面。',
+    'Beam 是專為中文創作者打造的 Link in Bio 工具。我們相信每位創作者都值得擁有一個能整合社群、販售商品、經營粉絲關係的專屬頁面。',
   alternates: { canonical: '/about' },
   openGraph: {
-    title: '關於 Link Portal',
+    title: '關於 Beam',
     description: '專為中文創作者打造的 Link in Bio 工具',
     url: '/about',
     type: 'website',

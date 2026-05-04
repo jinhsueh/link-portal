@@ -26,15 +26,15 @@ export const PLATFORM_ICONS: Record<string, React.ElementType> = {
   discord:     Hash,
 }
 
-export function SocialIcon({ platform, url }: { platform: string; url: string }) {
+export function SocialIcon({ platform, url, iconUrl, label: customLabel }: { platform: string; url: string; iconUrl?: string | null; label?: string | null }) {
   const config = getPlatformConfig(platform)
-  const label = config?.label ?? platform
+  const label = customLabel ?? config?.label ?? platform
   const color = config?.color ?? 'var(--color-text-muted)'
   const Icon = PLATFORM_ICONS[platform] ?? ExternalLink
 
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" aria-label={label}
-      className="rounded-full flex items-center justify-center transition-all"
+      className="rounded-full flex items-center justify-center transition-all overflow-hidden"
       style={{
         width: 42,
         height: 42,
@@ -58,7 +58,15 @@ export function SocialIcon({ platform, url }: { platform: string; url: string })
         el.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)'
         el.style.background = 'rgba(255,255,255,0.92)'
       }}>
-      <Icon size={19} />
+      {iconUrl ? (
+        // Full-bleed cover so brand logos fill the circle (matches the editor
+        // preview thumbnail). Uploaded icons should look like Crescendo's logo
+        // not a small padded badge.
+        <img src={iconUrl} alt={label}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+      ) : (
+        <Icon size={19} />
+      )}
     </a>
   )
 }

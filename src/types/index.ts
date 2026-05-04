@@ -17,18 +17,28 @@ export interface LinkContent {
   url: string
   description?: string
   thumbnail?: string
+  /** Hide the auto-fetched favicon on the public link button. */
+  hideIcon?: boolean
+  /** Override button background color (any CSS color). Falls back to theme. */
+  bgColor?: string
+  /** Override button text color (any CSS color). Falls back to theme. */
+  textColor?: string
 }
 
 export interface BannerContent {
   imageUrl: string
   linkUrl?: string
   alt?: string
+  /** Caption text shown below the banner image on public profiles. */
+  caption?: string
 }
 
 export interface VideoContent {
   platform: 'youtube' | 'tiktok' | 'spotify'
   embedId: string
   url?: string // original URL for display
+  /** Smaller secondary text shown below the title on public profiles. */
+  description?: string
 }
 
 export interface EmailFormContent {
@@ -61,6 +71,8 @@ export interface FaqContent {
 
 export interface CarouselContent {
   images: Array<{ url: string; linkUrl?: string; alt?: string }>
+  /** Caption text shown below the carousel on public profiles. */
+  caption?: string
 }
 
 export interface MapContent {
@@ -82,6 +94,8 @@ export interface CalendarEventContent {
   location?: string
   description?: string
   url?: string                 // event details page
+  /** Optional uploaded icon URL — replaces the default lucide CalendarPlus tile. */
+  iconUrl?: string
 }
 
 export type BlockContent =
@@ -134,4 +148,7 @@ export interface SocialLinkData {
   platform: string
   url: string
   order: number
+  label?: string | null
+  /** Optional uploaded icon URL — overrides the platform's default lucide icon. */
+  iconUrl?: string | null
 }

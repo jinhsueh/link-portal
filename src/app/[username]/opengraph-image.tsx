@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { prisma } from '@/lib/prisma'
 
-export const alt = 'Link Portal'
+export const alt = 'Beam'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -20,7 +20,7 @@ export default async function OGImage({
   if (!user) {
     return new ImageResponse(
       <div style={{ display: 'flex', width: '100%', height: '100%', background: '#1A1A2E', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: '#5090FF', fontSize: 48 }}>Link Portal</span>
+        <span style={{ color: '#5090FF', fontSize: 48 }}>Beam</span>
       </div>,
       size,
     )
@@ -119,9 +119,9 @@ export default async function OGImage({
             color: 'white',
           }}
         >
-          LP
+          B
         </div>
-        <span style={{ fontSize: 20, color: '#5090FF', fontWeight: 600 }}>Link Portal</span>
+        <span style={{ fontSize: 20, color: '#5090FF', fontWeight: 600 }}>Beam</span>
       </div>
     </div>,
     size,

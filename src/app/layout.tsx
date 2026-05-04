@@ -20,8 +20,8 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Link Portal — 免費 Link in Bio 工具｜整合 IG、YouTube、商品連結的創作者頁面',
-    template: '%s｜Link Portal',
+    default: 'Beam — 免費 Link in Bio 工具｜整合 IG、YouTube、商品連結的創作者頁面',
+    template: '%s｜Beam',
   },
   description:
     '免費建立你的 Link in Bio 頁面，一個連結整合 Instagram、YouTube、Podcast、數位商品與粉絲名單蒐集。專為中文創作者打造的 Linktree 替代方案。',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Link Portal — 免費 Link in Bio 工具｜創作者社群連結整合',
+    title: 'Beam — 免費 Link in Bio 工具｜創作者社群連結整合',
     description: '一個連結整合所有社群、商品、名單蒐集。免費建立，30 秒上線。',
     url: '/',
     siteName: SITE_NAME,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Link Portal — 免費 Link in Bio 工具',
+    title: 'Beam — 免費 Link in Bio 工具',
     description: '一個連結整合所有社群、商品、名單蒐集。免費建立，30 秒上線。',
   },
   robots: {
@@ -134,34 +134,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   mainEntity: [
                     {
                       '@type': 'Question',
-                      name: 'Link Portal 是什麼？',
+                      name: 'Beam 是什麼？',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: 'Link Portal 是一款免費的 Link in Bio 工具，讓創作者用一個連結整合所有社群平台、數位商品販售和粉絲名單蒐集。',
+                        text: 'Beam 是一款免費的 Link in Bio 工具，讓創作者用一個連結整合所有社群平台、數位商品販售和粉絲名單蒐集。',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: 'Link Portal 是免費的嗎？',
+                      name: 'Beam 是免費的嗎？',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: '是的，Link Portal 提供永久免費的基礎方案，不需要信用卡即可註冊使用，30 秒內即可建立你的頁面。',
+                        text: '是的，Beam 提供永久免費的基礎方案，不需要信用卡即可註冊使用，30 秒內即可建立你的頁面。',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: '可以在 Link Portal 上賣東西嗎？',
+                      name: '可以在 Beam 上賣東西嗎？',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: '可以，Link Portal 內建金流串接，你可以直接在頁面上販售課程、電子書、設計模板等數位商品。',
+                        text: '可以，Beam 內建金流串接，你可以直接在頁面上販售課程、電子書、設計模板等數位商品。',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: 'Link Portal 和 Linktree 有什麼不同？',
+                      name: 'Beam 和 Linktree 有什麼不同？',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: 'Link Portal 專為中文創作者打造，除了連結整合外還支援數位商品販售、粉絲名單蒐集、多分頁管理等進階功能，基礎方案永久免費。',
+                        text: 'Beam 專為中文創作者打造，除了連結整合外還支援數位商品販售、粉絲名單蒐集、多分頁管理等進階功能，基礎方案永久免費。',
                       },
                     },
                   ],

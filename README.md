@@ -1,6 +1,6 @@
-# Link Portal
+# Beam
 
-> 專屬創作者的 Link-in-Bio 平台，仿 Portaly 設計，採用 Cresclab 設計系統。
+> 專屬創作者的 Link-in-Bio 平台,採用 Cresclab 設計系統。Domain: `beam.io`(fallback `beam.bio`)。
 
 ## 功能
 

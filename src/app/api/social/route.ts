@@ -42,11 +42,18 @@ export async function PUT(req: NextRequest) {
     await tx.socialLink.deleteMany({ where: { userId: session.id } })
     const results = []
     for (const item of links) {
-      const { url, label, order } = item as { url: string; label?: string; order: number }
+      const { url, label, order, iconUrl } = item as { url: string; label?: string; order: number; iconUrl?: string }
       if (!url) continue
       const platform = detectPlatform(url)
       const link = await tx.socialLink.create({
-        data: { userId: session.id, platform, url, label, order },
+        data: {
+          userId: session.id,
+          platform,
+          url,
+          label,
+          order,
+          ...(iconUrl ? { iconUrl } : {}),
+        },
       })
       results.push(link)
     }

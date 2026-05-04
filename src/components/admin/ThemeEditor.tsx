@@ -138,6 +138,31 @@ export function ThemeEditor({ pageId, initialTheme, onThemeChange }: Props) {
         </div>
       </Section>
 
+      {/* Layout — 底版 toggle */}
+      <Section title="版面樣式">
+        <div className="flex gap-3">
+          {([
+            { value: false, label: '無底版', desc: '內容直接在背景上' },
+            { value: true,  label: '底版',   desc: '白色卡片框住內容' },
+          ] as const).map(({ value, label, desc }) => {
+            const active = !!theme.bgPanel === value
+            return (
+              <button key={String(value)} onClick={() => updateTheme({ bgPanel: value })}
+                className="flex-1 py-3 px-3 rounded-xl text-sm transition-all text-left"
+                style={{
+                  background: active ? theme.primaryColor : 'white',
+                  color: active ? 'white' : 'var(--color-text-secondary)',
+                  border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
+                  cursor: 'pointer',
+                }}>
+                <div className="font-semibold">{label}</div>
+                <div className="text-xs mt-0.5" style={{ opacity: active ? 0.85 : 0.7 }}>{desc}</div>
+              </button>
+            )
+          })}
+        </div>
+      </Section>
+
       {/* Button Style */}
       <Section title="按鈕風格">
         <div className="flex gap-3 mb-4">

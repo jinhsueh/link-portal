@@ -27,12 +27,12 @@ import { DownloadCloud } from 'lucide-react'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface UserData {
-  id: string; username: string; name?: string; bio?: string; avatarUrl?: string
+  id: string; username: string; name?: string; bio?: string; avatarUrl?: string; bannerUrl?: string
   role: string; effectivePlan: 'free' | 'pro' | 'premium'; trialDaysLeft: number
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null; theme?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null }>
   }>
-  socialLinks: Array<{ id: string; platform: string; url: string; label?: string; order: number }>
+  socialLinks: Array<{ id: string; platform: string; url: string; label?: string; order: number; iconUrl?: string | null }>
 }
 
 type EditorMode = 'content' | 'appearance'
@@ -398,6 +398,7 @@ export default function AdminPage() {
                     name: user.name,
                     bio: user.bio,
                     avatarUrl: user.avatarUrl,
+                    bannerUrl: user.bannerUrl,
                     socialLinks: user.socialLinks,
                   }}
                   onUpdate={() => loadUser(activePageId ?? undefined)}
@@ -580,7 +581,7 @@ export default function AdminPage() {
                     const socialLinks = previewSocialLinks ?? user?.socialLinks
                     return socialLinks && socialLinks.length > 0 ? (
                       <div className="flex justify-center gap-2 mb-4">
-                        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} />)}
+                        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
                       </div>
                     ) : null
                   })()}

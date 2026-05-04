@@ -72,22 +72,54 @@ function mapGenericLink(item: Record<string, unknown>): ImportedBlock | null {
   }
 }
 
+/**
+ * Strip `<style>...</style>` and `<script>...</script>` blocks (and HTML
+ * comments) entirely, *contents and all*. The plain `<[^>]+>` regex used by
+ * `extractAnchorText` only removes the tag delimiters — the CSS/JS body
+ * survives, which on Portaly (Emotion CSS-in-JS) means anchor "text" ends
+ * up like `.css-kkoiw7{width:1.75em;…}` instead of the actual title.
+ */
+function stripStyleAndScript(html: string): string {
+  return html
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+}
+
+/** Decode common HTML entities found in anchor text (Portaly emits these). */
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
+}
+
 /** Fallback: extract anchor tags from HTML via regex. */
 function fallbackExtractAnchors(html: string, sourceUrl: string): ImportedBlock[] {
+  // Pre-clean: remove <style>, <script>, comments — otherwise their bodies
+  // leak into the "text" inside anchors when we strip tags below.
+  const clean = stripStyleAndScript(html)
+
   const blocks: ImportedBlock[] = []
   const seen = new Set<string>()
   // Match <a href="..." …>…text…</a>
   const re = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi
   const origin = (() => { try { return new URL(sourceUrl).origin } catch { return '' } })()
   let m: RegExpExecArray | null
-  while ((m = re.exec(html))) {
+  while ((m = re.exec(clean))) {
     const href = m[1]
     if (!href || href.startsWith('#') || href.startsWith('mailto:')) continue
     if (href.startsWith('/') || (origin && href.startsWith(origin))) continue // skip nav/same-origin
     if (seen.has(href)) continue
     seen.add(href)
-    const text = m[2].replace(/<[^>]+>/g, '').trim()
-    if (!text) continue
+    // Strip remaining tags, collapse whitespace, decode entities.
+    const text = decodeEntities(m[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+    // Final safety: skip if text still looks like CSS/JS (defensive).
+    if (!text || /^[.#]?[\w-]+\s*\{/.test(text)) continue
     blocks.push({
       type: 'link',
       title: text,

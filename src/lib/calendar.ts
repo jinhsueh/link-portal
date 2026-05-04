@@ -97,10 +97,10 @@ export function buildIcsContent(
   const title = content.eventTitle || fallbackTitle || 'Event'
   const start = content.startDate
   const end = content.endDate || defaultEnd(start)
-  const uid = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}@link-portal`
+  const uid = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}@beam.io`
   const dtstamp = toCompactUtc(new Date().toISOString())
 
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Link Portal//Calendar Event//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT', `UID:${uid}`, `DTSTAMP:${dtstamp}`]
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Beam//Calendar Event//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT', `UID:${uid}`, `DTSTAMP:${dtstamp}`]
 
   if (content.allDay) {
     lines.push(`DTSTART;VALUE=DATE:${toCompactDate(start)}`)

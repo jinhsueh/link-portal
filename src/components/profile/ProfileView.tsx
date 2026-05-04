@@ -13,6 +13,7 @@ export interface ProfileViewProps {
   name?: string | null
   bio?: string | null
   avatarUrl?: string | null
+  bannerUrl?: string | null
   pages: Array<{
     id: string
     name: string
@@ -22,7 +23,7 @@ export interface ProfileViewProps {
     theme: string | null
     blocks: BlockData[]
   }>
-  socialLinks: Array<{ id: string; platform: string; url: string }>
+  socialLinks: Array<{ id: string; platform: string; url: string; iconUrl?: string | null; label?: string | null }>
   activePageSlug?: string
   showWatermark?: boolean
   // If true, ShareBar uses the live origin URL; if false, points to the canonical demo path.
@@ -43,6 +44,7 @@ export function ProfileView({
   name,
   bio,
   avatarUrl,
+  bannerUrl,
   pages,
   socialLinks,
   activePageSlug,
@@ -66,7 +68,47 @@ export function ProfileView({
 
   return (
     <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '40px 20px 64px' }}>
+      {/* Banner — full-width hero above the avatar. Avatar overlaps the bottom
+          edge by half its height, mirroring the Portaly "橫幅看板" layout. The
+          bottom 30% fades into the page background so the avatar overlap reads
+          as a soft transition rather than a hard image cut. */}
+      {bannerUrl && (
+        <div style={{ width: '100%', maxHeight: 220, overflow: 'hidden', position: 'relative' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={bannerUrl} alt={`${displayName} banner`}
+            style={{ width: '100%', height: 'auto', maxHeight: 220, objectFit: 'cover', display: 'block' }} />
+          <div aria-hidden style={{
+            position: 'absolute', left: 0, right: 0, bottom: 0,
+            height: '40%',
+            background: `linear-gradient(to bottom, transparent 0%, ${bg} 100%)`,
+            pointerEvents: 'none',
+          }} />
+        </div>
+      )}
+      <div className="profile-frame" style={{
+        // Wider on desktop (>=640px) so the public page doesn't look like a phone
+        // mockup pinned to the centre of a huge screen. Mobile keeps 480 max.
+        maxWidth: 560,
+        margin: '0 auto',
+        // When a banner is present, pull the avatar up so it overlaps the banner edge.
+        padding: bannerUrl ? '0 20px 64px' : '40px 20px 64px',
+        marginTop: bannerUrl ? -56 : 0,
+        position: 'relative',
+        // 底版 — wrap profile content in a soft white card so the page bg frames it.
+        // Only kicks in when theme.bgPanel is enabled; otherwise content sits flat
+        // on the page background (current default).
+        ...(theme.bgPanel ? {
+          background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 24,
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)'}`,
+          boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.35)' : '0 12px 40px rgba(80,144,255,0.10)',
+          padding: bannerUrl ? '70px 24px 48px' : '40px 24px 48px',
+          marginTop: bannerUrl ? -28 : 24,
+          marginBottom: 24,
+        } : {}),
+      }}>
 
         {/* Profile header */}
         <div className="text-center mb-7">
@@ -98,7 +140,12 @@ export function ProfileView({
           <h1 className="font-bold" style={{ fontSize: 22, color: isDark ? '#fff' : 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>{displayName}</h1>
           {bio && (
             <p className="mt-2.5 text-sm mx-auto"
-              style={{ color: isDark ? 'rgba(255,255,255,0.78)' : 'var(--color-text-secondary)', lineHeight: 1.65, maxWidth: 320 }}>
+              style={{
+                color: isDark ? 'rgba(255,255,255,0.78)' : 'var(--color-text-secondary)',
+                lineHeight: 1.65,
+                maxWidth: 320,
+                whiteSpace: 'pre-line', // honor newlines from textarea so bios can be multi-paragraph
+              }}>
               {bio}
             </p>
           )}
@@ -107,7 +154,7 @@ export function ProfileView({
         {/* Social icons */}
         {socialLinks.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2.5 mb-7">
-            {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} />)}
+            {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
           </div>
         )}
 
@@ -138,7 +185,7 @@ export function ProfileView({
 
         {/* Share tools */}
         <div className="mb-7">
-          <ShareBar url={shareUrl} title={`${displayName} | Link Portal`} />
+          <ShareBar url={shareUrl} title={`${displayName} | Beam`} />
         </div>
 
         {/* View tracking — only on real profiles */}
@@ -162,7 +209,7 @@ export function ProfileView({
                 textDecoration: 'none',
               }}>
               <Link2 size={12} />
-              Link Portal
+              Beam
             </Link>
           </div>
         )}

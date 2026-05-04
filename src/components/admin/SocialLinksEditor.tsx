@@ -1,12 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
-  Plus, X, Check, Pencil, ExternalLink,
+  Plus, X, Check, Pencil, ExternalLink, Upload, GripVertical,
   Camera, PlayCircle, Music, AtSign, MessageCircle, Globe,
   Headphones, MessageSquare, Briefcase, MapPin, Send, Phone,
 } from 'lucide-react'
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor,
+  useSensor, useSensors, DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext, sortableKeyboardCoordinates,
+  verticalListSortingStrategy, arrayMove, useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { SocialIcon } from '@/components/ui/SocialIcon'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
 
 interface SocialLinkItem {
@@ -15,6 +25,7 @@ interface SocialLinkItem {
   url: string
   label?: string
   order: number
+  iconUrl?: string | null
 }
 
 interface Props {
@@ -30,6 +41,14 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
   const [newLabel, setNewLabel] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [uploadingId, setUploadingId] = useState<string | null>(null)
+  // When a user picks an icon file, hold it here pending crop confirmation.
+  const [pendingIcon, setPendingIcon] = useState<{ linkId: string; file: File } | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
 
   const detectedPlatform = newUrl.trim() ? detectPlatform(newUrl.trim()) : null
   const detectedConfig = detectedPlatform ? getPlatformConfig(detectedPlatform) : null
@@ -48,8 +67,7 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
   const handleAdd = () => {
     const url = newUrl.trim()
     if (!url) return
-    // Check duplicate
-    if (localLinks.some(l => l.url === url)) return
+    if (localLinks.some(l => l.url === url)) return // duplicate
     const platform = detectPlatform(url)
     setLocalLinks(prev => {
       const next = [...prev, {
@@ -74,6 +92,54 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
     })
   }
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    setLocalLinks(prev => {
+      const oldIndex = prev.findIndex(l => l.id === active.id)
+      const newIndex = prev.findIndex(l => l.id === over.id)
+      if (oldIndex < 0 || newIndex < 0) return prev
+      const next = arrayMove(prev, oldIndex, newIndex)
+      onLinksChange?.(next)
+      return next
+    })
+  }
+
+  // Step 1: file picked → stash and open crop modal.
+  const handleIconPick = (linkId: string, file: File) => {
+    setPendingIcon({ linkId, file })
+  }
+
+  // Step 2: crop confirmed → upload the cropped square.
+  const handleIconCropped = async (cropped: File) => {
+    if (!pendingIcon) return
+    const linkId = pendingIcon.linkId
+    setPendingIcon(null)
+    setUploadingId(linkId)
+    const formData = new FormData()
+    formData.append('file', cropped)
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        setLocalLinks(prev => {
+          const next = prev.map(l => l.id === linkId ? { ...l, iconUrl: data.url } : l)
+          onLinksChange?.(next)
+          return next
+        })
+      }
+    } catch { /* silent */ }
+    setUploadingId(null)
+  }
+
+  const handleIconRemove = (linkId: string) => {
+    setLocalLinks(prev => {
+      const next = prev.map(l => l.id === linkId ? { ...l, iconUrl: null } : l)
+      onLinksChange?.(next)
+      return next
+    })
+  }
+
   const handleSaveAll = async () => {
     setSaving(true)
     try {
@@ -81,7 +147,12 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          links: localLinks.map((l, i) => ({ url: l.url, label: l.label, order: i })),
+          links: localLinks.map((l, i) => ({
+            url: l.url,
+            label: l.label,
+            iconUrl: l.iconUrl ?? undefined,
+            order: i,
+          })),
         }),
       })
       setSaved(true)
@@ -92,7 +163,7 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
     setSaving(false)
   }
 
-  // Collapsed state
+  // ── Collapsed (read-only badge row + edit button) ──
   if (!editing) {
     return (
       <div className="flex items-center gap-2 flex-wrap">
@@ -100,7 +171,7 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
           <>
             <div className="flex items-center gap-1.5">
               {links.map(l => (
-                <SocialIcon key={l.id} platform={l.platform} url={l.url} />
+                <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />
               ))}
             </div>
             <button onClick={handleStartEdit}
@@ -122,44 +193,30 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
     )
   }
 
-  // Expanded (editing) state
+  // ── Expanded (editing) ──
   return (
     <div className="space-y-3">
-      {/* Existing links */}
+      {/* Sortable list of existing links */}
       {localLinks.length > 0 && (
-        <div className="space-y-1.5">
-          {localLinks.map(l => {
-            const config = getPlatformConfig(l.platform)
-            return (
-              <div key={l.url} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
-                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'white', border: '1px solid var(--color-border)' }}>
-                  <SocialIconMini platform={l.platform} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold" style={{ color: config?.color ?? 'var(--color-text-muted)' }}>
-                    {l.label || config?.label || l.platform}
-                  </p>
-                  <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{l.url}</p>
-                </div>
-                <button onClick={() => handleRemove(l.url)}
-                  className="p-1 rounded-lg flex-shrink-0"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#E53E3E')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-                  <X size={14} />
-                </button>
-              </div>
-            )
-          })}
-        </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={localLinks.map(l => l.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-1.5">
+              {localLinks.map(l => (
+                <SortableSocialRow key={l.id} link={l}
+                  onRemove={() => handleRemove(l.url)}
+                  onIconUpload={file => handleIconPick(l.id, file)}
+                  onIconRemove={() => handleIconRemove(l.id)}
+                  uploading={uploadingId === l.id} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
 
-      {/* Add new link input */}
+      {/* Add new link */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          {detectedConfig && (
+          {detectedConfig && detectedPlatform !== 'custom' && (
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg flex-shrink-0"
               style={{ background: detectedConfig.color + '15', color: detectedConfig.color }}>
               <SocialIconMini platform={detectedPlatform!} />
@@ -212,6 +269,16 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
         )}
       </div>
 
+      {/* Helper hint */}
+      <div className="text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>
+        {localLinks.length > 1 && (
+          <p>拖曳左側 <GripVertical size={11} className="inline" /> 排序、點 <Upload size={11} className="inline" /> 上傳自訂圖示</p>
+        )}
+        <p>
+          自訂圖示建議:**1:1 正方形,512×512 px 以上**(會自動裁成圓形顯示)。透明背景 PNG 或 SVG 視覺最佳。
+        </p>
+      </div>
+
       {/* Actions */}
       <div className="flex items-center gap-2 pt-1">
         <button onClick={handleSaveAll} disabled={saving}
@@ -229,11 +296,126 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
           取消
         </button>
       </div>
+
+      {/* Crop modal — opens when an icon file is picked, closes on confirm/cancel. */}
+      {pendingIcon && (
+        <ImageCropperModal
+          file={pendingIcon.file}
+          aspect={1}
+          cropShape="round"
+          title="裁切社群圖示"
+          onComplete={handleIconCropped}
+          onCancel={() => setPendingIcon(null)}
+        />
+      )}
     </div>
   )
 }
 
-// Mini icon for the editor list (no link, just visual)
+/* ── Single sortable row ── */
+function SortableSocialRow({
+  link, onRemove, onIconUpload, onIconRemove, uploading,
+}: {
+  link: SocialLinkItem
+  onRemove: () => void
+  onIconUpload: (file: File) => void
+  onIconRemove: () => void
+  uploading: boolean
+}) {
+  const config = getPlatformConfig(link.platform)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: link.id })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.55 : 1,
+    zIndex: isDragging ? 10 : 'auto',
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}
+      className="flex items-center gap-2 px-2 py-2 rounded-xl"
+      data-dragging={isDragging || undefined}
+      data-css="social-row"
+      // Background uses inline so dnd's transform doesn't conflict with hover utility classes.
+      // Surface from theme tokens.
+    >
+      <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+        {/* Drag handle */}
+        <button {...attributes} {...listeners}
+          className="flex-shrink-0 p-1 rounded cursor-grab active:cursor-grabbing"
+          style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', touchAction: 'none' }}
+          aria-label="拖曳排序">
+          <GripVertical size={14} />
+        </button>
+
+        {/* Icon preview (custom or platform) */}
+        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+          style={{ background: 'white', border: '1px solid var(--color-border)' }}>
+          {link.iconUrl ? (
+            <img src={link.iconUrl} alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <SocialIconMini platform={link.platform} />
+          )}
+        </div>
+
+        {/* Label + URL */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold" style={{ color: config?.color ?? 'var(--color-text-muted)' }}>
+            {link.label || config?.label || link.platform}
+          </p>
+          <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{link.url}</p>
+        </div>
+
+        {/* Upload icon */}
+        <button onClick={() => fileInputRef.current?.click()}
+          className="p-1.5 rounded-lg flex-shrink-0"
+          title="上傳自訂圖示"
+          style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+          <Upload size={12} />
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={e => {
+            const f = e.target.files?.[0]
+            if (f) onIconUpload(f)
+            e.target.value = ''
+          }}
+        />
+
+        {/* Remove icon (only when there is one) */}
+        {link.iconUrl && (
+          <button onClick={onIconRemove}
+            className="text-[10px] font-semibold flex-shrink-0"
+            title="清除自訂圖示"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}>
+            清除
+          </button>
+        )}
+
+        {/* Remove link */}
+        <button onClick={onRemove}
+          className="p-1 rounded-lg flex-shrink-0"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#E53E3E')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+          <X size={14} />
+        </button>
+
+        {uploading && (
+          <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>上傳中…</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ── Mini icon for in-row preview ── */
 const MINI_ICONS: Record<string, React.ElementType> = {
   instagram: Camera,
   youtube: PlayCircle,

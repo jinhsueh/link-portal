@@ -1,6 +1,6 @@
 'use client'
 
-import { BlockData, CalendarEventContent } from '@/types'
+import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
@@ -27,8 +27,13 @@ function trackClick(blockId: string, pageId?: string) {
 }
 
 function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; pageId?: string; btnStyle?: string }) {
-  const content = block.content as { url: string; thumbnail?: string; description?: string }
+  const content = block.content as LinkContent
+  const customBg = content.bgColor
+  const customText = content.textColor
+  const hasCustomBg = !!customBg
+
   const [favicon, setFavicon] = useState<string | null>(() => {
+    if (content.hideIcon) return null
     if (content.thumbnail) return content.thumbnail
     if (content.url) {
       try {
@@ -39,22 +44,30 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
     return null
   })
 
+  // Resolve text color: custom override → filled style white → theme text
+  const resolvedTextColor = customText
+    ?? (btnStyle === 'filled' || hasCustomBg ? '#ffffff' : 'var(--theme-text, var(--color-text-primary))')
+  const resolvedSecondaryColor = customText
+    ?? (btnStyle === 'filled' || hasCustomBg ? 'rgba(255,255,255,0.8)' : 'var(--theme-text-secondary, var(--color-text-secondary))')
+  const resolvedChevronColor = customText
+    ?? (btnStyle === 'filled' || hasCustomBg ? 'rgba(255,255,255,0.6)' : 'var(--theme-text-muted, var(--color-text-muted))')
+
   return (
     <a href={ensureUrl(content.url)} target="_blank" rel="noopener noreferrer"
       onClick={() => trackClick(block.id, pageId)}
       className="flex items-center gap-3 w-full transition-all group link-block"
       style={{
         padding: '16px 20px',
-        background: btnStyle === 'filled' ? 'var(--theme-primary, var(--color-primary))'
-          : btnStyle === 'soft' ? 'var(--theme-card-bg, white)'
-          : 'var(--theme-card-bg, white)',
-        color: btnStyle === 'filled' ? 'white' : undefined,
-        border: btnStyle === 'filled' ? 'none' : `1px solid var(--theme-border, var(--color-border))`,
+        background: customBg
+          ?? (btnStyle === 'filled' ? 'var(--theme-primary, var(--color-primary))' : 'var(--theme-card-bg, white)'),
+        color: resolvedTextColor,
+        border: (btnStyle === 'filled' || hasCustomBg) ? 'none' : `1px solid var(--theme-border, var(--color-border))`,
         borderRadius: 'var(--theme-radius, 12px)',
-        textDecoration: 'none', boxShadow: btnStyle === 'filled' ? 'none' : 'var(--shadow-sm)',
+        textDecoration: 'none',
+        boxShadow: (btnStyle === 'filled' || hasCustomBg) ? 'none' : 'var(--shadow-sm)',
       }}
       onMouseEnter={e => {
-        if (btnStyle !== 'filled') {
+        if (btnStyle !== 'filled' && !hasCustomBg) {
           (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-primary, var(--color-primary))'
           ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)'
         } else {
@@ -62,42 +75,81 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
         }
       }}
       onMouseLeave={e => {
-        if (btnStyle !== 'filled') {
+        if (btnStyle !== 'filled' && !hasCustomBg) {
           (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-border, var(--color-border))'
           ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'
         } else {
           (e.currentTarget as HTMLElement).style.opacity = '1'
         }
       }}>
-      {favicon && (
+      {!content.hideIcon && favicon && (
         <img src={favicon} alt="" width={20} height={20} className="flex-shrink-0 rounded"
           style={{ objectFit: 'contain' }}
           onError={() => setFavicon(null)} />
       )}
-      <div className="flex-1 min-w-0">
-        <span className="font-semibold text-sm block truncate" style={{ color: btnStyle === 'filled' ? 'white' : 'var(--theme-text, var(--color-text-primary))' }}>
+      {/* When the icon is hidden, center the text — leaves a stable visual without
+          the asymmetric "icon on left, text in middle" gap. The chevron also goes
+          away to let the title own the entire width. */}
+      <div className={`flex-1 min-w-0 ${content.hideIcon ? 'text-center' : ''}`}>
+        <span className="font-semibold text-sm block truncate" style={{ color: resolvedTextColor }}>
           {block.title}
         </span>
         {content.description && (
-          <span className="text-xs block truncate mt-0.5" style={{ color: btnStyle === 'filled' ? 'rgba(255,255,255,0.8)' : 'var(--theme-text-secondary, var(--color-text-secondary))' }}>
+          <span className="text-xs block truncate mt-0.5" style={{ color: resolvedSecondaryColor }}>
             {content.description}
           </span>
         )}
       </div>
-      <ChevronRight size={16} className="flex-shrink-0" style={{ color: btnStyle === 'filled' ? 'rgba(255,255,255,0.6)' : 'var(--theme-text-muted, var(--color-text-muted))' }} />
+      {!content.hideIcon && (
+        <ChevronRight size={16} className="flex-shrink-0" style={{ color: resolvedChevronColor }} />
+      )}
     </a>
   )
 }
 
 function BannerBlock({ block }: { block: BlockData }) {
-  const content = block.content as { imageUrl: string; linkUrl?: string; alt?: string }
-  const inner = (
-    <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
-      className="w-full object-cover" style={{ borderRadius: 12 }} />
+  const content = block.content as BannerContent
+  const hasText = !!(block.title || content.caption)
+
+  // If there's no caption/title, render the bare image (legacy behavior — keeps
+  // pixel-perfect look for banners that intentionally only have an image).
+  if (!hasText) {
+    const bareImg = (
+      <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
+        className="w-full object-cover" style={{ borderRadius: 12 }} />
+    )
+    return content.linkUrl
+      ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block">{bareImg}</a>
+      : <div>{bareImg}</div>
+  }
+
+  // With text: image-on-top card with title + caption below.
+  const card = (
+    <div className="w-full overflow-hidden" style={{
+      background: 'var(--theme-card-bg, white)',
+      border: '1px solid var(--theme-border, var(--color-border))',
+      borderRadius: 'var(--theme-radius, 12px)',
+      boxShadow: 'var(--shadow-sm)',
+    }}>
+      <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
+        className="w-full object-cover" style={{ display: 'block' }} />
+      <div style={{ padding: '14px 18px' }}>
+        {block.title && (
+          <p className="font-bold text-sm" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+            {block.title}
+          </p>
+        )}
+        {content.caption && (
+          <p className="text-xs mt-1" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+            {content.caption}
+          </p>
+        )}
+      </div>
+    </div>
   )
   return content.linkUrl
-    ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block">{inner}</a>
-    : <div>{inner}</div>
+    ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full" style={{ textDecoration: 'none' }}>{card}</a>
+    : <div className="w-full">{card}</div>
 }
 
 function HeadingBlock({ block }: { block: BlockData }) {
@@ -194,18 +246,34 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
 }
 
 function VideoBlock({ block }: { block: BlockData }) {
-  const content = block.content as { platform?: string; embedId?: string; url?: string }
+  const content = block.content as VideoContent & { platform?: string }
   const platform = content.platform ?? 'youtube'
   const embedId = content.embedId ?? ''
+
+  // Shared header: title (bold sm) + description (xs muted) — separate sizes
+  // so the heading no longer dominates the embed.
+  const Header = () => (block.title || content.description) ? (
+    <div className="px-3 py-2.5" style={{
+      background: 'var(--theme-card-bg, white)',
+      borderBottom: '1px solid var(--theme-border, var(--color-border))',
+    }}>
+      {block.title && (
+        <p className="text-sm font-bold leading-snug" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+          {block.title}
+        </p>
+      )}
+      {content.description && (
+        <p className="text-xs mt-1" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.55, whiteSpace: 'pre-line' }}>
+          {content.description}
+        </p>
+      )}
+    </div>
+  ) : null
 
   if (platform === 'youtube' && embedId) {
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        {block.title && (
-          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
-            {block.title}
-          </p>
-        )}
+        <Header />
         <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
           <iframe
             src={`https://www.youtube.com/embed/${embedId}`}
@@ -222,11 +290,7 @@ function VideoBlock({ block }: { block: BlockData }) {
   if (platform === 'tiktok' && embedId) {
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        {block.title && (
-          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
-            {block.title}
-          </p>
-        )}
+        <Header />
         <div style={{ position: 'relative', paddingBottom: '177%', height: 0 }}>
           <iframe
             src={`https://www.tiktok.com/embed/v2/${embedId}`}
@@ -243,11 +307,7 @@ function VideoBlock({ block }: { block: BlockData }) {
     // embedId is the full path like "track/xxx" or "playlist/xxx"
     return (
       <div className="w-full" style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        {block.title && (
-          <p className="text-sm font-semibold px-3 py-2" style={{ background: 'white', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}>
-            {block.title}
-          </p>
-        )}
+        <Header />
         <iframe
           src={`https://open.spotify.com/embed/${embedId}`}
           title={block.title ?? 'Spotify'}
@@ -392,17 +452,22 @@ function FaqBlock({ block }: { block: BlockData }) {
 }
 
 function CarouselBlock({ block }: { block: BlockData }) {
-  const content = block.content as { images: Array<{ url: string; linkUrl?: string; alt?: string }> }
+  const content = block.content as CarouselContent
   const [current, setCurrent] = useState(0)
   const images = content.images ?? []
   if (images.length === 0) return null
 
   const goTo = (i: number) => setCurrent((i + images.length) % images.length)
   const img = images[current]
+  const hasText = !!(block.title || content.caption)
 
-  const inner = (
-    <div className="relative w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-      <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280 }} />
+  const carouselInner = (
+    <div className="relative w-full" style={{
+      borderRadius: hasText ? 0 : 'var(--theme-radius, 12px)',
+      overflow: 'hidden',
+      boxShadow: hasText ? 'none' : 'var(--shadow-sm)',
+    }}>
+      <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280, display: 'block' }} />
       {images.length > 1 && (
         <>
           <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current - 1) }}
@@ -422,8 +487,32 @@ function CarouselBlock({ block }: { block: BlockData }) {
     </div>
   )
 
+  // Wrap in card with title/caption when either exists.
+  const inner = hasText ? (
+    <div className="w-full overflow-hidden" style={{
+      background: 'var(--theme-card-bg, white)',
+      border: '1px solid var(--theme-border, var(--color-border))',
+      borderRadius: 'var(--theme-radius, 12px)',
+      boxShadow: 'var(--shadow-sm)',
+    }}>
+      {carouselInner}
+      <div style={{ padding: '14px 18px' }}>
+        {block.title && (
+          <p className="font-bold text-sm" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+            {block.title}
+          </p>
+        )}
+        {content.caption && (
+          <p className="text-xs mt-1" style={{ color: 'var(--theme-text-secondary, var(--color-text-secondary))', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+            {content.caption}
+          </p>
+        )}
+      </div>
+    </div>
+  ) : carouselInner
+
   return img.linkUrl
-    ? <a href={ensureUrl(img.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full">{inner}</a>
+    ? <a href={ensureUrl(img.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full" style={{ textDecoration: 'none' }}>{inner}</a>
     : <div className="w-full">{inner}</div>
 }
 
@@ -512,15 +601,21 @@ function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: stri
       display: 'flex', flexDirection: 'column', gap: 12,
     }}>
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 rounded-xl flex flex-col items-center justify-center font-bold"
-          style={{
-            width: 52, height: 52,
-            background: 'var(--theme-primary, var(--color-primary))',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-          }}>
-          <CalendarPlus size={22} />
-        </div>
+        {content.iconUrl ? (
+          <img src={content.iconUrl} alt={content.eventTitle ?? block.title ?? ''}
+            className="flex-shrink-0 object-cover"
+            style={{ width: 52, height: 52, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }} />
+        ) : (
+          <div className="flex-shrink-0 rounded-xl flex flex-col items-center justify-center font-bold"
+            style={{
+              width: 52, height: 52,
+              background: 'var(--theme-primary, var(--color-primary))',
+              color: 'white',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+            }}>
+            <CalendarPlus size={22} />
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <p className="font-bold text-sm" style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
             {content.eventTitle || block.title || 'Event'}

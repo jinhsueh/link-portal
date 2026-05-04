@@ -71,10 +71,17 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
         <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{TYPE_LABELS[block.type]}</p>
       </div>
 
-      {/* Stats */}
-      <div className="hidden sm:flex flex-col items-end text-xs flex-shrink-0" style={{ color: 'var(--color-text-muted)' }}>
-        <span>{block.clicks} 點擊</span>
-        <span>{block.views} 曝光</span>
+      {/* Stats — tooltip explains the counters because users keep asking
+          "are these realtime?" / "what does 曝光 mean?". Both counts are
+          captured by /api/track on every public page view & link click,
+          updated in near-realtime (~1 second after the visitor action).
+          Compact pill on mobile so it stays useful on phone-width admin. */}
+      <div
+        className="flex sm:flex-col flex-row items-end gap-1 sm:gap-0 text-xs flex-shrink-0 cursor-help leading-tight"
+        style={{ color: 'var(--color-text-muted)' }}
+        title={`點擊:粉絲實際點按此區塊的次數\n曝光:此區塊在公開頁被看到的次數\n\n資料來自即時追蹤,訪客動作後約 1 秒同步。`}>
+        <span className="whitespace-nowrap">{block.clicks} 點擊</span>
+        <span className="whitespace-nowrap">{block.views} 曝光</span>
       </div>
 
       {/* Schedule badge */}

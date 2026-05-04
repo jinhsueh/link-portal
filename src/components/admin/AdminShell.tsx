@@ -78,7 +78,7 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
               <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-blue)' }}>
                 <Link2 size={14} color="white" />
               </div>
-              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Link Portal</span>
+              <span className="font-bold" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)' }}>Beam</span>
             </div>
             <nav className="hidden sm:flex items-center gap-1">
               {NAV_ITEMS.map(({ href, label, icon: Icon }) => (

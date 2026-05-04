@@ -31,7 +31,7 @@ export async function PATCH(req: Request) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { name, bio, avatarUrl, email, notifyNewSubscriber, notifyNewOrder, notifyWeeklyReport } = body
+  const { name, bio, avatarUrl, bannerUrl, email, notifyNewSubscriber, notifyNewOrder, notifyWeeklyReport } = body
 
   // Email format validation
   if (email !== undefined && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -44,6 +44,7 @@ export async function PATCH(req: Request) {
       ...(name !== undefined && { name }),
       ...(bio !== undefined && { bio }),
       ...(avatarUrl !== undefined && { avatarUrl }),
+      ...(bannerUrl !== undefined && { bannerUrl }),
       ...(email !== undefined && { email }),
       ...(notifyNewSubscriber !== undefined && { notifyNewSubscriber }),
       ...(notifyNewOrder !== undefined && { notifyNewOrder }),

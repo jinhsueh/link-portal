@@ -48,7 +48,7 @@ const FEATURES: { section: string; items: Feature[] }[] = [
   {
     section: '品牌與網域',
     items: [
-      { label: '移除 Link Portal 浮水印', free: false, pro: true, premium: true },
+      { label: '移除 Beam 浮水印', free: false, pro: true, premium: true },
       { label: '自訂 Favicon', free: false, pro: false, premium: true },
       { label: '自訂網域（mybrand.com）', free: false, pro: false, premium: true },
       { label: '自訂 CSS', free: false, pro: false, premium: true },
@@ -82,7 +82,7 @@ export default function PricingPage() {
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
         <Link href="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)', textDecoration: 'none' }}>
           <Link2 size={20} style={{ color: 'var(--color-primary)' }} />
-          Link Portal
+          Beam
         </Link>
         <Link href="/admin" className="text-sm font-semibold" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
           登入 / 註冊 →
@@ -101,7 +101,7 @@ export default function PricingPage() {
             成長到哪，方案跟到哪
           </h1>
           <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
-            從新手創作者到品牌商家，每一步 Link Portal 都陪你
+            從新手創作者到品牌商家，每一步 Beam 都陪你
           </p>
         </div>
 

@@ -73,7 +73,7 @@ export default function LoginPage() {
             <Link2 size={28} color="white" />
           </div>
           <h1 className="font-bold text-2xl" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-            Link Portal
+            Beam
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>建立你的個人傳送門</p>
         </div>
@@ -120,7 +120,7 @@ export default function LoginPage() {
                   </label>
                   <div className="flex items-center overflow-hidden" style={{ border: '1px solid var(--color-border)', borderRadius: 12 }}>
                     <span className="px-3 py-3 text-xs border-r" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
-                      linkportal.cc/
+                      beam.io/
                     </span>
                     <input type="text" value={username}
                       onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
