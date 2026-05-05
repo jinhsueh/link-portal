@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
-  ShoppingBag, Menu, X, Mail, Moon, Sun, Shield, Sparkles,
+  ShoppingBag, Mail, Moon, Sun, Shield, Sparkles, Home,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/admin', label: '主頁', icon: null },
-  { href: '/admin/analytics', label: '數據分析', icon: BarChart2 },
-  { href: '/admin/orders', label: '訂單管理', icon: ShoppingBag },
-  { href: '/admin/subscribers', label: '訂閱名單', icon: Mail },
+  { href: '/admin', label: '主頁', icon: Home },
+  { href: '/admin/analytics', label: '數據', icon: BarChart2 },
+  { href: '/admin/orders', label: '訂單', icon: ShoppingBag },
+  { href: '/admin/subscribers', label: '訂閱', icon: Mail },
   { href: '/admin/settings', label: '設定', icon: Settings },
 ]
 
@@ -27,7 +27,6 @@ interface Props {
 export function AdminShell({ username, role, effectivePlan, trialDaysLeft, children }: Props) {
   const router = useRouter()
   const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('admin-dark-mode') === 'true'
     return false
@@ -131,54 +130,48 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)'; (e.currentTarget as HTMLElement).style.background = 'none' }}>
               <LogOut size={14} />
             </button>
-            {/* Mobile hamburger */}
-            <button className="sm:hidden" onClick={() => setMobileOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--color-text-secondary)' }}>
-              <Menu size={20} />
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 sm:hidden">
-          <div className="absolute inset-0" style={{ background: 'rgba(26,26,46,0.5)' }}
-            onClick={() => setMobileOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-64"
-            style={{ background: 'var(--color-card)', boxShadow: 'var(--shadow-lg)' }}>
-            <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <span className="font-bold" style={{ color: 'var(--color-primary)' }}>選單</span>
-              <button onClick={() => setMobileOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <nav className="p-3 flex flex-col gap-1">
-              {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-                <a key={href} href={href} onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium"
-                  style={{
-                    color: isActive(href) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                    background: isActive(href) ? 'var(--color-primary-light)' : 'transparent',
-                    textDecoration: 'none',
-                  }}>
-                  {Icon && <Icon size={16} />}{label}
-                </a>
-              ))}
-              {username && (
-                <a href={`/${username}`} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium"
-                  style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
-                  <ExternalLink size={16} />預覽頁面
-                </a>
-              )}
-            </nav>
-          </div>
-        </div>
-      )}
+      {/* Page content — extra bottom padding on mobile to clear the bottom-tab nav */}
+      <div className="pb-20 sm:pb-0">
+        {children}
+      </div>
 
-      {children}
+      {/* Mobile bottom-tab nav (replaces the old hamburger drawer).
+          Persistent, thumb-reachable, tracks pathname like a native app. */}
+      <nav
+        className="sm:hidden fixed bottom-0 inset-x-0 z-40"
+        style={{
+          background: 'var(--color-card)',
+          borderTop: '1px solid var(--color-border)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
+        }}
+      >
+        <div className="flex items-stretch justify-around">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active = isActive(href)
+            return (
+              <a
+                key={href}
+                href={href}
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2"
+                style={{
+                  color: active ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                  textDecoration: 'none',
+                  minHeight: 56,
+                  fontWeight: active ? 600 : 500,
+                }}
+              >
+                <Icon size={20} />
+                <span style={{ fontSize: 10, lineHeight: 1.2 }}>{label}</span>
+              </a>
+            )
+          })}
+        </div>
+      </nav>
     </div>
   )
 }

@@ -59,7 +59,9 @@ model Page {
   slug      String
   order     Int      @default(0)
   isDefault Boolean  @default(false)
-  theme     String   @default("{}") // JSON: { primaryColor, bgType, bgColor, bgGradient, buttonStyle, fontStyle }
+  // Page.theme dropped — theme is now account-level on User. The deprecated
+  // column was kept around for ~1 month for backward compat after the
+  // 20260505034424_add_user_theme migration and is now safe to remove.
   password  String?  // If set, page requires this password to view
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

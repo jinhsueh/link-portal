@@ -17,8 +17,7 @@ export interface ProfileViewProps {
   bannerUrl?: string | null
   /**
    * Account-level theme (JSON string). Single visual identity across all pages —
-   * switching tabs only changes blocks, never visual style. Page.theme is
-   * deprecated but kept on the type for backward-compat fallback.
+   * switching tabs only changes blocks, never visual style.
    */
   theme?: string | null
   pages: Array<{
@@ -27,8 +26,6 @@ export interface ProfileViewProps {
     slug: string
     isDefault: boolean
     order: number
-    /** @deprecated Use top-level `theme` instead. Kept for transition period. */
-    theme?: string | null
     blocks: BlockData[]
   }>
   socialLinks: Array<{ id: string; platform: string; url: string; iconUrl?: string | null; label?: string | null }>
@@ -73,9 +70,8 @@ export function ProfileView({
     if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1
     return 0
   })
-  // Theme is account-level — always use userTheme. Falls back to activePage.theme
-  // only during the transition window before all rows have User.theme populated.
-  const theme = parseTheme(userTheme || activePage.theme)
+  // Theme is account-level — single source of truth on User.
+  const theme = parseTheme(userTheme)
   const themeCSS = themeToCSS(theme)
   const isDark = isColorDark(theme.bgColor)
   const bg = theme.bgType === 'gradient' && theme.bgGradient ? theme.bgGradient : theme.bgColor

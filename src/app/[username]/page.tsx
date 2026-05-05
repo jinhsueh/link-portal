@@ -33,7 +33,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     slug: p.slug,
     isDefault: p.isDefault,
     order: p.order,
-    theme: p.theme,
     blocks: p.blocks
       .filter(b => {
         if (b.scheduleStart && new Date(b.scheduleStart) > now) return false

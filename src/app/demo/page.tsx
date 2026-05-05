@@ -213,8 +213,7 @@ const DEMO_PROFILE: ProfileViewProps = {
   name: 'Mia 米亞',
   bio: '生活美學 × 穿搭靈感 🌸 IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作邀約歡迎私訊 💌',
   avatarUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&h=200&fit=crop&crop=face',
-  // Theme moved to account-level — same JSON used to live per-page on each
-  // demo page entry, now lives once on the profile.
+  // Theme is account-level — one JSON for the whole profile, never per page.
   theme: THEME_JSON,
   pages: [
     {
@@ -223,7 +222,6 @@ const DEMO_PROFILE: ProfileViewProps = {
       slug: 'home',
       isDefault: true,
       order: 0,
-      theme: THEME_JSON,
       blocks: mainBlocks,
     },
     {
@@ -232,7 +230,6 @@ const DEMO_PROFILE: ProfileViewProps = {
       slug: 'collab',
       isDefault: false,
       order: 1,
-      theme: THEME_JSON,
       blocks: collabBlocks,
     },
   ],

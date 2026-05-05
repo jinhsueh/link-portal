@@ -28,6 +28,16 @@ async function main() {
   await prisma.user.deleteMany()
   console.log('🗑️  Cleaned up existing data')
 
+  // Theme is account-level (User.theme) — same JSON for every page.
+  const DEMO_THEME = JSON.stringify({
+    primaryColor: '#E84393',
+    bgType: 'gradient',
+    bgColor: '#FFF5F7',
+    bgGradient: 'linear-gradient(135deg, #FFF5F7 0%, #FFECD2 50%, #FCB69F 100%)',
+    buttonStyle: 'rounded',
+    fontStyle: 'modern',
+  })
+
   // ─── Create user ───
   const user = await prisma.user.create({
     data: {
@@ -36,6 +46,7 @@ async function main() {
       name: 'Mia 米亞',
       bio: '生活美學 × 穿搭靈感 🌸 IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作邀約歡迎私訊 💌',
       avatarUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&h=200&fit=crop&crop=face',
+      theme: DEMO_THEME,
     },
   })
   console.log(`✅ Created user: ${user.name} (@${user.username})`)
@@ -48,14 +59,6 @@ async function main() {
       slug: 'home',
       isDefault: true,
       order: 0,
-      theme: JSON.stringify({
-        primaryColor: '#E84393',
-        bgType: 'gradient',
-        bgColor: '#FFF5F7',
-        bgGradient: 'linear-gradient(135deg, #FFF5F7 0%, #FFECD2 50%, #FCB69F 100%)',
-        buttonStyle: 'rounded',
-        fontStyle: 'modern',
-      }),
     },
   })
 
@@ -67,14 +70,6 @@ async function main() {
       slug: 'collab',
       isDefault: false,
       order: 1,
-      theme: JSON.stringify({
-        primaryColor: '#E84393',
-        bgType: 'gradient',
-        bgColor: '#FFF5F7',
-        bgGradient: 'linear-gradient(135deg, #FFF5F7 0%, #FFECD2 50%, #FCB69F 100%)',
-        buttonStyle: 'rounded',
-        fontStyle: 'modern',
-      }),
     },
   })
   console.log(`✅ Created pages: 主頁, 合作邀約`)

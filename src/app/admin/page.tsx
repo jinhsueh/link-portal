@@ -33,7 +33,7 @@ interface UserData {
   /** Account-level theme JSON (replaces per-page theme — see ThemeEditor refactor). */
   theme?: string
   role: string; effectivePlan: 'free' | 'pro' | 'premium'; trialDaysLeft: number
-  pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null; theme?: string | null
+  pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null; pinned?: boolean }>
   }>
   socialLinks: Array<{ id: string; platform: string; url: string; label?: string; order: number; iconUrl?: string | null }>
@@ -98,15 +98,10 @@ export default function AdminPage() {
     if (res.status === 401) { router.push('/login'); return }
     const data: UserData = await res.json()
     setUser(data)
-    // Hydrate theme from User (account-level). Falls back to default page's
-    // theme during the migration window for any users whose User.theme is
-    // still empty (e.g. legacy rows the backfill didn't cover).
+    // Hydrate theme from User (account-level — single source of truth).
     try {
       const userTheme = data.theme ? JSON.parse(data.theme) : {}
-      const fallbackPageTheme = data.pages.find(p => p.isDefault)?.theme
-        ? JSON.parse(data.pages.find(p => p.isDefault)!.theme!)
-        : {}
-      setPreviewTheme({ ...DEFAULT_THEME, ...fallbackPageTheme, ...userTheme })
+      setPreviewTheme({ ...DEFAULT_THEME, ...userTheme })
     } catch {
       setPreviewTheme(DEFAULT_THEME)
     }
