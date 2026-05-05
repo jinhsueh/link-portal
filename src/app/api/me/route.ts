@@ -31,7 +31,7 @@ export async function PATCH(req: Request) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { name, bio, avatarUrl, bannerUrl, email, username, notifyNewSubscriber, notifyNewOrder, notifyWeeklyReport } = body
+  const { name, bio, avatarUrl, bannerUrl, email, username, theme, notifyNewSubscriber, notifyNewOrder, notifyWeeklyReport } = body
 
   // Email format validation
   if (email !== undefined && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -73,6 +73,8 @@ export async function PATCH(req: Request) {
       ...(bannerUrl !== undefined && { bannerUrl }),
       ...(email !== undefined && { email }),
       ...(username !== undefined && { username: String(username).trim().toLowerCase() }),
+      // theme arrives as a typed object from ThemeEditor; serialise to JSON for storage
+      ...(theme !== undefined && { theme: typeof theme === 'string' ? theme : JSON.stringify(theme) }),
       ...(notifyNewSubscriber !== undefined && { notifyNewSubscriber }),
       ...(notifyNewOrder !== undefined && { notifyNewOrder }),
       ...(notifyWeeklyReport !== undefined && { notifyWeeklyReport }),

@@ -14,6 +14,7 @@ model User {
   bio          String?
   avatarUrl    String?
   bannerUrl    String?  // Optional header image displayed at the top of the public profile
+  theme        String   @default("{}")  // Page theme as JSON — account-level so all pages share visual identity. Page.theme is deprecated but kept for backward compat during migration.
   passwordHash String?
   role             String    @default("user")   // "user" | "admin"
   plan             String    @default("free")   // "free" | "pro_trial" | "pro"

@@ -30,6 +30,8 @@ import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface UserData {
   id: string; username: string; name?: string; bio?: string; avatarUrl?: string; bannerUrl?: string
+  /** Account-level theme JSON (replaces per-page theme — see ThemeEditor refactor). */
+  theme?: string
   role: string; effectivePlan: 'free' | 'pro' | 'premium'; trialDaysLeft: number
   pages: Array<{ id: string; name: string; slug: string; isDefault: boolean; password?: string | null; theme?: string | null
     blocks: Array<{ id: string; type: string; title?: string | null; content: string; order: number; active: boolean; clicks: number; views: number; scheduleStart?: string | null; scheduleEnd?: string | null; pinned?: boolean }>
@@ -86,9 +88,9 @@ export default function AdminPage() {
       scheduleStart: b.scheduleStart ?? null, scheduleEnd: b.scheduleEnd ?? null,
       pinned: b.pinned ?? false,
     })))
-    // Load page theme
-    const existing = JSON.parse(pageData.theme || '{}')
-    setPreviewTheme({ ...DEFAULT_THEME, ...existing })
+    // Theme is account-level — see loadUser, not per-page anymore. Switching
+    // pages now only swaps the blocks list, no visual reset (the original
+    // "switching tabs feels like a different site" complaint).
   }
 
   const loadUser = useCallback(async (keepPageId?: string) => {
@@ -96,6 +98,18 @@ export default function AdminPage() {
     if (res.status === 401) { router.push('/login'); return }
     const data: UserData = await res.json()
     setUser(data)
+    // Hydrate theme from User (account-level). Falls back to default page's
+    // theme during the migration window for any users whose User.theme is
+    // still empty (e.g. legacy rows the backfill didn't cover).
+    try {
+      const userTheme = data.theme ? JSON.parse(data.theme) : {}
+      const fallbackPageTheme = data.pages.find(p => p.isDefault)?.theme
+        ? JSON.parse(data.pages.find(p => p.isDefault)!.theme!)
+        : {}
+      setPreviewTheme({ ...DEFAULT_THEME, ...fallbackPageTheme, ...userTheme })
+    } catch {
+      setPreviewTheme(DEFAULT_THEME)
+    }
     const targetPage = keepPageId
       ? data.pages.find(p => p.id === keepPageId)
       : data.pages.find(p => p.isDefault) ?? data.pages[0]
@@ -608,7 +622,6 @@ export default function AdminPage() {
                   before tweaking the theme itself. */}
               {user && user.pages.length > 0 && <PageTabs />}
               <ThemeEditor
-                pageId={activePageId}
                 initialTheme={previewTheme}
                 username={user?.username}
                 onThemeChange={setPreviewTheme}

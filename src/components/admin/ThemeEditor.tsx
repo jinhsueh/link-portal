@@ -5,13 +5,18 @@ import { Check } from 'lucide-react'
 import { PRESET_THEMES, DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
 interface Props {
-  pageId: string | null
   initialTheme: PageTheme
   username?: string
   onThemeChange?: (theme: PageTheme) => void
 }
 
-export function ThemeEditor({ pageId, initialTheme, onThemeChange }: Props) {
+/**
+ * ThemeEditor — account-level visual identity editor. Theme used to be saved
+ * per-Page, but that broke the "switch tabs feels like a different site" UX
+ * and didn't match users' "one brand, multiple pages" mental model. Now saves
+ * to `/api/me` PATCH `theme` so all pages share the same visual.
+ */
+export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
   const [theme, setTheme] = useState<PageTheme>(initialTheme)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -23,12 +28,11 @@ export function ThemeEditor({ pageId, initialTheme, onThemeChange }: Props) {
   }
 
   const handleSave = async () => {
-    if (!pageId) return
     setSaving(true)
-    await fetch(`/api/pages/${pageId}/theme`, {
+    await fetch(`/api/me`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(theme),
+      body: JSON.stringify({ theme }),
     })
     setSaving(false)
     setSaved(true)

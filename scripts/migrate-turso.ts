@@ -139,16 +139,29 @@ async function main() {
     const checksum = createHash('sha256').update(sql).digest('hex')
     const id = `${name}-${Date.now()}`
 
-    // 4. Execute each statement, then record. We do NOT wrap in a single
-    //    transaction because Turso's HTTP pipeline doesn't support
-    //    multi-statement transactions cleanly across DDL.
+    // 4. Execute ALL statements in a SINGLE pipeline call.
+    //
+    // Background: previously each statement was a separate `exec` call, which
+    // means each used a fresh connection. SQLite-style "redefine table"
+    // migrations Prisma generates rely on `PRAGMA foreign_keys=OFF` to prevent
+    // cascade-deletes when DROP TABLE runs. PRAGMA settings are PER-CONNECTION,
+    // so when each statement got its own connection, the PRAGMA had no effect
+    // and the drop cascaded. **This caused production data loss in the
+    // 20260505034424_add_user_theme migration**: dropping User cascaded into
+    // Page/Block/SocialLink/Subscriber, wiping every row.
+    //
+    // Putting all statements in one pipeline batch shares a single connection,
+    // so PRAGMA persists and the multi-step migration runs as Prisma intended.
     const statements = splitStatements(sql)
-    for (const stmt of statements) {
-      const result = await exec(host, token, stmt)
-      const r = result.results[0]
+    const requests: PipelineRequest[] = [
+      ...statements.map(sql => ({ type: 'execute' as const, stmt: { sql } })),
+      { type: 'close' as const },
+    ]
+    const result = await runPipeline(host, token, requests)
+    for (let i = 0; i < result.results.length; i++) {
+      const r = result.results[i]
       if (r.type === 'error') {
-        // Re-throw with context so failures are debuggable in CI logs.
-        throw new Error(`[migrate-turso] FAIL on ${name}: ${r.error.message}\nSQL: ${stmt.slice(0, 200)}`)
+        throw new Error(`[migrate-turso] FAIL on ${name}: ${r.error.message}\nSQL: ${statements[i]?.slice(0, 200)}`)
       }
     }
 

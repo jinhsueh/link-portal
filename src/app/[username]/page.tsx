@@ -68,6 +68,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       bio={user.bio}
       avatarUrl={user.avatarUrl}
       bannerUrl={user.bannerUrl}
+      theme={user.theme}
       pages={pages}
       socialLinks={user.socialLinks}
       activePageSlug={pageSlug}
