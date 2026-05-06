@@ -331,50 +331,76 @@ export default function AdminPage() {
    *  Pulled out as a closure so it can be rendered both after ProfileEditor
    *  (content mode) and above ThemeEditor (appearance mode) without
    *  duplicating ~40 lines of JSX. */
-  const PageTabs = () => user ? (
-    <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
-      {user.pages.map(p => (
-        <div key={p.id} className="flex items-center gap-1 group" style={{ flexShrink: 0 }}>
-          <button
-            onClick={() => switchToPage(p)}
-            className="px-4 py-2 text-sm font-semibold transition-all"
-            style={{
-              background: p.id === activePageId ? 'var(--color-primary)' : 'white',
-              color: p.id === activePageId ? 'white' : 'var(--color-text-secondary)',
-              border: `1px solid ${p.id === activePageId ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              borderRadius: 8,
-              cursor: 'pointer',
-            }}>
-            {p.name}
-            {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
-          </button>
-          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={() => handleRenamePage(p.id, p.name)}
-              className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-              <Pencil size={12} />
+  const PageTabs = () => {
+    if (!user) return null
+    // The action cluster (rename / lock / delete) only applies to the
+    // currently-active page and lives flush-right of the tab strip — that
+    // way the visible tabs sit shoulder-to-shoulder without inline gaps,
+    // and the user always knows which page the actions affect.
+    const activePage = user.pages.find(p => p.id === activePageId)
+    return (
+      <div className="flex items-center gap-2 mb-5">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0">
+          {user.pages.map(p => (
+            <button key={p.id}
+              onClick={() => switchToPage(p)}
+              className="px-4 py-2 text-sm font-semibold transition-all flex-shrink-0"
+              style={{
+                background: p.id === activePageId ? 'var(--color-primary)' : 'white',
+                color: p.id === activePageId ? 'white' : 'var(--color-text-secondary)',
+                border: `1px solid ${p.id === activePageId ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                borderRadius: 8,
+                cursor: 'pointer',
+              }}>
+              {p.name}
+              {p.isDefault && <span className="ml-1 opacity-60 text-xs">★</span>}
             </button>
-            <button onClick={() => handleTogglePassword(p.id)} title={p.password ? '移除密碼' : '設定密碼'}
-              className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
-              {p.password ? <Lock size={12} /> : <Unlock size={12} />}
+          ))}
+          <button onClick={handleAddPage}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors"
+            style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
+            <Plus size={13} />新增分頁
+          </button>
+        </div>
+        {/* Actions for the active page — visually grouped on the right so
+            they don't break the tab spacing. Only renders once instead of
+            per-tab. */}
+        {activePage && (
+          <div className="flex items-center gap-0.5 pl-2 ml-1 flex-shrink-0"
+            style={{ borderLeft: '1px solid var(--color-border)' }}>
+            <button onClick={() => handleRenamePage(activePage.id, activePage.name)}
+              title="重新命名"
+              className="p-1.5 rounded transition-colors"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+              <Pencil size={14} />
+            </button>
+            <button onClick={() => handleTogglePassword(activePage.id)}
+              title={activePage.password ? '移除密碼' : '設定密碼'}
+              className="p-1.5 rounded transition-colors"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: activePage.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+              {activePage.password ? <Lock size={14} /> : <Unlock size={14} />}
             </button>
             {user.pages.length > 1 && (
-              <button onClick={() => handleDeletePage(p.id)}
-                className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}>
-                <TrashIcon size={12} />
+              <button onClick={() => handleDeletePage(activePage.id)}
+                title="刪除此分頁"
+                className="p-1.5 rounded transition-colors"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#FFF5F5' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+                <TrashIcon size={14} />
               </button>
             )}
           </div>
-        </div>
-      ))}
-      <button onClick={handleAddPage}
-        className="flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors"
-        style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
-        <Plus size={13} />新增分頁
-      </button>
-    </div>
-  ) : null
+        )}
+      </div>
+    )
+  }
 
   if (loading) return (
     <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
@@ -628,10 +654,10 @@ export default function AdminPage() {
         {/* Right: Live preview — adaptive width based on deviceMode.
             Mobile (default) = 320px phone-sized canvas, blocks render at near-
             real-mobile dimensions so email forms and calendar cards don't get
-            squished. Desktop = 520px wider canvas so users can see how content
-            breathes at larger viewports + an "open in new tab" link to the
-            real desktop 2-column layout (since we can't fit 1024px in here). */}
-        <div className="hidden lg:block flex-shrink-0" style={{ width: deviceMode === 'mobile' ? 320 : 520, transition: 'width 0.25s ease' }}>
+            squished. Desktop = 600px wider canvas + a faked 2-column grid
+            (sticky avatar/bio sidebar + blocks main) so the preview actually
+            *reads* as the desktop layout, not a wider phone. */}
+        <div className="hidden lg:block flex-shrink-0" style={{ width: deviceMode === 'mobile' ? 320 : 600, transition: 'width 0.25s ease' }}>
           <div style={{ position: 'sticky', top: 80 }}>
             {/* Device toggle */}
             <div className="flex items-center justify-between mb-3 gap-2">
@@ -663,7 +689,7 @@ export default function AdminPage() {
               borderRadius: deviceMode === 'mobile' ? 40 : 16,
               padding: 10,
               boxShadow: '0 24px 64px rgba(26,26,46,0.25)',
-              width: deviceMode === 'mobile' ? 300 : 500,
+              width: deviceMode === 'mobile' ? 300 : 580,
               transition: 'width 0.25s ease, border-radius 0.25s ease',
             }}>
               <div style={{
@@ -681,7 +707,7 @@ export default function AdminPage() {
                   <div style={{ width: '100%', maxHeight: 140, overflow: 'hidden', position: 'relative' }}>
                     <img src={(previewProfile?.bannerUrl ?? user?.bannerUrl)!}
                       alt=""
-                      style={{ width: '100%', height: 'auto', maxHeight: 140, objectFit: 'cover', display: 'block' }} />
+                      style={{ width: '100%', height: 'auto', maxHeight: 140, objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
                     <div aria-hidden style={{
                       position: 'absolute', left: 0, right: 0, bottom: 0,
                       height: '40%',
@@ -695,49 +721,68 @@ export default function AdminPage() {
                   padding: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? '0 16px 24px' : '32px 16px 24px',
                   marginTop: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? -36 : 0,
                   position: 'relative',
+                  // Desktop preview = 2-column grid (avatar/bio left, blocks
+                  // right) so users can see the real desktop layout structure,
+                  // not a wider phone. Mobile preview keeps single-column.
+                  ...(deviceMode === 'desktop' && {
+                    display: 'grid',
+                    gridTemplateColumns: '180px 1fr',
+                    gap: 20,
+                    alignItems: 'start',
+                  }),
                 }}>
-                  {/* Avatar */}
-                  <div className="flex flex-col items-center text-center mb-5">
-                    {(previewProfile?.avatarUrl ?? user?.avatarUrl) ? (
-                      <img src={(previewProfile?.avatarUrl ?? user?.avatarUrl)!} alt={(previewProfile?.name ?? user?.name ?? user?.username) || ''}
-                        className="w-16 h-16 rounded-full object-cover mb-3"
-                        style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
-                    ) : (
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
-                        style={{
-                          background: editorMode === 'appearance' ? previewTheme.primaryColor : 'var(--gradient-blue)',
-                          color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)',
-                          fontFamily: 'var(--font-display)',
-                        }}>
-                        {(previewProfile?.name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <p className="font-bold text-sm" style={{ color: editorMode === 'appearance' ? previewTextColor : 'var(--color-text-primary)' }}>
-                      {previewProfile?.name || user?.name || user?.username}
-                    </p>
-                    {(previewProfile?.bio ?? user?.bio) && (
-                      <p className="text-xs mt-1"
-                        style={{
-                          color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)',
-                          // Honor newlines so multi-paragraph bios match the
-                          // public profile rendering exactly (added pre-line).
-                          whiteSpace: 'pre-line',
-                          maxWidth: 280,
-                          margin: '4px auto 0',
-                        }}>
-                        {previewProfile?.bio ?? user?.bio}
+                  {/* ── Left column on desktop / top stack on mobile ── */}
+                  <aside style={deviceMode === 'desktop' ? { textAlign: 'left' } : undefined}>
+                    {/* Avatar */}
+                    <div className={deviceMode === 'desktop'
+                      ? 'flex flex-col items-start text-left mb-4'
+                      : 'flex flex-col items-center text-center mb-5'}>
+                      {(previewProfile?.avatarUrl ?? user?.avatarUrl) ? (
+                        <img src={(previewProfile?.avatarUrl ?? user?.avatarUrl)!} alt={(previewProfile?.name ?? user?.name ?? user?.username) || ''}
+                          className="w-16 h-16 rounded-full object-cover mb-3"
+                          style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
+                          style={{
+                            background: editorMode === 'appearance' ? previewTheme.primaryColor : 'var(--gradient-blue)',
+                            color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)',
+                            fontFamily: 'var(--font-display)',
+                          }}>
+                          {(previewProfile?.name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <p className="font-bold text-sm" style={{ color: editorMode === 'appearance' ? previewTextColor : 'var(--color-text-primary)' }}>
+                        {previewProfile?.name || user?.name || user?.username}
                       </p>
-                    )}
-                  </div>
-                  {/* Social */}
-                  {(() => {
-                    const socialLinks = previewSocialLinks ?? user?.socialLinks
-                    return socialLinks && socialLinks.length > 0 ? (
-                      <div className="flex justify-center gap-2 mb-4 flex-wrap">
-                        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
-                      </div>
-                    ) : null
-                  })()}
+                      {(previewProfile?.bio ?? user?.bio) && (
+                        <p className="text-xs mt-1"
+                          style={{
+                            color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)',
+                            // Honor newlines so multi-paragraph bios match the
+                            // public profile rendering exactly (added pre-line).
+                            whiteSpace: 'pre-line',
+                            maxWidth: deviceMode === 'desktop' ? 180 : 280,
+                            margin: deviceMode === 'desktop' ? '4px 0 0' : '4px auto 0',
+                          }}>
+                          {previewProfile?.bio ?? user?.bio}
+                        </p>
+                      )}
+                    </div>
+                    {/* Social */}
+                    {(() => {
+                      const socialLinks = previewSocialLinks ?? user?.socialLinks
+                      return socialLinks && socialLinks.length > 0 ? (
+                        <div className={deviceMode === 'desktop'
+                          ? 'flex flex-wrap gap-2 mb-4'
+                          : 'flex justify-center gap-2 mb-4 flex-wrap'}>
+                          {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
+                        </div>
+                      ) : null
+                    })()}
+                  </aside>
+
+                  {/* ── Right column on desktop / continues below on mobile ── */}
+                  <main style={{ minWidth: 0 }}>
                   {/* Blocks preview */}
                   {editorMode === 'appearance' ? (
                     /* Theme preview: use real blocks with themed styles */
@@ -783,6 +828,7 @@ export default function AdminPage() {
                       {blocks.map(block => <BlockRenderer key={block.id} block={block} />)}
                     </div>
                   )}
+                  </main>
                 </div>
               </div>
             </div>

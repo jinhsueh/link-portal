@@ -60,7 +60,12 @@ export default function AnalyticsPage() {
     { icon: TrendingUp, label: '平均 CTR', value: ctr, color: '#805AD5' },
   ]
 
-  const maxDaily = Math.max(...daily.map(d => d.clicks), 1)
+  // Cap visualisation to the last 14 days regardless of plan retention so the
+  // chart label "過去 14 天" stays accurate. The API returns up to 90 days of
+  // history (for Pro/Premium analytics), but rendering all 90 makes the X-axis
+  // unreadable in the bar chart.
+  const dailyChart = daily.slice(-14)
+  const maxDaily = Math.max(...dailyChart.map(d => d.clicks), 1)
 
   return (
     <AdminShell username={username} role={role} effectivePlan={effectivePlan} trialDaysLeft={trialDaysLeft}>
@@ -89,7 +94,7 @@ export default function AnalyticsPage() {
           </div>
           <div style={{ padding: '20px 24px' }}>
             <div className="flex items-end gap-1.5" style={{ height: 140 }}>
-              {daily.map((d) => {
+              {dailyChart.map((d) => {
                 const pct = maxDaily > 0 ? (d.clicks / maxDaily) * 100 : 0
                 const dateObj = new Date(d.date + 'T00:00:00')
                 const label = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`

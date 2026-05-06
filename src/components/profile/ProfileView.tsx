@@ -106,8 +106,13 @@ export function ProfileView({
       {bannerUrl && (
         <div style={{ width: '100%', maxHeight: 220, overflow: 'hidden', position: 'relative' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* objectPosition: 'center top' — when the source banner is taller
+              than the 220px crop window (typical on wide viewports), bias the
+              visible area towards the top. Banners almost always have their
+              title / logo in the upper half, so cropping the bottom is much
+              less destructive than the default centre-crop. */}
           <img src={bannerUrl} alt={`${displayName} banner`}
-            style={{ width: '100%', height: 'auto', maxHeight: 220, objectFit: 'cover', display: 'block' }} />
+            style={{ width: '100%', height: 'auto', maxHeight: 220, objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
           <div aria-hidden style={{
             position: 'absolute', left: 0, right: 0, bottom: 0,
             height: '40%',
