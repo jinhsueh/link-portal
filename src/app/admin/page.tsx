@@ -23,7 +23,8 @@ import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckS
 import { AdminShell } from '@/components/admin/AdminShell'
 import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
-import { DownloadCloud, Sparkles, RefreshCw } from 'lucide-react'
+import { DownloadCloud, Sparkles } from 'lucide-react'
+import { ProfileView } from '@/components/profile/ProfileView'
 import { PAGE_TEMPLATES } from '@/lib/block-templates'
 import { toast } from '@/components/ui/Toast'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
@@ -63,11 +64,6 @@ export default function AdminPage() {
   // sees how blocks behave at wider viewports + a link to open the real
   // desktop 2-column layout in a new tab.
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'desktop'>('mobile')
-  // Bumping this key forces the desktop-preview iframe to reload so the user
-  // can re-pull their just-saved page after editing. The iframe shows the
-  // *saved* version of the profile (we can't pump live React state into a
-  // cross-document iframe), so a refresh affordance is essential.
-  const [desktopIframeKey, setDesktopIframeKey] = useState(0)
 
   const handleCopyLink = async () => {
     if (!user) return
@@ -695,37 +691,22 @@ export default function AdminPage() {
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                 即時預覽
               </p>
-              <div className="flex items-center gap-1.5">
-                {/* Refresh — only meaningful on desktop where the iframe shows
-                    the saved version. After saving edits, click to pull the
-                    fresh page. */}
-                {deviceMode === 'desktop' && user?.username && (
-                  <button onClick={() => setDesktopIframeKey(k => k + 1)}
-                    title="重新載入(顯示最新已儲存版本)"
-                    className="p-1.5 rounded-full transition-colors"
-                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
-                    <RefreshCw size={12} />
+              <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                {(['mobile', 'desktop'] as const).map(mode => (
+                  <button key={mode}
+                    onClick={() => setDeviceMode(mode)}
+                    title={mode === 'mobile' ? '手機' : '桌面'}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                    style={{
+                      background: deviceMode === mode ? 'white' : 'transparent',
+                      color: deviceMode === mode ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                      boxShadow: deviceMode === mode ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                      border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                    {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
                   </button>
-                )}
-                <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                  {(['mobile', 'desktop'] as const).map(mode => (
-                    <button key={mode}
-                      onClick={() => setDeviceMode(mode)}
-                      title={mode === 'mobile' ? '手機' : '桌面'}
-                      className="px-2.5 py-1 rounded-full text-xs font-semibold"
-                      style={{
-                        background: deviceMode === mode ? 'white' : 'transparent',
-                        color: deviceMode === mode ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                        boxShadow: deviceMode === mode ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                        border: 'none', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', gap: 4,
-                      }}>
-                      {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
-                    </button>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
 
@@ -738,33 +719,63 @@ export default function AdminPage() {
               width: deviceMode === 'mobile' ? 300 : 580,
               transition: 'width 0.25s ease, border-radius 0.25s ease',
             }}>
-              {/* DESKTOP MODE — iframe scaled-down at true 1280px width */}
+              {/* DESKTOP MODE — live <ProfileView> rendered at true 1280px
+                  intrinsic width, scale-transformed down to fit. Because
+                  this is the SAME React component the public page uses,
+                  what the user sees IS the desktop layout (sticky avatar
+                  sidebar + 2-col blocks at lg: breakpoint), and live state
+                  flows in directly so edits update without saving. */}
               {deviceMode === 'desktop' ? (
-                user?.username ? (
+                user ? (
                   <div style={{
                     width: 564,            // = 580 - 8*2 padding
                     height: 720,
                     background: 'white',
                     borderRadius: 6,
-                    overflow: 'hidden',
+                    overflow: 'auto',      // long profiles can scroll the scaled view
                     position: 'relative',
                   }}>
-                    <iframe
-                      key={desktopIframeKey}
-                      src={`/${user.username}?_preview=1`}
-                      title="桌面預覽"
-                      // True desktop viewport. After scale 0.44, fits the
-                      // 564×720 visible window. The iframe content scrolls
-                      // internally at full desktop layout fidelity.
-                      style={{
-                        width: 1280,
-                        height: 1636,        // = 720 / 0.44
-                        border: 'none',
-                        transform: 'scale(0.44)',
-                        transformOrigin: 'top left',
-                        display: 'block',
-                      }}
-                    />
+                    <div style={{
+                      width: 1280,         // forces ProfileView's lg: layout
+                      transform: 'scale(0.44)',
+                      transformOrigin: 'top left',
+                      // Compensate for scale: the scaled element still
+                      // reserves its pre-scale layout box, leaving empty
+                      // space below. Setting margin-bottom negative pulls
+                      // the next sibling up (none here, but we still cap
+                      // visual height). minWidth ensures lg: media query.
+                    }}>
+                      <ProfileView
+                        username={user.username}
+                        name={previewProfile?.name ?? user.name}
+                        bio={previewProfile?.bio ?? user.bio}
+                        avatarUrl={previewProfile?.avatarUrl ?? user.avatarUrl}
+                        bannerUrl={previewProfile?.bannerUrl ?? user.bannerUrl}
+                        theme={editorMode === 'appearance'
+                          ? JSON.stringify(previewTheme)
+                          : (user.theme ?? '{}')}
+                        // Only the active page with its LIVE blocks. Other
+                        // pages aren't included — preview always reflects
+                        // the page being edited, matching the editor focus.
+                        pages={activePageId ? [{
+                          id: activePageId,
+                          name: user.pages.find(p => p.id === activePageId)?.name ?? '',
+                          slug: user.pages.find(p => p.id === activePageId)?.slug ?? 'home',
+                          isDefault: true,
+                          order: 0,
+                          blocks,
+                        }] : []}
+                        socialLinks={(previewSocialLinks ?? user.socialLinks).map(s => ({
+                          id: s.id, platform: s.platform, url: s.url,
+                          iconUrl: s.iconUrl ?? null,
+                          label: s.label ?? null,
+                        }))}
+                        showWatermark={false}
+                        // isDemo skips PageTracker so the preview doesn't
+                        // log fake views against the user's analytics.
+                        isDemo
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div style={{
@@ -773,7 +784,7 @@ export default function AdminPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'var(--color-text-muted)', fontSize: 13,
                   }}>
-                    儲存後即可預覽桌面版
+                    載入中…
                   </div>
                 )
               ) : (
