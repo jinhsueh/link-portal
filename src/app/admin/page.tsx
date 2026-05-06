@@ -594,18 +594,43 @@ export default function AdminPage() {
                     ))}
                   </div>
 
-                  {/* Manual / import alternatives */}
-                  <div className="flex items-center justify-center gap-2 pt-4" style={{ borderTop: '1px dashed var(--color-border)' }}>
-                    <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>或</span>
-                    <button onClick={() => setShowAddModal(true)}
-                      className="text-sm font-semibold px-3 py-2 rounded-lg"
-                      style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                      <Plus size={13} className="inline mr-1" />從零開始
-                    </button>
+                  {/* Manual / import alternatives — import is the primary CTA
+                      because it's the single biggest activation accelerator
+                      ("30 秒搬家"), and most new users coming from Linktree /
+                      Portaly will save real time vs. rebuilding from scratch.
+                      "從零開始" lives as a quiet ghost link to the right. */}
+                  <div className="flex flex-col items-center gap-2 pt-5" style={{ borderTop: '1px dashed var(--color-border)' }}>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                      已經在用 Linktree 或 Portaly?
+                    </p>
                     <button onClick={() => setShowImportModal(true)}
-                      className="text-sm font-semibold px-3 py-2 rounded-lg"
-                      style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                      <DownloadCloud size={13} className="inline mr-1" />從 Linktree 匯入
+                      className="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-lg transition-all"
+                      style={{
+                        background: 'var(--gradient-blue)',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(80,144,255,0.35)',
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(80,144,255,0.45)';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 14px rgba(80,144,255,0.35)';
+                      }}>
+                      <DownloadCloud size={15} />
+                      <span>一鍵搬家 — 30 秒</span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                        style={{ background: 'rgba(255,255,255,0.22)', color: 'white' }}>
+                        推薦
+                      </span>
+                    </button>
+                    <button onClick={() => setShowAddModal(true)}
+                      className="text-xs font-medium underline-offset-2 hover:underline"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                      或從零開始建立
                     </button>
                   </div>
                 </div>
