@@ -23,7 +23,7 @@ import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckS
 import { AdminShell } from '@/components/admin/AdminShell'
 import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
-import { DownloadCloud, Sparkles } from 'lucide-react'
+import { DownloadCloud, Sparkles, RefreshCw } from 'lucide-react'
 import { PAGE_TEMPLATES } from '@/lib/block-templates'
 import { toast } from '@/components/ui/Toast'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
@@ -63,6 +63,11 @@ export default function AdminPage() {
   // sees how blocks behave at wider viewports + a link to open the real
   // desktop 2-column layout in a new tab.
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'desktop'>('mobile')
+  // Bumping this key forces the desktop-preview iframe to reload so the user
+  // can re-pull their just-saved page after editing. The iframe shows the
+  // *saved* version of the profile (we can't pump live React state into a
+  // cross-document iframe), so a refresh affordance is essential.
+  const [desktopIframeKey, setDesktopIframeKey] = useState(0)
 
   const handleCopyLink = async () => {
     if (!user) return
@@ -677,11 +682,12 @@ export default function AdminPage() {
         </div>
 
         {/* Right: Live preview — adaptive width based on deviceMode.
-            Mobile (default) = 320px phone-sized canvas, blocks render at near-
-            real-mobile dimensions so email forms and calendar cards don't get
-            squished. Desktop = 600px wider canvas + a faked 2-column grid
-            (sticky avatar/bio sidebar + blocks main) so the preview actually
-            *reads* as the desktop layout, not a wider phone. */}
+            Mobile = 320px phone bezel, blocks render *live* from React state
+            so edits show without saving. Desktop = 600px monitor frame
+            holding an iframe of /<username> rendered at TRUE 1280px desktop
+            width, transform-scaled down to fit. The iframe shows the saved
+            version (can't pipe live state across documents), but the user
+            sees their actual desktop 2-column layout — not a faked one. */}
         <div className="hidden lg:block flex-shrink-0" style={{ width: deviceMode === 'mobile' ? 320 : 600, transition: 'width 0.25s ease' }}>
           <div style={{ position: 'sticky', top: 80 }}>
             {/* Device toggle */}
@@ -689,41 +695,95 @@ export default function AdminPage() {
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                 即時預覽
               </p>
-              <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                {(['mobile', 'desktop'] as const).map(mode => (
-                  <button key={mode}
-                    onClick={() => setDeviceMode(mode)}
-                    title={mode === 'mobile' ? '手機' : '桌面'}
-                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
-                    style={{
-                      background: deviceMode === mode ? 'white' : 'transparent',
-                      color: deviceMode === mode ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                      boxShadow: deviceMode === mode ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                      border: 'none', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                    {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
+              <div className="flex items-center gap-1.5">
+                {/* Refresh — only meaningful on desktop where the iframe shows
+                    the saved version. After saving edits, click to pull the
+                    fresh page. */}
+                {deviceMode === 'desktop' && user?.username && (
+                  <button onClick={() => setDesktopIframeKey(k => k + 1)}
+                    title="重新載入(顯示最新已儲存版本)"
+                    className="p-1.5 rounded-full transition-colors"
+                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
+                    <RefreshCw size={12} />
                   </button>
-                ))}
+                )}
+                <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                  {(['mobile', 'desktop'] as const).map(mode => (
+                    <button key={mode}
+                      onClick={() => setDeviceMode(mode)}
+                      title={mode === 'mobile' ? '手機' : '桌面'}
+                      className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                      style={{
+                        background: deviceMode === mode ? 'white' : 'transparent',
+                        color: deviceMode === mode ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                        boxShadow: deviceMode === mode ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                        border: 'none', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                      {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Frame — phone bezel for mobile, soft monitor frame for desktop */}
+            {/* Frame — phone bezel for mobile, monitor for desktop */}
             <div style={{
               background: '#1A1A2E',
-              borderRadius: deviceMode === 'mobile' ? 40 : 16,
-              padding: 10,
+              borderRadius: deviceMode === 'mobile' ? 40 : 12,
+              padding: deviceMode === 'mobile' ? 10 : 8,
               boxShadow: '0 24px 64px rgba(26,26,46,0.25)',
               width: deviceMode === 'mobile' ? 300 : 580,
               transition: 'width 0.25s ease, border-radius 0.25s ease',
             }}>
+              {/* DESKTOP MODE — iframe scaled-down at true 1280px width */}
+              {deviceMode === 'desktop' ? (
+                user?.username ? (
+                  <div style={{
+                    width: 564,            // = 580 - 8*2 padding
+                    height: 720,
+                    background: 'white',
+                    borderRadius: 6,
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}>
+                    <iframe
+                      key={desktopIframeKey}
+                      src={`/${user.username}?_preview=1`}
+                      title="桌面預覽"
+                      // True desktop viewport. After scale 0.44, fits the
+                      // 564×720 visible window. The iframe content scrolls
+                      // internally at full desktop layout fidelity.
+                      style={{
+                        width: 1280,
+                        height: 1636,        // = 720 / 0.44
+                        border: 'none',
+                        transform: 'scale(0.44)',
+                        transformOrigin: 'top left',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{
+                    width: 564, height: 720,
+                    background: 'white', borderRadius: 6,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--color-text-muted)', fontSize: 13,
+                  }}>
+                    儲存後即可預覽桌面版
+                  </div>
+                )
+              ) : (
+              /* MOBILE MODE — live React preview from current state */
               <div style={{
                 background: editorMode === 'appearance' ? previewBg : 'white',
-                borderRadius: deviceMode === 'mobile' ? 32 : 8,
+                borderRadius: 32,
                 overflow: 'hidden',
-                height: deviceMode === 'mobile' ? 600 : 720,
+                height: 600,
                 overflowY: 'auto',
-                transition: 'height 0.25s ease',
               }}>
                 {/* Banner — same hero treatment as the public profile, with the
                     bottom 40% fading into the page bg so the avatar overlap is
@@ -746,68 +806,49 @@ export default function AdminPage() {
                   padding: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? '0 16px 24px' : '32px 16px 24px',
                   marginTop: (previewProfile?.bannerUrl ?? user?.bannerUrl) ? -36 : 0,
                   position: 'relative',
-                  // Desktop preview = 2-column grid (avatar/bio left, blocks
-                  // right) so users can see the real desktop layout structure,
-                  // not a wider phone. Mobile preview keeps single-column.
-                  ...(deviceMode === 'desktop' && {
-                    display: 'grid',
-                    gridTemplateColumns: '180px 1fr',
-                    gap: 20,
-                    alignItems: 'start',
-                  }),
                 }}>
-                  {/* ── Left column on desktop / top stack on mobile ── */}
-                  <aside style={deviceMode === 'desktop' ? { textAlign: 'left' } : undefined}>
-                    {/* Avatar */}
-                    <div className={deviceMode === 'desktop'
-                      ? 'flex flex-col items-start text-left mb-4'
-                      : 'flex flex-col items-center text-center mb-5'}>
-                      {(previewProfile?.avatarUrl ?? user?.avatarUrl) ? (
-                        <img src={(previewProfile?.avatarUrl ?? user?.avatarUrl)!} alt={(previewProfile?.name ?? user?.name ?? user?.username) || ''}
-                          className="w-16 h-16 rounded-full object-cover mb-3"
-                          style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
-                          style={{
-                            background: editorMode === 'appearance' ? previewTheme.primaryColor : 'var(--gradient-blue)',
-                            color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)',
-                            fontFamily: 'var(--font-display)',
-                          }}>
-                          {(previewProfile?.name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <p className="font-bold text-sm" style={{ color: editorMode === 'appearance' ? previewTextColor : 'var(--color-text-primary)' }}>
-                        {previewProfile?.name || user?.name || user?.username}
+                  {/* Avatar */}
+                  <div className="flex flex-col items-center text-center mb-5">
+                    {(previewProfile?.avatarUrl ?? user?.avatarUrl) ? (
+                      <img src={(previewProfile?.avatarUrl ?? user?.avatarUrl)!} alt={(previewProfile?.name ?? user?.name ?? user?.username) || ''}
+                        className="w-16 h-16 rounded-full object-cover mb-3"
+                        style={{ border: '3px solid white', boxShadow: 'var(--shadow-md)' }} />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-3"
+                        style={{
+                          background: editorMode === 'appearance' ? previewTheme.primaryColor : 'var(--gradient-blue)',
+                          color: 'white', border: '3px solid white', boxShadow: 'var(--shadow-md)',
+                          fontFamily: 'var(--font-display)',
+                        }}>
+                        {(previewProfile?.name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <p className="font-bold text-sm" style={{ color: editorMode === 'appearance' ? previewTextColor : 'var(--color-text-primary)' }}>
+                      {previewProfile?.name || user?.name || user?.username}
+                    </p>
+                    {(previewProfile?.bio ?? user?.bio) && (
+                      <p className="text-xs mt-1"
+                        style={{
+                          color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)',
+                          // Honor newlines so multi-paragraph bios match the
+                          // public profile rendering exactly (added pre-line).
+                          whiteSpace: 'pre-line',
+                          maxWidth: 280,
+                          margin: '4px auto 0',
+                        }}>
+                        {previewProfile?.bio ?? user?.bio}
                       </p>
-                      {(previewProfile?.bio ?? user?.bio) && (
-                        <p className="text-xs mt-1"
-                          style={{
-                            color: editorMode === 'appearance' ? (isDark ? '#94A3B8' : '#4A5568') : 'var(--color-text-secondary)',
-                            // Honor newlines so multi-paragraph bios match the
-                            // public profile rendering exactly (added pre-line).
-                            whiteSpace: 'pre-line',
-                            maxWidth: deviceMode === 'desktop' ? 180 : 280,
-                            margin: deviceMode === 'desktop' ? '4px 0 0' : '4px auto 0',
-                          }}>
-                          {previewProfile?.bio ?? user?.bio}
-                        </p>
-                      )}
-                    </div>
-                    {/* Social */}
-                    {(() => {
-                      const socialLinks = previewSocialLinks ?? user?.socialLinks
-                      return socialLinks && socialLinks.length > 0 ? (
-                        <div className={deviceMode === 'desktop'
-                          ? 'flex flex-wrap gap-2 mb-4'
-                          : 'flex justify-center gap-2 mb-4 flex-wrap'}>
-                          {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
-                        </div>
-                      ) : null
-                    })()}
-                  </aside>
-
-                  {/* ── Right column on desktop / continues below on mobile ── */}
-                  <main style={{ minWidth: 0 }}>
+                    )}
+                  </div>
+                  {/* Social */}
+                  {(() => {
+                    const socialLinks = previewSocialLinks ?? user?.socialLinks
+                    return socialLinks && socialLinks.length > 0 ? (
+                      <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
+                      </div>
+                    ) : null
+                  })()}
                   {/* Blocks preview */}
                   {editorMode === 'appearance' ? (
                     /* Theme preview: use real blocks with themed styles */
@@ -853,9 +894,9 @@ export default function AdminPage() {
                       {blocks.map(block => <BlockRenderer key={block.id} block={block} />)}
                     </div>
                   )}
-                  </main>
                 </div>
               </div>
+              )}
             </div>
 
             {/* Open in new tab — gives users access to the *real* live page
