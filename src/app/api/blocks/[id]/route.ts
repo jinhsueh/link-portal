@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 
@@ -38,6 +39,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     },
   })
 
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json(block)
 }
 
@@ -53,5 +55,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!existing) return NextResponse.json({ error: 'Block not found' }, { status: 404 })
 
   await prisma.block.delete({ where: { id } })
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json({ ok: true })
 }

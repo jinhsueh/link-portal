@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { getPlanLimits } from '@/lib/plan'
@@ -60,5 +61,6 @@ export async function POST(req: NextRequest) {
     },
   })
 
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json(page)
 }

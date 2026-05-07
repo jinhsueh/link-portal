@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { detectPlatform } from '@/lib/social-platforms'
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     ? await prisma.socialLink.update({ where: { id: existing.id }, data: { platform, url, label } })
     : await prisma.socialLink.create({ data: { userId: session.id, platform, url, label, order: 0 } })
 
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json(link)
 }
 
@@ -60,6 +62,7 @@ export async function PUT(req: NextRequest) {
     return results
   })
 
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json(created)
 }
 
@@ -70,5 +73,6 @@ export async function DELETE(req: NextRequest) {
   const platform = req.nextUrl.searchParams.get('platform')
   if (!platform) return NextResponse.json({ error: 'platform required' }, { status: 400 })
   await prisma.socialLink.deleteMany({ where: { userId: session.id, platform } })
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json({ ok: true })
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
@@ -30,6 +31,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   const updated = await prisma.page.update({ where: { id }, data })
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json(updated)
 }
 
@@ -63,5 +65,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     }
   }
 
+  revalidateTag('profile', { expire: 0 })
   return NextResponse.json({ ok: true })
 }

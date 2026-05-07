@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { getSession, SESSION_COOKIE, signSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { getEffectivePlan, getTrialDaysLeft } from '@/lib/plan'
@@ -80,6 +81,10 @@ export async function PATCH(req: Request) {
       ...(notifyWeeklyReport !== undefined && { notifyWeeklyReport }),
     },
   })
+
+  // Bust the unstable_cache profile cache so the public /<username> page
+  // sees the new theme / name / bio / avatar immediately on next visit.
+  revalidateTag('profile', { expire: 0 })
 
   const { passwordHash, ...safeUser } = user
   const res = NextResponse.json({ ...safeUser, hasPassword: !!passwordHash })
