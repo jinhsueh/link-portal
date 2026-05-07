@@ -42,6 +42,35 @@ export interface PageTheme {
    * email_form, product, countdown) actually go side-by-side.
    */
   layout?: 'stacked' | 'horizontal' | 'fullwidth' | 'cards'
+
+  /**
+   * Entrance animation when each block enters the viewport. Driven by
+   * IntersectionObserver in AnimatedBlock so it fires on scroll, not just
+   * on initial mount. Default 'slide-up' — the previous behaviour was a
+   * lighter fade so this is intentionally a tiny visual upgrade for everyone.
+   * `'none'` opts out (e.g. for users who find motion distracting).
+   */
+  entranceAnimation?: 'none' | 'fade' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale'
+
+  /**
+   * Card corner geometry. Extends `buttonRadius` (kept for backward compat)
+   * with five "cut corner" variants that use `clip-path: polygon(...)` to
+   * produce 45° angled corners — visually distinctive (Portaly / ticket-stub
+   * style). When set to anything other than 'rounded' / 'pill' / 'square',
+   * `--theme-clip-path` is emitted and `border-radius` is forced to 0 since
+   * clip-path doesn't combine with rounded edges cleanly.
+   *
+   *   rounded      — current default (border-radius)
+   *   pill         — fully rounded (border-radius: 9999px)
+   *   square       — sharp 90° corners (border-radius: 0)
+   *   cut-tr       — top-right corner clipped at 45°
+   *   cut-tl       — top-left
+   *   cut-br       — bottom-right
+   *   cut-bl       — bottom-left
+   *   cut-diagonal — top-right + bottom-left clipped (parallelogram-ish)
+   *   notched      — top + bottom centre notch (門票 / ticket stub)
+   */
+  cornerStyle?: 'rounded' | 'pill' | 'square' | 'cut-tr' | 'cut-tl' | 'cut-br' | 'cut-bl' | 'cut-diagonal' | 'notched'
 }
 
 export const DEFAULT_THEME: PageTheme = {
@@ -54,6 +83,8 @@ export const DEFAULT_THEME: PageTheme = {
   fontStyle: 'default',
   bgPanel: 'none',
   layout: 'stacked',
+  entranceAnimation: 'slide-up',
+  cornerStyle: 'rounded',
 }
 
 export const PRESET_THEMES: { name: string; theme: Partial<PageTheme> }[] = [
@@ -212,8 +243,35 @@ export function themeToCSS(theme: PageTheme): React.CSSProperties {
     bg = theme.bgColor
   }
 
-  const radius = theme.buttonRadius === 'pill' ? '9999px'
-    : theme.buttonRadius === 'square' ? '6px' : '12px'
+  // cornerStyle wins over buttonRadius when both are set — but if cornerStyle
+  // is unset (legacy themes), we map buttonRadius into cornerStyle so the
+  // visual is unchanged. Either way, the shape we emit is "the resolved
+  // cornerStyle", and downstream blocks read --theme-radius / --theme-clip-path
+  // accordingly.
+  const corner = theme.cornerStyle
+    ?? (theme.buttonRadius === 'pill' ? 'pill'
+       : theme.buttonRadius === 'square' ? 'square'
+       : 'rounded')
+
+  let radius = '12px'                  // default rounded
+  let clipPath = 'none'                // default no clipping
+  switch (corner) {
+    case 'pill':         radius = '9999px'; break
+    case 'square':       radius = '0';      break
+    case 'rounded':      radius = '12px';   break
+    case 'cut-tr':       radius = '0'; clipPath = 'polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)'; break
+    case 'cut-tl':       radius = '0'; clipPath = 'polygon(18px 0, 100% 0, 100% 100%, 0 100%, 0 18px)'; break
+    case 'cut-br':       radius = '0'; clipPath = 'polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%)'; break
+    case 'cut-bl':       radius = '0'; clipPath = 'polygon(0 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 18px))'; break
+    case 'cut-diagonal': radius = '0'; clipPath = 'polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))'; break
+    case 'notched':
+      // Door-ticket: small semi-circular notches on left + right midpoints.
+      // Approximated with polygon (no native CSS for circular notches in
+      // clip-path without SVG masks; an octagon-ish cut reads as "notched").
+      radius = '0'
+      clipPath = 'polygon(0 0, 100% 0, 100% calc(50% - 8px), calc(100% - 8px) 50%, 100% calc(50% + 8px), 100% 100%, 0 100%, 0 calc(50% + 8px), 8px 50%, 0 calc(50% - 8px))'
+      break
+  }
 
   return {
     '--theme-primary': theme.primaryColor,
@@ -224,6 +282,7 @@ export function themeToCSS(theme: PageTheme): React.CSSProperties {
     '--theme-border': borderColor,
     '--theme-card-bg': cardBg,
     '--theme-radius': radius,
+    '--theme-clip-path': clipPath,
     '--theme-btn-style': theme.buttonStyle,
   } as React.CSSProperties
 }

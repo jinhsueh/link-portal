@@ -1,9 +1,70 @@
 'use client'
 
-import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent } from '@/types'
+import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent, ImageOverlayPosition } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
+
+/**
+ * Compute styles for text overlaid on an image (banner / carousel slide /
+ * image-grid cell). Returns the wrapper position styles + the gradient.
+ * Centralised so all three callers stay visually consistent — same gradient
+ * stops, same paddings, same horizontal alignment per position.
+ */
+function overlayTextStyles(position: ImageOverlayPosition = 'bottom-left'): {
+  wrapper: React.CSSProperties
+  gradient: React.CSSProperties
+  text: React.CSSProperties
+} {
+  // Vertical anchor + alignment derive from the chosen preset.
+  const isBottom = position !== 'center'
+  const align: React.CSSProperties['textAlign'] = position === 'bottom-center'
+    ? 'center' : position === 'center' ? 'center' : 'left'
+  const justify: React.CSSProperties['justifyContent'] = position === 'bottom-center'
+    ? 'center' : position === 'center' ? 'center' : 'flex-start'
+
+  return {
+    wrapper: {
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      justifyContent: position === 'center' ? 'center' : 'flex-end',
+      padding: position === 'center' ? '20px' : '18px 20px',
+      pointerEvents: 'none', // gradient + text shouldn't block image click
+    },
+    gradient: {
+      position: 'absolute',
+      inset: 0,
+      // Bottom-anchored gradient covers ~55% of image; centre uses an even
+      // dimming so the text sits readable on top of any photo.
+      background: position === 'center'
+        ? 'linear-gradient(to bottom, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.5) 100%)'
+        : 'linear-gradient(to bottom, transparent 0%, transparent 45%, rgba(0,0,0,0.65) 100%)',
+      pointerEvents: 'none',
+    },
+    text: {
+      position: 'relative',  // sit above the gradient
+      color: 'white',
+      textAlign: align,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: justify === 'center' ? 'center' : 'flex-start',
+      // Subtle shadow so light-grey backgrounds don't wash out white text.
+      textShadow: '0 1px 4px rgba(0,0,0,0.45)',
+    },
+  }
+}
+
+/** Style snippet that applies the theme's corner geometry. The clip-path
+ *  variable is set by themeToCSS — falls back to 'none' on legacy themes
+ *  so the visual is unchanged. We always emit both so a theme that flips
+ *  from cut → rounded picks up cleanly. */
+const themeShape: React.CSSProperties = {
+  borderRadius: 'var(--theme-radius, 12px)',
+  clipPath: 'var(--theme-clip-path, none)',
+}
 
 
 function ensureUrl(url: string): string {
@@ -84,7 +145,7 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
           ?? (btnStyle === 'filled' ? 'var(--theme-primary, var(--color-primary))' : 'var(--theme-card-bg, white)'),
         color: resolvedTextColor,
         border: borderWidth > 0 ? `${borderWidth}px solid ${borderColor}` : 'none',
-        borderRadius: 'var(--theme-radius, 12px)',
+        ...themeShape,
         textDecoration: 'none',
         boxShadow: (btnStyle === 'filled' || hasCustomBg) ? 'none' : 'var(--shadow-sm)',
       }}
@@ -131,13 +192,54 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
 function BannerBlock({ block }: { block: BlockData }) {
   const content = block.content as BannerContent
   const hasText = !!(block.title || content.caption)
+  const overlay = !!content.overlayText
+
+  // ── Overlay mode: title + caption sit ON TOP of the image with a dark
+  // gradient. Portaly-style hero card. Only valid when there's text to
+  // show; an overlay-on-blank-image is just a regular bare image. ──
+  if (overlay && hasText) {
+    const o = overlayTextStyles(content.overlayPosition)
+    const overlayCard = (
+      <div className="w-full relative overflow-hidden" style={{
+        ...themeShape,
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
+          className="w-full object-cover" style={{ display: 'block' }} />
+        <div aria-hidden style={o.gradient} />
+        <div style={o.wrapper}>
+          <div style={o.text}>
+            {block.title && (
+              <p className="font-bold" style={{ fontSize: 18, color: 'white', margin: 0, lineHeight: 1.25 }}>
+                {block.title}
+              </p>
+            )}
+            {content.caption && (
+              <p className="text-xs mt-1" style={{
+                color: 'rgba(255,255,255,0.92)',
+                lineHeight: 1.5,
+                whiteSpace: 'pre-line',
+                margin: 0,
+                marginTop: block.title ? 4 : 0,
+              }}>
+                {content.caption}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+    return content.linkUrl
+      ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full" style={{ textDecoration: 'none' }}>{overlayCard}</a>
+      : <div className="w-full">{overlayCard}</div>
+  }
 
   // If there's no caption/title, render the bare image (legacy behavior — keeps
   // pixel-perfect look for banners that intentionally only have an image).
   if (!hasText) {
     const bareImg = (
       <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
-        className="w-full object-cover" style={{ borderRadius: 12 }} />
+        className="w-full object-cover" style={themeShape} />
     )
     return content.linkUrl
       ? <a href={ensureUrl(content.linkUrl)} target="_blank" rel="noopener noreferrer" className="block">{bareImg}</a>
@@ -149,7 +251,7 @@ function BannerBlock({ block }: { block: BlockData }) {
     <div className="w-full overflow-hidden" style={{
       background: 'var(--theme-card-bg, white)',
       border: '1px solid var(--theme-border, var(--color-border))',
-      borderRadius: 'var(--theme-radius, 12px)',
+      ...themeShape,
       boxShadow: 'var(--shadow-sm)',
     }}>
       <img src={content.imageUrl} alt={content.alt ?? block.title ?? ''}
@@ -259,7 +361,7 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
   return (
     <div className="w-full" style={{
       background: 'white', border: '1px solid var(--color-border)',
-      borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
+      ...themeShape, overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
     }}>
       {/* Product image */}
       {content.imageUrl && (
@@ -463,7 +565,8 @@ function CountdownBlock({ block }: { block: BlockData }) {
   return (
     <div className="w-full text-center" style={{
       padding: '24px 20px', background: 'var(--theme-card-bg, white)',
-      border: '1px solid var(--theme-border, var(--color-border))', borderRadius: 'var(--theme-radius, 12px)',
+      border: '1px solid var(--theme-border, var(--color-border))',
+      ...themeShape,
       boxShadow: 'var(--shadow-sm)',
     }}>
       {(block.title || content.label) && (
@@ -487,7 +590,8 @@ function FaqBlock({ block }: { block: BlockData }) {
 
   return (
     <div className="w-full" style={{
-      border: '1px solid var(--theme-border, var(--color-border))', borderRadius: 'var(--theme-radius, 12px)',
+      border: '1px solid var(--theme-border, var(--color-border))',
+      ...themeShape,
       overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
     }}>
       {block.title && (
@@ -528,30 +632,78 @@ function CarouselBlock({ block }: { block: BlockData }) {
   // its own. This is what makes per-slide narratives possible.
   const activeCaption = img.caption || content.caption
   const hasText = !!(block.title || activeCaption)
+  const overlay = !!content.overlayText
 
+  // Nav controls (prev/next + dots) — shared by both layout modes so the
+  // carousel feels the same whether captions overlay or sit below.
+  const navControls = images.length > 1 ? (
+    <>
+      <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current - 1) }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+        style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>‹</button>
+      <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current + 1) }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+        style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>›</button>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5"
+        style={{ zIndex: 2 }}>
+        {images.map((_, i) => (
+          <button key={i} onClick={e => { e.preventDefault(); e.stopPropagation(); setCurrent(i) }}
+            className="w-2 h-2 rounded-full" style={{ background: i === current ? 'white' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', padding: 0 }} />
+        ))}
+      </div>
+    </>
+  ) : null
+
+  // ── OVERLAY mode: title + caption float over the image with a dark
+  // gradient. Nav controls sit on top too. ──
+  if (overlay && hasText) {
+    const o = overlayTextStyles(content.overlayPosition)
+    const overlayCard = (
+      <div className="relative w-full overflow-hidden" style={{
+        ...themeShape,
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 320, display: 'block' }} />
+        <div aria-hidden style={o.gradient} />
+        <div style={o.wrapper}>
+          <div style={o.text}>
+            {block.title && (
+              <p className="font-bold" style={{ fontSize: 18, color: 'white', margin: 0, lineHeight: 1.25 }}>
+                {block.title}
+              </p>
+            )}
+            {activeCaption && (
+              <p className="text-xs mt-1" style={{
+                color: 'rgba(255,255,255,0.92)',
+                lineHeight: 1.5,
+                whiteSpace: 'pre-line',
+                margin: 0,
+                marginTop: block.title ? 4 : 0,
+              }}>
+                {activeCaption}
+              </p>
+            )}
+          </div>
+        </div>
+        {navControls}
+      </div>
+    )
+    return img.linkUrl
+      ? <a href={ensureUrl(img.linkUrl)} target="_blank" rel="noopener noreferrer" className="block w-full" style={{ textDecoration: 'none' }}>{overlayCard}</a>
+      : <div className="w-full">{overlayCard}</div>
+  }
+
+  // ── LEGACY mode: caption row below the image. ──
   const carouselInner = (
     <div className="relative w-full" style={{
-      borderRadius: hasText ? 0 : 'var(--theme-radius, 12px)',
+      ...(hasText
+        ? { borderRadius: 0, clipPath: 'none' }   // outer card owns the shape
+        : themeShape),
       overflow: 'hidden',
       boxShadow: hasText ? 'none' : 'var(--shadow-sm)',
     }}>
       <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280, display: 'block' }} />
-      {images.length > 1 && (
-        <>
-          <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current - 1) }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>‹</button>
-          <button onClick={e => { e.preventDefault(); e.stopPropagation(); goTo(current + 1) }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 16 }}>›</button>
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <button key={i} onClick={e => { e.preventDefault(); e.stopPropagation(); setCurrent(i) }}
-                className="w-2 h-2 rounded-full" style={{ background: i === current ? 'white' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', padding: 0 }} />
-            ))}
-          </div>
-        </>
-      )}
+      {navControls}
     </div>
   )
 
@@ -560,7 +712,7 @@ function CarouselBlock({ block }: { block: BlockData }) {
     <div className="w-full overflow-hidden" style={{
       background: 'var(--theme-card-bg, white)',
       border: '1px solid var(--theme-border, var(--color-border))',
-      borderRadius: 'var(--theme-radius, 12px)',
+      ...themeShape,
       boxShadow: 'var(--shadow-sm)',
     }}>
       {carouselInner}
@@ -586,12 +738,18 @@ function CarouselBlock({ block }: { block: BlockData }) {
 
 function ImageGridBlock({ block }: { block: BlockData }) {
   // Customer feedback #9: a Portaly-style two-column image grid block.
-  // Each cell can optionally link out. Empty cells render as a placeholder
-  // box so the grid stays visually balanced even mid-edit.
-  const content = block.content as { cells?: Array<{ url: string; linkUrl?: string; alt?: string }> }
+  // Each cell can optionally link out + carry a per-cell title. When
+  // overlayText is on, the cell title floats over the image with a dark
+  // gradient (Portaly hero card style at thumbnail scale).
+  const content = block.content as {
+    cells?: Array<{ url: string; linkUrl?: string; alt?: string; title?: string }>
+    overlayText?: boolean
+    overlayPosition?: ImageOverlayPosition
+  }
   const cells = (content.cells ?? []).filter(c => c.url)
   if (cells.length === 0) return null
   const hasTitle = !!block.title
+  const overlay = !!content.overlayText
   return (
     <div className="w-full" style={{ background: 'transparent' }}>
       {hasTitle && (
@@ -602,25 +760,52 @@ function ImageGridBlock({ block }: { block: BlockData }) {
       )}
       <div className="grid grid-cols-2 gap-2">
         {cells.map((cell, i) => {
-          const inner = (
-            <img
-              src={cell.url}
-              alt={cell.alt ?? ''}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform"
-              style={{ aspectRatio: '1 / 1', display: 'block' }}
-            />
-          )
           const wrapStyle: React.CSSProperties = {
-            borderRadius: 'var(--theme-radius, 12px)',
+            ...themeShape,
             overflow: 'hidden',
             boxShadow: 'var(--shadow-sm)',
+            position: 'relative',  // anchor for overlay
           }
+          const inner = (
+            <>
+              <img
+                src={cell.url}
+                alt={cell.alt ?? ''}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform"
+                style={{ aspectRatio: '1 / 1', display: 'block' }}
+              />
+              {overlay && cell.title && (() => {
+                const o = overlayTextStyles(content.overlayPosition)
+                return (
+                  <>
+                    <div aria-hidden style={o.gradient} />
+                    <div style={o.wrapper}>
+                      <div style={o.text}>
+                        <p className="font-bold" style={{
+                          fontSize: 14,
+                          color: 'white',
+                          margin: 0,
+                          lineHeight: 1.25,
+                        }}>{cell.title}</p>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
+            </>
+          )
           return cell.linkUrl ? (
             <a key={i} href={ensureUrl(cell.linkUrl)} target="_blank" rel="noopener noreferrer"
               style={wrapStyle}
-              onMouseEnter={e => { (e.currentTarget.firstChild as HTMLElement).style.transform = 'scale(1.03)' }}
-              onMouseLeave={e => { (e.currentTarget.firstChild as HTMLElement).style.transform = 'scale(1)' }}>
+              onMouseEnter={e => {
+                const img = e.currentTarget.querySelector('img') as HTMLElement | null
+                if (img) img.style.transform = 'scale(1.03)'
+              }}
+              onMouseLeave={e => {
+                const img = e.currentTarget.querySelector('img') as HTMLElement | null
+                if (img) img.style.transform = 'scale(1)'
+              }}>
               {inner}
             </a>
           ) : (
@@ -637,7 +822,7 @@ function MapBlock({ block }: { block: BlockData }) {
   const q = encodeURIComponent(content.query ?? '')
   const hasHeader = !!(block.title || content.description)
   return (
-    <div className="w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+    <div className="w-full" style={{ ...themeShape, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
       {hasHeader && (
         // Title and description live in their own header rows so creators can
         // keep the title short and tight (e.g. "公司位置") while putting the
@@ -671,7 +856,7 @@ function MapBlock({ block }: { block: BlockData }) {
 function EmbedBlock({ block }: { block: BlockData }) {
   const content = block.content as { html: string; height?: number }
   return (
-    <div className="w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+    <div className="w-full" style={{ ...themeShape, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
       {block.title && (
         <p className="text-sm font-semibold px-3 py-2" style={{
           background: 'var(--theme-card-bg, white)', color: 'var(--theme-text, var(--color-text-primary))',
@@ -726,7 +911,7 @@ function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: stri
     <div className="w-full" style={{
       background: 'var(--theme-card-bg, white)',
       border: '1px solid var(--theme-border, var(--color-border))',
-      borderRadius: 'var(--theme-radius, 12px)',
+      ...themeShape,
       boxShadow: 'var(--shadow-sm)',
       padding: '18px 20px',
       display: 'flex', flexDirection: 'column', gap: 12,

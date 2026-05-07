@@ -15,12 +15,31 @@ export type BlockType =
   | 'calendar_event'
 
 /**
+ * Position presets for text overlaid on banner / carousel / image-grid images.
+ * Keep this narrow — three options is enough for "頭、中、左下" UX intent and
+ * avoids per-pixel positioning UI.
+ */
+export type ImageOverlayPosition = 'bottom-left' | 'bottom-center' | 'center'
+
+/**
  * Two-column image grid (Portaly-style). Each cell can be tapped to open a
  * link. Customer feedback wanted Portaly-style 2-up image layouts in addition
  * to the single banner / horizontal carousel options.
  */
 export interface ImageGridContent {
-  cells: Array<{ url: string; linkUrl?: string; alt?: string }>
+  cells: Array<{
+    url: string
+    linkUrl?: string
+    alt?: string
+    /** Optional title rendered on top of the cell when overlayText is on. */
+    title?: string
+  }>
+  /** Render cell.title (and the optional grid-level title) on top of the
+   *  cell image with a dark gradient. Off = no overlay (no caption row
+   *  either, since cells are square thumbnails). */
+  overlayText?: boolean
+  /** Where the overlay text sits within the cell. Default bottom-left. */
+  overlayPosition?: ImageOverlayPosition
 }
 
 export interface LinkContent {
@@ -53,6 +72,11 @@ export interface BannerContent {
   alt?: string
   /** Caption text shown below the banner image on public profiles. */
   caption?: string
+  /** Render block.title (+ caption) on top of the image with a dark gradient
+   *  instead of in a separate row below it. Portaly-style hero card. */
+  overlayText?: boolean
+  /** Where the overlay text sits within the image. Default bottom-left. */
+  overlayPosition?: ImageOverlayPosition
 }
 
 export interface VideoContent {
@@ -101,6 +125,12 @@ export interface CarouselContent {
   }>
   /** Carousel-level caption (fallback when a slide has no per-image caption). */
   caption?: string
+  /** Render title + caption on top of the active slide with a dark gradient
+   *  instead of below it. Falls back to the same "row below" rendering when
+   *  off, preserving existing carousels. */
+  overlayText?: boolean
+  /** Where the overlay text sits within each slide. Default bottom-left. */
+  overlayPosition?: ImageOverlayPosition
 }
 
 export interface MapContent {

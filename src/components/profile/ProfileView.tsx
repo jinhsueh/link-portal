@@ -250,6 +250,7 @@ export function ProfileView({
             const fullSpan = isGrid && RICH_BLOCK_TYPES.has(block.type)
             return (
               <AnimatedBlock key={block.id} index={i}
+                animation={theme.entranceAnimation}
                 className={fullSpan ? 'sm:col-span-2' : undefined}>
                 <BlockRenderer block={block} pageId={activePage.id} btnStyle={theme.buttonStyle} />
               </AnimatedBlock>

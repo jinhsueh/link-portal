@@ -204,3 +204,57 @@ body {
     transform: none;
   }
 }
+
+/* ── Block entrance animations (#動畫 — Phase 2 visual upgrade) ──
+   IntersectionObserver in AnimatedBlock toggles `.is-visible` once the
+   block crosses the viewport threshold. The base class sets the resting
+   "hidden" state so server-rendered HTML doesn't flash visible before JS
+   hydrates; .is-visible flips it to the animated end state.
+   All five variants honor prefers-reduced-motion. */
+
+.block-anim-fade,
+.block-anim-slide-up,
+.block-anim-slide-left,
+.block-anim-slide-right,
+.block-anim-scale {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.block-anim-slide-up    { transform: translateY(28px); }
+.block-anim-slide-left  { transform: translateX(-28px); }
+.block-anim-slide-right { transform: translateX(28px); }
+.block-anim-scale       { transform: scale(0.94); }
+
+.block-anim-fade.is-visible,
+.block-anim-slide-up.is-visible,
+.block-anim-slide-left.is-visible,
+.block-anim-slide-right.is-visible,
+.block-anim-scale.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* JS-disabled fallback: SSR'd HTML stays visible if JS never executes. */
+.no-js .block-anim-fade,
+.no-js .block-anim-slide-up,
+.no-js .block-anim-slide-left,
+.no-js .block-anim-slide-right,
+.no-js .block-anim-scale {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block-anim-fade,
+  .block-anim-slide-up,
+  .block-anim-slide-left,
+  .block-anim-slide-right,
+  .block-anim-scale {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -45,6 +45,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [linkUrl, setLinkUrl] = useState((content.linkUrl as string) ?? '')
   const [alt, setAlt] = useState((content.alt as string) ?? '')
   const [bannerCaption, setBannerCaption] = useState((content.caption as string) ?? '')
+  // Banner overlay (#圖片蓋字)
+  const [bannerOverlay, setBannerOverlay] = useState<boolean>(Boolean(content.overlayText))
+  const [bannerOverlayPos, setBannerOverlayPos] = useState<'bottom-left' | 'bottom-center' | 'center'>(
+    (content.overlayPosition as 'bottom-left' | 'bottom-center' | 'center') ?? 'bottom-left'
+  )
 
   // Heading
   const [text, setText] = useState((content.text as string) ?? '')
@@ -172,6 +177,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkUrl ? { linkUrl } : {}),
           ...(alt ? { alt } : {}),
           ...(bannerCaption ? { caption: bannerCaption } : {}),
+          ...(bannerOverlay ? { overlayText: true } : {}),
+          ...(bannerOverlay && bannerOverlayPos !== 'bottom-left' ? { overlayPosition: bannerOverlayPos } : {}),
         }
         break
       case 'heading':
@@ -208,11 +215,20 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         newContent = {
           images: carouselImages.filter(i => i.url.trim()),
           ...(carouselCaption ? { caption: carouselCaption } : {}),
+          ...(carouselOverlay ? { overlayText: true } : {}),
+          ...(carouselOverlay && carouselOverlayPos !== 'bottom-left' ? { overlayPosition: carouselOverlayPos } : {}),
         }
         break
       case 'image_grid':
         newContent = {
-          cells: gridCells.filter(c => c.url.trim()),
+          cells: gridCells.filter(c => c.url.trim()).map(c => ({
+            url: c.url,
+            ...(c.linkUrl ? { linkUrl: c.linkUrl } : {}),
+            ...(c.alt ? { alt: c.alt } : {}),
+            ...(c.title ? { title: c.title } : {}),
+          })),
+          ...(gridOverlay ? { overlayText: true } : {}),
+          ...(gridOverlay && gridOverlayPos !== 'bottom-left' ? { overlayPosition: gridOverlayPos } : {}),
         }
         break
       case 'map':
@@ -274,10 +290,18 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     (content.images as Array<{ url: string; linkUrl?: string; alt?: string; caption?: string }>) ?? []
   )
   const [carouselCaption, setCarouselCaption] = useState((content.caption as string) ?? '')
+  const [carouselOverlay, setCarouselOverlay] = useState<boolean>(Boolean(content.overlayText))
+  const [carouselOverlayPos, setCarouselOverlayPos] = useState<'bottom-left' | 'bottom-center' | 'center'>(
+    (content.overlayPosition as 'bottom-left' | 'bottom-center' | 'center') ?? 'bottom-left'
+  )
 
-  // Image Grid (2-column) — array of { url, linkUrl?, alt? }
-  const [gridCells, setGridCells] = useState<Array<{ url: string; linkUrl?: string; alt?: string }>>(
-    (content.cells as Array<{ url: string; linkUrl?: string; alt?: string }>) ?? [{ url: '' }, { url: '' }]
+  // Image Grid (2-column) — array of { url, linkUrl?, alt?, title? } + overlay flag
+  const [gridCells, setGridCells] = useState<Array<{ url: string; linkUrl?: string; alt?: string; title?: string }>>(
+    (content.cells as Array<{ url: string; linkUrl?: string; alt?: string; title?: string }>) ?? [{ url: '' }, { url: '' }]
+  )
+  const [gridOverlay, setGridOverlay] = useState<boolean>(Boolean(content.overlayText))
+  const [gridOverlayPos, setGridOverlayPos] = useState<'bottom-left' | 'bottom-center' | 'center'>(
+    (content.overlayPosition as 'bottom-left' | 'bottom-center' | 'center') ?? 'bottom-left'
   )
 
   // Map
@@ -342,6 +366,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkUrl ? { linkUrl } : {}),
           ...(alt ? { alt } : {}),
           ...(bannerCaption ? { caption: bannerCaption } : {}),
+          ...(bannerOverlay ? { overlayText: true } : {}),
+          ...(bannerOverlay ? { overlayPosition: bannerOverlayPos } : {}),
         }
         break
       case 'heading':
@@ -388,6 +414,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           previewContent = {
             images: carouselImages.filter(i => i.url),
             ...(carouselCaption ? { caption: carouselCaption } : {}),
+            ...(carouselOverlay ? { overlayText: true } : {}),
+            ...(carouselOverlay ? { overlayPosition: carouselOverlayPos } : {}),
+          }
+        }
+        break
+      case 'image_grid':
+        if (gridCells.some(c => c.url)) {
+          previewContent = {
+            cells: gridCells.filter(c => c.url).map(c => ({
+              url: c.url,
+              ...(c.linkUrl ? { linkUrl: c.linkUrl } : {}),
+              ...(c.title ? { title: c.title } : {}),
+            })),
+            ...(gridOverlay ? { overlayText: true } : {}),
+            ...(gridOverlay ? { overlayPosition: gridOverlayPos } : {}),
           }
         }
         break
@@ -408,12 +449,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     block.type, title, text, size, headingColor, headingAlign,
     url, linkDesc, linkHideIcon, linkBgColor, linkTextColor,
     linkIconUrl, linkTitleSize, linkTitleAlign, linkBorderColor, linkBorderWidth, linkAnimation,
-    imageUrl, linkUrl, alt, bannerCaption,
+    imageUrl, linkUrl, alt, bannerCaption, bannerOverlay, bannerOverlayPos,
     videoUrl, videoDescription,
     price, currency, productDesc, productImg, productCheckoutUrl,
     targetDate, countdownLabel,
     calStart, calEnd, calTimezone, calAllDay, calLocation, calDescription, calIconUrl,
-    carouselImages, carouselCaption,
+    carouselImages, carouselCaption, carouselOverlay, carouselOverlayPos,
+    gridCells, gridOverlay, gridOverlayPos,
   ])
 
   return (
@@ -680,6 +722,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
+              {/* 圖片蓋字 toggle (Phase 2 visual upgrade #3) */}
+              <OverlayToggle
+                value={bannerOverlay}
+                position={bannerOverlayPos}
+                onValueChange={setBannerOverlay}
+                onPositionChange={setBannerOverlayPos}
+              />
             </>
           )}
 
@@ -988,6 +1037,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
                 + 新增圖片
               </button>
+              <OverlayToggle
+                value={carouselOverlay}
+                position={carouselOverlayPos}
+                onValueChange={setCarouselOverlay}
+                onPositionChange={setCarouselOverlayPos}
+              />
             </>
           )}
 
@@ -1036,6 +1091,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     placeholder="點擊連結（選填）"
                     style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }}
                     onFocus={focusIn} onBlur={focusOut} />
+                  {/* Per-cell title — only meaningful when overlayText is on,
+                      since otherwise grid cells are pure thumbnails. */}
+                  <input value={cell.title ?? ''}
+                    onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, title: e.target.value } : c))}
+                    placeholder="格子標題(會蓋在圖上,需開啟下方圖片蓋字)"
+                    style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }}
+                    onFocus={focusIn} onBlur={focusOut} />
                   {cell.url && (
                     <img src={cell.url} alt={`Preview ${i + 1}`} className="rounded-lg"
                       style={{ width: '100%', maxWidth: 120, aspectRatio: '1 / 1', objectFit: 'cover', border: '1px solid var(--color-border)' }} />
@@ -1048,6 +1110,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
                 + 新增格子
               </button>
+              <OverlayToggle
+                value={gridOverlay}
+                position={gridOverlayPos}
+                onValueChange={setGridOverlay}
+                onPositionChange={setGridOverlayPos}
+              />
             </>
           )}
 
@@ -1237,6 +1305,65 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
         {label}
       </label>
       {children}
+    </div>
+  )
+}
+
+/**
+ * OverlayToggle — shared "文字蓋在圖片上" control used by banner / carousel /
+ * image_grid forms. Keeps the visual / wording consistent across the three
+ * blocks so users learn the pattern once. Position picker only shows when
+ * overlay is on (no point picking a position for hidden text).
+ */
+function OverlayToggle({
+  value, position, onValueChange, onPositionChange,
+}: {
+  value: boolean
+  position: 'bottom-left' | 'bottom-center' | 'center'
+  onValueChange: (v: boolean) => void
+  onPositionChange: (p: 'bottom-left' | 'bottom-center' | 'center') => void
+}) {
+  return (
+    <div className="rounded-xl p-4 space-y-3"
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+      <label className="flex items-start gap-2 cursor-pointer">
+        <input type="checkbox" checked={value}
+          onChange={e => onValueChange(e.target.checked)}
+          style={{ width: 16, height: 16, accentColor: 'var(--color-primary)', marginTop: 2 }} />
+        <div>
+          <span className="text-sm font-semibold block" style={{ color: 'var(--color-text-primary)' }}>
+            文字蓋在圖片上(Portaly 風格 hero card)
+          </span>
+          <span className="text-xs block mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            開啟後標題與說明會浮在圖上,自動加深色漸層讓文字讀得清楚。
+          </span>
+        </div>
+      </label>
+      {value && (
+        <div>
+          <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
+            文字位置
+          </label>
+          <div className="grid grid-cols-3 gap-1">
+            {([
+              { value: 'bottom-left', label: '左下' },
+              { value: 'bottom-center', label: '正下' },
+              { value: 'center', label: '正中' },
+            ] as const).map(opt => (
+              <button key={opt.value} type="button"
+                onClick={() => onPositionChange(opt.value)}
+                className="py-2 text-xs font-semibold rounded-lg"
+                style={{
+                  background: position === opt.value ? 'var(--color-primary)' : 'white',
+                  color: position === opt.value ? 'white' : 'var(--color-text-secondary)',
+                  border: '1px solid var(--color-border)', cursor: 'pointer',
+                }}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

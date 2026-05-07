@@ -202,7 +202,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
             { value: 'pill', label: '膠囊' },
             { value: 'square', label: '方角' },
           ] as const).map(({ value, label }) => (
-            <button key={value} onClick={() => updateTheme({ buttonRadius: value })}
+            <button key={value} onClick={() => updateTheme({ buttonRadius: value, cornerStyle: value })}
               className="flex-1 py-3 text-sm font-semibold transition-all"
               style={{
                 background: theme.buttonRadius === value ? theme.primaryColor : 'white',
@@ -214,6 +214,76 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
               {label}
             </button>
           ))}
+        </div>
+      </Section>
+
+      {/* Phase 2 visual upgrade: Cut corners (#切角). The 6 cut variants
+          extend the basic rounded/pill/square trio above — picking a cut
+          here overrides buttonRadius's geometry. Visual previews use the
+          same clip-path polygons as the public renderer so what they
+          see is what they'll get. */}
+      <Section title="角落樣式 ✂️">
+        <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
+          選一個切角樣式給所有卡片區塊(連結、橫幅、商品、輪播…)。
+        </p>
+        <div className="grid grid-cols-3 gap-2.5">
+          {([
+            { value: 'cut-tr',       label: '右上切', clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)' },
+            { value: 'cut-tl',       label: '左上切', clip: 'polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px)' },
+            { value: 'cut-br',       label: '右下切', clip: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' },
+            { value: 'cut-bl',       label: '左下切', clip: 'polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
+            { value: 'cut-diagonal', label: '對角切', clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
+            { value: 'notched',      label: '門票形', clip: 'polygon(0 0, 100% 0, 100% calc(50% - 6px), calc(100% - 6px) 50%, 100% calc(50% + 6px), 100% 100%, 0 100%, 0 calc(50% + 6px), 6px 50%, 0 calc(50% - 6px))' },
+          ] as const).map(({ value, label, clip }) => {
+            const active = theme.cornerStyle === value
+            return (
+              <button key={value} onClick={() => updateTheme({ cornerStyle: value })}
+                className="relative py-7 px-3 text-xs font-semibold transition-all overflow-hidden"
+                style={{
+                  background: active ? theme.primaryColor : 'white',
+                  color: active ? 'white' : 'var(--color-text-secondary)',
+                  border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
+                  borderRadius: 0,
+                  clipPath: clip,
+                  cursor: 'pointer',
+                }}>
+                {label}
+              </button>
+            )
+          })}
+        </div>
+      </Section>
+
+      {/* Phase 2 visual upgrade: Entrance animation (#動畫). Driven by
+          IntersectionObserver in AnimatedBlock so blocks animate as the
+          user scrolls down — closes the "Portaly feels alive" gap. */}
+      <Section title="進場動畫 🎬">
+        <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
+          每個區塊滑進畫面時的動效。系統會自動尊重使用者的「減少動態」偏好。
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { value: 'none',        label: '無' },
+            { value: 'fade',        label: '淡入' },
+            { value: 'slide-up',    label: '上滑' },
+            { value: 'slide-left',  label: '左滑' },
+            { value: 'slide-right', label: '右滑' },
+            { value: 'scale',       label: '縮放' },
+          ] as const).map(({ value, label }) => {
+            const active = (theme.entranceAnimation ?? 'slide-up') === value
+            return (
+              <button key={value} onClick={() => updateTheme({ entranceAnimation: value })}
+                className="py-3 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: active ? theme.primaryColor : 'white',
+                  color: active ? 'white' : 'var(--color-text-secondary)',
+                  border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
+                  cursor: 'pointer',
+                }}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </Section>
     </div>
