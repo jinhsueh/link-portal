@@ -665,11 +665,19 @@ function CarouselBlock({ block }: { block: BlockData }) {
   if (overlay && hasText) {
     const o = overlayTextStyles(content.overlayPosition)
     const overlayCard = (
+      // 16:9 aspect-ratio container: most marketing banners are designed
+      // at 16:9 (matches YouTube thumbnails), so cover-filling at this
+      // ratio rarely crops actual content. Previous maxHeight: 320 with
+      // unconstrained aspect made tall images get their tops/bottoms
+      // chopped off (customer screenshot).
       <div className="relative w-full overflow-hidden" style={{
         ...themeShape,
+        aspectRatio: '16 / 9',
         boxShadow: 'var(--shadow-sm)',
       }}>
-        <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 320, display: 'block' }} />
+        <img src={img.url} alt={img.alt ?? ''}
+          className="w-full h-full object-cover"
+          style={{ display: 'block' }} />
         <div aria-hidden style={o.gradient} />
         <div style={o.wrapper}>
           <div style={o.text}>
@@ -700,15 +708,20 @@ function CarouselBlock({ block }: { block: BlockData }) {
   }
 
   // ── LEGACY mode: caption row below the image. ──
+  // Same 16:9 container as overlay mode for visual consistency — every
+  // carousel reads as a uniform "designed" thumbnail strip.
   const carouselInner = (
     <div className="relative w-full" style={{
       ...(hasText
         ? { borderRadius: 0, clipPath: 'none' }   // outer card owns the shape
         : themeShape),
+      aspectRatio: '16 / 9',
       overflow: 'hidden',
       boxShadow: hasText ? 'none' : 'var(--shadow-sm)',
     }}>
-      <img src={img.url} alt={img.alt ?? ''} className="w-full object-cover" style={{ maxHeight: 280, display: 'block' }} />
+      <img src={img.url} alt={img.alt ?? ''}
+        className="w-full h-full object-cover"
+        style={{ display: 'block' }} />
       {navControls}
     </div>
   )

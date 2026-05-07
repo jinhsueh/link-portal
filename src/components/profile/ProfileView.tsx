@@ -114,6 +114,175 @@ export function ProfileView({
     ? 'grid grid-cols-1 sm:grid-cols-2 gap-3'
     : 'flex flex-col gap-3'
 
+  // ── HERO-BANNER layout (Portaly-style) ──
+  // Full-bleed banner across the entire viewport, avatar overlapping the
+  // banner's bottom-left, name + socials in a horizontal row to the right.
+  // Below: wide bio + 2-col blocks grid. Mobile collapses everything to
+  // a centred single-column stack so it stays scannable on phones.
+  if (layout === 'hero-banner') {
+    return (
+      <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
+        {/* Hero banner — full viewport width (no max-w cap). Falls back to
+            a brand-tinted gradient panel when no banner image is set, so
+            the layout still reads as "hero-led" without an upload. */}
+        <div style={{
+          width: '100%',
+          aspectRatio: '21 / 9',
+          maxHeight: 440,
+          minHeight: 220,
+          overflow: 'hidden',
+          position: 'relative',
+          background: bannerUrl
+            ? undefined
+            : `linear-gradient(135deg, ${theme.primaryColor}30 0%, ${theme.primaryColor}10 50%, ${bg} 100%)`,
+        }}>
+          {bannerUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={bannerUrl} alt={`${displayName} banner`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+          )}
+        </div>
+
+        {/* Content area — wider than narrow layouts to match hero scale */}
+        <div className="mx-auto px-4 lg:px-6" style={{ maxWidth: 1080 }}>
+
+          {/* Profile header row: avatar overlaps banner; name + social to right */}
+          <div className="flex flex-col lg:flex-row items-center lg:items-end gap-5 lg:gap-7"
+            style={{ marginTop: -64 }}>
+            {/* Avatar — large (140px) so it reads strong against the banner */}
+            <div className="relative flex-shrink-0" style={{ width: 140, height: 140 }}>
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt={displayName}
+                  className="w-full h-full rounded-full object-cover"
+                  style={{
+                    border: '5px solid white',
+                    boxShadow: `0 12px 36px ${theme.primaryColor}50, 0 4px 12px rgba(0,0,0,0.10)`,
+                  }} />
+              ) : (
+                <div className="w-full h-full rounded-full flex items-center justify-center font-bold"
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}cc)`,
+                    color: 'white',
+                    fontSize: 52,
+                    border: '5px solid white',
+                    boxShadow: `0 12px 36px ${theme.primaryColor}50, 0 4px 12px rgba(0,0,0,0.10)`,
+                    fontFamily: 'var(--font-display)',
+                  }}>
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+
+            {/* Name + socials, horizontally aligned next to avatar on desktop */}
+            <div className="flex-1 min-w-0 text-center lg:text-left lg:pb-2">
+              <h1 className="font-bold" style={{
+                fontSize: 30,
+                color: isDark ? '#fff' : 'var(--color-text-primary)',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.15,
+              }}>
+                {displayName}
+              </h1>
+              {socialLinks.length > 0 && (
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 mt-3">
+                  {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
+                </div>
+              )}
+            </div>
+
+            {/* Share controls — hidden on mobile (we render below); on desktop
+                sits at the right edge of the header row, top-aligned with the
+                avatar, mirroring Portaly's [share][qr][收藏] strip. */}
+            <div className="hidden lg:block lg:pb-2 lg:ml-auto">
+              <ShareBar url={shareUrl} title={`${displayName} | Beam`} />
+            </div>
+          </div>
+
+          {/* Bio — wide, single paragraph below the header row */}
+          {bio && (
+            <p className="mt-6 text-center lg:text-left text-sm" style={{
+              color: isDark ? 'rgba(255,255,255,0.78)' : 'var(--color-text-secondary)',
+              lineHeight: 1.7,
+              maxWidth: 720,
+              whiteSpace: 'pre-line',
+              margin: '24px auto 0',
+            }}>
+              {bio}
+            </p>
+          )}
+
+          {/* Mobile share — desktop has it inline above */}
+          <div className="mt-6 lg:hidden">
+            <ShareBar url={shareUrl} title={`${displayName} | Beam`} />
+          </div>
+
+          {/* Page tabs — same instant-toggle pattern as the other layouts */}
+          {pages.length > 1 && (
+            <div className="flex justify-center lg:justify-start gap-2 mt-8 overflow-x-auto pb-1 -mx-2 px-2">
+              {pages.map(p => {
+                const active = p.id === activePage.id
+                return (
+                  <button key={p.id}
+                    onClick={() => {
+                      setActiveSlug(p.slug)
+                      if (typeof window !== 'undefined') {
+                        const url = new URL(window.location.href)
+                        if (p.isDefault) url.searchParams.delete('page')
+                        else url.searchParams.set('page', p.slug)
+                        window.history.replaceState(null, '', url.toString())
+                      }
+                    }}
+                    className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0"
+                    style={{
+                      background: active ? theme.primaryColor : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)'),
+                      color: active ? 'white' : (isDark ? 'rgba(255,255,255,0.85)' : 'var(--color-text-secondary)'),
+                      border: active ? `1px solid ${theme.primaryColor}` : `1px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.06)'}`,
+                      boxShadow: active ? `0 4px 12px ${theme.primaryColor}40` : '0 1px 3px rgba(0,0,0,0.04)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      cursor: 'pointer',
+                    }}>
+                    {p.name}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {!isDemo && <PageTracker pageId={activePage.id} />}
+
+          {/* Blocks — 2-col grid on lg with rich blocks spanning full width */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-8 pb-16">
+            {blocks.map((block, i) => {
+              const fullSpan = RICH_BLOCK_TYPES.has(block.type)
+              return (
+                <AnimatedBlock key={block.id} index={i}
+                  animation={theme.entranceAnimation}
+                  className={fullSpan ? 'lg:col-span-2' : undefined}>
+                  <BlockRenderer block={block} pageId={activePage.id} btnStyle={theme.buttonStyle} />
+                </AnimatedBlock>
+              )
+            })}
+          </div>
+
+          {showWatermark && (
+            <div className="pb-12 text-center">
+              <Link href="/" className="inline-flex items-center gap-1.5 text-xs"
+                style={{
+                  color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--color-text-muted)',
+                  textDecoration: 'none',
+                }}>
+                <Link2 size={12} />
+                Beam
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen" style={{ ...themeCSS, background: bg, fontFamily: 'var(--font-primary), var(--font-cjk)' }}>
       {/* Banner — full-width hero above the avatar. Avatar overlaps the bottom

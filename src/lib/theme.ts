@@ -31,17 +31,20 @@ export interface PageTheme {
   }
 
   /**
-   * Public-page block layout preset. Two orthogonal axes baked into 4 variants:
-   *   - 直式 stacked   = single column, narrow container (default)
-   *   - 橫式 horizontal= 2-column grid, narrow container
-   *   - 滿版 fullwidth = single column, wide container
-   *   - 小卡 cards     = 2-column grid, wide container
+   * Public-page block layout preset. Five variants:
+   *   - 直式 stacked     = single column, narrow container (default)
+   *   - 橫式 horizontal  = 2-column grid, narrow container
+   *   - 滿版 fullwidth   = single column, wide container
+   *   - 小卡 cards       = 2-column grid, wide container
+   *   - hero-banner      = Portaly-style — full-bleed banner at top, avatar
+   *                        overlapping bottom-left, name + social in a horizontal
+   *                        row, then 2-col blocks. The most "designed page" look.
    *
    * "Rich" blocks (banner, video, carousel, calendar, embed, map, faq) always
    * span both columns in grid layouts — only compact types (link, heading,
    * email_form, product, countdown) actually go side-by-side.
    */
-  layout?: 'stacked' | 'horizontal' | 'fullwidth' | 'cards'
+  layout?: 'stacked' | 'horizontal' | 'fullwidth' | 'cards' | 'hero-banner'
 
   /**
    * Entrance animation when each block enters the viewport. Driven by

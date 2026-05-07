@@ -148,15 +148,18 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
             (single column / 2-col grid). */}
         <div className="grid grid-cols-2 gap-2 mb-3">
           {([
-            { value: 'stacked',    label: '直式',   desc: '單欄、窄版(預設)' },
-            { value: 'horizontal', label: '橫式',   desc: '雙欄、窄版' },
-            { value: 'fullwidth',  label: '滿版',   desc: '單欄、寬版' },
-            { value: 'cards',      label: '小卡',   desc: '雙欄、寬版' },
-          ] as const).map(({ value, label, desc }) => {
+            { value: 'stacked',     label: '直式',         desc: '單欄、窄版(預設)',          wide: false },
+            { value: 'horizontal',  label: '橫式',         desc: '雙欄、窄版',                  wide: false },
+            { value: 'fullwidth',   label: '滿版',         desc: '單欄、寬版',                  wide: false },
+            { value: 'cards',       label: '小卡',         desc: '雙欄、寬版',                  wide: false },
+            // hero-banner spans both columns of the 2-col picker since its
+            // visual is fundamentally larger / different from the others.
+            { value: 'hero-banner', label: 'Hero Banner ✨', desc: '大圖頂版 + 雙欄(Portaly 風)', wide: true  },
+          ] as const).map(({ value, label, desc, wide }) => {
             const active = (theme.layout ?? 'stacked') === value
             return (
               <button key={value} onClick={() => updateTheme({ layout: value })}
-                className="py-2.5 px-3 rounded-xl text-sm transition-all text-left"
+                className={`py-2.5 px-3 rounded-xl text-sm transition-all text-left ${wide ? 'col-span-2' : ''}`}
                 style={{
                   background: active ? theme.primaryColor : 'white',
                   color: active ? 'white' : 'var(--color-text-secondary)',
