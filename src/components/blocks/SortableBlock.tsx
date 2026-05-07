@@ -74,10 +74,11 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
         <Icon size={15} style={{ color: 'var(--color-primary)' }} />
       </div>
 
-      {/* Info */}
+      {/* Info — strip inline markdown (used in heading text) so the row
+          shows readable text instead of "**bold**" / "[link](url)" syntax. */}
       <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEdit(block)}>
         <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>
-          {block.title || TYPE_LABELS[block.type]}
+          {stripMarkdownForDisplay(block.title) || TYPE_LABELS[block.type]}
         </p>
         <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
           {TYPE_LABELS[block.type]}
@@ -237,4 +238,18 @@ function KebabMenu({ items }: { items: KebabItem[] }) {
       )}
     </div>
   )
+}
+
+/**
+ * Strip the inline-markdown subset (**bold**, [text](url)) used by heading
+ * blocks so the admin block-list row shows readable text. Newlines collapse
+ * to spaces because the row is single-line.
+ */
+function stripMarkdownForDisplay(s: string | null | undefined): string {
+  if (!s) return ''
+  return s
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1')
+    .replace(/\s*\n\s*/g, ' ')
+    .trim()
 }
