@@ -12,7 +12,21 @@ import { ProfileView } from '@/components/profile/ProfileView'
 // hnd1 (Tokyo) sits in the same AWS region as Turso, cutting query latency
 // to single-digit ms. This is a per-route hint for the App Router; the
 // homepage / static routes can stay wherever Vercel decides.
+//
+// Note: on Vercel Hobby plan this is ignored (Hobby pins to iad1) — the
+// hint kicks in once the project is on Pro. The ISR revalidate below is
+// what actually buys us speed today regardless of plan.
 export const preferredRegion = 'hnd1'
+
+// ISR: cache the rendered page for 30 seconds. First visitor pays the
+// cold-render cost; everyone after that hits a static HTML cache until
+// the next save triggers revalidation. /api/me PATCH handlers should
+// call revalidatePath(`/${username}`) after a successful write so creators
+// see their changes immediately when they refresh — but in the worst case
+// the cache simply expires after 30s. Trade-off chosen because the
+// Hobby-tier latency to Turso (3-4s/req) made every uncached visit
+// painfully slow before this.
+export const revalidate = 30
 
 interface Props {
   params: Promise<{ username: string }>
