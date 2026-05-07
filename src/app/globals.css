@@ -258,3 +258,46 @@ body {
     transition: none;
   }
 }
+
+/* ── Block hover animations (Phase 2.5) ──
+   Applied at the AnimatedBlock wrapper level so every block type — link,
+   card, banner, carousel, even text headings — picks up a uniform hover
+   effect. Different from the per-block .link-anim-* (which only fires on
+   the link button's intrinsic hover): this is the "card lifts when you
+   point at it" pattern most modern profile pages have. */
+
+.block-hover-lift,
+.block-hover-scale,
+.block-hover-glow {
+  transition: transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 0.22s cubic-bezier(0.22, 0.61, 0.36, 1),
+              filter   0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.block-hover-lift:hover,
+.block-hover-lift:focus-within {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.10));
+}
+
+.block-hover-scale:hover,
+.block-hover-scale:focus-within {
+  transform: scale(1.015);
+}
+
+.block-hover-glow:hover,
+.block-hover-glow:focus-within {
+  filter: drop-shadow(0 0 14px var(--theme-primary, #5090FF))
+          drop-shadow(0 8px 16px rgba(0,0,0,0.06));
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block-hover-lift:hover,
+  .block-hover-scale:hover,
+  .block-hover-glow:hover {
+    transform: none;
+    filter: none;
+  }
+}

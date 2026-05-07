@@ -56,6 +56,21 @@ export interface PageTheme {
   entranceAnimation?: 'none' | 'fade' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale'
 
   /**
+   * Hover animation when mouse passes over each block. Applied to the
+   * AnimatedBlock wrapper so it covers every block type uniformly.
+   *
+   *   none   — no hover effect (default before this option existed)
+   *   lift   — translateY(-3px) + softened shadow (current default)
+   *   scale  — subtle 1.015 scale-up
+   *   glow   — primary-colour ring + glow halo
+   *
+   * Honours `prefers-reduced-motion`. LinkBlock's per-block animation
+   * setting (bounce / scale) is independent — runs in addition to the
+   * block-level hover, applied only to the link itself.
+   */
+  hoverAnimation?: 'none' | 'lift' | 'scale' | 'glow'
+
+  /**
    * Card corner geometry. Extends `buttonRadius` (kept for backward compat)
    * with five "cut corner" variants that use `clip-path: polygon(...)` to
    * produce 45° angled corners — visually distinctive (Portaly / ticket-stub
@@ -88,6 +103,7 @@ export const DEFAULT_THEME: PageTheme = {
   layout: 'stacked',
   entranceAnimation: 'slide-up',
   cornerStyle: 'rounded',
+  hoverAnimation: 'lift',
 }
 
 export const PRESET_THEMES: { name: string; theme: Partial<PageTheme> }[] = [

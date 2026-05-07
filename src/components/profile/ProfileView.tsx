@@ -259,6 +259,7 @@ export function ProfileView({
               return (
                 <AnimatedBlock key={block.id} index={i}
                   animation={theme.entranceAnimation}
+                  hover={theme.hoverAnimation}
                   className={fullSpan ? 'lg:col-span-2' : undefined}>
                   <BlockRenderer block={block} pageId={activePage.id} btnStyle={theme.buttonStyle} />
                 </AnimatedBlock>
@@ -451,6 +452,7 @@ export function ProfileView({
             return (
               <AnimatedBlock key={block.id} index={i}
                 animation={theme.entranceAnimation}
+                hover={theme.hoverAnimation}
                 className={fullSpan ? 'sm:col-span-2' : undefined}>
                 <BlockRenderer block={block} pageId={activePage.id} btnStyle={theme.buttonStyle} />
               </AnimatedBlock>

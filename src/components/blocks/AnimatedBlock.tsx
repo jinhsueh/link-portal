@@ -10,6 +10,8 @@ export type EntranceAnimation =
   | 'slide-right'
   | 'scale'
 
+export type HoverAnimation = 'none' | 'lift' | 'scale' | 'glow'
+
 interface Props {
   index: number
   children: React.ReactNode
@@ -23,6 +25,13 @@ interface Props {
    * prefers-reduced-motion regardless via CSS).
    */
   animation?: EntranceAnimation
+  /**
+   * Theme-driven hover effect (lift / scale / glow). Stacks on top of any
+   * intrinsic block hover behaviour (e.g. LinkBlock's bounce). Default
+   * 'lift' so every page gets some response when the user mouses over a
+   * card, not the previous static-stone feel.
+   */
+  hover?: HoverAnimation
 }
 
 /**
@@ -39,7 +48,7 @@ interface Props {
  * we still apply a small index-based delay so they cascade visually instead
  * of slamming in together.
  */
-export function AnimatedBlock({ index, children, className, animation = 'slide-up' }: Props) {
+export function AnimatedBlock({ index, children, className, animation = 'slide-up', hover = 'lift' }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
 
@@ -93,8 +102,9 @@ export function AnimatedBlock({ index, children, className, animation = 'slide-u
   // Compose the class: base (for the resting hidden state) + is-visible
   // when triggered. The CSS file owns what `block-anim-slide-up` etc. mean.
   const animClass = animation !== 'none' ? `block-anim-${animation}` : ''
+  const hoverClass = hover !== 'none' ? `block-hover-${hover}` : ''
   const visibleClass = visible ? 'is-visible' : ''
-  const composed = [className, animClass, visibleClass].filter(Boolean).join(' ')
+  const composed = [className, animClass, hoverClass, visibleClass].filter(Boolean).join(' ')
 
   return (
     <div ref={ref} className={composed}>
