@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BlockData } from '@/types'
@@ -10,43 +11,41 @@ import { ProfileView } from '@/components/profile/ProfileView'
 // Without this, Vercel default-runs in iad1 (Virginia), and every Prisma
 // query crosses the Pacific — adds ~150-200ms × N round-trips per request.
 // hnd1 (Tokyo) sits in the same AWS region as Turso, cutting query latency
-// to single-digit ms. This is a per-route hint for the App Router; the
-// homepage / static routes can stay wherever Vercel decides.
-//
-// Note: on Vercel Hobby plan this is ignored (Hobby pins to iad1) — the
-// hint kicks in once the project is on Pro. The ISR revalidate below is
-// what actually buys us speed today regardless of plan.
+// to single-digit ms. Note: Vercel Hobby ignores this (pins to iad1); the
+// data-cache below is what actually buys us speed regardless of plan.
 export const preferredRegion = 'hnd1'
-
-// ISR: cache the rendered page for 30 seconds. First visitor pays the
-// cold-render cost; everyone after that hits a static HTML cache until
-// the next save triggers revalidation. /api/me PATCH handlers should
-// call revalidatePath(`/${username}`) after a successful write so creators
-// see their changes immediately when they refresh — but in the worst case
-// the cache simply expires after 30s. Trade-off chosen because the
-// Hobby-tier latency to Turso (3-4s/req) made every uncached visit
-// painfully slow before this.
-export const revalidate = 30
 
 interface Props {
   params: Promise<{ username: string }>
   searchParams: Promise<{ page?: string }>
 }
 
-// Wrap in React's `cache()` so the same lookup inside one render — page
-// component + generateMetadata BOTH call this — dedupes to a single Turso
-// round-trip. Without this, the public profile route hit Turso twice per
-// request and (because Turso is in ap-northeast-1 while Vercel functions
-// default to iad1) added ~1.5s of avoidable latency to every page load.
-const getProfile = cache(async (username: string) => {
-  return prisma.user.findUnique({
-    where: { username },
-    include: {
-      pages: { orderBy: { order: 'asc' }, include: { blocks: { orderBy: { order: 'asc' } } } },
-      socialLinks: { orderBy: { order: 'asc' } },
-    },
-  })
-})
+// `searchParams` access opts the route into fully-dynamic rendering, so a
+// page-level `revalidate = N` would be ignored. We cache the DATA fetch
+// instead via unstable_cache — the page still re-renders on every request,
+// but the slow cross-Pacific Turso roundtrip is skipped for 30 seconds.
+//
+// Cache invalidation: profile-write handlers (e.g. /api/me PATCH, blocks
+// CRUD) can call `revalidateTag('profile')` to flush this cache instantly
+// when a creator saves changes. In the worst case the cache simply expires
+// after 30s on its own.
+const getProfileCached = unstable_cache(
+  async (username: string) => {
+    return prisma.user.findUnique({
+      where: { username },
+      include: {
+        pages: { orderBy: { order: 'asc' }, include: { blocks: { orderBy: { order: 'asc' } } } },
+        socialLinks: { orderBy: { order: 'asc' } },
+      },
+    })
+  },
+  ['profile-by-username'],
+  { revalidate: 30, tags: ['profile'] },
+)
+
+// Outer React.cache() dedupes within ONE render so the page component + its
+// generateMetadata sibling share a single call to the data-cached fetcher.
+const getProfile = cache(async (username: string) => getProfileCached(username))
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { username } = await params
