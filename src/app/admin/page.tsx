@@ -513,9 +513,24 @@ export default function AdminPage() {
                 <OnboardingChecklist
                   hasBlocks={blocks.length > 0}
                   hasProfile={!!(user.avatarUrl || user.bio)}
+                  // Detect "style picked" by inspecting the parsed theme:
+                  // any of cornerStyle, entranceAnimation, or primaryColor
+                  // diverging from the Beam defaults counts. We don't make
+                  // this strict (e.g. require ALL three) — one nudge is
+                  // enough to claim the user has "engaged" with style.
+                  hasPickedStyle={(() => {
+                    if (!user.theme) return false
+                    try {
+                      const t = JSON.parse(user.theme)
+                      return !!(t.cornerStyle && t.cornerStyle !== 'rounded')
+                        || !!(t.entranceAnimation && t.entranceAnimation !== 'slide-up')
+                        || (typeof t.primaryColor === 'string' && t.primaryColor.toUpperCase() !== '#5090FF')
+                    } catch { return false }
+                  })()}
                   username={user.username}
                   onAddBlock={() => setShowAddModal(true)}
                   onGoToSettings={() => router.push('/admin/settings')}
+                  onGoToAppearance={() => setEditorMode('appearance')}
                 />
               )}
 

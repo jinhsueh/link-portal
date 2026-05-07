@@ -123,6 +123,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     | { kind: 'carousel'; index: number; file: File }
     | { kind: 'link-icon'; file: File }
     | { kind: 'grid'; index: number; file: File }
+    | { kind: 'feature'; file: File }
   const [pendingBlockImage, setPendingBlockImage] = useState<BlockImageTarget | null>(null)
   const uploadCroppedBlockImage = async (cropped: File) => {
     if (!pendingBlockImage) return
@@ -146,6 +147,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           const idx = target.index
           setGridCells(prev => prev.map((c, j) => j === idx ? { ...c, url: data.url } : c))
         }
+        else if (target.kind === 'feature') setFcImageUrl(data.url)
       }
     } catch { /* silent */ }
     setUploading(false)
@@ -231,6 +233,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(gridOverlay && gridOverlayPos !== 'bottom-left' ? { overlayPosition: gridOverlayPos } : {}),
         }
         break
+      case 'feature_card':
+        newContent = {
+          imageUrl: fcImageUrl,
+          ...(fcDescription ? { description: fcDescription } : {}),
+          ...(fcCtaLabel ? { ctaLabel: fcCtaLabel } : {}),
+          ...(fcCtaUrl ? { ctaUrl: fcCtaUrl } : {}),
+          ...(fcImagePosition !== 'left' ? { imagePosition: fcImagePosition } : {}),
+        }
+        break
       case 'map':
         newContent = {
           query: mapQuery,
@@ -304,6 +315,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     (content.overlayPosition as 'bottom-left' | 'bottom-center' | 'center') ?? 'bottom-left'
   )
 
+  // Feature card — Portaly-style image + description + CTA card
+  const [fcImageUrl, setFcImageUrl] = useState((content.imageUrl as string) ?? '')
+  const [fcDescription, setFcDescription] = useState((content.description as string) ?? '')
+  const [fcCtaLabel, setFcCtaLabel] = useState((content.ctaLabel as string) ?? '')
+  const [fcCtaUrl, setFcCtaUrl] = useState((content.ctaUrl as string) ?? '')
+  const [fcImagePosition, setFcImagePosition] = useState<'left' | 'right'>(
+    (content.imagePosition as 'left' | 'right') ?? 'left'
+  )
+
   // Map
   const [mapQuery, setMapQuery] = useState((content.query as string) ?? '')
   const [mapZoom, setMapZoom] = useState(String(content.zoom ?? 15))
@@ -332,6 +352,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     link: '連結按鈕', banner: '橫幅看板', video: '影片',
     email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
     countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
+    feature_card: '圖文卡片',
     map: '地圖嵌入', embed: 'HTML 嵌入',
     calendar_event: '加入日曆',
   }
@@ -432,6 +453,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           }
         }
         break
+      case 'feature_card':
+        if (fcImageUrl) {
+          previewContent = {
+            imageUrl: fcImageUrl,
+            ...(fcDescription ? { description: fcDescription } : {}),
+            ...(fcCtaLabel ? { ctaLabel: fcCtaLabel } : {}),
+            ...(fcCtaUrl ? { ctaUrl: fcCtaUrl } : {}),
+            ...(fcImagePosition !== 'left' ? { imagePosition: fcImagePosition } : {}),
+          }
+        }
+        break
     }
     if (!previewContent) return null
     return {
@@ -456,6 +488,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     calStart, calEnd, calTimezone, calAllDay, calLocation, calDescription, calIconUrl,
     carouselImages, carouselCaption, carouselOverlay, carouselOverlayPos,
     gridCells, gridOverlay, gridOverlayPos,
+    fcImageUrl, fcDescription, fcCtaLabel, fcCtaUrl, fcImagePosition,
   ])
 
   return (
@@ -1119,6 +1152,73 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             </>
           )}
 
+          {/* ── FEATURE CARD (Portaly-style image-left, text-right) ── */}
+          {block.type === 'feature_card' && (
+            <>
+              <Field label="標題">
+                <input value={title} onChange={e => setTitle(e.target.value)} required
+                  placeholder="例:AI 顧問服務" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="圖片">
+                <div className="flex gap-2 items-center">
+                  <input value={fcImageUrl} onChange={e => setFcImageUrl(e.target.value)} required
+                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                  <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                    style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                    <Upload size={14} />
+                    {uploading ? '...' : '上傳'}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]
+                        if (f) setPendingBlockImage({ kind: 'feature', file: f })
+                        e.target.value = ''
+                      }} />
+                  </label>
+                </div>
+                {fcImageUrl && (
+                  <img src={fcImageUrl} alt="Preview" className="mt-2 rounded-lg"
+                    style={{ width: '100%', height: 100, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                )}
+              </Field>
+              <Field label="說明文字（選填）">
+                <textarea value={fcDescription} onChange={e => setFcDescription(e.target.value)}
+                  placeholder="這段文字會顯示在圖片旁邊,支援多行" rows={3}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="圖片位置">
+                <div className="flex gap-2">
+                  {(['left', 'right'] as const).map(pos => (
+                    <button key={pos} type="button"
+                      onClick={() => setFcImagePosition(pos)}
+                      className="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors"
+                      style={{
+                        background: fcImagePosition === pos ? 'var(--color-primary)' : 'white',
+                        color: fcImagePosition === pos ? 'white' : 'var(--color-text-secondary)',
+                        border: `1px solid ${fcImagePosition === pos ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                        cursor: 'pointer',
+                      }}>
+                      {pos === 'left' ? '🖼️ 圖在左' : '圖在右 🖼️'}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                  💡 連續多張圖文卡片時,左右交替排列(例如:左、右、左)會更有節奏感。
+                </p>
+              </Field>
+              {/* Optional CTA — when both label + URL set, the whole card becomes
+                  clickable; otherwise it's a static info card. */}
+              <Field label="CTA 按鈕文字（選填）">
+                <input value={fcCtaLabel} onChange={e => setFcCtaLabel(e.target.value)}
+                  placeholder="例:了解更多 / 立即報名" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="CTA 連結網址（選填）">
+                <input value={fcCtaUrl} onChange={e => setFcCtaUrl(e.target.value)}
+                  placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+            </>
+          )}
+
           {/* ── MAP ── */}
           {block.type === 'map' && (
             <>
@@ -1279,6 +1379,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             : pendingBlockImage.kind === 'product' ? 1
             : pendingBlockImage.kind === 'link-icon' ? 1
             : pendingBlockImage.kind === 'grid' ? 1
+            : pendingBlockImage.kind === 'feature' ? 4 / 3
             : 16 / 9
           }
           cropShape={pendingBlockImage.kind === 'link-icon' ? 'round' : 'rect'}
@@ -1288,6 +1389,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             : pendingBlockImage.kind === 'product' ? '裁切商品圖片'
             : pendingBlockImage.kind === 'link-icon' ? '裁切連結 icon'
             : pendingBlockImage.kind === 'grid' ? `裁切第 ${pendingBlockImage.index + 1} 格圖片`
+            : pendingBlockImage.kind === 'feature' ? '裁切圖文卡片圖片(4:3)'
             : `裁切第 ${pendingBlockImage.index + 1} 張圖片`
           }
           onComplete={uploadCroppedBlockImage}

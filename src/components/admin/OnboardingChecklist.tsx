@@ -1,17 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Link2, User, Share2, X, Sparkles } from 'lucide-react'
+import { Check, X, Sparkles } from 'lucide-react'
 
 interface Props {
   hasBlocks: boolean
   hasProfile: boolean // avatarUrl or bio set
+  /** True when the user has nudged at least one theme dial off the default
+   *  (cornerStyle / entranceAnimation / primaryColor). Drives the new
+   *  "選一個視覺風格" onboarding step. */
+  hasPickedStyle: boolean
   username: string
   onAddBlock: () => void
   onGoToSettings: () => void
+  onGoToAppearance: () => void
 }
 
-export function OnboardingChecklist({ hasBlocks, hasProfile, username, onAddBlock, onGoToSettings }: Props) {
+export function OnboardingChecklist({ hasBlocks, hasProfile, hasPickedStyle, username, onAddBlock, onGoToSettings, onGoToAppearance }: Props) {
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('onboarding-dismissed') === 'true'
     return false
@@ -36,13 +41,17 @@ export function OnboardingChecklist({ hasBlocks, hasProfile, username, onAddBloc
     setTimeout(() => setLinkCopied(false), 2000)
   }
 
-  const allDone = hasBlocks && hasProfile && hasShared
+  const allDone = hasBlocks && hasProfile && hasPickedStyle && hasShared
   if (dismissed || allDone) return null
 
   const steps = [
     { done: true, label: '建立帳號', action: null },
     { done: hasBlocks, label: '加入你的第一個連結', action: onAddBlock, actionLabel: '新增區塊' },
     { done: hasProfile, label: '設定大頭照和自我介紹', action: onGoToSettings, actionLabel: '前往設定' },
+    // New step: nudge users to customise their visual style so they don't
+    // stay on the default Beam blue + rounded corners forever. Without this,
+    // the default theme reads "範本未填" rather than "creator's brand".
+    { done: hasPickedStyle, label: '選一個視覺風格(切角 / 動畫 / 主題色)', action: onGoToAppearance, actionLabel: '前往外觀' },
     { done: hasShared, label: '分享你的頁面連結', action: handleCopyLink, actionLabel: linkCopied ? '已複製！' : '複製連結' },
   ]
 

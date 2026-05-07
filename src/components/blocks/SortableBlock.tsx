@@ -8,12 +8,14 @@ import {
   GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag,
   Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin,
   Code, CalendarPlus, MoreHorizontal, Star, FolderInput, ChevronRight, LayoutGrid,
+  Newspaper,
 } from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
   email_form: Mail, product: ShoppingBag, heading: AlignLeft, social: ExternalLink,
   countdown: Timer, faq: HelpCircle, carousel: Images, image_grid: LayoutGrid,
+  feature_card: Newspaper,
   map: MapPin, embed: Code,
   calendar_event: CalendarPlus,
 }
@@ -21,6 +23,7 @@ const TYPE_LABELS: Record<BlockType, string> = {
   link: '連結按鈕', banner: '橫幅看板', video: '影片',
   email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
   countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
+  feature_card: '圖文卡片',
   map: '地圖嵌入', embed: 'HTML 嵌入',
   calendar_event: '加入日曆',
 }

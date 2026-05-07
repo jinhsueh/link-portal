@@ -1,6 +1,6 @@
 'use client'
 
-import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent, ImageOverlayPosition } from '@/types'
+import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent, ImageOverlayPosition, FeatureCardContent } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
@@ -817,6 +817,99 @@ function ImageGridBlock({ block }: { block: BlockData }) {
   )
 }
 
+function FeatureCardBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
+  // Portaly-style horizontal feature card: image-and-text-side-by-side on
+  // desktop, image-on-top stack on mobile. The single biggest visual gap
+  // vs Portaly's storytelling pages (per the Phase 1 audit).
+  const content = block.content as FeatureCardContent
+  const imageOnRight = content.imagePosition === 'right'
+  const hasCta = !!(content.ctaLabel && content.ctaUrl)
+
+  const card = (
+    <div
+      className="w-full overflow-hidden flex flex-col sm:flex-row"
+      style={{
+        background: 'var(--theme-card-bg, white)',
+        border: '1px solid var(--theme-border, var(--color-border))',
+        ...themeShape,
+        boxShadow: 'var(--shadow-sm)',
+        // Reverse on desktop only when imagePosition is 'right'. Mobile
+        // keeps image-on-top regardless so the stack reads consistently.
+        flexDirection: imageOnRight
+          ? 'column'  // stays column on mobile; sm: kicks in below
+          : 'column',
+      }}
+    >
+      {/* Mobile: always image first. Desktop: order driven by imagePosition. */}
+      {content.imageUrl && (
+        <div
+          className={imageOnRight ? 'sm:order-2' : 'sm:order-1'}
+          style={{ width: '100%', flexShrink: 0 }}
+        >
+          <img
+            src={content.imageUrl}
+            alt={block.title ?? ''}
+            className="w-full object-cover"
+            style={{ aspectRatio: '4 / 3', display: 'block', minHeight: 160 }}
+          />
+        </div>
+      )}
+      <div
+        className={imageOnRight ? 'sm:order-1 flex-1' : 'sm:order-2 flex-1'}
+        style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}
+      >
+        {block.title && (
+          <p className="font-bold" style={{
+            fontSize: 17,
+            color: 'var(--theme-text, var(--color-text-primary))',
+            lineHeight: 1.3,
+          }}>
+            {block.title}
+          </p>
+        )}
+        {content.description && (
+          <p className="text-sm" style={{
+            color: 'var(--theme-text-secondary, var(--color-text-secondary))',
+            lineHeight: 1.6,
+            whiteSpace: 'pre-line',
+          }}>
+            {content.description}
+          </p>
+        )}
+        {hasCta && (
+          <span
+            className="inline-flex items-center gap-1 text-sm font-bold mt-1"
+            style={{
+              color: 'var(--theme-primary, var(--color-primary))',
+              alignSelf: 'flex-start',
+            }}
+          >
+            {content.ctaLabel}
+            <ChevronRight size={14} />
+          </span>
+        )}
+      </div>
+    </div>
+  )
+
+  // The whole card clicks through to the CTA URL when one exists. If not,
+  // it's just a static info card. Track click only when there's a target.
+  return hasCta ? (
+    <a
+      href={ensureUrl(content.ctaUrl!)}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => trackClick(block.id, pageId)}
+      className="block w-full"
+      style={{ textDecoration: 'none' }}
+    >
+      {card}
+    </a>
+  ) : (
+    <div className="w-full">{card}</div>
+  )
+}
+
 function MapBlock({ block }: { block: BlockData }) {
   const content = block.content as { query: string; zoom?: number; description?: string }
   const q = encodeURIComponent(content.query ?? '')
@@ -992,6 +1085,7 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'faq': return <FaqBlock block={block} />
     case 'carousel': return <CarouselBlock block={block} />
     case 'image_grid': return <ImageGridBlock block={block} />
+    case 'feature_card': return <FeatureCardBlock block={block} pageId={pageId} />
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
     case 'calendar_event': return <CalendarEventBlock block={block} pageId={pageId} />

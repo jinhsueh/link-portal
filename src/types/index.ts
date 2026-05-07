@@ -10,9 +10,30 @@ export type BlockType =
   | 'faq'
   | 'carousel'
   | 'image_grid'
+  | 'feature_card'
   | 'map'
   | 'embed'
   | 'calendar_event'
+
+/**
+ * Feature card — Portaly's "image-left, text-right" horizontal layout.
+ * Each block holds ONE feature: an image + a title + a body description
+ * + an optional CTA button. Stacks well at mobile (image on top, text
+ * below); on desktop sits image-and-text side by side. Customer flagged
+ * this as the single biggest visual gap vs. Portaly's storytelling layout.
+ */
+export interface FeatureCardContent {
+  imageUrl: string
+  /** Body copy under the title. Supports newlines. */
+  description?: string
+  /** Optional CTA button label (e.g. "了解更多"). Hidden if blank. */
+  ctaLabel?: string
+  /** Where the CTA button goes. Required only if ctaLabel is set. */
+  ctaUrl?: string
+  /** Image side. Default 'left'. Set to 'right' for visual rhythm — common
+   *  Portaly pattern is alternating left/right between consecutive cards. */
+  imagePosition?: 'left' | 'right'
+}
 
 /**
  * Position presets for text overlaid on banner / carousel / image-grid images.
@@ -166,6 +187,8 @@ export type BlockContent =
   | CountdownContent
   | FaqContent
   | CarouselContent
+  | ImageGridContent
+  | FeatureCardContent
   | MapContent
   | EmbedContent
   | CalendarEventContent
