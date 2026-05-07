@@ -7,19 +7,21 @@ import { BlockData, BlockType } from '@/types'
 import {
   GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag,
   Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin,
-  Code, CalendarPlus, MoreHorizontal, Star,
+  Code, CalendarPlus, MoreHorizontal, Star, FolderInput, ChevronRight, LayoutGrid,
 } from 'lucide-react'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
   email_form: Mail, product: ShoppingBag, heading: AlignLeft, social: ExternalLink,
-  countdown: Timer, faq: HelpCircle, carousel: Images, map: MapPin, embed: Code,
+  countdown: Timer, faq: HelpCircle, carousel: Images, image_grid: LayoutGrid,
+  map: MapPin, embed: Code,
   calendar_event: CalendarPlus,
 }
 const TYPE_LABELS: Record<BlockType, string> = {
   link: '連結按鈕', banner: '橫幅看板', video: '影片',
   email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
-  countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
+  countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
+  map: '地圖嵌入', embed: 'HTML 嵌入',
   calendar_event: '加入日曆',
 }
 
@@ -31,9 +33,12 @@ interface Props {
   onDuplicate?: (block: BlockData) => void
   onSchedule?: (block: BlockData) => void
   onPin?: (id: string, pinned: boolean) => void
+  /** Pages the block can be moved into (current page is filtered out by parent). */
+  movePages?: Array<{ id: string; name: string }>
+  onMoveToPage?: (blockId: string, pageId: string) => void
 }
 
-export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule, onPin }: Props) {
+export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule, onPin, movePages, onMoveToPage }: Props) {
   const hasSchedule = !!(block.scheduleStart || block.scheduleEnd)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id })
@@ -114,13 +119,23 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
         {block.active ? <Eye size={15} /> : <EyeOff size={15} />}
       </button>
 
-      {/* Kebab menu — collapses edit/pin/duplicate/schedule/delete (less-used actions) */}
+      {/* Kebab menu — collapses edit/pin/duplicate/schedule/move/delete (less-used actions) */}
       <KebabMenu
         items={[
           { label: '編輯',     icon: Edit2, onClick: () => onEdit(block) },
           { label: block.pinned ? '取消主推' : '設為主推', icon: Star, onClick: () => onPin?.(block.id, !block.pinned) },
           { label: '複製',     icon: Copy, onClick: () => onDuplicate?.(block) },
           { label: hasSchedule ? '修改排程' : '排程顯示', icon: Clock, onClick: () => onSchedule?.(block) },
+          // Only render the "move to other page" entry when there ARE other
+          // pages to move into. Single-page accounts wouldn't see this.
+          ...(movePages && movePages.length > 0 && onMoveToPage ? [{
+            label: '移至其他分頁',
+            icon: FolderInput,
+            submenu: movePages.map(p => ({
+              label: p.name,
+              onClick: () => onMoveToPage(block.id, p.id),
+            })),
+          }] : []),
           { label: '刪除',     icon: Trash2, onClick: () => onDelete(block.id), danger: true },
         ]}
       />
@@ -131,18 +146,24 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
 interface KebabItem {
   label: string
   icon: React.ElementType
-  onClick: () => void
+  onClick?: () => void
   danger?: boolean
+  /** When set, this item opens a submenu (e.g. 移至其他分頁 → list of pages). */
+  submenu?: Array<{ label: string; onClick: () => void }>
 }
 
 function KebabMenu({ items }: { items: KebabItem[] }) {
   const [open, setOpen] = useState(false)
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+        setOpenSubmenu(null)
+      }
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -157,23 +178,61 @@ function KebabMenu({ items }: { items: KebabItem[] }) {
         <MoreHorizontal size={15} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-10 rounded-xl py-1 min-w-[140px]"
+        <div className="absolute right-0 top-full mt-1 z-10 rounded-xl py-1 min-w-[160px]"
           style={{ background: 'white', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-lg)' }}>
-          {items.map(({ label, icon: Icon, onClick, danger }) => (
-            <button key={label}
-              onClick={() => { setOpen(false); onClick() }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors"
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: danger ? '#E53E3E' : 'var(--color-text-secondary)',
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = danger ? '#FFF5F5' : 'var(--color-surface)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
-              <Icon size={13} />
-              <span>{label}</span>
-            </button>
-          ))}
+          {items.map(({ label, icon: Icon, onClick, danger, submenu }) => {
+            const hasSub = !!submenu && submenu.length > 0
+            const isSubOpen = openSubmenu === label
+            return (
+              <div key={label} className="relative">
+                <button
+                  onClick={() => {
+                    if (hasSub) {
+                      setOpenSubmenu(isSubOpen ? null : label)
+                    } else {
+                      setOpen(false)
+                      setOpenSubmenu(null)
+                      onClick?.()
+                    }
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors"
+                  style={{
+                    background: isSubOpen ? 'var(--color-surface)' : 'none',
+                    border: 'none', cursor: 'pointer',
+                    color: danger ? '#E53E3E' : 'var(--color-text-secondary)',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = danger ? '#FFF5F5' : 'var(--color-surface)' }}
+                  onMouseLeave={e => { if (!isSubOpen) (e.currentTarget as HTMLElement).style.background = 'none' }}>
+                  <Icon size={13} />
+                  <span className="flex-1">{label}</span>
+                  {hasSub && <ChevronRight size={12} style={{ opacity: 0.6 }} />}
+                </button>
+                {hasSub && isSubOpen && (
+                  // Submenu opens to the LEFT (not right) so it doesn't push
+                  // off-screen on the right-aligned kebab. Stacks just below
+                  // its trigger so the visual relationship reads as "expand
+                  // this row" rather than "fly out".
+                  <div className="absolute right-full top-0 mr-1 rounded-xl py-1 min-w-[140px]"
+                    style={{ background: 'white', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-lg)' }}>
+                    {submenu.map(({ label: subLabel, onClick: subClick }) => (
+                      <button key={subLabel}
+                        onClick={() => { setOpen(false); setOpenSubmenu(null); subClick() }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors"
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: 'var(--color-text-secondary)', textAlign: 'left',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}>
+                        <span className="truncate">{subLabel}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

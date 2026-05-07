@@ -39,6 +39,13 @@ interface Props {
   cropShape?: 'rect' | 'round'
   /** Optional title shown in the modal header. */
   title?: string
+  /**
+   * 'banner' — show desktop + mobile viewport mock-ups under the cropper
+   * so the user can verify the crop reads well at both sizes. Customer
+   * feedback was that they couldn't tell what would be visible on each
+   * device until after publishing.
+   */
+  viewportPreview?: 'banner'
   onComplete: (cropped: File) => void
   onCancel: () => void
 }
@@ -48,6 +55,7 @@ export function ImageCropperModal({
   aspect,
   cropShape = 'rect',
   title = '裁切圖片',
+  viewportPreview,
   onComplete,
   onCancel,
 }: Props) {
@@ -57,6 +65,9 @@ export function ImageCropperModal({
   const [rotation, setRotation] = useState(0)
   const [pixelArea, setPixelArea] = useState<Area | null>(null)
   const [working, setWorking] = useState(false)
+  // Live thumbnail of the crop region for the viewport preview. Recomputed
+  // (debounced via the area callback) whenever the user pans/zooms.
+  const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null)
 
   // Read the file into a data URL once on mount.
   useEffect(() => {
@@ -65,9 +76,17 @@ export function ImageCropperModal({
     reader.readAsDataURL(file)
   }, [file])
 
-  const handleCropComplete = useCallback((_area: Area, areaPixels: Area) => {
+  const handleCropComplete = useCallback(async (_area: Area, areaPixels: Area) => {
     setPixelArea(areaPixels)
-  }, [])
+    // Update the viewport preview thumbnail. Skip when not in viewport mode
+    // to avoid the canvas render cost on every pan/zoom.
+    if (viewportPreview && imageSrc) {
+      try {
+        const dataUrl = await cropToDataUrl(imageSrc, areaPixels, rotation)
+        setPreviewDataUrl(dataUrl)
+      } catch { /* preview is best-effort */ }
+    }
+  }, [imageSrc, rotation, viewportPreview])
 
   const handleConfirm = async () => {
     if (!imageSrc || !pixelArea) return
@@ -134,6 +153,45 @@ export function ImageCropperModal({
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
             <RotateCw size={12} /> 旋轉 90°
           </button>
+
+          {/* Viewport preview — banner mode shows side-by-side desktop +
+              mobile mock-ups so the creator can see the crop in context.
+              Helps with the "桌面跟手機顯示不一樣" complaint by making both
+              renderings visible BEFORE upload. */}
+          {viewportPreview === 'banner' && previewDataUrl && (
+            <div>
+              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>
+                預覽:在公開頁的呈現(同一張圖,只是顯示尺寸不同)
+              </p>
+              <div className="flex items-start gap-3">
+                {/* Desktop mock — wider window, 3:1 aspect */}
+                <div className="flex-1">
+                  <div style={{
+                    width: '100%', aspectRatio: '3 / 1',
+                    overflow: 'hidden', borderRadius: 6,
+                    border: '1px solid var(--color-border)',
+                  }}>
+                    <img src={previewDataUrl} alt="桌面版預覽"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+                  </div>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>💻 桌面版</p>
+                </div>
+                {/* Mobile mock — phone bezel, narrower aspect kept identical (3:1)
+                    so the crop is the same on both — only render size differs. */}
+                <div style={{ width: 90 }}>
+                  <div style={{
+                    width: '100%', aspectRatio: '3 / 1',
+                    overflow: 'hidden', borderRadius: 4,
+                    border: '1px solid var(--color-border)',
+                  }}>
+                    <img src={previewDataUrl} alt="手機版預覽"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+                  </div>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>📱 手機版</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -237,4 +295,56 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = reject
     img.src = src
   })
+}
+
+/**
+ * Lightweight version of cropToFile that returns a data URL — used for the
+ * live viewport preview thumbnail. Caps preview at 480px wide so the canvas
+ * pipeline doesn't bog down on large source images during pan/zoom.
+ */
+async function cropToDataUrl(
+  imageSrc: string,
+  pixelArea: Area,
+  rotationDeg: number,
+): Promise<string> {
+  const image = await loadImage(imageSrc)
+  const rad = (rotationDeg * Math.PI) / 180
+  const safeArea = Math.max(image.width, image.height) * 2
+  const stage = document.createElement('canvas')
+  stage.width = safeArea
+  stage.height = safeArea
+  const sctx = stage.getContext('2d')!
+  sctx.translate(safeArea / 2, safeArea / 2)
+  sctx.rotate(rad)
+  sctx.translate(-image.width / 2, -image.height / 2)
+  sctx.drawImage(image, 0, 0)
+
+  const PREVIEW_MAX = 480
+  const longest = Math.max(pixelArea.width, pixelArea.height)
+  const scale = longest > PREVIEW_MAX ? PREVIEW_MAX / longest : 1
+  const outW = Math.round(pixelArea.width * scale)
+  const outH = Math.round(pixelArea.height * scale)
+
+  const cropCanvas = document.createElement('canvas')
+  cropCanvas.width = pixelArea.width
+  cropCanvas.height = pixelArea.height
+  const cctx = cropCanvas.getContext('2d')!
+  const data = sctx.getImageData(0, 0, safeArea, safeArea)
+  cctx.putImageData(
+    data,
+    Math.round(0 - safeArea / 2 + image.width / 2 - pixelArea.x),
+    Math.round(0 - safeArea / 2 + image.height / 2 - pixelArea.y),
+  )
+
+  const out = document.createElement('canvas')
+  out.width = outW
+  out.height = outH
+  const octx = out.getContext('2d')!
+  octx.imageSmoothingEnabled = true
+  octx.imageSmoothingQuality = 'medium'
+  octx.fillStyle = '#FFFFFF'
+  octx.fillRect(0, 0, outW, outH)
+  octx.drawImage(cropCanvas, 0, 0, outW, outH)
+
+  return out.toDataURL('image/jpeg', 0.7)
 }

@@ -28,6 +28,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [linkHideIcon, setLinkHideIcon] = useState(Boolean(content.hideIcon))
   const [linkBgColor, setLinkBgColor] = useState((content.bgColor as string) ?? '')
   const [linkTextColor, setLinkTextColor] = useState((content.textColor as string) ?? '')
+  // ── New link customisation fields (customer feedback #2) ──
+  const [linkIconUrl, setLinkIconUrl] = useState((content.iconUrl as string) ?? '')
+  const [linkTitleSize, setLinkTitleSize] = useState<number>((content.titleSize as number) ?? 14)
+  const [linkTitleAlign, setLinkTitleAlign] = useState<'left' | 'center' | 'right'>(
+    (content.titleAlign as 'left' | 'center' | 'right') ?? (Boolean(content.hideIcon) ? 'center' : 'left')
+  )
+  const [linkBorderColor, setLinkBorderColor] = useState((content.borderColor as string) ?? '')
+  const [linkBorderWidth, setLinkBorderWidth] = useState<number>((content.borderWidth as number) ?? 1)
+  const [linkAnimation, setLinkAnimation] = useState<'none' | 'bounce' | 'scale'>(
+    (content.animation as 'none' | 'bounce' | 'scale') ?? 'none'
+  )
 
   // Banner
   const [imageUrl, setImageUrl] = useState((content.imageUrl as string) ?? '')
@@ -38,12 +49,18 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   // Heading
   const [text, setText] = useState((content.text as string) ?? '')
   const [size, setSize] = useState<string>((content.size as string) ?? 'md')
+  const [headingColor, setHeadingColor] = useState((content.color as string) ?? '')
+  const [headingAlign, setHeadingAlign] = useState<'left' | 'center' | 'right'>(
+    (content.align as 'left' | 'center' | 'right') ?? 'center'
+  )
 
   // Product
   const [price, setPrice] = useState(String(content.price ?? ''))
   const [currency, setCurrency] = useState((content.currency as string) ?? 'NT$')
   const [productDesc, setProductDesc] = useState((content.description as string) ?? '')
   const [productImg, setProductImg] = useState((content.imageUrl as string) ?? '')
+  const [productCheckoutUrl, setProductCheckoutUrl] = useState((content.checkoutUrl as string) ?? '')
+  const [scrapingProductImg, setScrapingProductImg] = useState(false)
 
   // Email
   const [placeholder, setPlaceholder] = useState((content.placeholder as string) ?? '輸入你的 Email')
@@ -99,6 +116,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     | { kind: 'banner'; file: File }
     | { kind: 'product'; file: File }
     | { kind: 'carousel'; index: number; file: File }
+    | { kind: 'link-icon'; file: File }
+    | { kind: 'grid'; index: number; file: File }
   const [pendingBlockImage, setPendingBlockImage] = useState<BlockImageTarget | null>(null)
   const uploadCroppedBlockImage = async (cropped: File) => {
     if (!pendingBlockImage) return
@@ -113,9 +132,14 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
       if (data.url) {
         if (target.kind === 'banner') setImageUrl(data.url)
         else if (target.kind === 'product') setProductImg(data.url)
+        else if (target.kind === 'link-icon') setLinkIconUrl(data.url)
         else if (target.kind === 'carousel') {
           const idx = target.index
           setCarouselImages(prev => prev.map((im, j) => j === idx ? { ...im, url: data.url } : im))
+        }
+        else if (target.kind === 'grid') {
+          const idx = target.index
+          setGridCells(prev => prev.map((c, j) => j === idx ? { ...c, url: data.url } : c))
         }
       }
     } catch { /* silent */ }
@@ -134,6 +158,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkHideIcon ? { hideIcon: true } : {}),
           ...(linkBgColor ? { bgColor: linkBgColor } : {}),
           ...(linkTextColor ? { textColor: linkTextColor } : {}),
+          ...(linkIconUrl ? { iconUrl: linkIconUrl } : {}),
+          ...(linkTitleSize !== 14 ? { titleSize: linkTitleSize } : {}),
+          ...(linkTitleAlign !== (linkHideIcon ? 'center' : 'left') ? { titleAlign: linkTitleAlign } : {}),
+          ...(linkBorderColor ? { borderColor: linkBorderColor } : {}),
+          ...(linkBorderWidth !== 1 ? { borderWidth: linkBorderWidth } : {}),
+          ...(linkAnimation !== 'none' ? { animation: linkAnimation } : {}),
         }
         break
       case 'banner':
@@ -145,7 +175,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         }
         break
       case 'heading':
-        newContent = { text, size }
+        newContent = {
+          text, size,
+          ...(headingColor ? { color: headingColor } : {}),
+          ...(headingAlign !== 'center' ? { align: headingAlign } : {}),
+        }
         break
       case 'product':
         newContent = {
@@ -153,6 +187,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           currency,
           ...(productDesc ? { description: productDesc } : {}),
           ...(productImg ? { imageUrl: productImg } : {}),
+          ...(productCheckoutUrl ? { checkoutUrl: productCheckoutUrl } : {}),
         }
         break
       case 'email_form':
@@ -175,8 +210,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(carouselCaption ? { caption: carouselCaption } : {}),
         }
         break
+      case 'image_grid':
+        newContent = {
+          cells: gridCells.filter(c => c.url.trim()),
+        }
+        break
       case 'map':
-        newContent = { query: mapQuery, zoom: parseInt(mapZoom) || 15 }
+        newContent = {
+          query: mapQuery,
+          zoom: parseInt(mapZoom) || 15,
+          ...(mapDescription ? { description: mapDescription } : {}),
+        }
         break
       case 'embed':
         newContent = { html: embedHtml, height: parseInt(embedHeight) || 300 }
@@ -231,9 +275,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   )
   const [carouselCaption, setCarouselCaption] = useState((content.caption as string) ?? '')
 
+  // Image Grid (2-column) — array of { url, linkUrl?, alt? }
+  const [gridCells, setGridCells] = useState<Array<{ url: string; linkUrl?: string; alt?: string }>>(
+    (content.cells as Array<{ url: string; linkUrl?: string; alt?: string }>) ?? [{ url: '' }, { url: '' }]
+  )
+
   // Map
   const [mapQuery, setMapQuery] = useState((content.query as string) ?? '')
   const [mapZoom, setMapZoom] = useState(String(content.zoom ?? 15))
+  const [mapDescription, setMapDescription] = useState((content.description as string) ?? '')
 
   // Embed
   const [embedHtml, setEmbedHtml] = useState((content.html as string) ?? '')
@@ -257,7 +307,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const TYPE_LABELS: Record<BlockType, string> = {
     link: '連結按鈕', banner: '橫幅看板', video: '影片',
     email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
-    countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', map: '地圖嵌入', embed: 'HTML 嵌入',
+    countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
+    map: '地圖嵌入', embed: 'HTML 嵌入',
     calendar_event: '加入日曆',
   }
 
@@ -277,6 +328,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkHideIcon ? { hideIcon: true } : {}),
           ...(linkBgColor ? { bgColor: linkBgColor } : {}),
           ...(linkTextColor ? { textColor: linkTextColor } : {}),
+          ...(linkIconUrl ? { iconUrl: linkIconUrl } : {}),
+          ...(linkTitleSize !== 14 ? { titleSize: linkTitleSize } : {}),
+          ...(linkTitleAlign !== (linkHideIcon ? 'center' : 'left') ? { titleAlign: linkTitleAlign } : {}),
+          ...(linkBorderColor ? { borderColor: linkBorderColor } : {}),
+          ...(linkBorderWidth !== 1 ? { borderWidth: linkBorderWidth } : {}),
+          ...(linkAnimation !== 'none' ? { animation: linkAnimation } : {}),
         }
         break
       case 'banner':
@@ -288,7 +345,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         }
         break
       case 'heading':
-        previewContent = { text: text || '標題預覽', size }
+        previewContent = {
+          text: text || '標題預覽', size,
+          ...(headingColor ? { color: headingColor } : {}),
+          ...(headingAlign !== 'center' ? { align: headingAlign } : {}),
+        }
         break
       case 'video':
         if (videoUrl) {
@@ -301,6 +362,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           currency,
           ...(productDesc ? { description: productDesc } : {}),
           ...(productImg ? { imageUrl: productImg } : {}),
+          ...(productCheckoutUrl ? { checkoutUrl: productCheckoutUrl } : {}),
         }
         break
       case 'countdown':
@@ -343,10 +405,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    block.type, title, text, size, url, linkDesc, linkHideIcon, linkBgColor, linkTextColor,
+    block.type, title, text, size, headingColor, headingAlign,
+    url, linkDesc, linkHideIcon, linkBgColor, linkTextColor,
+    linkIconUrl, linkTitleSize, linkTitleAlign, linkBorderColor, linkBorderWidth, linkAnimation,
     imageUrl, linkUrl, alt, bannerCaption,
     videoUrl, videoDescription,
-    price, currency, productDesc, productImg,
+    price, currency, productDesc, productImg, productCheckoutUrl,
     targetDate, countdownLabel,
     calStart, calEnd, calTimezone, calAllDay, calLocation, calDescription, calIconUrl,
     carouselImages, carouselCaption,
@@ -452,6 +516,124 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     重設為主題預設色
                   </button>
                 )}
+
+                {/* ── Custom icon upload (replaces auto-fetched favicon) ── */}
+                <div className="pt-3" style={{ borderTop: '1px dashed var(--color-border)' }}>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                    自訂左側 icon(取代自動抓取的網站圖示)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {linkIconUrl && (
+                      <img src={linkIconUrl} alt="" className="rounded"
+                        style={{ width: 36, height: 36, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                    )}
+                    <label className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                      <Upload size={12} /> {uploading ? '上傳中…' : (linkIconUrl ? '更換' : '上傳 icon')}
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={e => {
+                          const f = e.target.files?.[0]
+                          if (f) setPendingBlockImage({ kind: 'link-icon', file: f })
+                          e.target.value = ''
+                        }} />
+                    </label>
+                    {linkIconUrl && (
+                      <button type="button" onClick={() => setLinkIconUrl('')}
+                        className="text-xs font-semibold"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E', padding: '4px 6px' }}>
+                        移除
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* ── Title size + alignment ── */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      標題字型大小
+                    </label>
+                    <select value={linkTitleSize} onChange={e => setLinkTitleSize(parseInt(e.target.value))}
+                      style={{ ...inputStyle, padding: '8px 10px', fontSize: 12 }}
+                      onFocus={focusIn} onBlur={focusOut}>
+                      <option value={12}>小 (12px)</option>
+                      <option value={14}>標準 (14px)</option>
+                      <option value={16}>大 (16px)</option>
+                      <option value={18}>特大 (18px)</option>
+                      <option value={20}>超大 (20px)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      標題對齊
+                    </label>
+                    <div className="flex gap-1">
+                      {(['left', 'center', 'right'] as const).map(a => (
+                        <button key={a} type="button"
+                          onClick={() => setLinkTitleAlign(a)}
+                          className="flex-1 py-2 text-xs font-semibold rounded-lg"
+                          style={{
+                            background: linkTitleAlign === a ? 'var(--color-primary)' : 'white',
+                            color: linkTitleAlign === a ? 'white' : 'var(--color-text-secondary)',
+                            border: '1px solid var(--color-border)', cursor: 'pointer',
+                          }}>
+                          {a === 'left' ? '左' : a === 'center' ? '中' : '右'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Border color + width ── */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      邊框顏色
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={linkBorderColor || '#E5E7EB'}
+                        onChange={e => setLinkBorderColor(e.target.value)}
+                        style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                      <input value={linkBorderColor} onChange={e => setLinkBorderColor(e.target.value)}
+                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        onFocus={focusIn} onBlur={focusOut} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      邊框粗細(px)
+                    </label>
+                    <input type="number" min={0} max={6} value={linkBorderWidth}
+                      onChange={e => setLinkBorderWidth(Math.min(6, Math.max(0, parseInt(e.target.value) || 0)))}
+                      style={{ ...inputStyle, padding: '8px 10px', fontSize: 12 }}
+                      onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                </div>
+
+                {/* ── Hover animation ── */}
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                    滑鼠移過動態效果
+                  </label>
+                  <div className="grid grid-cols-3 gap-1">
+                    {([
+                      { value: 'none', label: '無' },
+                      { value: 'bounce', label: '彈跳' },
+                      { value: 'scale', label: '放大' },
+                    ] as const).map(opt => (
+                      <button key={opt.value} type="button"
+                        onClick={() => setLinkAnimation(opt.value)}
+                        className="py-2 text-xs font-semibold rounded-lg"
+                        style={{
+                          background: linkAnimation === opt.value ? 'var(--color-primary)' : 'white',
+                          color: linkAnimation === opt.value ? 'white' : 'var(--color-text-secondary)',
+                          border: '1px solid var(--color-border)', cursor: 'pointer',
+                        }}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -504,9 +686,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── HEADING ── */}
           {block.type === 'heading' && (
             <>
-              <Field label="標題文字">
-                <input value={text} onChange={e => setText(e.target.value)} required
-                  placeholder="標題文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              <Field label="標題文字(支援多行 / **粗體** / [連結文字](網址))">
+                <textarea value={text} onChange={e => setText(e.target.value)} required
+                  placeholder={'標題文字\n第二行也可以\n**粗體** 或 [連結文字](https://...)'}
+                  rows={4}
+                  style={{ ...inputStyle, resize: 'vertical', minHeight: 90 } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                  ✨ 換行直接 Enter、粗體用 <code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>**字**</code>、超連結用 <code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>[文字](網址)</code>
+                </p>
               </Field>
               <Field label="文字大小">
                 <div className="flex gap-2">
@@ -522,6 +710,39 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                       {{ sm: '小', md: '中', lg: '大' }[s]}
                     </button>
                   ))}
+                </div>
+              </Field>
+              <Field label="文字對齊">
+                <div className="flex gap-2">
+                  {(['left', 'center', 'right'] as const).map(a => (
+                    <button key={a} type="button" onClick={() => setHeadingAlign(a)}
+                      className="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors"
+                      style={{
+                        background: headingAlign === a ? 'var(--color-primary)' : 'white',
+                        color: headingAlign === a ? 'white' : 'var(--color-text-secondary)',
+                        border: `1px solid ${headingAlign === a ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                        cursor: 'pointer',
+                      }}>
+                      {a === 'left' ? '左' : a === 'center' ? '中' : '右'}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+              <Field label="文字顏色(選填)">
+                <div className="flex items-center gap-2">
+                  <input type="color" value={headingColor || '#1A1A2E'}
+                    onChange={e => setHeadingColor(e.target.value)}
+                    style={{ width: 40, height: 40, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
+                  <input value={headingColor} onChange={e => setHeadingColor(e.target.value)}
+                    placeholder="預設(主題色)" style={{ ...inputStyle, flex: 1 }}
+                    onFocus={focusIn} onBlur={focusOut} />
+                  {headingColor && (
+                    <button type="button" onClick={() => setHeadingColor('')}
+                      className="text-xs font-semibold flex-shrink-0"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '4px 8px' }}>
+                      重設
+                    </button>
+                  )}
                 </div>
               </Field>
             </>
@@ -556,6 +777,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     onFocus={focusIn} onBlur={focusOut} />
                 </div>
               </Field>
+              {/* Optional checkout URL — also doubles as the source for the
+                  "從網址抓圖" auto-fetch below. */}
+              <Field label="購買連結(選填)">
+                <input value={productCheckoutUrl} onChange={e => setProductCheckoutUrl(e.target.value)}
+                  placeholder="https://stripe.com/... 或 https://gumroad.com/..."
+                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
               <Field label="商品圖片（選填）">
                 <div className="flex gap-2 items-center">
                   <input value={productImg} onChange={e => setProductImg(e.target.value)}
@@ -572,6 +800,33 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                       }} />
                   </label>
                 </div>
+                {/* Auto-fetch the og:image from the checkout URL — addresses the
+                    "網址抓圖未成功" feedback by giving creators an explicit
+                    button instead of expecting magic from the URL field. */}
+                {productCheckoutUrl && (
+                  <button type="button"
+                    onClick={async () => {
+                      setScrapingProductImg(true)
+                      try {
+                        const res = await fetch(`/api/scrape-image?url=${encodeURIComponent(productCheckoutUrl)}`)
+                        const data = await res.json()
+                        if (res.ok && data.image) {
+                          setProductImg(data.image)
+                          toast.success('已從網址抓取商品圖')
+                        } else {
+                          toast.error(data.error ?? '抓圖失敗')
+                        }
+                      } catch {
+                        toast.error('網路錯誤,請再試一次')
+                      }
+                      setScrapingProductImg(false)
+                    }}
+                    disabled={scrapingProductImg}
+                    className="mt-2 text-xs font-semibold flex items-center gap-1"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '4px 0' }}>
+                    {scrapingProductImg ? '抓取中…' : '🔍 從購買連結自動抓圖'}
+                  </button>
+                )}
                 {productImg && (
                   <img src={productImg} alt="Preview" className="mt-2 rounded-lg"
                     style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
@@ -680,11 +935,19 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={title} onChange={e => setTitle(e.target.value)}
                   placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="說明文字（選填）">
+              <Field label="圖片說明（選填）">
                 <textarea value={carouselCaption} onChange={e => setCarouselCaption(e.target.value)}
-                  placeholder="顯示在輪播下方的說明,支援換行" rows={2}
+                  placeholder="例:本季穿搭精選 / 春夏新品" rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
+                {/* Clarify what this field is for — customer feedback was that
+                    they didn't see this text in the preview and assumed it was
+                    a hidden SEO field. It IS rendered (below the image when
+                    there's a title or caption), AND it doubles as alt-text
+                    fallback for screen readers + search engines. */}
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                  ✨ 顯示在輪播圖片下方;有設定標題時才會出現。也用於 Google 收錄與無障礙朗讀。
+                </p>
               </Field>
               {carouselImages.map((img, i) => (
                 <div key={i} className="rounded-xl p-3 space-y-2" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
@@ -728,12 +991,79 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             </>
           )}
 
+          {/* ── IMAGE GRID (2-column, Portaly-style) ── */}
+          {block.type === 'image_grid' && (
+            <>
+              <Field label="標題（選填）">
+                <input value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="例:春夏新品" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                每張圖以 1:1 正方形顯示,並排成兩欄。每張圖可設定點擊連結。
+              </p>
+              {gridCells.map((cell, i) => (
+                <div key={i} className="rounded-xl p-3 space-y-2"
+                  style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>
+                      第 {i + 1} 格
+                    </span>
+                    <input value={cell.url}
+                      onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, url: e.target.value } : c))}
+                      placeholder="圖片網址"
+                      style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }}
+                      onFocus={focusIn} onBlur={focusOut} />
+                    <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
+                      <Upload size={12} />
+                      {uploading ? '...' : '上傳'}
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={e => {
+                          const f = e.target.files?.[0]
+                          if (f) setPendingBlockImage({ kind: 'grid', index: i, file: f })
+                          e.target.value = ''
+                        }} />
+                    </label>
+                    {gridCells.length > 2 && (
+                      <button type="button"
+                        onClick={() => setGridCells(prev => prev.filter((_, j) => j !== i))}
+                        className="text-xs"
+                        style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                    )}
+                  </div>
+                  <input value={cell.linkUrl ?? ''}
+                    onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, linkUrl: e.target.value } : c))}
+                    placeholder="點擊連結（選填）"
+                    style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }}
+                    onFocus={focusIn} onBlur={focusOut} />
+                  {cell.url && (
+                    <img src={cell.url} alt={`Preview ${i + 1}`} className="rounded-lg"
+                      style={{ width: '100%', maxWidth: 120, aspectRatio: '1 / 1', objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                  )}
+                </div>
+              ))}
+              <button type="button"
+                onClick={() => setGridCells(prev => [...prev, { url: '' }])}
+                className="w-full py-2 text-sm font-semibold rounded-lg"
+                style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
+                + 新增格子
+              </button>
+            </>
+          )}
+
           {/* ── MAP ── */}
           {block.type === 'map' && (
             <>
               <Field label="標題（選填）">
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="地點名稱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder="例:公司位置" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              {/* Customer feedback: 標題塞太多文字會醜,需要單獨的說明欄位 */}
+              <Field label="說明文字（選填）">
+                <textarea value={mapDescription} onChange={e => setMapDescription(e.target.value)}
+                  placeholder="例:週一到週五 10am–7pm,門口請按電鈴" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
               </Field>
               <Field label="地點或地址">
                 <input value={mapQuery} onChange={e => setMapQuery(e.target.value)}
@@ -879,12 +1209,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           aspect={
             pendingBlockImage.kind === 'banner' ? 3
             : pendingBlockImage.kind === 'product' ? 1
+            : pendingBlockImage.kind === 'link-icon' ? 1
+            : pendingBlockImage.kind === 'grid' ? 1
             : 16 / 9
           }
-          cropShape="rect"
+          cropShape={pendingBlockImage.kind === 'link-icon' ? 'round' : 'rect'}
+          viewportPreview={pendingBlockImage.kind === 'banner' ? 'banner' : undefined}
           title={
             pendingBlockImage.kind === 'banner' ? '裁切橫幅圖片'
             : pendingBlockImage.kind === 'product' ? '裁切商品圖片'
+            : pendingBlockImage.kind === 'link-icon' ? '裁切連結 icon'
+            : pendingBlockImage.kind === 'grid' ? `裁切第 ${pendingBlockImage.index + 1} 格圖片`
             : `裁切第 ${pendingBlockImage.index + 1} 張圖片`
           }
           onComplete={uploadCroppedBlockImage}

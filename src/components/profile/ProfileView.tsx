@@ -104,15 +104,17 @@ export function ProfileView({
           bottom 30% fades into the page background so the avatar overlap reads
           as a soft transition rather than a hard image cut. */}
       {bannerUrl && (
-        <div style={{ width: '100%', maxHeight: 220, overflow: 'hidden', position: 'relative' }}>
+        // Lock the container to the banner's 3:1 aspect at all viewports so
+        // mobile and desktop see the SAME cropped image — only the rendered
+        // pixel size differs. Customer feedback was that desktop's prior
+        // maxHeight: 220 cap chopped off the bottom of wide-screen banners
+        // while mobile showed everything, making "upload preview" deceptive.
+        // Cap the container width on huge screens (max-w-5xl ≈ 1024px) so a
+        // 3:1 banner doesn't dominate 4K monitors at 600+px tall.
+        <div className="mx-auto" style={{ width: '100%', maxWidth: 1024, aspectRatio: '3 / 1', overflow: 'hidden', position: 'relative' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {/* objectPosition: 'center top' — when the source banner is taller
-              than the 220px crop window (typical on wide viewports), bias the
-              visible area towards the top. Banners almost always have their
-              title / logo in the upper half, so cropping the bottom is much
-              less destructive than the default centre-crop. */}
           <img src={bannerUrl} alt={`${displayName} banner`}
-            style={{ width: '100%', height: 'auto', maxHeight: 220, objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
           <div aria-hidden style={{
             position: 'absolute', left: 0, right: 0, bottom: 0,
             height: '40%',

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
-import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2, CalendarPlus } from 'lucide-react'
+import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2, CalendarPlus, LayoutGrid } from 'lucide-react'
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
 import { PLATFORM_ICONS } from '@/components/ui/SocialIcon'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso } from '@/lib/calendar'
@@ -21,6 +21,7 @@ const MORE_TYPES: { type: BlockType; icon: React.ElementType; label: string; des
   { type: 'countdown',  icon: Timer,        label: '倒數計時', description: '活動或限時優惠' },
   { type: 'faq',        icon: HelpCircle,   label: 'FAQ 問答', description: '常見問題摺疊' },
   { type: 'carousel',   icon: Images,       label: '圖片輪播', description: '多張圖滑動展示' },
+  { type: 'image_grid', icon: LayoutGrid,   label: '雙欄圖片', description: '兩欄式並排展示' },
   { type: 'map',        icon: MapPin,       label: '地圖嵌入', description: 'Google Maps' },
   { type: 'embed',      icon: Code,         label: 'HTML 嵌入', description: '自訂 iframe / HTML' },
 ]
@@ -107,6 +108,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'countdown')  content = { targetDate: url, label: title || '即將開始' }
     if (selected === 'faq')        content = { items: [{ question: title || '問題？', answer: '答案...' }] }
     if (selected === 'carousel')   content = { images: carouselImages.filter(i => i.url.trim()).map(i => ({ url: i.url, ...(i.linkUrl ? { linkUrl: i.linkUrl } : {}) })) }
+    if (selected === 'image_grid') content = { cells: [{ url: '' }, { url: '' }] }
     if (selected === 'map')        content = { query: url || title, zoom: 15 }
     if (selected === 'embed')      content = { html: url, height: 300 }
     if (selected === 'product') {
@@ -485,6 +487,14 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                       style={{ ...inputStyle, resize: 'none', fontFamily: 'monospace', fontSize: 12 }}
                       onFocus={focusIn} onBlur={focusOut} />
                   </div>
+                )}
+                {selected === 'image_grid' && (
+                  // No fields here — just create with two empty cells, then
+                  // EditBlockModal handles upload + linkUrl per cell. Avoids
+                  // a duplicate uploader path in this modal.
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    建立後即可在區塊編輯畫面上傳兩張(或更多)圖片並設定點擊連結。
+                  </p>
                 )}
                 {selected === 'banner' && (
                   <div>

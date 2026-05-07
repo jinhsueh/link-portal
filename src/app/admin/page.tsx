@@ -170,6 +170,29 @@ export default function AdminPage() {
     toast.success(`已套用「${tpl.name}」範本`)
   }
 
+  // Move a block to another page. The destination block joins the bottom
+  // of the destination page; the source list optimistically drops it. We
+  // re-pull /api/me afterwards so other UI (page tab counters etc.) stays
+  // in sync with the new pageId assignment.
+  const handleMoveToPage = async (blockId: string, destPageId: string) => {
+    if (!user) return
+    const destPage = user.pages.find(p => p.id === destPageId)
+    if (!destPage) return
+    setBlocks(prev => prev.filter(b => b.id !== blockId))
+    try {
+      const res = await fetch(`/api/blocks/${blockId}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pageId: destPageId }),
+      })
+      if (!res.ok) throw new Error('move failed')
+      toast.success(`已移至「${destPage.name}」`)
+      loadUser(activePageId ?? undefined)
+    } catch {
+      toast.error('移動失敗,請再試一次')
+      loadUser(activePageId ?? undefined)
+    }
+  }
+
   const handleDuplicate = async (block: BlockData) => {
     if (!user || !activePageId) return
     const res = await fetch('/api/blocks', {
@@ -651,7 +674,9 @@ export default function AdminPage() {
                               onToggle={handleToggle} onDelete={handleDelete}
                               onEdit={setEditingBlock} onDuplicate={handleDuplicate}
                               onSchedule={setSchedulingBlock}
-                              onPin={handlePin} />
+                              onPin={handlePin}
+                              movePages={user?.pages.filter(p => p.id !== activePageId).map(p => ({ id: p.id, name: p.name })) ?? []}
+                              onMoveToPage={handleMoveToPage} />
                           </div>
                         </div>
                       ))}

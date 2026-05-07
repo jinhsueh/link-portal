@@ -9,9 +9,19 @@ export type BlockType =
   | 'countdown'
   | 'faq'
   | 'carousel'
+  | 'image_grid'
   | 'map'
   | 'embed'
   | 'calendar_event'
+
+/**
+ * Two-column image grid (Portaly-style). Each cell can be tapped to open a
+ * link. Customer feedback wanted Portaly-style 2-up image layouts in addition
+ * to the single banner / horizontal carousel options.
+ */
+export interface ImageGridContent {
+  cells: Array<{ url: string; linkUrl?: string; alt?: string }>
+}
 
 export interface LinkContent {
   url: string
@@ -19,10 +29,22 @@ export interface LinkContent {
   thumbnail?: string
   /** Hide the auto-fetched favicon on the public link button. */
   hideIcon?: boolean
+  /** Custom uploaded icon (replaces the auto-fetched favicon). */
+  iconUrl?: string
   /** Override button background color (any CSS color). Falls back to theme. */
   bgColor?: string
   /** Override button text color (any CSS color). Falls back to theme. */
   textColor?: string
+  /** Title font size in px. Default 14. */
+  titleSize?: number
+  /** Title alignment when icon is hidden. Default 'left'. */
+  titleAlign?: 'left' | 'center' | 'right'
+  /** Border color override (CSS color). */
+  borderColor?: string
+  /** Border width in px. Default 1. */
+  borderWidth?: number
+  /** Hover animation. 'none' (default), 'bounce', 'scale'. */
+  animation?: 'none' | 'bounce' | 'scale'
 }
 
 export interface BannerContent {

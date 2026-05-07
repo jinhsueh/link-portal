@@ -26,10 +26,26 @@ export const PLATFORM_ICONS: Record<string, React.ElementType> = {
   discord:     Hash,
 }
 
-export function SocialIcon({ platform, url, iconUrl, label: customLabel }: { platform: string; url: string; iconUrl?: string | null; label?: string | null }) {
+export function SocialIcon({ platform, url, iconUrl, label: customLabel, colorMode = 'theme' }: {
+  platform: string
+  url: string
+  iconUrl?: string | null
+  label?: string | null
+  /**
+   * 'theme' (default) — use the active page theme's primary color so social
+   *   icons feel cohesive with the rest of the brand. Customer feedback was
+   *   that lucide's default icons looked dated next to platform-coloured
+   *   competitors; making them re-tint with theme colour fixes that.
+   * 'platform' — preserve each platform's brand colour (Instagram pink,
+   *   YouTube red, etc.) for users who want the classic look.
+   */
+  colorMode?: 'theme' | 'platform'
+}) {
   const config = getPlatformConfig(platform)
   const label = customLabel ?? config?.label ?? platform
-  const color = config?.color ?? 'var(--color-text-muted)'
+  const color = colorMode === 'theme'
+    ? 'var(--theme-primary, var(--color-primary))'
+    : (config?.color ?? 'var(--color-text-muted)')
   const Icon = PLATFORM_ICONS[platform] ?? ExternalLink
 
   return (

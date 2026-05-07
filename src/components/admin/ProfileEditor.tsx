@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { Camera, X, Save, Check, ChevronDown, ChevronUp } from 'lucide-react'
-import { SocialLinksEditor } from '@/components/admin/SocialLinksEditor'
+import { useState, useRef, useEffect } from 'react'
+import { Camera, X, Save, Check, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
+import { SocialLinksEditor, type SocialLinksEditorHandle } from '@/components/admin/SocialLinksEditor'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
+import { toast } from '@/components/ui/Toast'
 
 interface SocialLinkItem {
   id: string
@@ -123,16 +124,50 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
     onUpdate()
   }
 
-  const handleSaveProfile = async () => {
+  // Unified save: name/bio + social links in parallel. The parent (admin
+  // page) re-pulls /api/me on success so other components see fresh data.
+  const socialEditorRef = useRef<SocialLinksEditorHandle>(null)
+  // Dirty for the profile half of the editor (name/bio).
+  const isProfileDirty = (name !== (profile.name ?? '')) || (bio !== (profile.bio ?? ''))
+  // Track social-editor dirty state by polling on each render. Cheap because
+  // the comparison loop in the editor's isDirty() runs over a small array.
+  const [socialDirty, setSocialDirty] = useState(false)
+  useEffect(() => {
+    setSocialDirty(socialEditorRef.current?.isDirty() ?? false)
+  })
+  const isDirty = isProfileDirty || socialDirty
+
+  const handleSaveAll = async () => {
     setSaving(true)
-    await fetch('/api/me', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, bio }),
-    })
+    try {
+      // Profile fields and social links go in parallel — they live on
+      // different endpoints (/api/me vs /api/social) and don't depend on
+      // each other, so concurrent saves halve the spinner time.
+      await Promise.all([
+        isProfileDirty ? fetch('/api/me', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, bio }),
+        }) : Promise.resolve(),
+        socialDirty && socialEditorRef.current ? socialEditorRef.current.save() : Promise.resolve(),
+      ])
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+      onUpdate()
+      toast.success('已儲存')
+    } catch {
+      toast.error('儲存失敗,請再試一次')
+    }
     setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-    onUpdate()
+  }
+
+  // Cancel unsaved changes — restore name/bio from props and tell the
+  // social editor to throw away its local edits. Avatar/banner aren't
+  // included because they're saved-on-upload (no rollback story).
+  const handleCancelAll = () => {
+    setName(profile.name ?? '')
+    setBio(profile.bio ?? '')
+    onLiveChange?.({ name: profile.name ?? '', bio: profile.bio ?? '', avatarUrl, bannerUrl })
+    socialEditorRef.current?.reset()
   }
 
   const hasProfile = !!(avatarUrl || profile.bio || profile.socialLinks.length > 0)
@@ -276,22 +311,59 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
                 onBlur={e => (e.target.style.borderColor = 'var(--color-border)')} />
               <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{bio.length}/200</p>
             </div>
-            <button onClick={handleSaveProfile} disabled={saving}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
-              style={{
-                background: saved ? '#22C55E' : 'var(--color-primary)',
-                color: 'white', border: 'none', cursor: 'pointer',
-                opacity: saving ? 0.7 : 1,
-              }}>
-              {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : <><Save size={14} />儲存資料</>}
-            </button>
+            {/* The old per-section "儲存資料" button lived here; customer
+                feedback was that having two save buttons (this one + the
+                social editor's "全部儲存") was confusing. Both are now
+                replaced by the single unified bar at the bottom. */}
           </div>
 
-          {/* Social Links */}
+          {/* Social Links — embedded mode means SocialLinksEditor renders
+              without its own save/cancel; the parent's bar drives both. */}
           <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>社群連結</label>
-            <SocialLinksEditor links={profile.socialLinks} onSave={onUpdate} onLinksChange={onSocialLinksChange} />
+            <SocialLinksEditor
+              ref={socialEditorRef}
+              links={profile.socialLinks}
+              onSave={onUpdate}
+              onLinksChange={onSocialLinksChange}
+              embedded
+            />
           </div>
+
+          {/* Unified save bar — yellow "尚未儲存" warning + 全部儲存 + 取消.
+              Sticky at the bottom of the expanded card so users always see
+              it while scrolling through their changes. */}
+          {isDirty && (
+            <div className="rounded-xl flex items-center justify-between gap-3 px-4 py-3"
+              style={{
+                background: '#FFFBEB', border: '1px solid #FDE68A',
+                position: 'sticky', bottom: 0,
+                boxShadow: '0 -4px 12px rgba(0,0,0,0.04)',
+              }}>
+              <div className="flex items-center gap-2 min-w-0">
+                <AlertCircle size={16} style={{ color: '#D97706', flexShrink: 0 }} />
+                <p className="text-sm font-semibold" style={{ color: '#92400E' }}>
+                  尚未儲存變動,記得按右側「全部儲存」
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={handleCancelAll} disabled={saving}
+                  className="text-sm font-semibold px-3 py-2 rounded-lg"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+                  取消
+                </button>
+                <button onClick={handleSaveAll} disabled={saving}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
+                  style={{
+                    background: saved ? '#22C55E' : 'var(--color-primary)',
+                    color: 'white', border: 'none', cursor: 'pointer',
+                    opacity: saving ? 0.7 : 1,
+                  }}>
+                  {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : <><Save size={14} />全部儲存</>}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -314,6 +386,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
           file={pendingBanner}
           aspect={3}
           title="裁切橫幅(3:1)"
+          viewportPreview="banner"
           onComplete={uploadCroppedBanner}
           onCancel={() => {
             setPendingBanner(null)

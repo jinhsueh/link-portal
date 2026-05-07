@@ -177,3 +177,30 @@ body {
 @media (max-width: 768px) {
   .step-connector::after { display: none; }
 }
+
+/* Link button hover animations — customer feedback wanted Portaly-style
+   bounce / scale on hover so links feel more interactive. The base transition
+   on .link-block already smooths the property changes; these classes just
+   define the destination keyframe. Skip on prefers-reduced-motion. */
+.link-anim-bounce:hover,
+.link-anim-bounce:focus-visible {
+  animation: link-bounce 0.5s ease;
+}
+.link-anim-scale:hover,
+.link-anim-scale:focus-visible {
+  transform: scale(1.025);
+}
+@keyframes link-bounce {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-6px); }
+  60%  { transform: translateY(0); }
+  80%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .link-anim-bounce:hover,
+  .link-anim-scale:hover {
+    animation: none;
+    transform: none;
+  }
+}

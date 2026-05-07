@@ -36,9 +36,19 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
   const customBg = content.bgColor
   const customText = content.textColor
   const hasCustomBg = !!customBg
+  const customIcon = content.iconUrl
+  const customBorderColor = content.borderColor
+  const customBorderWidth = content.borderWidth
+  const titleSize = content.titleSize ?? 14
+  // Alignment when icon is hidden — customer feedback wanted left/center/right
+  // explicit instead of a hard-coded centre. With icon visible, the icon
+  // anchors the visual to the left so alignment doesn't apply.
+  const titleAlign = content.titleAlign ?? (content.hideIcon ? 'center' : 'left')
+  const animation = content.animation ?? 'none'
 
   const [favicon, setFavicon] = useState<string | null>(() => {
     if (content.hideIcon) return null
+    if (customIcon) return customIcon
     if (content.thumbnail) return content.thumbnail
     if (content.url) {
       try {
@@ -57,34 +67,43 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
   const resolvedChevronColor = customText
     ?? (btnStyle === 'filled' || hasCustomBg ? 'rgba(255,255,255,0.6)' : 'var(--theme-text-muted, var(--color-text-muted))')
 
+  // Border resolution. Custom width/color override theme defaults. For filled
+  // buttons we still respect a custom border if explicitly set.
+  const borderWidth = customBorderWidth ?? ((btnStyle === 'filled' || hasCustomBg) ? 0 : 1)
+  const borderColor = customBorderColor
+    ?? ((btnStyle === 'filled' || hasCustomBg) ? 'transparent' : 'var(--theme-border, var(--color-border))')
+  const hoverBorderColor = customBorderColor ?? 'var(--theme-primary, var(--color-primary))'
+
   return (
     <a href={ensureUrl(content.url)} target="_blank" rel="noopener noreferrer"
       onClick={() => trackClick(block.id, pageId)}
-      className="flex items-center gap-3 w-full transition-all group link-block"
+      className={`flex items-center gap-3 w-full transition-all group link-block link-anim-${animation}`}
       style={{
         padding: '16px 20px',
         background: customBg
           ?? (btnStyle === 'filled' ? 'var(--theme-primary, var(--color-primary))' : 'var(--theme-card-bg, white)'),
         color: resolvedTextColor,
-        border: (btnStyle === 'filled' || hasCustomBg) ? 'none' : `1px solid var(--theme-border, var(--color-border))`,
+        border: borderWidth > 0 ? `${borderWidth}px solid ${borderColor}` : 'none',
         borderRadius: 'var(--theme-radius, 12px)',
         textDecoration: 'none',
         boxShadow: (btnStyle === 'filled' || hasCustomBg) ? 'none' : 'var(--shadow-sm)',
       }}
       onMouseEnter={e => {
-        if (btnStyle !== 'filled' && !hasCustomBg) {
-          (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-primary, var(--color-primary))'
-          ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)'
-        } else {
-          (e.currentTarget as HTMLElement).style.opacity = '0.9'
+        const el = e.currentTarget as HTMLElement
+        if (borderWidth > 0 && !customBorderColor && btnStyle !== 'filled' && !hasCustomBg) {
+          el.style.borderColor = hoverBorderColor
+          el.style.boxShadow = 'var(--shadow-md)'
+        } else if (btnStyle === 'filled' || hasCustomBg) {
+          el.style.opacity = '0.9'
         }
       }}
       onMouseLeave={e => {
-        if (btnStyle !== 'filled' && !hasCustomBg) {
-          (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-border, var(--color-border))'
-          ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'
-        } else {
-          (e.currentTarget as HTMLElement).style.opacity = '1'
+        const el = e.currentTarget as HTMLElement
+        if (borderWidth > 0 && !customBorderColor && btnStyle !== 'filled' && !hasCustomBg) {
+          el.style.borderColor = borderColor
+          el.style.boxShadow = 'var(--shadow-sm)'
+        } else if (btnStyle === 'filled' || hasCustomBg) {
+          el.style.opacity = '1'
         }
       }}>
       {!content.hideIcon && favicon && (
@@ -92,11 +111,8 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
           style={{ objectFit: 'contain' }}
           onError={() => setFavicon(null)} />
       )}
-      {/* When the icon is hidden, center the text — leaves a stable visual without
-          the asymmetric "icon on left, text in middle" gap. The chevron also goes
-          away to let the title own the entire width. */}
-      <div className={`flex-1 min-w-0 ${content.hideIcon ? 'text-center' : ''}`}>
-        <span className="font-semibold text-sm block truncate" style={{ color: resolvedTextColor }}>
+      <div className="flex-1 min-w-0" style={{ textAlign: titleAlign }}>
+        <span className="font-semibold block truncate" style={{ color: resolvedTextColor, fontSize: titleSize, lineHeight: 1.3 }}>
           {block.title}
         </span>
         {content.description && (
@@ -158,14 +174,57 @@ function BannerBlock({ block }: { block: BlockData }) {
 }
 
 function HeadingBlock({ block }: { block: BlockData }) {
-  const content = block.content as { text: string; size?: string }
+  const content = block.content as {
+    text: string; size?: string; color?: string; align?: 'left' | 'center' | 'right'
+  }
   const size = content.size === 'lg' ? 18 : content.size === 'sm' ? 13 : 15
+  const align = content.align ?? 'center'
+  const color = content.color || 'var(--theme-text-secondary, var(--color-text-secondary))'
   return (
-    <p className="text-center font-semibold px-2"
-      style={{ color: 'var(--color-text-secondary)', fontSize: size }}>
-      {content.text ?? block.title}
+    <p className="font-semibold px-2"
+      style={{ color, fontSize: size, textAlign: align, whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+      {renderInlineMarkdown(content.text ?? block.title ?? '')}
     </p>
   )
+}
+
+/**
+ * Tiny markdown subset: supports **bold** and [label](url).
+ * Customer feedback: heading needs multi-line / bold / links. We avoid pulling
+ * in a full markdown lib because we only need two features and bundle size
+ * matters for the public profile route. Anything not matching the patterns
+ * passes through as plain text — no HTML escaping needed because React
+ * already escapes string children.
+ */
+function renderInlineMarkdown(text: string): React.ReactNode {
+  if (!text) return null
+  // Pattern: bold (**...**) or link ([...](http...)). The capture order
+  // matters — alternation tries bold first so "**[link](url)**" treats the
+  // outer bold first, leaving the link as inner content (which we recurse
+  // through the same parser).
+  const RE = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g
+  const out: React.ReactNode[] = []
+  let lastIndex = 0
+  let key = 0
+  let m: RegExpExecArray | null
+  while ((m = RE.exec(text)) !== null) {
+    if (m.index > lastIndex) out.push(text.slice(lastIndex, m.index))
+    if (m[1] !== undefined) {
+      // Bold
+      out.push(<strong key={key++}>{m[1]}</strong>)
+    } else if (m[2] !== undefined && m[3] !== undefined) {
+      // Link — defensive rel + target so we don't break referrer policy.
+      out.push(
+        <a key={key++} href={m[3]} target="_blank" rel="noopener noreferrer"
+          style={{ color: 'inherit', textDecoration: 'underline' }}>
+          {m[2]}
+        </a>
+      )
+    }
+    lastIndex = m.index + m[0].length
+  }
+  if (lastIndex < text.length) out.push(text.slice(lastIndex))
+  return out
 }
 
 function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
@@ -525,16 +584,79 @@ function CarouselBlock({ block }: { block: BlockData }) {
     : <div className="w-full">{inner}</div>
 }
 
+function ImageGridBlock({ block }: { block: BlockData }) {
+  // Customer feedback #9: a Portaly-style two-column image grid block.
+  // Each cell can optionally link out. Empty cells render as a placeholder
+  // box so the grid stays visually balanced even mid-edit.
+  const content = block.content as { cells?: Array<{ url: string; linkUrl?: string; alt?: string }> }
+  const cells = (content.cells ?? []).filter(c => c.url)
+  if (cells.length === 0) return null
+  const hasTitle = !!block.title
+  return (
+    <div className="w-full" style={{ background: 'transparent' }}>
+      {hasTitle && (
+        <p className="font-bold text-sm mb-2 px-2"
+          style={{ color: 'var(--theme-text, var(--color-text-primary))' }}>
+          {block.title}
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-2">
+        {cells.map((cell, i) => {
+          const inner = (
+            <img
+              src={cell.url}
+              alt={cell.alt ?? ''}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform"
+              style={{ aspectRatio: '1 / 1', display: 'block' }}
+            />
+          )
+          const wrapStyle: React.CSSProperties = {
+            borderRadius: 'var(--theme-radius, 12px)',
+            overflow: 'hidden',
+            boxShadow: 'var(--shadow-sm)',
+          }
+          return cell.linkUrl ? (
+            <a key={i} href={ensureUrl(cell.linkUrl)} target="_blank" rel="noopener noreferrer"
+              style={wrapStyle}
+              onMouseEnter={e => { (e.currentTarget.firstChild as HTMLElement).style.transform = 'scale(1.03)' }}
+              onMouseLeave={e => { (e.currentTarget.firstChild as HTMLElement).style.transform = 'scale(1)' }}>
+              {inner}
+            </a>
+          ) : (
+            <div key={i} style={wrapStyle}>{inner}</div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function MapBlock({ block }: { block: BlockData }) {
-  const content = block.content as { query: string; zoom?: number }
+  const content = block.content as { query: string; zoom?: number; description?: string }
   const q = encodeURIComponent(content.query ?? '')
+  const hasHeader = !!(block.title || content.description)
   return (
     <div className="w-full" style={{ borderRadius: 'var(--theme-radius, 12px)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-      {block.title && (
-        <p className="text-sm font-semibold px-3 py-2" style={{
+      {hasHeader && (
+        // Title and description live in their own header rows so creators can
+        // keep the title short and tight (e.g. "公司位置") while putting the
+        // long-form prose ("週一到週五 10am–7pm,門口請按電鈴") below it.
+        <div style={{
           background: 'var(--theme-card-bg, white)', color: 'var(--theme-text, var(--color-text-primary))',
           borderBottom: '1px solid var(--theme-border, var(--color-border))',
-        }}>{block.title}</p>
+          padding: '10px 14px',
+        }}>
+          {block.title && (
+            <p className="text-sm font-semibold leading-tight">{block.title}</p>
+          )}
+          {content.description && (
+            <p className="text-xs leading-relaxed mt-1" style={{
+              color: 'var(--theme-text-muted, var(--color-text-secondary))',
+              whiteSpace: 'pre-line',
+            }}>{content.description}</p>
+          )}
+        </div>
       )}
       <iframe
         src={`https://maps.google.com/maps?q=${q}&z=${content.zoom ?? 15}&output=embed`}
@@ -684,6 +806,7 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'countdown': return <CountdownBlock block={block} />
     case 'faq': return <FaqBlock block={block} />
     case 'carousel': return <CarouselBlock block={block} />
+    case 'image_grid': return <ImageGridBlock block={block} />
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
     case 'calendar_event': return <CalendarEventBlock block={block} pageId={pageId} />

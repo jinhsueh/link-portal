@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import {
   Plus, X, Check, Pencil, ExternalLink, Upload, GripVertical,
   Camera, PlayCircle, Music, AtSign, MessageCircle, Globe,
@@ -33,10 +33,27 @@ interface Props {
   links: SocialLinkItem[]
   onSave: () => void
   onLinksChange?: (links: SocialLinkItem[]) => void
+  /**
+   * Embedded mode = the parent (ProfileEditor) owns the unified "全部儲存"
+   * button. We hide our own save/cancel and always render in editing mode,
+   * exposing save() / isDirty / reset() via ref so the parent can drive us.
+   * Customer feedback consolidated the save UX into a single button at the
+   * bottom of ProfileEditor.
+   */
+  embedded?: boolean
 }
 
-export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
-  const [editing, setEditing] = useState(false)
+export interface SocialLinksEditorHandle {
+  save: () => Promise<void>
+  isDirty: () => boolean
+  reset: () => void
+}
+
+export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(function SocialLinksEditor(
+  { links, onSave, onLinksChange, embedded = false }: Props,
+  ref,
+) {
+  const [editing, setEditing] = useState(embedded)
   const [localLinks, setLocalLinks] = useState<SocialLinkItem[]>(links)
   const [newUrl, setNewUrl] = useState('')
   const [newLabel, setNewLabel] = useState('')
@@ -70,7 +87,13 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
   const handleAdd = () => {
     const url = newUrl.trim()
     if (!url) return
-    if (localLinks.some(l => l.url === url)) return // duplicate
+    if (localLinks.some(l => l.url === url)) {
+      // Customer feedback: silent rejection on dup URL felt like the button
+      // was broken. Surface it with a toast — and keep the input populated
+      // so the user can edit instead of retyping.
+      toast.error('這個網址已經加過了,不能重複新增')
+      return
+    }
     const platform = detectPlatform(url)
     setLocalLinks(prev => {
       const next = [...prev, {
@@ -168,13 +191,41 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
       onSave()
-      setEditing(false)
+      // Stay in editing mode when embedded — the parent's unified save bar
+      // is what closes the experience, not us.
+      if (!embedded) setEditing(false)
     } catch { /* silent */ }
     setSaving(false)
   }
 
+  // Imperative API for the parent's "全部儲存" button.
+  useImperativeHandle(ref, () => ({
+    save: handleSaveAll,
+    // Quick dirty check: count + each url/label/iconUrl/order pair against
+    // the prop. Cheap because the list is small.
+    isDirty: () => {
+      if (localLinks.length !== links.length) return true
+      for (let i = 0; i < localLinks.length; i++) {
+        const a = localLinks[i]
+        const b = links[i]
+        if (!b || a.url !== b.url || (a.label ?? '') !== (b.label ?? '')
+          || (a.iconUrl ?? '') !== (b.iconUrl ?? '') || a.order !== b.order) return true
+      }
+      return false
+    },
+    reset: () => {
+      setLocalLinks([...links])
+      setNewUrl('')
+      setNewLabel('')
+      onLinksChange?.(links)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [localLinks, links])
+
   // ── Collapsed (read-only badge row + edit button) ──
-  if (!editing) {
+  // Skipped in embedded mode — parent owns the section heading and the
+  // save bar, this editor just shows the editable list.
+  if (!editing && !embedded) {
     return (
       <div className="flex items-center gap-2 flex-wrap">
         {links.length > 0 ? (
@@ -289,23 +340,25 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
         </p>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 pt-1">
-        <button onClick={handleSaveAll} disabled={saving}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
-          style={{
-            background: saved ? '#22C55E' : 'var(--color-primary)',
-            color: 'white', border: 'none', cursor: 'pointer',
-            opacity: saving ? 0.7 : 1,
-          }}>
-          {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : '全部儲存'}
-        </button>
-        <button onClick={handleCancel}
-          className="text-sm font-semibold px-3 py-2"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-          取消
-        </button>
-      </div>
+      {/* Actions — hidden in embedded mode (parent owns the unified save bar) */}
+      {!embedded && (
+        <div className="flex items-center gap-2 pt-1">
+          <button onClick={handleSaveAll} disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
+            style={{
+              background: saved ? '#22C55E' : 'var(--color-primary)',
+              color: 'white', border: 'none', cursor: 'pointer',
+              opacity: saving ? 0.7 : 1,
+            }}>
+            {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : '全部儲存'}
+          </button>
+          <button onClick={handleCancel}
+            className="text-sm font-semibold px-3 py-2"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+            取消
+          </button>
+        </div>
+      )}
 
       {/* Crop modal — opens when an icon file is picked, closes on confirm/cancel. */}
       {pendingIcon && (
@@ -320,7 +373,7 @@ export function SocialLinksEditor({ links, onSave, onLinksChange }: Props) {
       )}
     </div>
   )
-}
+})
 
 /* ── Single sortable row ── */
 function SortableSocialRow({

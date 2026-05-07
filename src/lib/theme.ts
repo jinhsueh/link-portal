@@ -239,6 +239,7 @@ export const RICH_BLOCK_TYPES: ReadonlySet<string> = new Set([
   'banner',
   'video',
   'carousel',
+  'image_grid',
   'calendar_event',
   'embed',
   'map',
