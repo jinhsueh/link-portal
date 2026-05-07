@@ -335,6 +335,11 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
   }
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // Hide the <img> entirely on load failure instead of letting the browser
+  // render its "broken image + alt text" fallback (which looks like a bug
+  // — small icon + text in the top-left corner of the card). User reported
+  // this on a stale Stripe / Gumroad image URL.
+  const [imgFailed, setImgFailed] = useState(false)
 
   const displayPrice = content.price ?? 0
   const displayCurrency = content.currency ?? 'NT$'
@@ -364,9 +369,10 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
       ...themeShape, overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
     }}>
       {/* Product image */}
-      {content.imageUrl && (
+      {content.imageUrl && !imgFailed && (
         <img src={content.imageUrl} alt={block.title ?? ''}
-          className="w-full object-cover" style={{ maxHeight: 200 }} />
+          className="w-full object-cover" style={{ maxHeight: 200 }}
+          onError={() => setImgFailed(true)} />
       )}
 
       <div style={{ padding: '16px 20px' }}>

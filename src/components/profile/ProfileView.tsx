@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { AnimatedBlock } from '@/components/blocks/AnimatedBlock'
 import { SocialIcon } from '@/components/ui/SocialIcon'
@@ -57,8 +60,22 @@ export function ProfileView({
   showWatermark = true,
   isDemo = false,
 }: ProfileViewProps) {
+  // Initial active slug: prop takes priority, then default flag, then first.
+  const initialSlug = activePageSlug
+    ?? pages.find(p => p.isDefault)?.slug
+    ?? pages[0]?.slug
+  // Local state so tab clicks switch INSTANTLY without a full-page nav.
+  // Customer feedback: 主頁 ↔ 產品介紹 換頁要等整頁重 load,體驗很卡。
+  const [activeSlug, setActiveSlug] = useState(initialSlug)
+
+  // Keep state in sync if the slug prop changes (e.g. browser back/forward
+  // or someone shares a URL that routes to a different tab).
+  useEffect(() => {
+    if (activePageSlug !== undefined) setActiveSlug(activePageSlug)
+  }, [activePageSlug])
+
   const activePage =
-    pages.find(p => p.slug === activePageSlug) ??
+    pages.find(p => p.slug === activeSlug) ??
     pages.find(p => p.isDefault) ??
     pages[0]
   if (!activePage) return null
@@ -209,14 +226,28 @@ export function ProfileView({
         {/* ─── Right column (desktop) / continues below profile (mobile) ─── */}
         <main className="lg:min-w-0">
 
-        {/* Page tabs */}
+        {/* Page tabs — instant client-side toggle (was <a href> doing a full
+            navigation, which made 主頁 ↔ 產品介紹 feel sluggish). The URL is
+            still kept in sync via history.replaceState so deep-links + share
+            URLs continue to work, but no network round-trip happens. */}
         {pages.length > 1 && (
           <div className="flex justify-center lg:justify-start gap-2 mb-6 overflow-x-auto pb-1 -mx-2 px-2">
             {pages.map(p => {
               const active = p.id === activePage.id
-              const tabHref = isDemo ? `/demo?page=${p.slug}` : `/${username}?page=${p.slug}`
               return (
-                <a key={p.id} href={tabHref}
+                <button key={p.id}
+                  onClick={() => {
+                    setActiveSlug(p.slug)
+                    // Mirror the chosen tab into the URL so refresh + share
+                    // land on the same view. Default page strips ?page= so
+                    // the canonical URL stays clean.
+                    if (typeof window !== 'undefined') {
+                      const url = new URL(window.location.href)
+                      if (p.isDefault) url.searchParams.delete('page')
+                      else url.searchParams.set('page', p.slug)
+                      window.history.replaceState(null, '', url.toString())
+                    }
+                  }}
                   className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0"
                   style={{
                     background: active ? theme.primaryColor : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)'),
@@ -225,10 +256,10 @@ export function ProfileView({
                     boxShadow: active ? `0 4px 12px ${theme.primaryColor}40` : '0 1px 3px rgba(0,0,0,0.04)',
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
-                    textDecoration: 'none',
+                    cursor: 'pointer',
                   }}>
                   {p.name}
-                </a>
+                </button>
               )
             })}
           </div>
