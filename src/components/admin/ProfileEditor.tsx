@@ -129,12 +129,31 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
   const socialEditorRef = useRef<SocialLinksEditorHandle>(null)
   // Dirty for the profile half of the editor (name/bio).
   const isProfileDirty = (name !== (profile.name ?? '')) || (bio !== (profile.bio ?? ''))
-  // Track social-editor dirty state by polling on each render. Cheap because
-  // the comparison loop in the editor's isDirty() runs over a small array.
+  // Track social-editor dirty separately. We DON'T poll the ref on every
+  // render because the parent doesn't re-render when child state changes —
+  // instead we hook into the same onLinksChange the parent already wires
+  // and recompute against the original `profile.socialLinks` snapshot.
   const [socialDirty, setSocialDirty] = useState(false)
+  const handleSocialLinksChange = (links: SocialLinkItem[]) => {
+    onSocialLinksChange?.(links)
+    // Cheap diff: length + same-key fields (matches SocialLinksEditor.isDirty).
+    const orig = profile.socialLinks
+    let dirty = links.length !== orig.length
+    if (!dirty) {
+      for (let i = 0; i < links.length; i++) {
+        const a = links[i]; const b = orig[i]
+        if (!b || a.url !== b.url || (a.label ?? '') !== (b.label ?? '')
+          || (a.iconUrl ?? '') !== (b.iconUrl ?? '') || a.order !== b.order) {
+          dirty = true; break
+        }
+      }
+    }
+    setSocialDirty(dirty)
+  }
+  // When the profile prop refreshes (after a save), reset the dirty flag.
   useEffect(() => {
-    setSocialDirty(socialEditorRef.current?.isDirty() ?? false)
-  })
+    setSocialDirty(false)
+  }, [profile.socialLinks])
   const isDirty = isProfileDirty || socialDirty
 
   const handleSaveAll = async () => {
@@ -168,6 +187,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
     setBio(profile.bio ?? '')
     onLiveChange?.({ name: profile.name ?? '', bio: profile.bio ?? '', avatarUrl, bannerUrl })
     socialEditorRef.current?.reset()
+    setSocialDirty(false)
   }
 
   const hasProfile = !!(avatarUrl || profile.bio || profile.socialLinks.length > 0)
@@ -325,7 +345,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
               ref={socialEditorRef}
               links={profile.socialLinks}
               onSave={onUpdate}
-              onLinksChange={onSocialLinksChange}
+              onLinksChange={handleSocialLinksChange}
               embedded
             />
           </div>
