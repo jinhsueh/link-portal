@@ -16,8 +16,28 @@ export interface BlockTemplate {
 
 export interface PageTemplate {
   id: string
+  /** Human-readable name resolved at render time from dict.admin.templates[id].name */
   name: string
+  /** Human-readable description resolved at render time from dict.admin.templates[id].description */
   description: string
+  emoji: string
+  blocks: BlockTemplate[]
+}
+
+/**
+ * Static template skeletons — id, emoji, and the blocks payload. The
+ * display name + description live in `messages/*.json` under
+ * `admin.templates[id]` so the picker (in /admin/page.tsx) can render in
+ * the visitor's chosen locale.
+ *
+ * The block CONTENT (titles, captions, descriptions) is intentionally kept
+ * in Chinese here — these are seed values the user replaces on their first
+ * edit, and the active market is Taiwan creators. A future improvement
+ * would per-locale block content; for now neutral / customised-after-apply
+ * is acceptable.
+ */
+export interface PageTemplateSkeleton {
+  id: string
   emoji: string
   blocks: BlockTemplate[]
 }
@@ -34,14 +54,12 @@ const IMG_GRID_2     = 'https://images.unsplash.com/photo-1490481651871-ab68de25
 const IMG_GRID_3     = 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=600&fit=crop'
 const IMG_GRID_4     = 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=600&fit=crop'
 
-export const PAGE_TEMPLATES: PageTemplate[] = [
+export const PAGE_TEMPLATE_SKELETONS: PageTemplateSkeleton[] = [
   // ── Visual-forward presets (showcase the Phase 2 + 3 upgrades) ──
   // Listed first so first-time users land on a Portaly-quality look out
   // of the box, not a vertical list of buttons.
   {
     id: 'brand-site',
-    name: '品牌官網風',
-    description: 'Hero banner + 圖文卡片 storytelling,適合 SaaS / 顧問 / 品牌',
     emoji: '✨',
     blocks: [
       {
@@ -96,8 +114,6 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   },
   {
     id: 'kol',
-    name: 'KOL / 創作者風',
-    description: '大圖片 hero + 雙欄圖片組合,影片 + 商品,展現作品集',
     emoji: '🌟',
     blocks: [
       {
@@ -144,8 +160,6 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   },
   {
     id: 'portfolio',
-    name: '作品集 / 攝影風',
-    description: '極簡卡片 + 大量圖片格,適合設計師、攝影師、藝術家',
     emoji: '🎨',
     blocks: [
       {
@@ -187,8 +201,6 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   },
   {
     id: 'creator',
-    name: 'IG / YouTube 創作者',
-    description: '社群連結 + 最新影片 + 合作邀約',
     emoji: '🎥',
     blocks: [
       {
@@ -225,8 +237,6 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   },
   {
     id: 'seller',
-    name: '線上課程 / 數位商品',
-    description: '商品列表 + 預購倒數 + 名單蒐集',
     emoji: '🛒',
     blocks: [
       {
@@ -266,8 +276,6 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   },
   {
     id: 'podcaster',
-    name: 'Podcast 主持人',
-    description: '收聽平台 + 訂閱 + 贊助',
     emoji: '🎙️',
     blocks: [
       {
@@ -303,3 +311,27 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     ],
   },
 ]
+
+/**
+ * Resolve full PageTemplate objects (with localized name + description) from
+ * the static skeletons + a dict. Used by the empty-state template chooser
+ * in /admin/page.tsx so the picker renders in the visitor's chosen locale.
+ *
+ * The dict slot is expected at `dict.admin.templates[id]` and must contain
+ * `name` + `description`. Falls back to the template id and an empty
+ * description if a locale is missing an entry (defensive — shouldn't happen).
+ */
+export function getPageTemplates(
+  templatesDict: Record<string, { name: string; description: string } | undefined>,
+): PageTemplate[] {
+  return PAGE_TEMPLATE_SKELETONS.map(sk => {
+    const meta = templatesDict[sk.id]
+    return {
+      id: sk.id,
+      emoji: sk.emoji,
+      name: meta?.name ?? sk.id,
+      description: meta?.description ?? '',
+      blocks: sk.blocks,
+    }
+  })
+}

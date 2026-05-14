@@ -1029,6 +1029,15 @@
       "ctaShare": "คัดลอกลิงก์"
     },
 
+    "templates": {
+      "brand-site": { "name": "เว็บแบรนด์",          "description": "Hero banner + การ์ดเล่าเรื่อง เหมาะกับ SaaS / ที่ปรึกษา / แบรนด์" },
+      "kol":        { "name": "KOL / ครีเอเตอร์",   "description": "Hero ใหญ่ + ตาราง 2 คอลัมน์ + วิดีโอ + สินค้า โชว์พอร์ตโฟลิโอ" },
+      "portfolio":  { "name": "พอร์ตโฟลิโอ / ภาพถ่าย", "description": "การ์ดมินิมอล + ตารางรูป เหมาะกับดีไซเนอร์ ช่างภาพ ศิลปิน" },
+      "creator":    { "name": "ครีเอเตอร์ IG / YouTube", "description": "ลิงก์โซเชียล + วิดีโอล่าสุด + ติดต่อร่วมงาน" },
+      "seller":     { "name": "คอร์ส / สินค้าดิจิทัล", "description": "รายการสินค้า + นับถอยหลังพรีออเดอร์ + เก็บอีเมล" },
+      "podcaster":  { "name": "Podcaster",             "description": "แพลตฟอร์มฟัง + สมัคร + สนับสนุน" }
+    },
+
     "page": {
       "deleteBlockConfirm": "ลบบล็อกนี้?",
       "duplicateSuffix": " (สำเนา)",

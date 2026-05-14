@@ -1029,6 +1029,15 @@
       "ctaShare": "リンクをコピー"
     },
 
+    "templates": {
+      "brand-site": { "name": "ブランドサイト風",      "description": "Hero バナー + ストーリーカード。SaaS、コンサル、ブランド向け" },
+      "kol":        { "name": "KOL / クリエイター風", "description": "大きな hero + 2カラム画像 + 動画 + 商品。作品集として展開" },
+      "portfolio":  { "name": "ポートフォリオ / 写真",  "description": "ミニマルカード + 多数の画像グリッド。デザイナー、写真家、アーティスト向け" },
+      "creator":    { "name": "IG / YouTube クリエイター", "description": "ソーシャルリンク + 最新動画 + コラボお問い合わせ" },
+      "seller":     { "name": "オンライン講座 / デジタル商品", "description": "商品リスト + 予約カウントダウン + メール収集" },
+      "podcaster":  { "name": "Podcast ホスト",         "description": "再生プラットフォーム + 購読 + サポート" }
+    },
+
     "page": {
       "deleteBlockConfirm": "このブロックを削除しますか？",
       "duplicateSuffix": "（コピー）",

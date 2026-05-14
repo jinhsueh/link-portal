@@ -26,7 +26,7 @@ import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
 import { DownloadCloud, Sparkles } from 'lucide-react'
 import { ProfileView } from '@/components/profile/ProfileView'
-import { PAGE_TEMPLATES } from '@/lib/block-templates'
+import { getPageTemplates } from '@/lib/block-templates'
 import { toast } from '@/components/ui/Toast'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
@@ -46,6 +46,11 @@ type EditorMode = 'content' | 'appearance'
 export default function AdminPage() {
   const { dict } = useDict()
   const t = dict.admin
+  // Resolve template names + descriptions in the visitor's locale. Memoised
+  // on `t.templates` so the array isn't rebuilt every render — though even
+  // a fresh array per render is cheap (6 entries, no React keys depend on
+  // identity besides id which is stable).
+  const PAGE_TEMPLATES = getPageTemplates(t.templates as unknown as Record<string, { name: string; description: string } | undefined>)
   const router = useRouter()
   const [user, setUser] = useState<UserData | null>(null)
   const [blocks, setBlocks] = useState<BlockData[]>([])

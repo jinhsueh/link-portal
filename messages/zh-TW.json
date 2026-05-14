@@ -1029,6 +1029,15 @@
       "ctaShare": "複製連結"
     },
 
+    "templates": {
+      "brand-site": { "name": "品牌官網風",      "description": "Hero banner + 圖文卡片 storytelling,適合 SaaS / 顧問 / 品牌" },
+      "kol":        { "name": "KOL / 創作者風",  "description": "大圖片 hero + 雙欄圖片組合,影片 + 商品,展現作品集" },
+      "portfolio":  { "name": "作品集 / 攝影風", "description": "極簡卡片 + 大量圖片格,適合設計師、攝影師、藝術家" },
+      "creator":    { "name": "IG / YouTube 創作者", "description": "社群連結 + 最新影片 + 合作邀約" },
+      "seller":     { "name": "線上課程 / 數位商品", "description": "商品列表 + 預購倒數 + 名單蒐集" },
+      "podcaster":  { "name": "Podcast 主持人",  "description": "收聽平台 + 訂閱 + 贊助" }
+    },
+
     "page": {
       "deleteBlockConfirm": "確定刪除此區塊？",
       "duplicateSuffix": "（副本）",

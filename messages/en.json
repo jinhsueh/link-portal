@@ -1029,6 +1029,15 @@
       "ctaShare": "Copy link"
     },
 
+    "templates": {
+      "brand-site": { "name": "Brand site",        "description": "Hero banner + storytelling cards. For SaaS, consultants, brands." },
+      "kol":        { "name": "KOL / Creator",     "description": "Big hero + 2-column image grid + video + product. Showcase your work." },
+      "portfolio":  { "name": "Portfolio / Photo", "description": "Minimal cards + image grid. For designers, photographers, artists." },
+      "creator":    { "name": "IG / YouTube creator", "description": "Social links + latest video + collab inquiries." },
+      "seller":     { "name": "Course / Product",  "description": "Product list + countdown + email capture." },
+      "podcaster":  { "name": "Podcaster",         "description": "Listen platforms + subscribe + tip jar." }
+    },
+
     "page": {
       "deleteBlockConfirm": "Delete this block?",
       "duplicateSuffix": " (copy)",
