@@ -1,0 +1,203 @@
+{
+  "common": {
+    "brandName": "Beam",
+    "tagline": "一個連結,串起所有粉絲互動",
+    "free": "免費",
+    "pro": "Pro",
+    "premium": "Premium",
+    "save": "儲存",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "edit": "編輯",
+    "share": "分享",
+    "preview": "預覽",
+    "copy": "複製",
+    "copied": "已複製!",
+    "loading": "載入中…",
+    "back": "返回",
+    "next": "下一步",
+    "done": "完成",
+    "yes": "是",
+    "no": "否",
+    "optional": "(選填)",
+    "required": "必填",
+    "tryFree": "免費試用",
+    "getStarted": "立即開始",
+    "signIn": "登入",
+    "signUp": "註冊",
+    "signOut": "登出",
+    "settings": "設定"
+  },
+
+  "nav": {
+    "home": "主頁",
+    "analytics": "數據",
+    "orders": "訂單",
+    "subscribers": "訂閱",
+    "settings": "設定"
+  },
+
+  "landing": {
+    "hero": {
+      "tag": "創作者永久免費",
+      "title": "一個連結,\n串起所有粉絲互動",
+      "subtitle": "Beam 是專為注重設計的創作者打造的 link-in-bio。把 Instagram、YouTube、Podcast、商品、訂閱名單整合在一個美麗的頁面上。",
+      "ctaPrimary": "免費建立你的頁面",
+      "ctaSecondary": "看 live demo",
+      "ctaNote": "不需信用卡,30 秒上線。"
+    },
+
+    "social": {
+      "title": "每個社群,一個家",
+      "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE 等 30 多個平台 — 內建圖示、跟著你的品牌色、一鍵追蹤。"
+    },
+
+    "features": [
+      { "title": "你需要的所有區塊",          "description": "連結、橫幅、影片、商品、表單、行事曆 — 拖放就能打造真正屬於你的頁面。" },
+      { "title": "為你的品牌設計主題",       "description": "8 種預設或完全自訂顏色、漸層背景、按鈕樣式。你的品牌,像素級完美。" },
+      { "title": "即時分析數據",             "description": "追蹤訪客、點擊次數、最熱門區塊 — 然後根據真正有效的數據迭代。" },
+      { "title": "販售數位商品",             "description": "內建 Stripe。直接從你的頁面販售課程、電子書、模板 — 不需開店。" },
+      { "title": "經營你的 Email 名單",      "description": "嵌入 Email 收集表單,擁有屬於你的受眾,擺脫向演算法租流量的循環。" },
+      { "title": "一個帳號多個分頁",         "description": "一個帳號,多個分頁。依主題分開 — 課程、合作、個人 — 各自有名字。" }
+    ],
+
+    "steps": [
+      { "num": "1", "title": "建立帳號",       "description": "選一個用戶名。不需信用卡。30 秒搞定。" },
+      { "num": "2", "title": "加入你的區塊",   "description": "拖放、編輯。建立過程中即時預覽。" },
+      { "num": "3", "title": "分享一個連結",   "description": "放在 IG bio、YouTube、Threads 或任何地方。一個連結通吃。" }
+    ],
+
+    "useCases": {
+      "title": "為每種創作者打造",
+      "items": [
+        { "title": "IG / YouTube 創作者",   "description": "把粉絲導向你的最新影片、業配連結、周邊商品 — 一個地方搞定。" },
+        { "title": "課程 / 商品銷售者",      "description": "用 Stripe 賣數位商品。上線前先收 Email。限時優惠跑倒數計時。" },
+        { "title": "Podcast 主持人",        "description": "Spotify、Apple Podcasts、YouTube 一鍵連結。讓聽眾用一杯咖啡支持你。" }
+      ]
+    },
+
+    "pricing": {
+      "title": "簡單、透明的價格",
+      "subtitle": "免費開始。需要更多時再升級。",
+      "free":    { "name": "免費版",  "price": "$0",  "period": "/月", "features": ["1 個分頁", "最多 10 個區塊", "基本分析", "Email 收集", "Beam 浮水印"] },
+      "pro":     { "name": "Pro",     "price": "$5",  "period": "/月", "features": ["3 個分頁", "無限區塊", "完整分析", "販售商品 (Stripe)", "移除浮水印", "優先客服"] },
+      "premium": { "name": "Premium", "price": "$12", "period": "/月", "features": ["無限分頁", "團隊成員", "自訂網域", "進階主題", "更低抽成 (2%)", "1 對 1 onboarding"] },
+      "cta": "免費開始"
+    },
+
+    "faq": {
+      "title": "你想問的,我們都答了",
+      "items": [
+        { "q": "Beam 真的免費嗎?",                      "a": "對。免費方案永久免費。只有你需要無限區塊、更多分頁、或移除浮水印時才需要升級 Pro。" },
+        { "q": "可以從 Linktree 匯入嗎?",               "a": "可以。貼上你的 linktr.ee 或 portaly.cc 網址,Beam 會在 30 秒內把連結、社群、名稱、簡介、頭像全部抓過來。" },
+        { "q": "商品販售怎麼運作?",                     "a": "在設定裡連接 Stripe 帳號。新增商品區塊、設定價格,顧客就能直接從你的頁面購買。Beam 收取小額抽成,依方案不同。" },
+        { "q": "可以使用自訂網域嗎?",                   "a": "可以,Premium 方案。把網域指向 Beam,我們處理 SSL。" },
+        { "q": "Email 訂閱者會被你們抽成嗎?",           "a": "絕不。訂閱者完全屬於你。隨時可以匯出 CSV。" }
+      ]
+    },
+
+    "footer": {
+      "tagline": "一個連結,串起所有粉絲互動",
+      "product": "產品",
+      "company": "公司",
+      "legal": "法律",
+      "pricing": "價格",
+      "demo": "Live demo",
+      "about": "關於",
+      "contact": "聯絡",
+      "privacy": "隱私",
+      "terms": "條款",
+      "copyright": "© 2026 Beam. All rights reserved."
+    },
+
+    "langSwitcher": {
+      "label": "語言"
+    }
+  },
+
+  "profile": {
+    "watermark": "由 Beam 製作",
+    "share": "分享",
+    "subscribe": "訂閱",
+    "subscribed": "已訂閱!",
+    "subscribePlaceholder": "輸入你的 Email",
+    "subscribeError": "出了點問題,請再試一次",
+    "buy": "立即購買",
+    "buyProcessing": "處理中…",
+    "passwordGate": {
+      "title": "此頁面受密碼保護",
+      "subtitle": "輸入密碼以查看",
+      "placeholder": "密碼",
+      "submit": "解鎖",
+      "wrong": "密碼錯誤"
+    },
+    "addToCalendar": {
+      "title": "加入日曆",
+      "google": "Google Calendar",
+      "ics": "下載 .ics"
+    }
+  },
+
+  "admin": {
+    "addBlock": "新增區塊",
+    "noBlocksTitle": "你的頁面是空的",
+    "noBlocksSubtitle": "挑一個起始範本,或從零開始打造。",
+    "fromScratch": "從零開始建立",
+    "importFromLinktree": "一鍵搬家 — 30 秒",
+    "alreadyOnLinktree": "已經在用 Linktree 或 Portaly?",
+    "blockManagement": "區塊管理",
+    "blockManagementHint": "拖曳調整順序、點擊眼睛隱藏區塊",
+    "deleteConfirm": "確定刪除此區塊?",
+    "moveToPage": "移至其他分頁",
+    "duplicate": "複製",
+    "schedule": "排程顯示",
+    "modifySchedule": "修改排程",
+    "pin": "設為主推",
+    "unpin": "取消主推",
+    "saveUnsaved": "尚未儲存變動,記得按右側「全部儲存」",
+    "saveAll": "全部儲存",
+
+    "onboarding": {
+      "title": "快速開始",
+      "steps": {
+        "createAccount":  "建立帳號",
+        "addBlock":       "加入你的第一個連結",
+        "setProfile":     "設定大頭照和自我介紹",
+        "pickStyle":      "選一個視覺風格(切角 / 動畫 / 主題色)",
+        "share":          "分享你的頁面連結"
+      },
+      "actionAdd":      "新增區塊",
+      "actionSettings": "前往設定",
+      "actionAppearance": "前往外觀",
+      "actionCopy":     "複製連結"
+    }
+  },
+
+  "auth": {
+    "loginTitle":      "歡迎回來",
+    "loginSubtitle":   "登入管理你的 Beam 頁面",
+    "signupTitle":     "建立你的 Beam 頁面",
+    "signupSubtitle":  "選一個用戶名,我們需要的就這樣",
+    "emailLabel":      "Email",
+    "passwordLabel":   "密碼",
+    "usernameLabel":   "用戶名",
+    "usernameHelp":    "你的頁面網址會在 beam.io/<username>",
+    "submitLogin":     "登入",
+    "submitSignup":    "建立帳號",
+    "switchToSignup":  "新來的?註冊一個",
+    "switchToLogin":   "已有帳號?登入"
+  },
+
+  "errors": {
+    "unauthorized":     "請先登入",
+    "notFound":         "找不到",
+    "networkError":     "網路錯誤,請再試一次",
+    "uploadFailed":     "上傳失敗,請再試一次",
+    "saveFailed":       "儲存失敗,請再試一次",
+    "usernameTaken":    "此用戶名已被使用",
+    "usernameInvalid":  "用戶名格式不正確",
+    "duplicateSocial":  "這個網址已經加過了,不能重複新增"
+  }
+}

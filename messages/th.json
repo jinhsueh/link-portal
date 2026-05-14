@@ -1,0 +1,203 @@
+{
+  "common": {
+    "brandName": "Beam",
+    "tagline": "ลิงก์เดียว เชื่อมทุก touchpoint กับแฟน",
+    "free": "ฟรี",
+    "pro": "Pro",
+    "premium": "Premium",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก…",
+    "saved": "บันทึกแล้ว",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "share": "แชร์",
+    "preview": "ดูตัวอย่าง",
+    "copy": "คัดลอก",
+    "copied": "คัดลอกแล้ว!",
+    "loading": "กำลังโหลด…",
+    "back": "ย้อนกลับ",
+    "next": "ถัดไป",
+    "done": "เสร็จ",
+    "yes": "ใช่",
+    "no": "ไม่",
+    "optional": "(ไม่บังคับ)",
+    "required": "จำเป็น",
+    "tryFree": "ลองฟรี",
+    "getStarted": "เริ่มเลย",
+    "signIn": "เข้าสู่ระบบ",
+    "signUp": "สมัครใหม่",
+    "signOut": "ออกจากระบบ",
+    "settings": "ตั้งค่า"
+  },
+
+  "nav": {
+    "home": "หน้าหลัก",
+    "analytics": "วิเคราะห์",
+    "orders": "ออเดอร์",
+    "subscribers": "ผู้ติดตาม",
+    "settings": "ตั้งค่า"
+  },
+
+  "landing": {
+    "hero": {
+      "tag": "ฟรีตลอดสำหรับครีเอเตอร์",
+      "title": "ลิงก์เดียว\nเชื่อมทุก touchpoint กับแฟน",
+      "subtitle": "Beam คือ link-in-bio ที่สร้างขึ้นเพื่อครีเอเตอร์ที่ใส่ใจดีไซน์ รวม Instagram, YouTube, podcast, สินค้า และ email list ไว้ในหน้าเดียวที่สวยงาม",
+      "ctaPrimary": "สร้างหน้าของคุณ — ฟรี",
+      "ctaSecondary": "ดู live demo",
+      "ctaNote": "ไม่ต้องใช้บัตรเครดิต ใช้งานได้ใน 30 วินาที"
+    },
+
+    "social": {
+      "title": "ทุกช่องทาง ในที่เดียว",
+      "subtitle": "Instagram, YouTube, TikTok, Threads, Spotify, LINE และอีก 30+ — มีไอคอนในตัว, สีแบรนด์ของคุณ, แตะครั้งเดียวเพื่อ follow"
+    },
+
+    "features": [
+      { "title": "บล็อกครบทุกแบบที่ต้องใช้",          "description": "ลิงก์ แบนเนอร์ วิดีโอ สินค้า ฟอร์ม ปฏิทิน — ลากวางเพื่อสร้างหน้าที่เป็นคุณจริง ๆ" },
+      { "title": "ปรับธีมให้ตรงแบรนด์",              "description": "8 พรีเซ็ตหรือสีคัสตอมทั้งหมด, gradient, สไตล์ปุ่ม. แบรนด์ของคุณ pixel-perfect" },
+      { "title": "วิเคราะห์เรียลไทม์",                "description": "ติดตามผู้เข้าชม คลิก บล็อกยอดนิยม — ปรับตามข้อมูลจริง" },
+      { "title": "ขายสินค้าดิจิทัล",                   "description": "Stripe ในตัว ขายคอร์ส, e-book, template ตรงจากหน้าคุณ — ไม่ต้องมีหน้าร้าน" },
+      { "title": "สร้าง email list",                  "description": "ฝังฟอร์มเก็บอีเมล, เป็นเจ้าของผู้ติดตามของคุณ, ไม่ต้องเช่าความสนใจจาก algorithm" },
+      { "title": "หลายหน้า ในบัญชีเดียว",             "description": "บัญชีเดียว หลายหน้า แบ่งตามหัวข้อ — คอร์ส, ความร่วมมือ, ส่วนตัว — ด้วย tab ที่ตั้งชื่อได้" }
+    ],
+
+    "steps": [
+      { "num": "1", "title": "สร้างบัญชี",        "description": "เลือก username ไม่ต้องใช้บัตรเครดิต เสร็จใน 30 วินาที" },
+      { "num": "2", "title": "เพิ่มบล็อก",       "description": "ลาก วาง แก้ไข ดูตัวอย่างอัปเดตทันที" },
+      { "num": "3", "title": "แชร์ลิงก์เดียว",   "description": "ใส่ใน IG bio, YouTube, Threads หรือที่ไหนก็ได้ ลิงก์เดียวจัดการทุกอย่าง" }
+    ],
+
+    "useCases": {
+      "title": "เหมาะสำหรับครีเอเตอร์ทุกแบบ",
+      "items": [
+        { "title": "ครีเอเตอร์ IG / YouTube",   "description": "พาแฟนไปวิดีโอล่าสุด ลิงก์ sponsor หรือสินค้า — ทุกอย่างที่เดียว" },
+        { "title": "ขายคอร์ส / สินค้า",          "description": "ขายสินค้าดิจิทัลด้วย Stripe เก็บอีเมลก่อนเปิดตัว ตั้ง countdown สำหรับโปรลิมิเต็ด" },
+        { "title": "Podcaster",                   "description": "เชื่อม Spotify, Apple Podcasts, YouTube ในแตะเดียว ให้ผู้ฟังสนับสนุนด้วยกาแฟแก้วเดียว" }
+      ]
+    },
+
+    "pricing": {
+      "title": "ราคาง่าย ๆ ตรงไปตรงมา",
+      "subtitle": "เริ่มฟรี อัปเกรดเมื่อต้องการเพิ่ม",
+      "free":    { "name": "Free",    "price": "$0",  "period": "/เดือน", "features": ["1 หน้า", "บล็อกได้ถึง 10", "วิเคราะห์พื้นฐาน", "เก็บอีเมล", "Beam watermark"] },
+      "pro":     { "name": "Pro",     "price": "$5",  "period": "/เดือน", "features": ["3 หน้า", "บล็อกไม่จำกัด", "วิเคราะห์ครบ", "ขายสินค้า (Stripe)", "เอา watermark ออก", "ซัพพอร์ตเร็วกว่า"] },
+      "premium": { "name": "Premium", "price": "$12", "period": "/เดือน", "features": ["หน้าไม่จำกัด", "สมาชิกทีม", "โดเมนของตัวเอง", "ธีมขั้นสูง", "ค่าธรรมเนียมต่ำกว่า (2%)", "onboarding 1-on-1"] },
+      "cta": "เริ่มฟรี"
+    },
+
+    "faq": {
+      "title": "คำถามที่พบบ่อย",
+      "items": [
+        { "q": "Beam ฟรีจริงเหรอ?",                          "a": "ใช่ แผน Free ฟรีตลอดไป อัปเกรด Pro เฉพาะเมื่อคุณต้องการบล็อกไม่จำกัด, หน้าเพิ่ม หรือเอา watermark ออก" },
+        { "q": "ย้ายจาก Linktree ได้มั้ย?",                  "a": "ได้ แค่วาง URL จาก linktr.ee หรือ portaly.cc แล้ว Beam จะดึงลิงก์, social, ชื่อ, bio, รูปโปรไฟล์ของคุณมาให้ใน 30 วินาที" },
+        { "q": "การขายสินค้าทำงานยังไง?",                    "a": "เชื่อมบัญชี Stripe ที่หน้า settings เพิ่มบล็อกสินค้า ตั้งราคา ลูกค้าซื้อจากหน้าคุณได้เลย Beam หักค่าธรรมเนียมเล็กน้อยตามแผน" },
+        { "q": "ใช้โดเมนตัวเองได้มั้ย?",                     "a": "ได้ ในแผน Premium ชี้โดเมนมาที่ Beam แล้วเราจัดการ SSL ให้" },
+        { "q": "พวกคุณหักค่าธรรมเนียมจากผู้ติดตามอีเมลของฉันมั้ย?", "a": "ไม่เลย ผู้ติดตามเป็นของคุณ export ออกเป็น CSV ได้ทุกเมื่อ" }
+      ]
+    },
+
+    "footer": {
+      "tagline": "ลิงก์เดียว เชื่อมทุก touchpoint กับแฟน",
+      "product": "ผลิตภัณฑ์",
+      "company": "บริษัท",
+      "legal": "ข้อกฎหมาย",
+      "pricing": "ราคา",
+      "demo": "Live demo",
+      "about": "เกี่ยวกับ",
+      "contact": "ติดต่อ",
+      "privacy": "ความเป็นส่วนตัว",
+      "terms": "ข้อกำหนด",
+      "copyright": "© 2026 Beam. สงวนลิขสิทธิ์"
+    },
+
+    "langSwitcher": {
+      "label": "ภาษา"
+    }
+  },
+
+  "profile": {
+    "watermark": "สร้างด้วย Beam",
+    "share": "แชร์",
+    "subscribe": "สมัคร",
+    "subscribed": "สมัครแล้ว!",
+    "subscribePlaceholder": "กรอกอีเมลของคุณ",
+    "subscribeError": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
+    "buy": "ซื้อเลย",
+    "buyProcessing": "กำลังประมวลผล…",
+    "passwordGate": {
+      "title": "หน้านี้ป้องกันด้วยรหัสผ่าน",
+      "subtitle": "กรอกรหัสผ่านเพื่อดู",
+      "placeholder": "รหัสผ่าน",
+      "submit": "ปลดล็อก",
+      "wrong": "รหัสผ่านไม่ถูกต้อง"
+    },
+    "addToCalendar": {
+      "title": "เพิ่มในปฏิทิน",
+      "google": "Google Calendar",
+      "ics": "ดาวน์โหลด .ics"
+    }
+  },
+
+  "admin": {
+    "addBlock": "เพิ่มบล็อก",
+    "noBlocksTitle": "หน้าของคุณว่างอยู่",
+    "noBlocksSubtitle": "เลือก template เริ่มต้น หรือสร้างจากศูนย์",
+    "fromScratch": "เริ่มจากศูนย์",
+    "importFromLinktree": "ย้ายในคลิกเดียว — 30 วินาที",
+    "alreadyOnLinktree": "ใช้ Linktree หรือ Portaly อยู่แล้ว?",
+    "blockManagement": "จัดการบล็อก",
+    "blockManagementHint": "ลากเพื่อจัดเรียง คลิกตาเพื่อซ่อน",
+    "deleteConfirm": "ต้องการลบบล็อกนี้?",
+    "moveToPage": "ย้ายไปหน้าอื่น",
+    "duplicate": "ทำซ้ำ",
+    "schedule": "ตั้งเวลาแสดง",
+    "modifySchedule": "แก้ไขเวลา",
+    "pin": "ปักหมุดบนสุด",
+    "unpin": "เลิกปักหมุด",
+    "saveUnsaved": "มีการแก้ไขที่ยังไม่บันทึก กด \"บันทึกทั้งหมด\" ทางขวา",
+    "saveAll": "บันทึกทั้งหมด",
+
+    "onboarding": {
+      "title": "เริ่มต้นด่วน",
+      "steps": {
+        "createAccount":  "สร้างบัญชี",
+        "addBlock":       "เพิ่มลิงก์แรก",
+        "setProfile":     "ตั้งรูปโปรไฟล์และ bio",
+        "pickStyle":      "เลือกสไตล์ภาพ (มุม / animation / สีแบรนด์)",
+        "share":          "แชร์ลิงก์ของคุณ"
+      },
+      "actionAdd":      "เพิ่มบล็อก",
+      "actionSettings": "ไปที่ตั้งค่า",
+      "actionAppearance": "ไปที่ลุค",
+      "actionCopy":     "คัดลอกลิงก์"
+    }
+  },
+
+  "auth": {
+    "loginTitle":      "ยินดีต้อนรับกลับมา",
+    "loginSubtitle":   "ลงชื่อเพื่อจัดการหน้า Beam ของคุณ",
+    "signupTitle":     "สร้างหน้า Beam",
+    "signupSubtitle":  "เลือก username — แค่นี้พอ",
+    "emailLabel":      "อีเมล",
+    "passwordLabel":   "รหัสผ่าน",
+    "usernameLabel":   "ชื่อผู้ใช้",
+    "usernameHelp":    "หน้าของคุณจะอยู่ที่ beam.io/<username>",
+    "submitLogin":     "เข้าสู่ระบบ",
+    "submitSignup":    "สร้างบัญชี",
+    "switchToSignup":  "ใหม่ที่นี่? สร้างบัญชี",
+    "switchToLogin":   "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"
+  },
+
+  "errors": {
+    "unauthorized":     "กรุณาเข้าสู่ระบบ",
+    "notFound":         "ไม่พบ",
+    "networkError":     "เครือข่ายขัดข้อง กรุณาลองอีกครั้ง",
+    "uploadFailed":     "อัปโหลดล้มเหลว",
+    "saveFailed":       "บันทึกล้มเหลว",
+    "usernameTaken":    "ชื่อผู้ใช้นี้ถูกใช้แล้ว",
+    "usernameInvalid":  "รูปแบบชื่อผู้ใช้ไม่ถูกต้อง",
+    "duplicateSocial":  "URL นี้ถูกเพิ่มไปแล้ว"
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "common": {
+    "brandName": "Beam",
+    "tagline": "One link. Every fan touchpoint.",
+    "free": "Free",
+    "pro": "Pro",
+    "premium": "Premium",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "preview": "Preview",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "(optional)",
+    "required": "Required",
+    "tryFree": "Try free",
+    "getStarted": "Get started",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "settings": "Settings"
+  },
+
+  "nav": {
+    "home": "Home",
+    "analytics": "Analytics",
+    "orders": "Orders",
+    "subscribers": "Subscribers",
+    "settings": "Settings"
+  },
+
+  "landing": {
+    "hero": {
+      "tag": "Free forever for creators",
+      "title": "One link.\nEvery fan touchpoint.",
+      "subtitle": "Beam is the link-in-bio built for creators who care about design. Unite Instagram, YouTube, podcasts, products, and your email list on one beautiful page.",
+      "ctaPrimary": "Build your page — free",
+      "ctaSecondary": "See a live demo",
+      "ctaNote": "No credit card. 30 seconds to live."
+    },
+
+    "social": {
+      "title": "Every channel, one home",
+      "subtitle": "Instagram, YouTube, TikTok, Threads, Spotify, LINE, and 30+ more — built-in icons, your brand color, one tap to follow."
+    },
+
+    "features": [
+      { "title": "Every block you need",        "description": "Links, banners, videos, products, forms, calendars — drag and drop to build a page that's truly yours." },
+      { "title": "Theme your brand",            "description": "8 presets or fully custom colors, gradient backgrounds, and button styles. Your brand, pixel-perfect." },
+      { "title": "Real-time analytics",         "description": "Track visitors, clicks, and top-performing blocks — and iterate on what actually works." },
+      { "title": "Sell digital products",       "description": "Stripe built-in. Sell courses, e-books, and templates directly from your page — no storefront needed." },
+      { "title": "Grow your email list",        "description": "Embed email capture forms, own your audience, and stop renting attention from the algorithm." },
+      { "title": "Multiple pages, one account", "description": "One account, many pages. Split by topic — courses, partnerships, personal — with named tabs." }
+    ],
+
+    "steps": [
+      { "num": "1", "title": "Create an account", "description": "Pick a username. No credit card. Done in 30 seconds." },
+      { "num": "2", "title": "Add your blocks",   "description": "Drag, drop, and edit. Preview updates instantly as you build." },
+      { "num": "3", "title": "Share one link",    "description": "Drop it in your IG bio, YouTube, Threads, or anywhere else. One link to rule them all." }
+    ],
+
+    "useCases": {
+      "title": "Built for every kind of creator",
+      "items": [
+        { "title": "IG / YouTube creators",   "description": "Send fans to your latest video, sponsorship link, or merch — all in one place." },
+        { "title": "Course & product sellers","description": "Sell digital products with Stripe. Capture emails before launch. Run countdowns for limited offers." },
+        { "title": "Podcasters",              "description": "Link Spotify, Apple Podcasts, and YouTube in one tap. Let listeners support you with a coffee." }
+      ]
+    },
+
+    "pricing": {
+      "title": "Simple, honest pricing",
+      "subtitle": "Start free. Upgrade when you need more.",
+      "free":    { "name": "Free",    "price": "$0",     "period": "/month", "features": ["1 page", "Up to 10 blocks", "Basic analytics", "Email capture", "Beam watermark"] },
+      "pro":     { "name": "Pro",     "price": "$5",     "period": "/month", "features": ["3 pages", "Unlimited blocks", "Full analytics", "Sell products (Stripe)", "Remove watermark", "Priority support"] },
+      "premium": { "name": "Premium", "price": "$12",    "period": "/month", "features": ["Unlimited pages", "Team members", "Custom domain", "Advanced theming", "Lower commission (2%)", "1-on-1 onboarding"] },
+      "cta": "Start free"
+    },
+
+    "faq": {
+      "title": "Questions, answered",
+      "items": [
+        { "q": "Is Beam really free?",                       "a": "Yes. The free plan stays free forever. Upgrade to Pro only when you need unlimited blocks, more pages, or to remove the watermark." },
+        { "q": "Can I import from Linktree?",                "a": "Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls your links, socials, name, bio, and avatar in 30 seconds." },
+        { "q": "How does selling products work?",            "a": "Connect a Stripe account in settings. Add a product block, set a price, and customers buy directly from your page. Beam takes a small commission depending on plan." },
+        { "q": "Can I use a custom domain?",                 "a": "Yes, on the Premium plan. Point your domain at Beam and we handle SSL." },
+        { "q": "Do you take a cut of my email subscribers?", "a": "Never. Subscribers belong to you. Export the list anytime as CSV." }
+      ]
+    },
+
+    "footer": {
+      "tagline": "One link. Every fan touchpoint.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "pricing": "Pricing",
+      "demo": "Live demo",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "copyright": "© 2026 Beam. All rights reserved."
+    },
+
+    "langSwitcher": {
+      "label": "Language"
+    }
+  },
+
+  "profile": {
+    "watermark": "Made with Beam",
+    "share": "Share",
+    "subscribe": "Subscribe",
+    "subscribed": "Subscribed!",
+    "subscribePlaceholder": "Enter your email",
+    "subscribeError": "Something went wrong, please try again",
+    "buy": "Buy now",
+    "buyProcessing": "Processing…",
+    "passwordGate": {
+      "title": "This page is protected",
+      "subtitle": "Enter the password to view",
+      "placeholder": "Password",
+      "submit": "Unlock",
+      "wrong": "Wrong password"
+    },
+    "addToCalendar": {
+      "title": "Add to calendar",
+      "google": "Google Calendar",
+      "ics": "Download .ics"
+    }
+  },
+
+  "admin": {
+    "addBlock": "Add block",
+    "noBlocksTitle": "Your page is empty",
+    "noBlocksSubtitle": "Pick a starter template, or build from scratch.",
+    "fromScratch": "Start from scratch",
+    "importFromLinktree": "One-click move — 30 seconds",
+    "alreadyOnLinktree": "Already on Linktree or Portaly?",
+    "blockManagement": "Block manager",
+    "blockManagementHint": "Drag to reorder. Click the eye to hide.",
+    "deleteConfirm": "Delete this block?",
+    "moveToPage": "Move to another page",
+    "duplicate": "Duplicate",
+    "schedule": "Schedule visibility",
+    "modifySchedule": "Modify schedule",
+    "pin": "Pin to top",
+    "unpin": "Unpin",
+    "saveUnsaved": "Unsaved changes. Click 'Save all' on the right.",
+    "saveAll": "Save all",
+
+    "onboarding": {
+      "title": "Quick start",
+      "steps": {
+        "createAccount":  "Sign up",
+        "addBlock":       "Add your first link",
+        "setProfile":     "Set avatar + bio",
+        "pickStyle":      "Pick a visual style (corners / animation / brand color)",
+        "share":          "Share your page link"
+      },
+      "actionAdd":      "Add block",
+      "actionSettings": "Go to settings",
+      "actionAppearance": "Go to appearance",
+      "actionCopy":     "Copy link"
+    }
+  },
+
+  "auth": {
+    "loginTitle":      "Welcome back",
+    "loginSubtitle":   "Sign in to manage your Beam page",
+    "signupTitle":     "Create your Beam page",
+    "signupSubtitle":  "Pick a username — that's all we need",
+    "emailLabel":      "Email",
+    "passwordLabel":   "Password",
+    "usernameLabel":   "Username",
+    "usernameHelp":    "Your page lives at beam.io/<username>",
+    "submitLogin":     "Sign in",
+    "submitSignup":    "Create account",
+    "switchToSignup":  "New here? Create an account",
+    "switchToLogin":   "Already have an account? Sign in"
+  },
+
+  "errors": {
+    "unauthorized":     "Please sign in",
+    "notFound":         "Not found",
+    "networkError":     "Network error, please try again",
+    "uploadFailed":     "Upload failed, please try again",
+    "saveFailed":       "Save failed, please try again",
+    "usernameTaken":    "That username is taken",
+    "usernameInvalid":  "Username format is invalid",
+    "duplicateSocial":  "That URL is already added"
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "common": {
+    "brandName": "Beam",
+    "tagline": "1つのリンクで、すべてのファンとつながる",
+    "free": "無料",
+    "pro": "Pro",
+    "premium": "Premium",
+    "save": "保存",
+    "saving": "保存中…",
+    "saved": "保存しました",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "share": "シェア",
+    "preview": "プレビュー",
+    "copy": "コピー",
+    "copied": "コピーしました!",
+    "loading": "読み込み中…",
+    "back": "戻る",
+    "next": "次へ",
+    "done": "完了",
+    "yes": "はい",
+    "no": "いいえ",
+    "optional": "(任意)",
+    "required": "必須",
+    "tryFree": "無料で試す",
+    "getStarted": "はじめる",
+    "signIn": "ログイン",
+    "signUp": "新規登録",
+    "signOut": "ログアウト",
+    "settings": "設定"
+  },
+
+  "nav": {
+    "home": "ホーム",
+    "analytics": "分析",
+    "orders": "注文",
+    "subscribers": "登録者",
+    "settings": "設定"
+  },
+
+  "landing": {
+    "hero": {
+      "tag": "クリエイターは永久無料",
+      "title": "1つのリンクで、\nすべてのファンとつながる。",
+      "subtitle": "Beam はデザインにこだわるクリエイターのための link-in-bio。Instagram、YouTube、ポッドキャスト、商品、メールリストを 1 つの美しいページに集約します。",
+      "ctaPrimary": "無料でページを作る",
+      "ctaSecondary": "ライブデモを見る",
+      "ctaNote": "クレジットカード不要。30 秒で公開。"
+    },
+
+    "social": {
+      "title": "すべてのチャンネルを 1 つの場所に",
+      "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE など 30 種類以上 — 標準アイコン、ブランドカラー対応、ワンタップでフォロー。"
+    },
+
+    "features": [
+      { "title": "必要なブロックすべて",                "description": "リンク、バナー、動画、商品、フォーム、カレンダー — ドラッグ&ドロップで、本当に自分だけのページを作れます。" },
+      { "title": "ブランドに合わせたテーマ",          "description": "8 種のプリセット、または完全カスタムカラー、グラデーション背景、ボタンスタイル。あなたのブランドを 1px も妥協なく。" },
+      { "title": "リアルタイム分析",                  "description": "訪問者、クリック、人気ブロックを追跡 — 実際に効果のあるものを基に改善できます。" },
+      { "title": "デジタル商品を販売",                "description": "Stripe を標準搭載。コース、電子書籍、テンプレートをページから直接販売 — ストアフロント不要。" },
+      { "title": "メールリストを育てる",              "description": "メール収集フォームを埋め込み、自分のオーディエンスを所有。アルゴリズムに依存しない。" },
+      { "title": "1 つのアカウントで複数ページ",      "description": "1 アカウントで複数のページ。コース、コラボ、プライベートなど名前付きタブで分けられます。" }
+    ],
+
+    "steps": [
+      { "num": "1", "title": "アカウントを作る",  "description": "ユーザー名を選ぶ。クレジットカード不要。30 秒で完了。" },
+      { "num": "2", "title": "ブロックを追加",    "description": "ドラッグ、ドロップ、編集。作成中もプレビューが即座に更新されます。" },
+      { "num": "3", "title": "1 つのリンクをシェア", "description": "IG bio、YouTube、Threads、どこでも貼り付けるだけ。1 リンクですべてカバー。" }
+    ],
+
+    "useCases": {
+      "title": "あらゆるクリエイターのために",
+      "items": [
+        { "title": "IG / YouTube クリエイター",      "description": "最新動画、PR リンク、グッズなどへファンを誘導 — すべて 1 ヶ所に。" },
+        { "title": "コース・商品の販売者",          "description": "Stripe でデジタル商品を販売。ローンチ前にメール獲得。限定オファーにカウントダウンを設置。" },
+        { "title": "ポッドキャスター",              "description": "Spotify、Apple Podcasts、YouTube を 1 タップで連携。リスナーがコーヒー 1 杯でサポートできます。" }
+      ]
+    },
+
+    "pricing": {
+      "title": "シンプルで誠実な料金",
+      "subtitle": "無料で開始。必要になったらアップグレード。",
+      "free":    { "name": "Free",    "price": "$0",  "period": "/月", "features": ["1 ページ", "10 ブロックまで", "基本分析", "メール収集", "Beam ウォーターマーク"] },
+      "pro":     { "name": "Pro",     "price": "$5",  "period": "/月", "features": ["3 ページ", "ブロック無制限", "完全分析", "商品販売 (Stripe)", "ウォーターマーク除去", "優先サポート"] },
+      "premium": { "name": "Premium", "price": "$12", "period": "/月", "features": ["ページ無制限", "チームメンバー", "独自ドメイン", "高度なテーマ", "低い手数料 (2%)", "1on1 オンボーディング"] },
+      "cta": "無料ではじめる"
+    },
+
+    "faq": {
+      "title": "よくある質問",
+      "items": [
+        { "q": "Beam は本当に無料ですか?",                  "a": "はい。無料プランは永久無料です。Pro へのアップグレードは、ブロック無制限、ページ追加、ウォーターマーク除去が必要になった時だけで構いません。" },
+        { "q": "Linktree から移行できますか?",              "a": "はい。linktr.ee または portaly.cc の URL を貼り付けるだけで、リンク、ソーシャル、名前、紹介、アイコンを 30 秒で取り込みます。" },
+        { "q": "商品販売はどう動きますか?",                 "a": "設定で Stripe アカウントを接続。商品ブロックを追加して価格を設定すると、顧客がページから直接購入できます。Beam はプランに応じて少額の手数料を受け取ります。" },
+        { "q": "独自ドメインは使えますか?",                 "a": "はい、Premium プランで対応しています。ドメインを Beam に向けると、SSL は当方で処理します。" },
+        { "q": "メール登録者から手数料を取りますか?",       "a": "取りません。登録者はあなたのものです。いつでも CSV でエクスポートできます。" }
+      ]
+    },
+
+    "footer": {
+      "tagline": "1つのリンクで、すべてのファンとつながる",
+      "product": "プロダクト",
+      "company": "会社",
+      "legal": "規約",
+      "pricing": "料金",
+      "demo": "ライブデモ",
+      "about": "概要",
+      "contact": "お問い合わせ",
+      "privacy": "プライバシー",
+      "terms": "利用規約",
+      "copyright": "© 2026 Beam. All rights reserved."
+    },
+
+    "langSwitcher": {
+      "label": "言語"
+    }
+  },
+
+  "profile": {
+    "watermark": "Beam で作成",
+    "share": "シェア",
+    "subscribe": "登録",
+    "subscribed": "登録完了!",
+    "subscribePlaceholder": "メールアドレスを入力",
+    "subscribeError": "エラーが発生しました。もう一度お試しください",
+    "buy": "今すぐ購入",
+    "buyProcessing": "処理中…",
+    "passwordGate": {
+      "title": "このページはパスワードで保護されています",
+      "subtitle": "パスワードを入力して閲覧",
+      "placeholder": "パスワード",
+      "submit": "ロック解除",
+      "wrong": "パスワードが違います"
+    },
+    "addToCalendar": {
+      "title": "カレンダーに追加",
+      "google": "Google カレンダー",
+      "ics": ".ics をダウンロード"
+    }
+  },
+
+  "admin": {
+    "addBlock": "ブロックを追加",
+    "noBlocksTitle": "ページが空です",
+    "noBlocksSubtitle": "スターターテンプレートを選ぶか、ゼロから作りましょう。",
+    "fromScratch": "ゼロから作る",
+    "importFromLinktree": "ワンクリックで移行 — 30 秒",
+    "alreadyOnLinktree": "すでに Linktree か Portaly を使っていますか?",
+    "blockManagement": "ブロック管理",
+    "blockManagementHint": "ドラッグで並び替え、目のアイコンで非表示。",
+    "deleteConfirm": "このブロックを削除しますか?",
+    "moveToPage": "別のページに移動",
+    "duplicate": "複製",
+    "schedule": "表示スケジュール",
+    "modifySchedule": "スケジュール変更",
+    "pin": "トップに固定",
+    "unpin": "固定を解除",
+    "saveUnsaved": "未保存の変更があります。右側の「すべて保存」をクリック。",
+    "saveAll": "すべて保存",
+
+    "onboarding": {
+      "title": "クイックスタート",
+      "steps": {
+        "createAccount":  "アカウント作成",
+        "addBlock":       "最初のリンクを追加",
+        "setProfile":     "アイコンと自己紹介を設定",
+        "pickStyle":      "ビジュアルスタイルを選ぶ(角・アニメ・ブランドカラー)",
+        "share":          "ページのリンクをシェア"
+      },
+      "actionAdd":      "ブロック追加",
+      "actionSettings": "設定へ",
+      "actionAppearance": "外観へ",
+      "actionCopy":     "リンクをコピー"
+    }
+  },
+
+  "auth": {
+    "loginTitle":      "おかえりなさい",
+    "loginSubtitle":   "ログインして Beam ページを管理",
+    "signupTitle":     "Beam ページを作成",
+    "signupSubtitle":  "ユーザー名を選ぶだけ — それだけで OK",
+    "emailLabel":      "メールアドレス",
+    "passwordLabel":   "パスワード",
+    "usernameLabel":   "ユーザー名",
+    "usernameHelp":    "ページの URL は beam.io/<username> になります",
+    "submitLogin":     "ログイン",
+    "submitSignup":    "アカウント作成",
+    "switchToSignup":  "はじめての方?新規登録",
+    "switchToLogin":   "アカウントをお持ちですか?ログイン"
+  },
+
+  "errors": {
+    "unauthorized":     "ログインしてください",
+    "notFound":         "見つかりません",
+    "networkError":     "ネットワークエラーです。もう一度お試しください",
+    "uploadFailed":     "アップロードに失敗しました",
+    "saveFailed":       "保存に失敗しました",
+    "usernameTaken":    "このユーザー名はすでに使用されています",
+    "usernameInvalid":  "ユーザー名の形式が正しくありません",
+    "duplicateSocial":  "この URL はすでに追加されています"
+  }
+}

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
+import { LOCALES, DEFAULT_LOCALE } from '@/lib/i18n'
 
 const PUBLIC_API_ROUTES = [
   '/api/auth',
@@ -10,8 +13,45 @@ const PUBLIC_API_ROUTES = [
   '/api/health',
 ]
 
+/**
+ * Detect the visitor's preferred locale from the Accept-Language header.
+ * Sticky preference (set via the language switcher) overrides via cookie.
+ * Falls back to DEFAULT_LOCALE when no match.
+ */
+function detectLocale(req: NextRequest): string {
+  // 1. Cookie has highest priority — set by the language switcher and
+  // persists across sessions so a user who picked Japanese once stays
+  // on Japanese even if their browser later sends a different Accept-Language.
+  const cookieLocale = req.cookies.get('lp_locale')?.value
+  if (cookieLocale && (LOCALES as readonly string[]).includes(cookieLocale)) {
+    return cookieLocale
+  }
+
+  // 2. Accept-Language header — use intl-localematcher for best-match BCP-47
+  // negotiation (handles 'zh-TW', 'zh-Hant-TW', 'en-US' equally).
+  const acceptLanguage = req.headers.get('accept-language') ?? ''
+  if (!acceptLanguage) return DEFAULT_LOCALE
+  const headers = { 'accept-language': acceptLanguage }
+  try {
+    const langs = new Negotiator({ headers }).languages()
+    return matchLocale(langs, LOCALES as unknown as string[], DEFAULT_LOCALE)
+  } catch {
+    return DEFAULT_LOCALE
+  }
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
+  // ── Locale redirect on bare "/" ──
+  // Only redirects EXACTLY "/" — never the locale paths themselves nor any
+  // other route. Public profiles (/<username>), admin, API stay untouched.
+  if (pathname === '/') {
+    const locale = detectLocale(req)
+    const url = req.nextUrl.clone()
+    url.pathname = `/${locale}`
+    return NextResponse.redirect(url)
+  }
 
   // Admin + Super Admin pages: require session cookie
   if (pathname.startsWith('/admin') || pathname.startsWith('/super-admin')) {
@@ -38,5 +78,12 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/super-admin/:path*', '/api/:path*'],
+  matcher: [
+    // Locale redirect on root
+    '/',
+    // Existing auth gates
+    '/admin/:path*',
+    '/super-admin/:path*',
+    '/api/:path*',
+  ],
 }
