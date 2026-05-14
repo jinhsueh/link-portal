@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   Link2, BarChart2, ShoppingBag, Mail, ArrowRight, Zap,
@@ -9,6 +10,52 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
+
+// Override the Chinese metadata inherited from the root layout. Without
+// this, sharing /en on Telegram / X / FB unfurls with the Chinese title
+// and description (`Beam — 免費 Link in Bio 工具…`), confusing English
+// audiences. Only locale-aware fields are overridden — metadataBase /
+// robots / manifest / formatDetection still inherit from the root.
+//
+// alternates.languages emits hreflang tags so Google recognises the two
+// language versions of the marketing page as alternates rather than
+// duplicate content.
+export const metadata: Metadata = {
+  title: 'Beam — Free link-in-bio for creators',
+  description:
+    'One link for all your socials, products, and email list. Build your creator page in 30 seconds — free, no credit card. Linktree alternative built for design-forward creators.',
+  keywords: [
+    'link in bio',
+    'linktree alternative',
+    'creator link page',
+    'bio link tool',
+    'social media link page',
+    'sell digital products',
+    'email capture',
+    'creator economy',
+  ],
+  alternates: {
+    canonical: '/en',
+    languages: {
+      en: '/en',
+      'zh-TW': '/',
+    },
+  },
+  openGraph: {
+    title: 'Beam — Free link-in-bio for creators',
+    description:
+      'One link for all your socials, products, and email list. Build it in 30 seconds — free, no credit card.',
+    url: '/en',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Beam — Free link-in-bio for creators',
+    description:
+      'One link for all your socials, products, and email list. Free, no credit card.',
+  },
+}
 
 /**
  * English landing page — sits at `/en`.
@@ -789,15 +836,7 @@ export default function LandingPageEn() {
   )
 }
 
-export const metadata = {
-  title: 'Beam — One link. Every fan touchpoint.',
-  description:
-    'Link-in-bio for creators: unite Instagram, YouTube, podcasts, digital products, and your email list on one page. Import from Linktree in 30 seconds. Free forever plan.',
-  alternates: {
-    canonical: '/en',
-    languages: {
-      en: '/en',
-      'zh-TW': '/',
-    },
-  },
-}
+// (metadata moved to the top of the file — see Metadata export above the
+// component. The previous export here only set title + description, which
+// left og:title / og:description / og:locale inheriting from the root
+// layout's Chinese values, causing /en unfurls to show Chinese titles.)
