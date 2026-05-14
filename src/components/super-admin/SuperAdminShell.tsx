@@ -7,17 +7,21 @@ import {
   Shield, Users, DollarSign, FileText, LogOut,
   Menu, X, Moon, Sun, ArrowLeft,
 } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
-const NAV_ITEMS = [
-  { href: '/super-admin', label: '總覽', icon: Shield },
-  { href: '/super-admin/users', label: '用戶管理', icon: Users },
-  { href: '/super-admin/revenue', label: '收入報表', icon: DollarSign },
-  { href: '/super-admin/content', label: '內容審核', icon: FileText },
-]
+const NAV_ITEM_DEFS = [
+  { href: '/super-admin',         key: 'overview', icon: Shield },
+  { href: '/super-admin/users',   key: 'users',    icon: Users },
+  { href: '/super-admin/revenue', key: 'revenue',  icon: DollarSign },
+  { href: '/super-admin/content', key: 'content',  icon: FileText },
+] as const
 
 export function SuperAdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { dict } = useDict()
+  const nav = dict.admin.superAdminNav
+  const NAV_ITEMS = NAV_ITEM_DEFS.map(it => ({ ...it, label: nav[it.key as keyof typeof nav] ?? it.key }))
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('admin-dark-mode') === 'true'
@@ -80,9 +84,9 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2">
             <Link href="/admin" style={{ ...navStyle(), fontSize: 13 }}>
-              <ArrowLeft size={14} />用戶後台
+              <ArrowLeft size={14} />{nav.backToAdmin}
             </Link>
-            <button onClick={toggleDark} style={navStyle()} title={dark ? '淺色模式' : '深色模式'}>
+            <button onClick={toggleDark} style={navStyle()} title={dark ? nav.lightMode : nav.darkMode}>
               {dark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
             <button onClick={handleLogout} style={navStyle()}
@@ -122,7 +126,7 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
               ))}
               <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium"
                 style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
-                <ArrowLeft size={16} />返回用戶後台
+                <ArrowLeft size={16} />{nav.backToAdminMobile}
               </Link>
             </nav>
           </div>

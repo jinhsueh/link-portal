@@ -224,7 +224,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
         {!expanded && profile.socialLinks.length > 0 && (
           <div className="flex items-center gap-1 mr-2">
             <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-              {profile.socialLinks.length} 個連結
+              {(profile.socialLinks.length === 1 ? t.socialCount : t.socialCountPlural).replace('{n}', String(profile.socialLinks.length))}
             </span>
           </div>
         )}
@@ -408,7 +408,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
         <ImageCropperModal
           file={pendingBanner}
           aspect={3}
-          title="裁切橫幅(3:1)"
+          title={t.cropBannerTitle}
           viewportPreview="banner"
           onComplete={uploadCroppedBanner}
           onCancel={() => {

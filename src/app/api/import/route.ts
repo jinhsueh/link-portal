@@ -20,17 +20,17 @@ export async function POST(req: NextRequest) {
 
   const { sourceUrl } = await req.json().catch(() => ({}))
   if (typeof sourceUrl !== 'string' || !sourceUrl.trim()) {
-    return NextResponse.json({ error: '請提供來源網址' }, { status: 400 })
+    return NextResponse.json({ error: 'Please provide a source URL.' }, { status: 400 })
   }
 
   let parsed: URL
   try {
     parsed = new URL(sourceUrl.trim())
   } catch {
-    return NextResponse.json({ error: '網址格式錯誤' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid URL format.' }, { status: 400 })
   }
   if (parsed.protocol !== 'https:') {
-    return NextResponse.json({ error: '僅支援 https 網址' }, { status: 400 })
+    return NextResponse.json({ error: 'Only https URLs are supported.' }, { status: 400 })
   }
 
   const host = parsed.hostname.toLowerCase()
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   else if (host === 'portaly.cc' || host.endsWith('.portaly.cc')) source = 'portaly'
 
   if (!source) {
-    return NextResponse.json({ error: '目前僅支援 linktr.ee 和 portaly.cc' }, { status: 400 })
+    return NextResponse.json({ error: 'Only linktr.ee and portaly.cc are supported.' }, { status: 400 })
   }
 
   try {
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     else profile = await importFromPortaly(parsed.toString())
     return NextResponse.json(profile)
   } catch (err) {
-    const msg = err instanceof Error ? err.message : '匯入失敗'
+    const msg = err instanceof Error ? err.message : 'Import failed.'
     return NextResponse.json({ error: msg }, { status: 502 })
   }
 }

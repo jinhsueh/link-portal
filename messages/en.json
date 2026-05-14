@@ -472,7 +472,10 @@
       "rowUploadIcon": "Upload custom icon",
       "rowClearIcon": "Clear custom icon",
       "rowClear": "Clear",
-      "rowUploading": "Uploading…"
+      "rowUploading": "Uploading…",
+      "socialCount": "{n} link",
+      "socialCountPlural": "{n} links",
+      "cropBannerTitle": "Crop banner (3:1)"
     },
 
     "themeEditor": {
@@ -586,7 +589,22 @@
       "more": "More",
       "step2": "Set up the block",
       "submit": "Add",
-      "selectType": "Select a type to continue"
+      "selectType": "Select a type to continue",
+      "stripeNotice": "Payments processed by <strong>Stripe</strong>. Make sure {key} is set in your <code>.env.local</code>.",
+      "stripeKeyName": "STRIPE_SECRET_KEY",
+      "productDescDefault": "Briefly describe what's included…",
+      "emailTitleDefault": "Email subscribe",
+      "webhookHint": "We'll POST new subscribers to this URL",
+      "headingTextLabel": "Text content",
+      "headingTextPlaceholder": "Heading text",
+      "mapPlaceholder": "Taipei 101, 25.0330,121.5654",
+      "imageGridHint": "After creating, upload 2+ images and set per-cell click links in the block editor.",
+      "featureCardHint": "After creating, upload an image, write a description, add a CTA button, and choose image-left or image-right layout.",
+      "bannerUploadPrompt": "Upload an image or paste a URL",
+      "bannerUploadingShort": "Uploading…",
+      "bannerSelectImage": "Choose image",
+      "bannerUrlFallback": "Or paste an image URL https://...",
+      "platformDetected": "✓ Detected {label}"
     },
 
     "editBlockModal": {
@@ -1027,6 +1045,39 @@
       "ctaView": "View page",
       "ctaTheme": "Theme",
       "ctaShare": "Copy link"
+    },
+
+    "scheduleModal": {
+      "title": "Schedule visibility",
+      "description": "Set when block \"{name}\" shows on the public page. Outside this range, the block auto-hides.",
+      "untitled": "Untitled",
+      "startLabel": "Start time",
+      "endLabel": "End time",
+      "clearBtn": "Clear schedule",
+      "cancelBtn": "Cancel",
+      "saveBtn": "Save schedule"
+    },
+
+    "shareBar": {
+      "copyLink": "Copy link",
+      "copied": "Link copied",
+      "qrShow": "Show QR Code",
+      "shareBtn": "Share",
+      "shareTitle": "Share",
+      "qrTitle": "Scan QR Code",
+      "copiedShort": "Copied",
+      "copyShort": "Copy link"
+    },
+
+    "superAdminNav": {
+      "overview": "Overview",
+      "users": "Users",
+      "revenue": "Revenue",
+      "content": "Content",
+      "backToAdmin": "Admin",
+      "darkMode": "Dark mode",
+      "lightMode": "Light mode",
+      "backToAdminMobile": "Back to admin"
     },
 
     "templates": {

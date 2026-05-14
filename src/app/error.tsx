@@ -3,6 +3,10 @@
 import { Link2 } from 'lucide-react'
 import Link from 'next/link'
 
+// Note: this is the Next.js error boundary. It may render before any
+// DictProvider in the tree resolves (the error itself could be the cause of
+// the missing provider), so we don't call useDict() here — we just use
+// English copy as the safe fallback for an unexpected error screen.
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4"
@@ -13,17 +17,17 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
           <Link2 size={28} color="white" />
         </div>
         <h1 className="font-bold text-2xl mb-2" style={{ color: 'var(--color-text-primary)' }}>
-          發生錯誤
+          Something went wrong
         </h1>
         <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)' }}>
-          抱歉，頁面發生了預期外的錯誤。
+          Sorry — the page hit an unexpected error.
         </p>
         <div className="flex gap-3 justify-center">
           <button onClick={reset} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
-            重試
+            Retry
           </button>
           <Link href="/" className="btn-ghost" style={{ padding: '10px 24px', fontSize: 14 }}>
-            回首頁
+            Home
           </Link>
         </div>
       </div>

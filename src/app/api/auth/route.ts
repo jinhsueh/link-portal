@@ -28,7 +28,7 @@ function isAuthRateLimited(ip: string): boolean {
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (isAuthRateLimited(ip)) {
-    return NextResponse.json({ error: '嘗試次數過多，請稍後再試' }, { status: 429 })
+    return NextResponse.json({ error: 'Too many attempts. Please try again later.' }, { status: 429 })
   }
 
   const { username: rawUsername, name, email, password, setPassword } = await req.json()
@@ -38,10 +38,10 @@ export async function POST(req: NextRequest) {
   // Dots are allowed inside but not at boundaries or consecutive (to avoid
   // weird URLs and confusion with file extensions).
   if (!username || !/^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*$/.test(username) || username.length < 3 || username.length > 30) {
-    return NextResponse.json({ error: '用戶名需為 3-30 字,可用英數字、底線、減號、點' }, { status: 400 })
+    return NextResponse.json({ error: 'Username must be 3–30 characters: letters, numbers, underscore, hyphen, dot.' }, { status: 400 })
   }
   if (RESERVED_USERNAMES.has(username)) {
-    return NextResponse.json({ error: '此用戶名為系統保留' }, { status: 400 })
+    return NextResponse.json({ error: 'This username is reserved by the system.' }, { status: 400 })
   }
 
   const existing = await prisma.user.findUnique({
@@ -52,11 +52,11 @@ export async function POST(req: NextRequest) {
   // Case 1: User exists with password → verify
   if (existing && existing.passwordHash) {
     if (!password) {
-      return NextResponse.json({ error: '請輸入密碼' }, { status: 400 })
+      return NextResponse.json({ error: 'Please enter a password.' }, { status: 400 })
     }
     const valid = await bcrypt.compare(password, existing.passwordHash)
     if (!valid) {
-      return NextResponse.json({ error: '密碼錯誤' }, { status: 401 })
+      return NextResponse.json({ error: 'Wrong password.' }, { status: 401 })
     }
     return setSessionAndRespond(existing)
   }
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     if (setPassword && password) {
       // Setting password for existing user
       if (password.length < 6) {
-        return NextResponse.json({ error: '密碼至少需要 6 個字元' }, { status: 400 })
+        return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 })
       }
       const hash = await bcrypt.hash(password, 12)
       await prisma.user.update({ where: { id: existing.id }, data: { passwordHash: hash } })
@@ -78,10 +78,10 @@ export async function POST(req: NextRequest) {
 
   // Case 3: New user → register
   if (!password) {
-    return NextResponse.json({ error: '請設定密碼' }, { status: 400 })
+    return NextResponse.json({ error: 'Please set a password.' }, { status: 400 })
   }
   if (password.length < 6) {
-    return NextResponse.json({ error: '密碼至少需要 6 個字元' }, { status: 400 })
+    return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 })
   }
 
   const hash = await bcrypt.hash(password, 12)
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       plan: 'pro_trial',
       trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       pages: {
-        create: { name: '主頁', slug: 'home', isDefault: true, order: 0 },
+        create: { name: 'Home', slug: 'home', isDefault: true, order: 0 },
       },
     },
     select: { id: true, username: true, name: true },

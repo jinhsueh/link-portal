@@ -472,7 +472,10 @@
       "rowUploadIcon": "อัปโหลดไอคอนกำหนดเอง",
       "rowClearIcon": "ล้างไอคอนกำหนดเอง",
       "rowClear": "ล้าง",
-      "rowUploading": "กำลังอัปโหลด…"
+      "rowUploading": "กำลังอัปโหลด…",
+      "socialCount": "{n} ลิงก์",
+      "socialCountPlural": "{n} ลิงก์",
+      "cropBannerTitle": "ครอปแบนเนอร์ (3:1)"
     },
 
     "themeEditor": {
@@ -586,7 +589,22 @@
       "more": "เพิ่มเติม",
       "step2": "ตั้งค่าบล็อก",
       "submit": "เพิ่ม",
-      "selectType": "เลือกประเภทเพื่อดำเนินการต่อ"
+      "selectType": "เลือกประเภทเพื่อดำเนินการต่อ",
+      "stripeNotice": "การชำระเงินดำเนินการโดย <strong>Stripe</strong> โปรดตรวจสอบว่าตั้ง {key} ใน <code>.env.local</code> แล้ว",
+      "stripeKeyName": "STRIPE_SECRET_KEY",
+      "productDescDefault": "อธิบายสินค้าสั้น ๆ…",
+      "emailTitleDefault": "สมัครรับอีเมล",
+      "webhookHint": "ระบบจะ POST ไปยัง URL นี้เมื่อมีคนสมัคร",
+      "headingTextLabel": "เนื้อหาตัวอักษร",
+      "headingTextPlaceholder": "ข้อความหัวข้อ",
+      "mapPlaceholder": "สยามพารากอน, 13.7466,100.5347",
+      "imageGridHint": "หลังสร้าง สามารถอัปโหลดภาพ 2 รูปขึ้นไปและตั้งลิงก์เมื่อคลิกในหน้าแก้ไขบล็อก",
+      "featureCardHint": "หลังสร้าง สามารถอัปโหลดภาพ ใส่คำอธิบาย เพิ่มปุ่ม CTA และเลือกวางภาพซ้าย/ขวา",
+      "bannerUploadPrompt": "อัปโหลดภาพหรือกรอก URL",
+      "bannerUploadingShort": "กำลังอัปโหลด...",
+      "bannerSelectImage": "เลือกภาพ",
+      "bannerUrlFallback": "หรือวาง URL ภาพ https://...",
+      "platformDetected": "✓ ตรวจพบ {label}"
     },
 
     "editBlockModal": {
@@ -1027,6 +1045,39 @@
       "ctaView": "ดูหน้าสาธารณะ",
       "ctaTheme": "ปรับธีม",
       "ctaShare": "คัดลอกลิงก์"
+    },
+
+    "scheduleModal": {
+      "title": "ตั้งเวลาแสดง",
+      "description": "ตั้งช่วงเวลาแสดงบล็อก \"{name}\" บนหน้าสาธารณะ นอกช่วงเวลานี้บล็อกจะซ่อนอัตโนมัติ",
+      "untitled": "ไม่มีชื่อ",
+      "startLabel": "เวลาเริ่ม",
+      "endLabel": "เวลาสิ้นสุด",
+      "clearBtn": "ล้างการตั้งเวลา",
+      "cancelBtn": "ยกเลิก",
+      "saveBtn": "บันทึกการตั้งเวลา"
+    },
+
+    "shareBar": {
+      "copyLink": "คัดลอกลิงก์",
+      "copied": "คัดลอกลิงก์แล้ว",
+      "qrShow": "แสดง QR Code",
+      "shareBtn": "แชร์",
+      "shareTitle": "แชร์หน้า",
+      "qrTitle": "สแกน QR Code",
+      "copiedShort": "คัดลอกแล้ว",
+      "copyShort": "คัดลอกลิงก์"
+    },
+
+    "superAdminNav": {
+      "overview": "ภาพรวม",
+      "users": "จัดการผู้ใช้",
+      "revenue": "รายงานรายได้",
+      "content": "ตรวจสอบเนื้อหา",
+      "backToAdmin": "หน้าผู้ใช้",
+      "darkMode": "โหมดมืด",
+      "lightMode": "โหมดสว่าง",
+      "backToAdminMobile": "กลับหน้าผู้ใช้"
     },
 
     "templates": {

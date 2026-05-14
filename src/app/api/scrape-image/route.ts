@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
     const title = grab('og:title') || grab('twitter:title')
     const description = grab('og:description') || grab('twitter:description')
 
-    if (!image) return NextResponse.json({ error: '這個網址沒有可用的預覽圖' }, { status: 404 })
+    if (!image) return NextResponse.json({ error: 'No preview image available for this URL.' }, { status: 404 })
 
     return NextResponse.json({ image, title, description })
   } catch (e) {

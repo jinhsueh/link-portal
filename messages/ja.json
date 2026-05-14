@@ -472,7 +472,10 @@
       "rowUploadIcon": "カスタムアイコンをアップロード",
       "rowClearIcon": "カスタムアイコンをクリア",
       "rowClear": "クリア",
-      "rowUploading": "アップロード中…"
+      "rowUploading": "アップロード中…",
+      "socialCount": "{n} 件のリンク",
+      "socialCountPlural": "{n} 件のリンク",
+      "cropBannerTitle": "バナーをクロップ (3:1)"
     },
 
     "themeEditor": {
@@ -586,7 +589,22 @@
       "more": "もっと見る",
       "step2": "ブロックを設定",
       "submit": "追加",
-      "selectType": "タイプを選んで続行"
+      "selectType": "タイプを選んで続行",
+      "stripeNotice": "決済は <strong>Stripe</strong> が処理。<code>.env.local</code> に {key} が設定されているか確認してください。",
+      "stripeKeyName": "STRIPE_SECRET_KEY",
+      "productDescDefault": "商品内容を簡潔に説明…",
+      "emailTitleDefault": "メール登録",
+      "webhookHint": "購読が発生した時にこの URL に POST します",
+      "headingTextLabel": "テキスト内容",
+      "headingTextPlaceholder": "見出しテキスト",
+      "mapPlaceholder": "東京タワー、35.6586,139.7454",
+      "imageGridHint": "作成後、ブロック編集画面で2枚以上の画像をアップロードし、クリック先リンクを設定できます。",
+      "featureCardHint": "作成後、画像アップロード、説明文、CTA ボタン、画像の左右レイアウトを設定できます。",
+      "bannerUploadPrompt": "画像をアップロードまたは URL を入力",
+      "bannerUploadingShort": "アップロード中...",
+      "bannerSelectImage": "画像を選択",
+      "bannerUrlFallback": "または画像 URL を貼り付け https://...",
+      "platformDetected": "✓ {label} を検出"
     },
 
     "editBlockModal": {
@@ -1027,6 +1045,39 @@
       "ctaView": "公開ページを見る",
       "ctaTheme": "テーマ調整",
       "ctaShare": "リンクをコピー"
+    },
+
+    "scheduleModal": {
+      "title": "予約表示",
+      "description": "ブロック「{name}」の公開時間範囲を設定。範囲外では自動的に非表示。",
+      "untitled": "無題",
+      "startLabel": "開始時刻",
+      "endLabel": "終了時刻",
+      "clearBtn": "予約を解除",
+      "cancelBtn": "キャンセル",
+      "saveBtn": "予約を保存"
+    },
+
+    "shareBar": {
+      "copyLink": "リンクをコピー",
+      "copied": "リンクをコピーしました",
+      "qrShow": "QR コードを表示",
+      "shareBtn": "シェア",
+      "shareTitle": "ページをシェア",
+      "qrTitle": "QR コードをスキャン",
+      "copiedShort": "コピーしました",
+      "copyShort": "リンクをコピー"
+    },
+
+    "superAdminNav": {
+      "overview": "概要",
+      "users": "ユーザー管理",
+      "revenue": "売上レポート",
+      "content": "コンテンツモデレーション",
+      "backToAdmin": "ユーザー管理画面",
+      "darkMode": "ダークモード",
+      "lightMode": "ライトモード",
+      "backToAdminMobile": "ユーザー管理画面に戻る"
     },
 
     "templates": {

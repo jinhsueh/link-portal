@@ -47,9 +47,10 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
   const [url, setUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  // email_form-specific
-  const [placeholder, setPlaceholder] = useState('輸入你的 Email')
-  const [buttonText, setButtonText] = useState('訂閱')
+  // email_form-specific — defaults come from the EditBlockModal dict so the
+  // initial placeholder/button text reads in the visitor's locale.
+  const [placeholder, setPlaceholder] = useState(dict.admin.editBlockModal.email.placeholderDefault)
+  const [buttonText, setButtonText] = useState(dict.admin.editBlockModal.email.buttonDefault)
   const [webhookUrl, setWebhookUrl] = useState('')
   // product-specific
   const [price, setPrice] = useState('')
@@ -110,8 +111,8 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'heading')    content = { text: title }
     if (selected === 'email_form') content = { placeholder, buttonText, ...(webhookUrl ? { webhookUrl } : {}) }
     if (selected === 'video')      content = parseVideoUrl(url)
-    if (selected === 'countdown')  content = { targetDate: url, label: title || '即將開始' }
-    if (selected === 'faq')        content = { items: [{ question: title || '問題？', answer: '答案...' }] }
+    if (selected === 'countdown')  content = { targetDate: url, label: title || dict.admin.editBlockModal.countdown.tagPlaceholder }
+    if (selected === 'faq')        content = { items: [{ question: title || dict.admin.editBlockModal.faq.questionPlaceholder, answer: dict.admin.editBlockModal.faq.answerPlaceholder }] }
     if (selected === 'carousel')   content = { images: carouselImages.filter(i => i.url.trim()).map(i => ({ url: i.url, ...(i.linkUrl ? { linkUrl: i.linkUrl } : {}) })) }
     if (selected === 'image_grid') content = { cells: [{ url: '' }, { url: '' }] }
     if (selected === 'feature_card') content = { imageUrl: '', description: '', imagePosition: 'left' }
@@ -176,7 +177,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
             {/* Recommended */}
             <p className="text-xs font-bold uppercase tracking-wider mb-3 px-1"
               style={{ color: 'var(--color-primary)' }}>
-              推薦
+              {t.recommended}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
               {RECOMMENDED_TYPES.map(({ type, icon: Icon }) => {
@@ -228,33 +229,36 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
             {/* ── CAROUSEL block ── */}
             {selected === 'calendar_event' ? (
               <>
+                {/* Quick-setup form — same fields as EditBlockModal's calendar
+                    section, reusing those dict keys so labels stay in sync. */}
+                {(() => null)()}
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>活動名稱 *</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.eventNameLabel} *</label>
                   <input value={title} onChange={e => setTitle(e.target.value)} required
-                    placeholder="例：春季快閃店開張" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={dict.admin.editBlockModal.calendar.eventNamePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
                 <div className="flex items-center gap-2" style={{ padding: '0 2px' }}>
                   <input type="checkbox" id="add-cal-allday" checked={calAllDay}
                     onChange={e => setCalAllDay(e.target.checked)}
                     style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
                   <label htmlFor="add-cal-allday" className="text-sm" style={{ color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
-                    全天事件
+                    {dict.admin.editBlockModal.calendar.allDay}
                   </label>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>開始時間 *</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.startLabel} *</label>
                   <input type={calAllDay ? 'date' : 'datetime-local'} value={calStart}
                     onChange={e => setCalStart(e.target.value)} required
                     style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>結束時間（選填，預設 +1 小時）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.endLabel}</label>
                   <input type={calAllDay ? 'date' : 'datetime-local'} value={calEnd}
                     onChange={e => setCalEnd(e.target.value)}
                     style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>時區</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.timezoneLabel}</label>
                   <div className="relative">
                     <select value={calTimezone} onChange={e => setCalTimezone(e.target.value)}
                       style={{ ...inputStyle, appearance: 'none', paddingRight: 36, cursor: 'pointer' }}
@@ -270,18 +274,18 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>地點（選填）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.locationLabel}</label>
                   <input value={calLocation} onChange={e => setCalLocation(e.target.value)}
-                    placeholder="台北 101、IG Live、Zoom 連結…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={dict.admin.editBlockModal.calendar.locationPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>描述（選填）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.descLabel}</label>
                   <textarea value={calDescription} onChange={e => setCalDescription(e.target.value)}
-                    placeholder="活動重點、注意事項…" rows={2}
+                    placeholder={dict.admin.editBlockModal.calendar.descPlaceholder} rows={2}
                     style={{ ...inputStyle, resize: 'none' }} onFocus={focusIn} onBlur={focusOut} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>活動連結（選填）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.calendar.linkLabel}</label>
                   <input value={calUrl} onChange={e => setCalUrl(e.target.value)}
                     placeholder="https://…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
@@ -289,13 +293,13 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
             ) : selected === 'carousel' ? (
               <>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>標題（選填）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.fields.titleOptional}</label>
                   <input value={title} onChange={e => setTitle(e.target.value)}
-                    placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={dict.admin.editBlockModal.carousel.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>圖片</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.banner.imageLabel}</label>
                   <div className="space-y-3">
                     {carouselImages.map((img, index) => (
                       <div key={index} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
@@ -303,11 +307,11 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                           <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>#{index + 1}</span>
                           <div className="flex gap-2 flex-1">
                             <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, i) => i === index ? { ...im, url: e.target.value } : im))}
-                              placeholder="圖片網址" style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                              placeholder={dict.admin.editBlockModal.carousel.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                             <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
                               style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                               <Upload size={12} />
-                              {uploading ? '...' : '上傳'}
+                              {uploading ? dict.admin.editBlockModal.uploadingShort : dict.admin.editBlockModal.upload}
                               <input type="file" accept="image/*" className="hidden"
                                 onChange={e => handleCarouselUpload(e, index)} />
                             </label>
@@ -320,7 +324,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                           )}
                         </div>
                         <input value={img.linkUrl} onChange={e => setCarouselImages(prev => prev.map((im, i) => i === index ? { ...im, linkUrl: e.target.value } : im))}
-                          placeholder="點擊連結（選填）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                          placeholder={dict.admin.editBlockModal.carousel.linkPlaceholder} style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                         {img.url && (
                           <img src={img.url} alt={`Preview ${index + 1}`} className="mt-2 rounded-lg"
                             style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
@@ -331,7 +335,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                   <button type="button" onClick={() => setCarouselImages(prev => [...prev, { url: '', linkUrl: '' }])}
                     className="flex items-center gap-1.5 mt-2 text-xs font-semibold px-3 py-2 rounded-lg"
                     style={{ color: 'var(--color-primary)', background: 'var(--color-primary-light)', border: 'none', cursor: 'pointer' }}>
-                    <Plus size={14} /> 新增圖片
+                    <Plus size={14} /> {dict.admin.editBlockModal.carousel.addImage}
                   </button>
                 </div>
               </>
@@ -341,29 +345,29 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 <div className="flex items-start gap-3 rounded-xl p-3"
                   style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
                   <ShoppingBag size={16} style={{ color: 'var(--color-primary)', flexShrink: 0, marginTop: 1 }} />
-                  <p className="text-xs" style={{ color: 'var(--color-primary)', lineHeight: 1.6 }}>
-                    付款由 <strong>Stripe</strong> 處理。請確認已在 <code>.env.local</code> 設定
-                    <code> STRIPE_SECRET_KEY</code>。
-                  </p>
+                  <p className="text-xs" style={{ color: 'var(--color-primary)', lineHeight: 1.6 }}
+                    dangerouslySetInnerHTML={{
+                      __html: t.stripeNotice.replace('{key}', `<code>${t.stripeKeyName}</code>`),
+                    }} />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>商品名稱 *</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.product.nameLabel} *</label>
                   <input value={title} onChange={e => setTitle(e.target.value)} required
-                    placeholder="例：Notion 模板包" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={dict.admin.editBlockModal.product.namePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>商品描述</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.product.descLabel}</label>
                   <textarea value={description} onChange={e => setDescription(e.target.value)}
-                    placeholder="簡短說明商品內容…" rows={2}
+                    placeholder={t.productDescDefault} rows={2}
                     style={{ ...inputStyle, resize: 'none' }}
                     onFocus={focusIn} onBlur={focusOut} />
                 </div>
 
                 {/* Price + currency row */}
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>售價 *</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.product.priceLabel} *</label>
                   <div className="flex gap-2">
                     {/* Currency selector */}
                     <div className="relative" style={{ flexShrink: 0 }}>
@@ -382,14 +386,14 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>商品圖片（選填）</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.product.imageLabel}</label>
                   <div className="flex gap-2 items-center">
                     <input value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-                      placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                      placeholder={dict.admin.editBlockModal.product.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
                     <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                       style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                       <Upload size={14} />
-                      {uploading ? '...' : '上傳'}
+                      {uploading ? dict.admin.editBlockModal.uploadingShort : dict.admin.editBlockModal.upload}
                       <input type="file" accept="image/*" className="hidden"
                         onChange={e => handleFileUpload(e, 'imageUrl')} />
                     </label>
@@ -406,41 +410,41 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 {selected === 'email_form' ? (
                   <>
                     <div>
-                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>標題</label>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.fields.title}</label>
                       <input value={title} onChange={e => setTitle(e.target.value)}
-                        placeholder="Email 訂閱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                        placeholder={t.emailTitleDefault} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>輸入框 placeholder</label>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.email.placeholderLabel}</label>
                       <input value={placeholder} onChange={e => setPlaceholder(e.target.value)}
-                        placeholder="輸入你的 Email" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                        placeholder={dict.admin.editBlockModal.email.placeholderDefault} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>按鈕文字</label>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.email.buttonLabel}</label>
                       <input value={buttonText} onChange={e => setButtonText(e.target.value)}
-                        placeholder="訂閱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                        placeholder={dict.admin.editBlockModal.email.buttonDefault} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>Webhook 網址（選填）</label>
+                      <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.email.webhookLabel}</label>
                       <input value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)}
                         placeholder="https://hooks.zapier.com/..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
-                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>收到訂閱時會 POST 到此網址</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{t.webhookHint}</p>
                     </div>
                   </>
                 ) : (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                      {selected === 'heading' ? '文字內容' : '標題'}
+                      {selected === 'heading' ? t.headingTextLabel : dict.admin.editBlockModal.fields.title}
                     </label>
                     <input value={title} onChange={e => setTitle(e.target.value)}
-                      required placeholder={selected === 'heading' ? '標題文字' : '顯示名稱'}
+                      required placeholder={selected === 'heading' ? t.headingTextPlaceholder : dict.admin.editBlockModal.fields.displayNamePlaceholder}
                       style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}
                 {['link', 'video'].includes(selected ?? '') && (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                      {selected === 'video' ? 'YouTube / TikTok / Spotify 網址' : '連結網址'}
+                      {selected === 'video' ? dict.admin.editBlockModal.video.urlLabel : dict.admin.editBlockModal.fields.url}
                     </label>
                     <div style={{ position: 'relative' }}>
                       <input value={url} onChange={e => setUrl(e.target.value)}
@@ -471,7 +475,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                       if (!cfg || platform === 'custom') return null
                       return (
                         <p className="text-xs mt-1.5" style={{ color: cfg.color, fontWeight: 600 }}>
-                          ✓ 偵測到 {cfg.label}
+                          {t.platformDetected.replace('{label}', cfg.label)}
                         </p>
                       )
                     })()}
@@ -479,21 +483,21 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                 )}
                 {selected === 'countdown' && (
                   <div>
-                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>目標時間</label>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.countdown.targetLabel}</label>
                     <input type="datetime-local" value={url} onChange={e => setUrl(e.target.value)}
                       required style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}
                 {selected === 'map' && (
                   <div>
-                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>地點或地址</label>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.map.addressLabel}</label>
                     <input value={url} onChange={e => setUrl(e.target.value)}
-                      required placeholder="台北 101、25.0330,121.5654" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                      required placeholder={t.mapPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}
                 {selected === 'embed' && (
                   <div>
-                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>HTML / iframe 程式碼</label>
+                    <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{dict.admin.editBlockModal.embed.htmlLabel}</label>
                     <textarea value={url} onChange={e => setUrl(e.target.value)}
                       required placeholder='<iframe src="..." />' rows={3}
                       style={{ ...inputStyle, resize: 'none', fontFamily: 'monospace', fontSize: 12 }}
@@ -505,7 +509,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                   // EditBlockModal handles upload + linkUrl per cell. Avoids
                   // a duplicate uploader path in this modal.
                   <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                    建立後即可在區塊編輯畫面上傳兩張(或更多)圖片並設定點擊連結。
+                    {t.imageGridHint}
                   </p>
                 )}
                 {selected === 'feature_card' && (
@@ -513,13 +517,13 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                   // here, just spawn an empty card and let EditBlockModal
                   // handle image / description / CTA wiring.
                   <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                    建立後可上傳圖片、設定描述文字、加上 CTA 按鈕,並選擇圖片放在左邊或右邊。
+                    {t.featureCardHint}
                   </p>
                 )}
                 {selected === 'banner' && (
                   <div>
                     <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                      橫幅圖片
+                      {dict.admin.editBlockModal.banner.imageLabel}
                     </label>
                     {url ? (
                       <div className="relative rounded-xl overflow-hidden mb-2" style={{ border: '1px solid var(--color-border)' }}>
@@ -535,12 +539,12 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                         style={{ border: '2px dashed var(--color-border)', background: 'var(--color-surface)' }}>
                         <Upload size={24} style={{ color: 'var(--color-text-muted)' }} />
                         <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                          {uploading ? '上傳中...' : '上傳圖片或輸入網址'}
+                          {uploading ? t.bannerUploadingShort : t.bannerUploadPrompt}
                         </p>
                         <div className="flex gap-2">
                           <label className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                             style={{ background: 'var(--color-primary)', color: 'white', cursor: 'pointer' }}>
-                            選擇圖片
+                            {t.bannerSelectImage}
                             <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                               onChange={e => handleFileUpload(e, 'url')} />
                           </label>
@@ -548,7 +552,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                       </div>
                     )}
                     <input value={url} onChange={e => setUrl(e.target.value)}
-                      placeholder="或貼上圖片網址 https://..." style={{ ...inputStyle, marginTop: 8 }}
+                      placeholder={t.bannerUrlFallback} style={{ ...inputStyle, marginTop: 8 }}
                       onFocus={focusIn} onBlur={focusOut} />
                   </div>
                 )}

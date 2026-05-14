@@ -106,7 +106,7 @@ export async function importFromLinktree(sourceUrl: string): Promise<ImportedPro
   const rawLinks: LinktreeLink[] = account.links ?? pageProps?.links ?? []
 
   if (!pageProps || (rawLinks.length === 0 && !account.pageTitle)) {
-    throw new Error('無法解析 Linktree 頁面，可能是連結錯誤或 Linktree 已更新結構')
+    throw new Error('Could not parse the Linktree page — either the URL is wrong or Linktree changed their structure.')
   }
 
   // Sort by position if provided

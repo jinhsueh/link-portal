@@ -23,10 +23,10 @@ export async function POST(req: Request) {
   const { email, role } = await req.json()
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: 'Email 格式不正確' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid email format.' }, { status: 400 })
   }
   if (!['editor', 'viewer'].includes(role)) {
-    return NextResponse.json({ error: '角色必須是 editor 或 viewer' }, { status: 400 })
+    return NextResponse.json({ error: 'Role must be editor or viewer.' }, { status: 400 })
   }
 
   // Plan-based team member limit
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   const limits = getPlanLimits(user!)
   if (limits.maxTeamMembers === 0) {
     return NextResponse.json(
-      { error: '免費方案不支援團隊協作，請升級 Pro', upgrade: true },
+      { error: 'Team collaboration requires Pro or above — please upgrade.', upgrade: true },
       { status: 403 }
     )
   }
@@ -49,8 +49,8 @@ export async function POST(req: Request) {
     const currentCount = await prisma.teamMember.count({ where: { ownerId: session.id } })
     if (currentCount >= limits.maxTeamMembers) {
       const msg = limits.maxTeamMembers === Infinity
-        ? '已達團隊成員上限'
-        : `目前方案最多 ${limits.maxTeamMembers} 位團隊成員，請升級 Premium 解除限制`
+        ? 'Team member limit reached.'
+        : `Your plan allows up to ${limits.maxTeamMembers} team members — upgrade to Premium for unlimited.`
       return NextResponse.json({ error: msg, upgrade: true }, { status: 403 })
     }
   }

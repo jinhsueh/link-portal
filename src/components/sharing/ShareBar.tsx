@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Copy, QrCode, Share2, Check, X } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {
   url: string
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function ShareBar({ url, title }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.shareBar
   const [copied, setCopied] = useState(false)
   const [showQR, setShowQR] = useState(false)
 
@@ -66,8 +69,8 @@ export function ShareBar({ url, title }: Props) {
         {/* Copy URL */}
         <button
           onClick={handleCopy}
-          aria-label={copied ? '已複製連結' : '複製連結'}
-          title="複製連結"
+          aria-label={copied ? t.copied : t.copyLink}
+          title={t.copyLink}
           style={{
             ...iconBtnStyle,
             background: copied ? '#C6F6D5' : iconBtnStyle.background,
@@ -81,7 +84,7 @@ export function ShareBar({ url, title }: Props) {
         {/* QR Code */}
         <button
           onClick={() => setShowQR(true)}
-          aria-label="顯示 QR Code"
+          aria-label={t.qrShow}
           title="QR Code"
           style={iconBtnStyle}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.10)' }}
@@ -92,8 +95,8 @@ export function ShareBar({ url, title }: Props) {
         {/* Share */}
         <button
           onClick={handleNativeShare}
-          aria-label="分享頁面"
-          title="分享"
+          aria-label={t.shareTitle}
+          title={t.shareBtn}
           style={iconBtnStyle}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.10)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}>
@@ -109,7 +112,7 @@ export function ShareBar({ url, title }: Props) {
           <div className="text-center" onClick={e => e.stopPropagation()}
             style={{ background: 'white', borderRadius: 24, padding: '32px 28px', boxShadow: '0 24px 64px rgba(0,0,0,0.2)', maxWidth: 320 }}>
             <div className="flex justify-between items-center mb-5">
-              <h3 className="font-bold" style={{ color: '#1A1A2E' }}>掃描 QR Code</h3>
+              <h3 className="font-bold" style={{ color: '#1A1A2E' }}>{t.qrTitle}</h3>
               <button onClick={() => setShowQR(false)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A0AEC0', padding: 4 }}>
                 <X size={20} />
@@ -123,7 +126,7 @@ export function ShareBar({ url, title }: Props) {
             <p className="text-xs font-mono truncate px-2" style={{ color: '#A0AEC0' }}>{url}</p>
             <button onClick={handleCopy} className="btn-primary w-full justify-center mt-4"
               style={{ fontSize: 14, padding: '11px 20px' }}>
-              {copied ? <><Check size={14} />已複製</> : <><Copy size={14} />複製連結</>}
+              {copied ? <><Check size={14} />{t.copiedShort}</> : <><Copy size={14} />{t.copyShort}</>}
             </button>
           </div>
         </div>

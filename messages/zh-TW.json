@@ -472,7 +472,10 @@
       "rowUploadIcon": "上傳自訂圖示",
       "rowClearIcon": "清除自訂圖示",
       "rowClear": "清除",
-      "rowUploading": "上傳中…"
+      "rowUploading": "上傳中…",
+      "socialCount": "{n} 個連結",
+      "socialCountPlural": "{n} 個連結",
+      "cropBannerTitle": "裁切橫幅(3:1)"
     },
 
     "themeEditor": {
@@ -586,7 +589,22 @@
       "more": "更多",
       "step2": "設定區塊",
       "submit": "新增",
-      "selectType": "選擇類型以繼續"
+      "selectType": "選擇類型以繼續",
+      "stripeNotice": "付款由 <strong>Stripe</strong> 處理。請確認已在 <code>.env.local</code> 設定 {key}。",
+      "stripeKeyName": "STRIPE_SECRET_KEY",
+      "productDescDefault": "簡短說明商品內容…",
+      "emailTitleDefault": "Email 訂閱",
+      "webhookHint": "收到訂閱時會 POST 到此網址",
+      "headingTextLabel": "文字內容",
+      "headingTextPlaceholder": "標題文字",
+      "mapPlaceholder": "台北 101、25.0330,121.5654",
+      "imageGridHint": "建立後即可在區塊編輯畫面上傳兩張(或更多)圖片並設定點擊連結。",
+      "featureCardHint": "建立後可上傳圖片、設定描述文字、加上 CTA 按鈕,並選擇圖片放在左邊或右邊。",
+      "bannerUploadPrompt": "上傳圖片或輸入網址",
+      "bannerUploadingShort": "上傳中...",
+      "bannerSelectImage": "選擇圖片",
+      "bannerUrlFallback": "或貼上圖片網址 https://...",
+      "platformDetected": "✓ 偵測到 {label}"
     },
 
     "editBlockModal": {
@@ -1027,6 +1045,39 @@
       "ctaView": "看公開頁",
       "ctaTheme": "調整外觀",
       "ctaShare": "複製連結"
+    },
+
+    "scheduleModal": {
+      "title": "排程設定",
+      "description": "設定區塊「{name}」的顯示時間範圍。在此範圍外,區塊將自動隱藏。",
+      "untitled": "未命名",
+      "startLabel": "開始時間",
+      "endLabel": "結束時間",
+      "clearBtn": "清除排程",
+      "cancelBtn": "取消",
+      "saveBtn": "儲存排程"
+    },
+
+    "shareBar": {
+      "copyLink": "複製連結",
+      "copied": "已複製連結",
+      "qrShow": "顯示 QR Code",
+      "shareBtn": "分享",
+      "shareTitle": "分享頁面",
+      "qrTitle": "掃描 QR Code",
+      "copiedShort": "已複製",
+      "copyShort": "複製連結"
+    },
+
+    "superAdminNav": {
+      "overview": "總覽",
+      "users": "用戶管理",
+      "revenue": "收入報表",
+      "content": "內容審核",
+      "backToAdmin": "用戶後台",
+      "darkMode": "深色模式",
+      "lightMode": "淺色模式",
+      "backToAdminMobile": "返回用戶後台"
     },
 
     "templates": {

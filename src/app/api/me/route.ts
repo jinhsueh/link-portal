@@ -36,7 +36,7 @@ export async function PATCH(req: Request) {
 
   // Email format validation
   if (email !== undefined && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: 'Email 格式不正確' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid email format.' }, { status: 400 })
   }
 
   // Username change — same rules as registration. We re-validate here even
@@ -44,10 +44,10 @@ export async function PATCH(req: Request) {
   if (username !== undefined) {
     const next = String(username).trim().toLowerCase()
     if (!next) {
-      return NextResponse.json({ error: '用戶名不能為空' }, { status: 400 })
+      return NextResponse.json({ error: 'Username cannot be empty.' }, { status: 400 })
     }
     if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(next) || next.length < 3 || next.length > 30) {
-      return NextResponse.json({ error: '用戶名格式不正確' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid username format.' }, { status: 400 })
     }
     const RESERVED = new Set([
       'admin', 'api', 'login', 'logout', 'signup', 'register',
@@ -55,12 +55,12 @@ export async function PATCH(req: Request) {
       'super-admin', 'en', 'settings', 'dashboard',
     ])
     if (RESERVED.has(next)) {
-      return NextResponse.json({ error: '此用戶名為系統保留' }, { status: 400 })
+      return NextResponse.json({ error: 'This username is reserved by the system.' }, { status: 400 })
     }
     if (next !== session.username) {
       const taken = await prisma.user.findUnique({ where: { username: next }, select: { id: true } })
       if (taken && taken.id !== session.id) {
-        return NextResponse.json({ error: '此用戶名已被使用' }, { status: 409 })
+        return NextResponse.json({ error: 'This username is taken.' }, { status: 409 })
       }
     }
   }

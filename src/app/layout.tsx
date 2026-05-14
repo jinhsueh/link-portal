@@ -21,22 +21,22 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Beam — 免費 Link in Bio 工具｜整合 IG、YouTube、商品連結的創作者頁面',
-    template: '%s｜Beam',
+    default: 'Beam — Free link-in-bio for creators | One page for IG, YouTube, products, audience',
+    template: '%s | Beam',
   },
   description:
-    '免費建立你的 Link in Bio 頁面，一個連結整合 Instagram、YouTube、Podcast、數位商品與粉絲名單蒐集。專為中文創作者打造的 Linktree 替代方案。',
+    'Build your link-in-bio page for free. One link to unite Instagram, YouTube, Podcasts, digital products, and your email list. The Linktree alternative built for creators worldwide.',
   keywords: [
     'link in bio',
-    'link in bio 工具',
-    '創作者連結頁面',
-    'IG 連結整合',
-    '社群連結整合',
-    'bio 連結',
-    '個人品牌',
-    '數位商品販售',
-    'Linktree 替代',
-    '中文 link in bio',
+    'link in bio tool',
+    'creator link page',
+    'IG link aggregator',
+    'social media links',
+    'bio link',
+    'personal brand',
+    'sell digital products',
+    'Linktree alternative',
+    'Beam',
   ],
   applicationName: SITE_NAME,
   authors: [{ name: SITE_NAME, url: SITE_URL }],
@@ -46,17 +46,17 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Beam — 免費 Link in Bio 工具｜創作者社群連結整合',
-    description: '一個連結整合所有社群、商品、名單蒐集。免費建立，30 秒上線。',
+    title: 'Beam — Free link-in-bio for creators',
+    description: 'One link for every fan touchpoint. Social, products, email list — built free. 30 seconds to live.',
     url: '/',
     siteName: SITE_NAME,
-    locale: 'zh_TW',
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Beam — 免費 Link in Bio 工具',
-    description: '一個連結整合所有社群、商品、名單蒐集。免費建立，30 秒上線。',
+    title: 'Beam — Free link-in-bio for creators',
+    description: 'One link for every fan touchpoint. Built free. 30 seconds to live.',
   },
   robots: {
     index: true,
@@ -83,7 +83,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-TW" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="min-h-screen antialiased">
         <script
           type="application/ld+json"
@@ -99,9 +99,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   applicationSubCategory: 'Link in Bio Tool',
                   operatingSystem: 'Web',
                   description:
-                    '免費 Link in Bio 工具，一個連結整合 IG、YouTube、Podcast、數位商品與粉絲名單蒐集。',
+                    'Free link-in-bio tool. One link to unite IG, YouTube, Podcasts, digital products, and your email list.',
                   url: SITE_URL,
-                  inLanguage: 'zh-TW',
+                  inLanguage: 'en',
                   publisher: { '@id': `${SITE_URL}/#organization` },
                   offers: [
                     {
@@ -109,30 +109,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       name: 'Free',
                       price: '0',
                       priceCurrency: 'TWD',
-                      description: '永久免費基礎方案，1 個頁面、12 個區塊',
+                      description: 'Forever-free starter plan. 1 page, 12 blocks.',
                     },
                     {
                       '@type': 'Offer',
                       name: 'Pro',
                       price: '159',
                       priceCurrency: 'TWD',
-                      description: 'Pro 方案月繳，10 個頁面、20 區塊、移除浮水印',
+                      description: 'Pro monthly: 10 pages, 20 blocks per page, watermark removed.',
                     },
                     {
                       '@type': 'Offer',
                       name: 'Premium',
                       price: '249',
                       priceCurrency: 'TWD',
-                      description: 'Premium 方案月繳，無限頁面與區塊、自訂網域',
+                      description: 'Premium monthly: unlimited pages and blocks, custom domain.',
                     },
                   ],
                   featureList: [
-                    '多元區塊類型（連結、橫幅、影片、商品、表單）',
-                    '主題自訂與品牌風格設定',
-                    '即時數據追蹤與分析',
-                    '內建金流串接販售數位商品',
-                    'Email 訂閱表單蒐集粉絲名單',
-                    '多分頁管理',
+                    'Diverse block types (link, banner, video, product, form)',
+                    'Theme customization with brand styling',
+                    'Real-time analytics tracking',
+                    'Built-in checkout to sell digital products',
+                    'Email subscribe form to grow your audience',
+                    'Multi-page management',
                   ],
                 },
                 {
@@ -140,34 +140,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   mainEntity: [
                     {
                       '@type': 'Question',
-                      name: 'Beam 是什麼？',
+                      name: 'What is Beam?',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: 'Beam 是一款免費的 Link in Bio 工具，讓創作者用一個連結整合所有社群平台、數位商品販售和粉絲名單蒐集。',
+                        text: 'Beam is a free link-in-bio tool that lets creators unite every social platform, sell digital products, and collect emails — all from one page.',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: 'Beam 是免費的嗎？',
+                      name: 'Is Beam free?',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: '是的，Beam 提供永久免費的基礎方案，不需要信用卡即可註冊使用，30 秒內即可建立你的頁面。',
+                        text: 'Yes. Beam offers a forever-free starter plan. No credit card required. Build your page in 30 seconds.',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: '可以在 Beam 上賣東西嗎？',
+                      name: 'Can I sell things on Beam?',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: '可以，Beam 內建金流串接，你可以直接在頁面上販售課程、電子書、設計模板等數位商品。',
+                        text: 'Yes. Beam has built-in checkout — sell courses, e-books, templates, and other digital products right from your page.',
                       },
                     },
                     {
                       '@type': 'Question',
-                      name: 'Beam 和 Linktree 有什麼不同？',
+                      name: 'How does Beam differ from Linktree?',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: 'Beam 專為中文創作者打造，除了連結整合外還支援數位商品販售、粉絲名單蒐集、多分頁管理等進階功能，基礎方案永久免費。',
+                        text: 'Beam is design-first and built for international creators with 4-language support (English, Japanese, Thai, Traditional Chinese), built-in payments, audience collection, and multi-page management. Core features are forever-free.',
                       },
                     },
                   ],
@@ -182,13 +182,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     url: `${SITE_URL}/icon.png`,
                   },
                   description:
-                    '專為中文創作者打造的 Link in Bio 工具，整合社群連結、數位商品販售與名單蒐集。',
+                    'A design-first link-in-bio tool for global creators. Unite social links, sell digital products, and grow your audience from one beautiful page.',
                   sameAs: SOCIAL_LINKS,
                   contactPoint: {
                     '@type': 'ContactPoint',
                     contactType: 'customer support',
                     email: CONTACT_EMAIL,
-                    availableLanguage: ['zh-Hant', 'en'],
+                    availableLanguage: ['en', 'ja', 'th', 'zh-Hant'],
                   },
                 },
                 {
@@ -196,7 +196,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   '@id': `${SITE_URL}/#website`,
                   url: SITE_URL,
                   name: SITE_NAME,
-                  inLanguage: 'zh-TW',
+                  inLanguage: 'en',
                   publisher: { '@id': `${SITE_URL}/#organization` },
                 },
               ],

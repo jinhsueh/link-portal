@@ -225,7 +225,7 @@ export async function importFromPortaly(sourceUrl: string): Promise<ImportedProf
   }
 
   if (blocks.length === 0 && !name && !bio && !avatarUrl) {
-    throw new Error('無法解析 Portaly 頁面,可能是連結錯誤或 Portaly 已更新結構')
+    throw new Error('Could not parse the Portaly page — either the URL is wrong or Portaly changed their structure.')
   }
 
   // Split out social-platform URLs from regular blocks
