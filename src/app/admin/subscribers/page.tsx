@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { Mail, Download, Trash2, Users, RefreshCw } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Subscriber {
   id: string
@@ -15,6 +16,8 @@ interface Subscriber {
 
 export default function SubscribersPage() {
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const s = dict.admin.subscribers
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [username, setUsername] = useState('')
   const [role, setRole] = useState('')
@@ -44,7 +47,7 @@ export default function SubscribersPage() {
   useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
 
   const handleDelete = async (id: string) => {
-    if (!confirm('確定刪除此訂閱者？')) return
+    if (!confirm(s.deleteConfirm)) return
     await fetch(`/api/subscribers?id=${id}`, { method: 'DELETE' })
     setSubscribers(prev => prev.filter(s => s.id !== id))
   }
@@ -78,9 +81,9 @@ export default function SubscribersPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>訂閱名單</h1>
+            <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>{s.pageTitle}</h1>
             <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
-              透過 Email 表單蒐集的訂閱者
+              {s.subtitle}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -93,7 +96,7 @@ export default function SubscribersPage() {
               <button onClick={handleExportCSV}
                 className="px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5"
                 style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid #C3D9FF', cursor: 'pointer' }}>
-                <Download size={14} />匯出 CSV
+                <Download size={14} />{s.exportCsv}
               </button>
             )}
           </div>
@@ -109,7 +112,7 @@ export default function SubscribersPage() {
             <p className="font-extrabold text-2xl" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
               {subscribers.length}
             </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>總訂閱人數</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{s.metricTotal}</p>
           </div>
           <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 14, padding: 20, boxShadow: 'var(--shadow-sm)' }}>
             <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
@@ -123,7 +126,7 @@ export default function SubscribersPage() {
                 return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
               }).length}
             </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>本月新增</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{s.metricThisMonth}</p>
           </div>
         </div>
 
@@ -135,12 +138,12 @@ export default function SubscribersPage() {
               style={{ background: 'var(--color-primary-light)' }}>
               <Mail size={24} style={{ color: 'var(--color-primary)' }} />
             </div>
-            <p className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>還沒有訂閱者</p>
+            <p className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>{s.emptyTitle}</p>
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              在頁面中加入「Email 表單」區塊開始蒐集粉絲名單
+              {s.emptyHint}
             </p>
             <Link href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
-              去新增區塊
+              {s.emptyBtn}
             </Link>
           </div>
         ) : (
@@ -152,9 +155,9 @@ export default function SubscribersPage() {
                 color: 'var(--color-text-muted)',
                 borderBottom: '1px solid var(--color-border)',
               }}>
-              <span>Email</span>
-              <span>來源</span>
-              <span>訂閱時間</span>
+              <span>{s.colEmail}</span>
+              <span>{s.colSource}</span>
+              <span>{s.colDate}</span>
               <span></span>
             </div>
 
@@ -170,10 +173,10 @@ export default function SubscribersPage() {
                 <p className="font-medium truncate" style={{ color: 'var(--color-text-primary)' }}>{sub.email}</p>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                   style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-                  {sub.source === 'email_form' ? '表單' : sub.source}
+                  {sub.source === 'email_form' ? s.sourceForm : sub.source}
                 </span>
                 <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                  {new Date(sub.createdAt).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  {new Date(sub.createdAt).toLocaleString(locale, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                 </p>
                 <button onClick={() => handleDelete(sub.id)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center"

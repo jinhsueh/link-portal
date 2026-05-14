@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { Search, ChevronLeft, ChevronRight, Ban, Shield } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface UserRow {
   id: string; username: string; email: string; name: string | null; avatarUrl: string | null
@@ -16,6 +17,8 @@ const PLAN_COLORS: Record<string, string> = { free: '#94A3B8', pro_trial: '#F59E
 
 export default function UsersPage() {
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const sa = dict.superAdmin
   const [users, setUsers] = useState<UserRow[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -52,7 +55,7 @@ export default function UsersPage() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-bold text-xl" style={{ color: 'var(--color-text-primary)' }}>
-            用戶管理 <span className="text-sm font-normal" style={{ color: 'var(--color-text-muted)' }}>({total})</span>
+            {sa.userMgmt} <span className="text-sm font-normal" style={{ color: 'var(--color-text-muted)' }}>({total})</span>
           </h1>
         </div>
 
@@ -60,17 +63,17 @@ export default function UsersPage() {
         <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <div className="flex-1 relative">
             <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="搜尋 username / email / name"
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder={sa.searchUsers}
               className="w-full" style={{ padding: '10px 12px 10px 36px', fontSize: 14, border: '1px solid var(--color-border)', borderRadius: 10, background: 'white', color: 'var(--color-text-primary)', outline: 'none' }} />
           </div>
           <select value={planFilter} onChange={e => { setPlanFilter(e.target.value); fetchUsers(1, search, e.target.value) }}
             style={{ padding: '10px 14px', fontSize: 14, border: '1px solid var(--color-border)', borderRadius: 10, background: 'white', color: 'var(--color-text-primary)', cursor: 'pointer' }}>
-            <option value="">全部方案</option>
+            <option value="">{sa.allPlans}</option>
             <option value="free">Free</option>
             <option value="pro_trial">Pro Trial</option>
             <option value="pro">Pro</option>
           </select>
-          <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>搜尋</button>
+          <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>{sa.search}</button>
         </form>
 
         {/* Table */}
@@ -79,16 +82,16 @@ export default function UsersPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
                 <tr style={{ background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['用戶', '方案', '頁面', '區塊', '訂單', '註冊日期', '狀態'].map(h => (
+                  {[sa.colUser, sa.colPlan, sa.colPages, sa.colBlocks, sa.colOrders, sa.colJoinedAt, sa.colStatus].map(h => (
                     <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12, textTransform: 'uppercase' as const }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>載入中...</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.loading}</td></tr>
                 ) : users.length === 0 ? (
-                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>無結果</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.empty}</td></tr>
                 ) : users.map(u => (
                   <tr key={u.id} onClick={() => router.push(`/super-admin/users/${u.id}`)}
                     style={{ borderBottom: '1px solid var(--color-border)', cursor: 'pointer' }}
@@ -119,15 +122,15 @@ export default function UsersPage() {
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-secondary)' }}>{u._count.blocks}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-secondary)' }}>{u._count.orders}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>
-                      {new Date(u.createdAt).toLocaleDateString('zh-TW')}
+                      {new Date(u.createdAt).toLocaleDateString(locale)}
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       {u.banned ? (
                         <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: '#E53E3E' }}>
-                          <Ban size={12} />封鎖
+                          <Ban size={12} />{sa.ban}
                         </span>
                       ) : (
-                        <span className="text-xs" style={{ color: '#10B981' }}>正常</span>
+                        <span className="text-xs" style={{ color: '#10B981' }}>{sa.active}</span>
                       )}
                     </td>
                   </tr>
@@ -139,7 +142,7 @@ export default function UsersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>第 {page} / {totalPages} 頁</span>
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.pageOf.replace('{n}', String(page)).replace('{total}', String(totalPages))}</span>
               <div className="flex gap-2">
                 <button onClick={() => fetchUsers(page - 1)} disabled={page <= 1}
                   className="px-3 py-1.5 rounded-lg text-sm" style={{ border: '1px solid var(--color-border)', cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1, background: 'white' }}>

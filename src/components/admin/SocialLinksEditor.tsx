@@ -388,6 +388,8 @@ function SortableSocialRow({
   onIconRemove: () => void
   uploading: boolean
 }) {
+  const { dict } = useDict()
+  const t = dict.admin.profileEditor
   const config = getPlatformConfig(link.platform)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: link.id })
@@ -412,7 +414,7 @@ function SortableSocialRow({
         <button {...attributes} {...listeners}
           className="flex-shrink-0 p-1 rounded cursor-grab active:cursor-grabbing"
           style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', touchAction: 'none' }}
-          aria-label="拖曳排序">
+          aria-label={t.rowDragSort}>
           <GripVertical size={14} />
         </button>
 
@@ -438,7 +440,7 @@ function SortableSocialRow({
         {/* Upload icon */}
         <button onClick={() => fileInputRef.current?.click()}
           className="p-1.5 rounded-lg flex-shrink-0"
-          title="上傳自訂圖示"
+          title={t.rowUploadIcon}
           style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
           <Upload size={12} />
         </button>
@@ -458,9 +460,9 @@ function SortableSocialRow({
         {link.iconUrl && (
           <button onClick={onIconRemove}
             className="text-[10px] font-semibold flex-shrink-0"
-            title="清除自訂圖示"
+            title={t.rowClearIcon}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}>
-            清除
+            {t.rowClear}
           </button>
         )}
 
@@ -474,7 +476,7 @@ function SortableSocialRow({
         </button>
 
         {uploading && (
-          <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>上傳中…</div>
+          <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{t.rowUploading}</div>
         )}
       </div>
     </div>

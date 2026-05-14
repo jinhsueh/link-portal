@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import CropperRaw, { Area } from 'react-easy-crop'
 import { X, Check, RotateCw } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 // react-easy-crop's class-component types don't match React 19's stricter JSX
 // signature, so cast to a permissive component type. The runtime is fine — only
@@ -54,11 +55,17 @@ export function ImageCropperModal({
   file,
   aspect,
   cropShape = 'rect',
-  title = '裁切圖片',
+  title,
   viewportPreview,
   onComplete,
   onCancel,
 }: Props) {
+  const { dict } = useDict()
+  // Placed under dict.profile so the cropper works in both admin (block image
+  // upload) AND on /demo (where there's a DictProvider only at the profile
+  // level). The `cropper` key is a sibling of `success` under profile.
+  const t = dict.profile.cropper
+  const resolvedTitle = title ?? t.defaultTitle
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -110,7 +117,7 @@ export function ImageCropperModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
           <h2 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-            {title}
+            {resolvedTitle}
           </h2>
           <button onClick={onCancel}
             className="p-1.5 rounded-lg"
@@ -142,7 +149,7 @@ export function ImageCropperModal({
         <div className="px-5 py-4 space-y-3" style={{ borderTop: '1px solid var(--color-border)' }}>
           <div>
             <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
-              縮放
+              {t.zoomLabel}
             </label>
             <input type="range" min={1} max={4} step={0.01} value={zoom}
               onChange={e => setZoom(Number(e.target.value))}
@@ -151,7 +158,7 @@ export function ImageCropperModal({
           <button onClick={() => setRotation(r => (r + 90) % 360)}
             className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-            <RotateCw size={12} /> 旋轉 90°
+            <RotateCw size={12} /> {t.rotateBtn}
           </button>
 
           {/* Viewport preview — banner mode shows side-by-side desktop +
@@ -161,7 +168,7 @@ export function ImageCropperModal({
           {viewportPreview === 'banner' && previewDataUrl && (
             <div>
               <p className="text-xs font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                預覽:在公開頁的呈現(同一張圖,只是顯示尺寸不同)
+                {t.previewTitle}
               </p>
               <div className="flex items-start gap-3">
                 {/* Desktop mock — wider window, 3:1 aspect */}
@@ -171,10 +178,10 @@ export function ImageCropperModal({
                     overflow: 'hidden', borderRadius: 6,
                     border: '1px solid var(--color-border)',
                   }}>
-                    <img src={previewDataUrl} alt="桌面版預覽"
+                    <img src={previewDataUrl} alt={t.altDesktop}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
                   </div>
-                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>💻 桌面版</p>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>{t.desktopLabel}</p>
                 </div>
                 {/* Mobile mock — phone bezel, narrower aspect kept identical (3:1)
                     so the crop is the same on both — only render size differs. */}
@@ -184,10 +191,10 @@ export function ImageCropperModal({
                     overflow: 'hidden', borderRadius: 4,
                     border: '1px solid var(--color-border)',
                   }}>
-                    <img src={previewDataUrl} alt="手機版預覽"
+                    <img src={previewDataUrl} alt={t.altMobile}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
                   </div>
-                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>📱 手機版</p>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: 'var(--color-text-muted)' }}>{t.mobileLabel}</p>
                 </div>
               </div>
             </div>
@@ -199,13 +206,13 @@ export function ImageCropperModal({
           <button onClick={onCancel}
             className="text-sm font-semibold px-4 py-2 rounded-lg"
             style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-            取消
+            {t.cancel}
           </button>
           <button onClick={handleConfirm} disabled={!pixelArea || working}
             className="btn-primary"
             style={{ fontSize: 13, padding: '8px 16px', opacity: pixelArea && !working ? 1 : 0.5 }}>
             <Check size={14} />
-            {working ? '處理中…' : '套用裁切'}
+            {working ? t.applying : t.apply}
           </button>
         </div>
       </div>

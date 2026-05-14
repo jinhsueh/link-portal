@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { Search, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface BlockItem {
   id: string; type: string; title: string | null; active: boolean; clicks: number; views: number
@@ -17,6 +18,8 @@ interface PageItem {
 
 export default function ContentPage() {
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const sa = dict.superAdmin
   const [type, setType] = useState<'blocks' | 'pages'>('blocks')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- items are BlockItem[] or PageItem[] depending on `type`, cast at render
   const [items, setItems] = useState<any[]>([])
@@ -61,7 +64,7 @@ export default function ContentPage() {
     <SuperAdminShell>
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>
-          內容審核 <span className="text-sm font-normal" style={{ color: 'var(--color-text-muted)' }}>({total})</span>
+          {sa.contentMgmt} <span className="text-sm font-normal" style={{ color: 'var(--color-text-muted)' }}>({total})</span>
         </h1>
 
         {/* Type toggle + search */}
@@ -75,17 +78,17 @@ export default function ContentPage() {
                   color: type === t ? 'white' : 'var(--color-text-secondary)',
                   border: 'none', cursor: 'pointer',
                 }}>
-                {t === 'blocks' ? '區塊' : '頁面'}
+                {t === 'blocks' ? sa.blocks : sa.pageSingular}
               </button>
             ))}
           </div>
           <form onSubmit={handleSearch} className="flex-1 flex gap-2">
             <div className="flex-1 relative">
               <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="搜尋標題 / 類型"
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder={sa.searchContent}
                 className="w-full" style={{ padding: '10px 12px 10px 36px', fontSize: 14, border: '1px solid var(--color-border)', borderRadius: 10, background: 'white', outline: 'none' }} />
             </div>
-            <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>搜尋</button>
+            <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>{sa.search}</button>
           </form>
         </div>
 
@@ -96,10 +99,10 @@ export default function ContentPage() {
               <thead>
                 <tr style={{ background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
                   {type === 'blocks'
-                    ? ['標題', '類型', '擁有者', '頁面', '點擊/瀏覽', '狀態', '操作'].map(h => (
+                    ? [sa.colTitle, sa.colType, sa.colOwner, sa.colPage, sa.colClicksViews, sa.colStatus, sa.colActions].map(h => (
                         <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12 }}>{h}</th>
                       ))
-                    : ['名稱', 'Slug', '擁有者', '區塊數', '建立日期'].map(h => (
+                    : [sa.colName, sa.colSlug, sa.colOwner, sa.colBlocksCount, sa.colCreated].map(h => (
                         <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12 }}>{h}</th>
                       ))
                   }
@@ -107,12 +110,12 @@ export default function ContentPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>載入中...</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.loading}</td></tr>
                 ) : items.length === 0 ? (
-                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>無結果</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.empty}</td></tr>
                 ) : type === 'blocks' ? items.map((b: BlockItem) => (
                   <tr key={b.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    <td style={{ padding: '12px 16px', color: 'var(--color-text-primary)', fontWeight: 500 }}>{b.title || '(無標題)'}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--color-text-primary)', fontWeight: 500 }}>{b.title || sa.untitled}</td>
                     <td style={{ padding: '12px 16px' }}>
                       <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ background: 'var(--color-surface)', color: 'var(--color-text-secondary)' }}>{b.type}</span>
                     </td>
@@ -121,8 +124,8 @@ export default function ContentPage() {
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{b.clicks} / {b.views}</td>
                     <td style={{ padding: '12px 16px' }}>
                       {b.active
-                        ? <span className="text-xs font-bold" style={{ color: '#10B981' }}>啟用</span>
-                        : <span className="text-xs font-bold" style={{ color: '#E53E3E' }}>停用</span>
+                        ? <span className="text-xs font-bold" style={{ color: '#10B981' }}>{sa.enabled}</span>
+                        : <span className="text-xs font-bold" style={{ color: '#E53E3E' }}>{sa.disabled}</span>
                       }
                     </td>
                     <td style={{ padding: '12px 16px' }}>
@@ -134,7 +137,7 @@ export default function ContentPage() {
                           border: `1px solid ${b.active ? '#FCA5A5' : '#C6F6D5'}`,
                           cursor: 'pointer',
                         }}>
-                        {b.active ? <><EyeOff size={12} />停用</> : <><Eye size={12} />啟用</>}
+                        {b.active ? <><EyeOff size={12} />{sa.disable}</> : <><Eye size={12} />{sa.enable}</>}
                       </button>
                     </td>
                   </tr>
@@ -144,7 +147,7 @@ export default function ContentPage() {
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)' }}>/{p.slug}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-secondary)' }}>@{p.user.username}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)' }}>{p._count.blocks}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{new Date(p.createdAt).toLocaleDateString('zh-TW')}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{new Date(p.createdAt).toLocaleDateString(locale)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -153,7 +156,7 @@ export default function ContentPage() {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>第 {page} / {totalPages} 頁</span>
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.pageOf.replace('{n}', String(page)).replace('{total}', String(totalPages))}</span>
               <div className="flex gap-2">
                 <button onClick={() => fetchData(page - 1)} disabled={page <= 1}
                   className="px-3 py-1.5 rounded-lg text-sm" style={{ border: '1px solid var(--color-border)', cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1, background: 'white' }}>

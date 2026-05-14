@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { DollarSign, ChevronLeft, ChevronRight, ExternalLink, ShoppingBag, TrendingUp } from 'lucide-react'
 import { fromStripeAmount, formatAmount } from '@/lib/stripe'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Order {
   id: string; stripeSessionId: string; customerEmail: string | null; productTitle: string | null
@@ -18,6 +19,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function RevenuePage() {
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const sa = dict.superAdmin
   const [orders, setOrders] = useState<Order[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -51,7 +54,7 @@ export default function RevenuePage() {
   return (
     <SuperAdminShell>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>收入報表</h1>
+        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>{sa.revenueTitle}</h1>
 
         {/* Revenue cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -66,14 +69,14 @@ export default function RevenuePage() {
           ))}
           {Object.keys(revenueByCurrency).length === 0 && (
             <div className="card" style={{ padding: 20 }}>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>尚無收入</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.noRevenue}</p>
             </div>
           )}
         </div>
 
         {/* Subscription breakdown */}
         <div className="card mb-6" style={{ padding: 20 }}>
-          <h3 className="font-bold text-sm mb-3" style={{ color: 'var(--color-text-primary)' }}>訂閱狀態分布</h3>
+          <h3 className="font-bold text-sm mb-3" style={{ color: 'var(--color-text-primary)' }}>{sa.subStatusDist}</h3>
           <div className="flex gap-6">
             {planBreakdown.map(({ plan, count }) => (
               <div key={plan} className="text-center">
@@ -89,13 +92,13 @@ export default function RevenuePage() {
           <div className="card mb-6" style={{ padding: 20 }}>
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp size={16} style={{ color: '#F59E0B' }} />
-              <h3 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>用戶銷售排行</h3>
+              <h3 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{sa.userSalesRank}</h3>
             </div>
             <div className="overflow-x-auto">
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    {['排名', '用戶', '訂單數', '總金額'].map(h => (
+                    {[sa.rank, sa.user, sa.orderCount, sa.totalAmount].map(h => (
                       <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12 }}>{h}</th>
                     ))}
                   </tr>
@@ -117,14 +120,14 @@ export default function RevenuePage() {
 
         {/* Filter */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>篩選：</span>
+          <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.filter}</span>
           <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); fetchData(1, e.target.value) }}
             style={{ padding: '8px 12px', fontSize: 13, border: '1px solid var(--color-border)', borderRadius: 8, background: 'white', cursor: 'pointer' }}>
-            <option value="">全部 ({total})</option>
-            <option value="paid">已付款</option>
-            <option value="pending">待處理</option>
-            <option value="failed">失敗</option>
-            <option value="refunded">已退款</option>
+            <option value="">{sa.all} ({total})</option>
+            <option value="paid">{sa.statusPaid}</option>
+            <option value="pending">{sa.statusPending}</option>
+            <option value="failed">{sa.statusFailed}</option>
+            <option value="refunded">{sa.statusRefunded}</option>
           </select>
         </div>
 
@@ -134,16 +137,16 @@ export default function RevenuePage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
                 <tr style={{ background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['用戶', '商品', '金額', '狀態', '客戶 Email', '日期'].map(h => (
+                  {[sa.user, sa.colProduct, sa.colAmount, sa.colStatus, sa.colCustomerEmail, sa.colDate].map(h => (
                     <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--color-text-muted)', fontSize: 12 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>載入中...</td></tr>
+                  <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.loading}</td></tr>
                 ) : orders.length === 0 ? (
-                  <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>無訂單</td></tr>
+                  <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>{sa.noOrders}</td></tr>
                 ) : orders.map(o => (
                   <tr key={o.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-primary)' }}>@{o.user.username}</td>
@@ -153,7 +156,7 @@ export default function RevenuePage() {
                       <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ color: STATUS_COLORS[o.status] || '#94A3B8' }}>{o.status}</span>
                     </td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{o.customerEmail || '-'}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{new Date(o.createdAt).toLocaleDateString('zh-TW')}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--color-text-muted)', fontSize: 13 }}>{new Date(o.createdAt).toLocaleDateString(locale)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -161,7 +164,7 @@ export default function RevenuePage() {
           </div>
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>第 {page} / {totalPages} 頁</span>
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.pageOf.replace('{n}', String(page)).replace('{total}', String(totalPages))}</span>
               <div className="flex gap-2">
                 <button onClick={() => fetchData(page - 1)} disabled={page <= 1}
                   className="px-3 py-1.5 rounded-lg text-sm" style={{ border: '1px solid var(--color-border)', cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1, background: 'white' }}>
@@ -180,7 +183,7 @@ export default function RevenuePage() {
           style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
           <ShoppingBag size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
           <p className="text-sm" style={{ color: 'var(--color-primary)' }}>
-            查看詳細付款記錄與退款操作，請前往
+            {sa.footerLinkPrefix}
             <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer"
               className="font-bold underline ml-1 inline-flex items-center gap-1">
               Stripe Dashboard <ExternalLink size={12} />

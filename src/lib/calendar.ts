@@ -212,17 +212,22 @@ export function formatEventDisplay(
   }).format(d)
 }
 
-/** Common timezones shown at the top of the dropdown for Taiwan-focused users. */
+/**
+ * Common timezones shown at the top of the dropdown. Labels are in English
+ * since IANA zone names + Latin-script city names are universally readable
+ * across all 4 supported locales — no need to translate.
+ */
 export const POPULAR_TIMEZONES: { id: string; label: string }[] = [
-  { id: 'Asia/Taipei',        label: '台北 (UTC+8)' },
-  { id: 'Asia/Tokyo',         label: '東京 (UTC+9)' },
-  { id: 'Asia/Seoul',         label: '首爾 (UTC+9)' },
-  { id: 'Asia/Singapore',     label: '新加坡 (UTC+8)' },
-  { id: 'Asia/Hong_Kong',     label: '香港 (UTC+8)' },
-  { id: 'Asia/Shanghai',      label: '上海 (UTC+8)' },
-  { id: 'America/Los_Angeles', label: '洛杉磯 (UTC-8/-7)' },
-  { id: 'America/New_York',   label: '紐約 (UTC-5/-4)' },
-  { id: 'Europe/London',      label: '倫敦 (UTC+0/+1)' },
+  { id: 'Asia/Taipei',        label: 'Taipei (UTC+8)' },
+  { id: 'Asia/Tokyo',         label: 'Tokyo (UTC+9)' },
+  { id: 'Asia/Seoul',         label: 'Seoul (UTC+9)' },
+  { id: 'Asia/Singapore',     label: 'Singapore (UTC+8)' },
+  { id: 'Asia/Hong_Kong',     label: 'Hong Kong (UTC+8)' },
+  { id: 'Asia/Shanghai',      label: 'Shanghai (UTC+8)' },
+  { id: 'Asia/Bangkok',       label: 'Bangkok (UTC+7)' },
+  { id: 'America/Los_Angeles', label: 'Los Angeles (UTC-8/-7)' },
+  { id: 'America/New_York',   label: 'New York (UTC-5/-4)' },
+  { id: 'Europe/London',      label: 'London (UTC+0/+1)' },
   { id: 'UTC',                label: 'UTC' },
 ]
 

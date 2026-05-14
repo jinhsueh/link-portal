@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useParams } from 'next/navigation'
 import { CheckCircle, ArrowLeft, ShoppingBag, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface OrderInfo {
   productTitle: string | null
@@ -22,6 +23,8 @@ function formatAmount(amount: number, currency: string) {
 }
 
 export default function SuccessPage() {
+  const { dict } = useDict()
+  const s = dict.profile.success
   const params = useParams()
   const searchParams = useSearchParams()
   const username = params?.username as string
@@ -70,7 +73,7 @@ export default function SuccessPage() {
         {loading ? (
           <div className="flex flex-col items-center gap-4" style={{ color: 'var(--color-text-muted)' }}>
             <Loader2 size={40} className="animate-spin" style={{ color: 'var(--color-primary)' }} />
-            <p className="text-sm font-medium">確認付款中…</p>
+            <p className="text-sm font-medium">{s.confirming}</p>
           </div>
         ) : (
           <div className="rounded-3xl p-8 sm:p-10" style={{
@@ -84,29 +87,29 @@ export default function SuccessPage() {
             </div>
 
             <h1 className="font-bold text-2xl mb-2" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-              付款成功！
+              {s.title}
             </h1>
 
             {order ? (
               <>
                 <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
-                  感謝購買
-                  <strong style={{ color: 'var(--color-text-primary)' }}> {order.productTitle ?? '商品'}</strong>！
+                  {s.thanksPrefix}
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{order.productTitle ?? s.productFallback}</strong>{s.thanksSuffix}
                   {order.customerEmail && (
-                    <> 確認信已寄至 <strong>{order.customerEmail}</strong>。</>
+                    <> {s.emailConfirm}<strong>{order.customerEmail}</strong>.</>
                   )}
                 </p>
 
                 {/* Order summary */}
                 <div className="rounded-xl p-4 mb-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                   <div className="flex items-center justify-between text-sm">
-                    <span style={{ color: 'var(--color-text-muted)' }}>商品名稱</span>
+                    <span style={{ color: 'var(--color-text-muted)' }}>{s.labelProduct}</span>
                     <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
                       {order.productTitle ?? '—'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm mt-2">
-                    <span style={{ color: 'var(--color-text-muted)' }}>付款金額</span>
+                    <span style={{ color: 'var(--color-text-muted)' }}>{s.labelAmount}</span>
                     <span className="font-bold" style={{ color: 'var(--color-primary)', fontSize: 16 }}>
                       {formatAmount(order.amount, order.currency)}
                     </span>
@@ -115,7 +118,7 @@ export default function SuccessPage() {
               </>
             ) : (
               <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
-                你的付款已收到，感謝購買！
+                {s.fallbackBody}
               </p>
             )}
 
@@ -124,14 +127,14 @@ export default function SuccessPage() {
               className="btn-primary w-full justify-center"
               style={{ display: 'flex', textDecoration: 'none', padding: '13px 20px', fontSize: 15 }}>
               <ArrowLeft size={16} />
-              回到個人頁面
+              {s.backToProfile}
             </Link>
 
             {/* Powered by Stripe */}
             <div className="flex items-center justify-center gap-2 mt-5">
               <ShoppingBag size={13} style={{ color: 'var(--color-text-muted)' }} />
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                付款由 <span className="font-semibold">Stripe</span> 安全處理
+                {s.secureNote}
               </p>
             </div>
           </div>

@@ -82,8 +82,8 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
           {typeLabel}
           {block.views > 0 && (
             <span className="ml-2 cursor-help"
-              title={`看過 ${block.views} 次 / 點過 ${block.clicks} 次\n資料即時更新,訪客動作後約 1 秒同步`}>
-              · 看過 {block.views} · 點過 {block.clicks}
+              title={dict.admin.row.viewedClicked.replace('{views}', String(block.views)).replace('{clicks}', String(block.clicks))}>
+              · {dict.admin.row.viewed} {block.views} · {dict.admin.row.clicked} {block.clicks}
             </span>
           )}
         </p>
@@ -92,10 +92,10 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
       {/* Pinned badge — shows first to signal "this block is the headline". */}
       {block.pinned && (
         <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0"
-          title="主推:此區塊會顯示在公開頁最上方"
+          title={dict.admin.row.pinnedTitle}
           style={{ background: '#FEF3C7', color: '#B45309', border: '1px solid #FCD34D' }}>
           <Star size={11} fill="currentColor" />
-          <span>主推</span>
+          <span>{dict.admin.row.pinnedBadge}</span>
         </div>
       )}
 
@@ -104,13 +104,13 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
         <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0"
           style={{ background: '#FFF7ED', color: '#C2410C', border: '1px solid #FDBA74' }}>
           <Clock size={11} />
-          <span>排程</span>
+          <span>{dict.admin.row.scheduledBadge}</span>
         </div>
       )}
 
       {/* Quick toggle (eye) — most-used action stays primary */}
       <button onClick={() => onToggle(block.id, !block.active)}
-        title={block.active ? '隱藏' : '顯示'}
+        title={block.active ? dict.admin.row.hide : dict.admin.row.show}
         className="p-2 rounded-lg flex-shrink-0"
         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
@@ -152,6 +152,7 @@ interface KebabItem {
 }
 
 function KebabMenu({ items }: { items: KebabItem[] }) {
+  const { dict } = useDict()
   const [open, setOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const ref = useRef<HTMLDivElement>(null)
@@ -171,7 +172,7 @@ function KebabMenu({ items }: { items: KebabItem[] }) {
   return (
     <div ref={ref} className="relative flex-shrink-0">
       <button onClick={() => setOpen(o => !o)}
-        title="更多操作"
+        title={dict.admin.row.moreActions}
         className="p-2 rounded-lg"
         style={{ background: open ? 'var(--color-surface)' : 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
         <MoreHorizontal size={15} />

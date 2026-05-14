@@ -1,29 +1,56 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cookies, headers } from 'next/headers'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
 import { SITE_URL, SITE_NAME, CONTACT_EMAIL } from '@/lib/site'
+import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
-export const metadata: Metadata = {
-  title: '聯絡我們',
-  description: `聯絡 ${SITE_NAME} 團隊。產品問題、合作提案、媒體邀約，歡迎來信 ${CONTACT_EMAIL}。`,
-  alternates: { canonical: '/contact' },
-  openGraph: {
-    title: `聯絡 ${SITE_NAME}`,
-    description: '產品問題、合作提案、媒體邀約',
-    url: '/contact',
-    type: 'website',
-  },
+async function resolveLocale(): Promise<Locale> {
+  const c = await cookies()
+  const cookieLocale = c.get('lp_locale')?.value
+  if (isLocale(cookieLocale)) return cookieLocale
+  const h = await headers()
+  const acceptLanguage = h.get('accept-language') ?? ''
+  if (!acceptLanguage) return DEFAULT_LOCALE
+  try {
+    const langs = new Negotiator({ headers: { 'accept-language': acceptLanguage } }).languages()
+    const matched = matchLocale(langs, LOCALES as unknown as string[], DEFAULT_LOCALE)
+    return isLocale(matched) ? matched : DEFAULT_LOCALE
+  } catch {
+    return DEFAULT_LOCALE
+  }
 }
 
-const breadcrumb = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: '首頁', item: SITE_URL },
-    { '@type': 'ListItem', position: 2, name: '聯絡我們', item: `${SITE_URL}/contact` },
-  ],
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await resolveLocale()
+  const dict = await getDictionary(locale)
+  const c = dict.contact
+  return {
+    title: c.metaTitle,
+    description: c.metaDescription.replace('{name}', SITE_NAME).replace('{email}', CONTACT_EMAIL),
+    alternates: { canonical: '/contact' },
+    openGraph: {
+      title: c.ogTitle.replace('{name}', SITE_NAME),
+      description: c.ogDescription,
+      url: '/contact',
+      type: 'website',
+    },
+  }
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await resolveLocale()
+  const dict = await getDictionary(locale)
+  const c = dict.contact
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: c.breadcrumbHome, item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: c.breadcrumbCurrent, item: `${SITE_URL}/contact` },
+    ],
+  }
   return (
     <>
       <script
@@ -33,22 +60,22 @@ export default function ContactPage() {
       <main className="mx-auto max-w-2xl px-6 py-16">
         <nav className="mb-8 text-sm text-gray-500">
           <Link href="/" className="hover:text-gray-900">
-            首頁
+            {c.breadcrumbHome}
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">聯絡我們</span>
+          <span className="text-gray-900">{c.breadcrumbCurrent}</span>
         </nav>
 
-        <h1 className="mb-6 text-4xl font-bold tracking-tight">聯絡我們</h1>
+        <h1 className="mb-6 text-4xl font-bold tracking-tight">{c.h1}</h1>
 
         <p className="mb-10 text-lg leading-relaxed text-gray-700">
-          有任何問題、合作提案或回饋嗎？我們很樂意聽到你的聲音。
+          {c.intro}
         </p>
 
         <section className="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-6">
-          <h2 className="mb-2 text-xl font-semibold">一般詢問與客戶支援</h2>
+          <h2 className="mb-2 text-xl font-semibold">{c.supportTitle}</h2>
           <p className="mb-3 text-gray-700">
-            產品使用問題、帳號問題、金流問題、退款申請
+            {c.supportBody}
           </p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
@@ -59,9 +86,9 @@ export default function ContactPage() {
         </section>
 
         <section className="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-6">
-          <h2 className="mb-2 text-xl font-semibold">商務合作與媒體</h2>
+          <h2 className="mb-2 text-xl font-semibold">{c.businessTitle}</h2>
           <p className="mb-3 text-gray-700">
-            合作提案、創作者計畫、媒體採訪邀約
+            {c.businessBody}
           </p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
@@ -72,7 +99,7 @@ export default function ContactPage() {
         </section>
 
         <p className="text-sm text-gray-500">
-          我們通常會在 1–2 個工作天內回覆所有來信。
+          {c.footer}
         </p>
       </main>
     </>

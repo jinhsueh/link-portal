@@ -106,37 +106,46 @@ export const DEFAULT_THEME: PageTheme = {
   hoverAnimation: 'lift',
 }
 
-export const PRESET_THEMES: { name: string; theme: Partial<PageTheme> }[] = [
+/**
+ * Stable theme preset IDs — translated to display name via
+ * `dict.admin.themeEditor.presetNames[id]` at render time. Keep these in
+ * sync with messages/*.json `admin.themeEditor.presetNames`.
+ */
+export type ThemePresetId =
+  | 'classicBlue' | 'violet' | 'coral' | 'forest'
+  | 'rose' | 'dark' | 'warmIvory' | 'monochrome'
+
+export const PRESET_THEMES: { id: ThemePresetId; theme: Partial<PageTheme> }[] = [
   {
-    name: '預設藍',
+    id: 'classicBlue',
     theme: { primaryColor: '#5090FF', bgType: 'gradient', bgColor: '#F0F4FF', bgGradient: 'linear-gradient(135deg, #F0F4FF 0%, #FFFFFF 60%)' },
   },
   {
-    name: '紫羅蘭',
+    id: 'violet',
     theme: { primaryColor: '#7C3AED', bgType: 'gradient', bgColor: '#F3E8FF', bgGradient: 'linear-gradient(135deg, #F3E8FF 0%, #FFFFFF 60%)' },
   },
   {
-    name: '珊瑚橘',
+    id: 'coral',
     theme: { primaryColor: '#F97316', bgType: 'gradient', bgColor: '#FFF7ED', bgGradient: 'linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 60%)' },
   },
   {
-    name: '森林綠',
+    id: 'forest',
     theme: { primaryColor: '#10B981', bgType: 'gradient', bgColor: '#ECFDF5', bgGradient: 'linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 60%)' },
   },
   {
-    name: '玫瑰粉',
+    id: 'rose',
     theme: { primaryColor: '#EC4899', bgType: 'gradient', bgColor: '#FDF2F8', bgGradient: 'linear-gradient(135deg, #FDF2F8 0%, #FFFFFF 60%)' },
   },
   {
-    name: '暗黑模式',
+    id: 'dark',
     theme: { primaryColor: '#60A5FA', bgType: 'solid', bgColor: '#0F172A' },
   },
   {
-    name: '米白溫暖',
+    id: 'warmIvory',
     theme: { primaryColor: '#D97706', bgType: 'solid', bgColor: '#FFFBEB' },
   },
   {
-    name: '經典黑白',
+    id: 'monochrome',
     theme: { primaryColor: '#1A1A2E', bgType: 'solid', bgColor: '#FFFFFF' },
   },
 ]

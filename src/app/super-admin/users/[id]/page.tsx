@@ -6,6 +6,7 @@ import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { ArrowLeft, Ban, Shield, FileText, ShoppingBag, Mail } from 'lucide-react'
 import { fromStripeAmount } from '@/lib/stripe'
 import { use } from 'react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface UserDetail {
   id: string; username: string; email: string; name: string | null; bio: string | null; avatarUrl: string | null
@@ -20,6 +21,8 @@ interface UserDetail {
 export default function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const sa = dict.superAdmin
   const [user, setUser] = useState<UserDetail | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -61,7 +64,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
       <div className="max-w-4xl mx-auto px-4 py-8">
         <button onClick={() => router.push('/super-admin/users')} className="flex items-center gap-1 text-sm mb-6"
           style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={14} />返回用戶列表
+          <ArrowLeft size={14} />{sa.backToUsers}
         </button>
 
         {/* Profile card */}
@@ -79,12 +82,12 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>{user.name || user.username}</h2>
                 {user.role === 'admin' && <Shield size={14} style={{ color: '#ED8936' }} />}
-                {user.banned && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold" style={{ background: '#FFF5F5', color: '#E53E3E' }}><Ban size={10} />封鎖中</span>}
+                {user.banned && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold" style={{ background: '#FFF5F5', color: '#E53E3E' }}><Ban size={10} />{sa.bannedBadge}</span>}
               </div>
               <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>@{user.username} &middot; {user.email}</p>
               {user.bio && <p className="text-sm mt-2" style={{ color: 'var(--color-text-secondary)' }}>{user.bio}</p>}
               <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
-                註冊：{new Date(user.createdAt).toLocaleDateString('zh-TW')}
+                {sa.joinedAt.replace('{date}', new Date(user.createdAt).toLocaleDateString(locale))}
               </p>
             </div>
           </div>
@@ -93,10 +96,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {[
-            { label: '頁面', value: user.pages.length, icon: FileText },
-            { label: '區塊', value: user._count.blocks, icon: FileText },
-            { label: '訂單', value: user._count.orders, icon: ShoppingBag },
-            { label: '訂閱者', value: user._count.subscribers, icon: Mail },
+            { label: sa.pages, value: user.pages.length, icon: FileText },
+            { label: sa.blocks, value: user._count.blocks, icon: FileText },
+            { label: sa.orders, value: user._count.orders, icon: ShoppingBag },
+            { label: sa.subscribers, value: user._count.subscribers, icon: Mail },
           ].map(({ label, value, icon: Icon }) => (
             <div key={label} className="card text-center" style={{ padding: 16 }}>
               <Icon size={16} style={{ color: 'var(--color-text-muted)', margin: '0 auto 4px' }} />
@@ -107,16 +110,16 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)' }}>
-          收入：<span className="font-semibold">{revenue}</span>
+          {sa.revenueLabel}<span className="font-semibold">{revenue}</span>
         </p>
 
         {/* Actions */}
         <div className="card mb-6" style={{ padding: 24 }}>
-          <h3 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>操作</h3>
+          <h3 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>{sa.actions}</h3>
           <div className="flex flex-wrap gap-3">
             {/* Plan change */}
             <div className="flex items-center gap-2">
-              <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>方案：</span>
+              <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{sa.planLabel}</span>
               <select value={user.plan} onChange={e => updateUser({ plan: e.target.value })} disabled={saving}
                 style={{ padding: '8px 12px', fontSize: 13, border: '1px solid var(--color-border)', borderRadius: 8, background: 'white', cursor: 'pointer' }}>
                 <option value="free">Free</option>
@@ -130,14 +133,14 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
               <button onClick={() => updateUser({ banned: false })} disabled={saving}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
                 style={{ background: '#F0FFF4', color: '#10B981', border: '1px solid #C6F6D5', cursor: 'pointer' }}>
-                解除封鎖
+                {sa.unban}
               </button>
             ) : (
-              <button onClick={() => { if (confirm('確定要封鎖此用戶？')) updateUser({ banned: true, bannedReason: '管理員手動封鎖' }) }}
+              <button onClick={() => { if (confirm(sa.banConfirm)) updateUser({ banned: true, bannedReason: sa.bannedReason }) }}
                 disabled={saving}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
                 style={{ background: '#FFF5F5', color: '#E53E3E', border: '1px solid #FCA5A5', cursor: 'pointer' }}>
-                <Ban size={14} />封鎖用戶
+                <Ban size={14} />{sa.banUser}
               </button>
             )}
           </div>
@@ -145,9 +148,9 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
         {/* Pages list */}
         <div className="card" style={{ padding: 24 }}>
-          <h3 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>頁面 ({user.pages.length})</h3>
+          <h3 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>{sa.pagesCountTitle.replace('{n}', String(user.pages.length))}</h3>
           {user.pages.length === 0 ? (
-            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>無頁面</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.noPages}</p>
           ) : (
             <div className="space-y-2">
               {user.pages.map(p => (
@@ -156,7 +159,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                     <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.name}</span>
                     <span className="text-xs ml-2" style={{ color: 'var(--color-text-muted)' }}>/{p.slug}</span>
                   </div>
-                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{p._count.blocks} 區塊</span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{p._count.blocks} {sa.blocksSuffix}</span>
                 </div>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { Users, FileText, MousePointerClick, DollarSign, Sparkles } from 'lucide-react'
 import { fromStripeAmount } from '@/lib/stripe'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Stats {
   totalUsers: number
@@ -24,6 +25,8 @@ const PLAN_LABELS: Record<string, string> = {
 
 export default function SuperAdminDashboard() {
   const router = useRouter()
+  const { dict } = useDict()
+  const sa = dict.superAdmin
   const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState('')
 
@@ -62,15 +65,15 @@ export default function SuperAdminDashboard() {
   return (
     <SuperAdminShell>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>平台總覽</h1>
+        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>{sa.overviewTitle}</h1>
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: '總用戶數', value: stats.totalUsers, icon: Users, color: '#3B82F6' },
-            { label: '總頁面數', value: stats.totalPages, icon: FileText, color: '#8B5CF6' },
-            { label: '總點擊數', value: stats.totalClicks.toLocaleString(), icon: MousePointerClick, color: '#10B981' },
-            { label: '總收入', value: totalRevenue, icon: DollarSign, color: '#F59E0B' },
+            { label: sa.users, value: stats.totalUsers, icon: Users, color: '#3B82F6' },
+            { label: sa.pages, value: stats.totalPages, icon: FileText, color: '#8B5CF6' },
+            { label: sa.clicks, value: stats.totalClicks.toLocaleString(), icon: MousePointerClick, color: '#10B981' },
+            { label: sa.revenue, value: totalRevenue, icon: DollarSign, color: '#F59E0B' },
           ].map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="card" style={{ padding: 20 }}>
               <div className="flex items-center gap-2 mb-2">
@@ -85,7 +88,7 @@ export default function SuperAdminDashboard() {
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Plan breakdown */}
           <div className="card" style={{ padding: 24 }}>
-            <h2 className="font-bold mb-4" style={{ fontSize: 16, color: 'var(--color-text-primary)' }}>方案分布</h2>
+            <h2 className="font-bold mb-4" style={{ fontSize: 16, color: 'var(--color-text-primary)' }}>{sa.planDist}</h2>
             <div className="space-y-3">
               {stats.planBreakdown.map(({ plan, count }) => {
                 const pct = stats.totalUsers ? Math.round((count / stats.totalUsers) * 100) : 0
@@ -106,16 +109,16 @@ export default function SuperAdminDashboard() {
               })}
               <div className="flex items-center gap-2 mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 <Sparkles size={14} style={{ color: '#F59E0B' }} />
-                活躍試用中：{stats.activeTrials}
+                {sa.activeTrials.replace('{n}', String(stats.activeTrials))}
               </div>
             </div>
           </div>
 
           {/* User growth chart */}
           <div className="card" style={{ padding: 24 }}>
-            <h2 className="font-bold mb-4" style={{ fontSize: 16, color: 'var(--color-text-primary)' }}>用戶成長（30天）</h2>
+            <h2 className="font-bold mb-4" style={{ fontSize: 16, color: 'var(--color-text-primary)' }}>{sa.growth30d}</h2>
             {stats.userGrowth.length === 0 ? (
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>尚無註冊數據</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{sa.noSignupData}</p>
             ) : (
               <div className="flex items-end gap-1" style={{ height: 120 }}>
                 {stats.userGrowth.map(({ date, count }) => (

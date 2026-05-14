@@ -53,8 +53,8 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       {/* Save button */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>主題外觀</h2>
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>自訂你的個人頁面風格</p>
+          <h2 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>{t.headerTitle}</h2>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t.headerSubtitle}</p>
         </div>
         <button onClick={handleSave} disabled={saving}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
@@ -63,15 +63,15 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
             color: 'white', border: 'none', cursor: 'pointer',
             opacity: saving ? 0.7 : 1,
           }}>
-          {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中…' : '儲存主題'}
+          {saved ? <><Check size={14} />{t.saveSaved}</> : saving ? t.saveSaving : t.saveBtn}
         </button>
       </div>
 
       {/* Presets */}
       <Section title={t.presets}>
         <div className="grid grid-cols-4 gap-3">
-          {PRESET_THEMES.map(({ name, theme: preset }) => (
-            <button key={name} onClick={() => applyPreset(preset)}
+          {PRESET_THEMES.map(({ id, theme: preset }) => (
+            <button key={id} onClick={() => applyPreset(preset)}
               className="text-center p-3 rounded-xl transition-all"
               style={{ border: '1px solid var(--color-border)', background: 'white', cursor: 'pointer' }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-primary)')}
@@ -80,7 +80,9 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
                 background: preset.bgType === 'gradient' && preset.bgGradient ? preset.bgGradient : preset.bgColor,
                 border: '2px solid ' + (preset.primaryColor ?? '#5090FF'),
               }} />
-              <span className="text-xs font-semibold" style={{ color: 'var(--color-text-primary)' }}>{name}</span>
+              <span className="text-xs font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                {t.presetNames?.[id] ?? id}
+              </span>
             </button>
           ))}
         </div>
@@ -109,16 +111,16 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       {/* Background */}
       <Section title={t.background}>
         <div className="flex gap-2 mb-3">
-          {(['solid', 'gradient'] as const).map(t => (
-            <button key={t} onClick={() => updateTheme({ bgType: t })}
+          {(['solid', 'gradient'] as const).map(b => (
+            <button key={b} onClick={() => updateTheme({ bgType: b })}
               className="px-4 py-2 rounded-lg text-sm font-semibold"
               style={{
-                background: theme.bgType === t ? 'var(--color-primary)' : 'white',
-                color: theme.bgType === t ? 'white' : 'var(--color-text-secondary)',
-                border: `1px solid ${theme.bgType === t ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                background: theme.bgType === b ? 'var(--color-primary)' : 'white',
+                color: theme.bgType === b ? 'white' : 'var(--color-text-secondary)',
+                border: `1px solid ${theme.bgType === b ? 'var(--color-primary)' : 'var(--color-border)'}`,
                 cursor: 'pointer',
               }}>
-              {{ solid: '純色', gradient: '漸層' }[t]}
+              {b === 'solid' ? t.solid : t.gradient}
             </button>
           ))}
         </div>
@@ -151,14 +153,17 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
             (single column / 2-col grid). */}
         <div className="grid grid-cols-2 gap-2 mb-3">
           {([
-            { value: 'stacked',     label: '直式',         desc: '單欄、窄版(預設)',          wide: false },
-            { value: 'horizontal',  label: '橫式',         desc: '雙欄、窄版',                  wide: false },
-            { value: 'fullwidth',   label: '滿版',         desc: '單欄、寬版',                  wide: false },
-            { value: 'cards',       label: '小卡',         desc: '雙欄、寬版',                  wide: false },
+            { value: 'stacked',     key: 'stacked',     wide: false },
+            { value: 'horizontal',  key: 'horizontal',  wide: false },
+            { value: 'fullwidth',   key: 'fullwidth',   wide: false },
+            { value: 'cards',       key: 'cards',       wide: false },
             // hero-banner spans both columns of the 2-col picker since its
             // visual is fundamentally larger / different from the others.
-            { value: 'hero-banner', label: 'Hero Banner ✨', desc: '大圖頂版 + 雙欄(Portaly 風)', wide: true  },
-          ] as const).map(({ value, label, desc, wide }) => {
+            { value: 'hero-banner', key: 'heroBanner',  wide: true  },
+          ] as const).map(({ value, key, wide }) => {
+            const layoutMeta = t.layouts?.[key as keyof typeof t.layouts]
+            const label = layoutMeta?.label ?? key
+            const desc = layoutMeta?.desc ?? ''
             const active = (theme.layout ?? 'stacked') === value
             return (
               <button key={value} onClick={() => updateTheme({ layout: value })}
@@ -186,9 +191,9 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       <Section title={t.buttonStyle}>
         <div className="flex gap-3 mb-4">
           {([
-            { value: 'outline', label: '線框' },
-            { value: 'filled', label: '填滿' },
-            { value: 'soft', label: '柔和' },
+            { value: 'outline', label: t.btnStyleOutline },
+            { value: 'filled',  label: t.btnStyleFilled },
+            { value: 'soft',    label: t.btnStyleSoft },
           ] as const).map(({ value, label }) => (
             <button key={value} onClick={() => updateTheme({ buttonStyle: value })}
               className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
@@ -204,9 +209,9 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
         </div>
         <div className="flex gap-3">
           {([
-            { value: 'rounded', label: '圓角' },
-            { value: 'pill', label: '膠囊' },
-            { value: 'square', label: '方角' },
+            { value: 'rounded', label: t.radiusRounded },
+            { value: 'pill',    label: t.radiusPill },
+            { value: 'square',  label: t.radiusSquare },
           ] as const).map(({ value, label }) => (
             <button key={value} onClick={() => updateTheme({ buttonRadius: value, cornerStyle: value })}
               className="flex-1 py-3 text-sm font-semibold transition-all"
@@ -230,17 +235,18 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
           see is what they'll get. */}
       <Section title={t.cornerStyleLabel}>
         <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
-          選一個切角樣式給所有卡片區塊(連結、橫幅、商品、輪播…)。
+          {t.cornerHint}
         </p>
         <div className="grid grid-cols-3 gap-2.5">
           {([
-            { value: 'cut-tr',       label: '右上切', clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)' },
-            { value: 'cut-tl',       label: '左上切', clip: 'polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px)' },
-            { value: 'cut-br',       label: '右下切', clip: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' },
-            { value: 'cut-bl',       label: '左下切', clip: 'polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
-            { value: 'cut-diagonal', label: '對角切', clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
-            { value: 'notched',      label: '門票形', clip: 'polygon(0 0, 100% 0, 100% calc(50% - 6px), calc(100% - 6px) 50%, 100% calc(50% + 6px), 100% 100%, 0 100%, 0 calc(50% + 6px), 6px 50%, 0 calc(50% - 6px))' },
-          ] as const).map(({ value, label, clip }) => {
+            { value: 'cut-tr',       clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)' },
+            { value: 'cut-tl',       clip: 'polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px)' },
+            { value: 'cut-br',       clip: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' },
+            { value: 'cut-bl',       clip: 'polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
+            { value: 'cut-diagonal', clip: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
+            { value: 'notched',      clip: 'polygon(0 0, 100% 0, 100% calc(50% - 6px), calc(100% - 6px) 50%, 100% calc(50% + 6px), 100% 100%, 0 100%, 0 calc(50% + 6px), 6px 50%, 0 calc(50% - 6px))' },
+          ] as const).map(({ value, clip }) => {
+            const label = t.cornerCuts?.[value as keyof typeof t.cornerCuts] ?? value
             const active = theme.cornerStyle === value
             return (
               <button key={value} onClick={() => updateTheme({ cornerStyle: value })}
@@ -265,17 +271,11 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
           user scrolls down — closes the "Portaly feels alive" gap. */}
       <Section title={t.entranceLabel}>
         <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
-          每個區塊滑進畫面時的動效。系統會自動尊重使用者的「減少動態」偏好。
+          {t.entranceHint2}
         </p>
         <div className="grid grid-cols-3 gap-2">
-          {([
-            { value: 'none',        label: '無' },
-            { value: 'fade',        label: '淡入' },
-            { value: 'slide-up',    label: '上滑' },
-            { value: 'slide-left',  label: '左滑' },
-            { value: 'slide-right', label: '右滑' },
-            { value: 'scale',       label: '縮放' },
-          ] as const).map(({ value, label }) => {
+          {(['none', 'fade', 'slide-up', 'slide-left', 'slide-right', 'scale'] as const).map(value => {
+            const label = t.entranceOpts?.[value as keyof typeof t.entranceOpts] ?? value
             const active = (theme.entranceAnimation ?? 'slide-up') === value
             return (
               <button key={value} onClick={() => updateTheme({ entranceAnimation: value })}
@@ -312,17 +312,17 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * committing — the right column phone-mockup also reflects choices live.
  */
 function BgPanelControls({ theme, updateTheme }: { theme: PageTheme; updateTheme: (p: Partial<PageTheme>) => void }) {
+  const { dict } = useDict()
+  const t = dict.admin.themeEditor
   const mode: PageTheme['bgPanel'] = typeof theme.bgPanel === 'boolean'
     ? (theme.bgPanel ? 'frosted-light' : 'none')
     : theme.bgPanel ?? 'none'
 
-  const presets = [
-    { value: 'none' as const,           label: '無底版',  desc: '內容直接在背景上' },
-    { value: 'frosted-light' as const,  label: '霧白',    desc: '白色霧面玻璃' },
-    { value: 'frosted-dark' as const,   label: '霧深',    desc: '深色霧面玻璃' },
-    { value: 'brand' as const,          label: '品牌色',  desc: '主色 8% 暈染' },
-    { value: 'custom' as const,         label: '自訂',    desc: '完全自訂顏色' },
-  ]
+  const presetKeys = ['none', 'frosted-light', 'frosted-dark', 'brand', 'custom'] as const
+  const presets = presetKeys.map(value => {
+    const meta = t.panelPresets?.[value as keyof typeof t.panelPresets]
+    return { value, label: meta?.label ?? value, desc: meta?.desc ?? '' }
+  })
 
   // Mini preview swatch — visualises each preset using the actual theme primary.
   const swatchFor = (val: PageTheme['bgPanel']): React.CSSProperties => {
@@ -373,13 +373,15 @@ function BgPanelControls({ theme, updateTheme }: { theme: PageTheme; updateTheme
 }
 
 function CustomBgPanelEditor({ theme, updateTheme }: { theme: PageTheme; updateTheme: (p: Partial<PageTheme>) => void }) {
+  const { dict } = useDict()
+  const t = dict.admin.themeEditor
   const c = theme.bgPanelCustom ?? { color: '#FFFFFF', opacity: 70, showBorder: true, showShadow: true }
   const set = (patch: Partial<typeof c>) => updateTheme({ bgPanelCustom: { ...c, ...patch } })
 
   return (
     <>
       <div>
-        <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>顏色</label>
+        <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>{t.panelColorLabel}</label>
         <div className="flex items-center gap-2">
           <input type="color" value={c.color}
             onChange={e => set({ color: e.target.value })}
@@ -393,7 +395,7 @@ function CustomBgPanelEditor({ theme, updateTheme }: { theme: PageTheme; updateT
 
       <div>
         <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
-          不透明度 <span style={{ color: 'var(--color-text-secondary)' }}>{c.opacity}%</span>
+          {t.panelOpacityLabel} <span style={{ color: 'var(--color-text-secondary)' }}>{c.opacity}%</span>
         </label>
         <input type="range" min={5} max={95} step={1} value={c.opacity}
           onChange={e => set({ opacity: Number(e.target.value) })}
@@ -405,13 +407,13 @@ function CustomBgPanelEditor({ theme, updateTheme }: { theme: PageTheme; updateT
           <input type="checkbox" checked={c.showBorder}
             onChange={e => set({ showBorder: e.target.checked })}
             style={{ width: 14, height: 14, accentColor: 'var(--color-primary)' }} />
-          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>細邊</span>
+          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{t.panelBorderThin}</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={c.showShadow}
             onChange={e => set({ showShadow: e.target.checked })}
             style={{ width: 14, height: 14, accentColor: 'var(--color-primary)' }} />
-          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>浮起陰影</span>
+          <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{t.panelShadow}</span>
         </label>
       </div>
     </>
