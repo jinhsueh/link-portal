@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles, ArrowRight } from 'lucide-react'
+import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { PLAN_PRICING } from '@/lib/plan'
 import { useDict } from '@/components/i18n/DictProvider'
@@ -302,16 +302,6 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
           <Save size={15} />{saved ? a.savedShort : saving ? a.savingShort : a.saveEmail}
         </button>
       </div>
-
-      {/* Profile redirect note */}
-      <Link href="/admin" className="flex items-center gap-3 p-4 rounded-2xl transition-all"
-        style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', textDecoration: 'none' }}>
-        <div className="flex-1">
-          <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>{a.profileMovedTitle}</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{a.profileMovedHint}</p>
-        </div>
-        <ArrowRight size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
-      </Link>
 
       {/* Language picker — affects the whole admin + public chrome via the
           lp_locale cookie. Reuses the same dropdown component used on the
