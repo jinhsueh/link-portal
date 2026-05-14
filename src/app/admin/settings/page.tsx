@@ -6,16 +6,12 @@ import Link from 'next/link'
 import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles, ArrowRight } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { PLAN_PRICING } from '@/lib/plan'
+import { useDict } from '@/components/i18n/DictProvider'
 
-const TABS = [
-  { id: 'account',       label: '帳號資訊', icon: User },
-  { id: 'billing',       label: '方案與帳單', icon: CreditCard },
-  { id: 'password',      label: '密碼管理', icon: Lock },
-  { id: 'notifications', label: '通知偏好', icon: Bell },
-  { id: 'danger',        label: '危險區域', icon: AlertTriangle },
-] as const
+const TAB_IDS = ['account', 'billing', 'password', 'notifications', 'danger'] as const
+const TAB_ICONS = { account: User, billing: CreditCard, password: Lock, notifications: Bell, danger: AlertTriangle } as const
 
-type TabId = typeof TABS[number]['id']
+type TabId = typeof TAB_IDS[number]
 
 interface TeamMember { id: string; memberEmail: string; role: string; status: string; invitedAt: string }
 interface UserData {
@@ -27,6 +23,9 @@ interface UserData {
 
 export default function SettingsPage() {
   const router = useRouter()
+  const { dict } = useDict()
+  const s = dict.admin.settings
+  const TABS = TAB_IDS.map(id => ({ id, label: s.nav[id as keyof typeof s.nav], icon: TAB_ICONS[id] }))
   const [user, setUser] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabId>('account')
@@ -51,7 +50,7 @@ export default function SettingsPage() {
   return (
     <AdminShell username={user?.username} role={user?.role} effectivePlan={user?.effectivePlan} trialDaysLeft={user?.trialDaysLeft}>
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>帳號設定</h1>
+        <h1 className="font-bold text-xl mb-6" style={{ color: 'var(--color-text-primary)' }}>{s.pageTitle}</h1>
 
         <div className="flex gap-6" style={{ minHeight: 500 }}>
           {/* Left: Tab navigation */}
@@ -122,6 +121,9 @@ const focusOut = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =
 
 // ─── Tab 1: Account ───
 function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData) => void }) {
+  const { dict, locale } = useDict()
+  const a = dict.admin.settings.account
+  const qr = dict.admin.settings.qr
   const [email, setEmail] = useState(user.email ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -171,10 +173,7 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
   const handleSaveUsername = async () => {
     const u = newUsername.trim().toLowerCase()
     if (u === user.username) { setEditingUsername(false); return }
-    if (!confirm(
-      `確定要把用戶名從「${user.username}」改成「${u}」嗎?\n\n` +
-      `舊網址 beam.io/${user.username} 會失效,任何已分享的舊連結都會 404。`
-    )) return
+    if (!confirm(a.changeUsernameConfirm.replace(/\{old\}/g, user.username).replace('{new}', u))) return
     setUsernameSaving(true)
     setUsernameError('')
     try {
@@ -184,13 +183,13 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
       })
       const updated = await res.json()
       if (!res.ok) {
-        setUsernameError(updated.error ?? '更改失敗')
+        setUsernameError(updated.error ?? a.changeFailed)
       } else {
         onUpdate(updated)
         setEditingUsername(false)
       }
     } catch (err) {
-      setUsernameError(err instanceof Error ? err.message : '網路錯誤')
+      setUsernameError(err instanceof Error ? err.message : a.networkError)
     }
     setUsernameSaving(false)
   }
@@ -211,21 +210,21 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
     <div className="space-y-6">
       {/* Account info */}
       <div style={cardStyle}>
-        <h2 className="font-bold mb-5" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>帳號資訊</h2>
+        <h2 className="font-bold mb-5" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{a.sectionTitle}</h2>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>加入時間</label>
-            <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{new Date(user.createdAt).toLocaleDateString('zh-TW')}</p>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>{a.joinedAt}</label>
+            <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{new Date(user.createdAt).toLocaleDateString(locale)}</p>
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>用戶名稱</label>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>{a.usernameLabel}</label>
             {!editingUsername ? (
               <div className="flex items-center gap-2">
                 <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{user.username}</p>
                 <button onClick={() => { setEditingUsername(true); setNewUsername(user.username); setUsernameError(''); setUsernameStatus('same') }}
                   className="text-xs font-semibold"
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
-                  更改
+                  {a.changeUsername}
                 </button>
               </div>
             ) : (
@@ -258,35 +257,35 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
                       cursor: ['available', 'same'].includes(usernameStatus) && !usernameSaving ? 'pointer' : 'default',
                       opacity: usernameSaving ? 0.6 : 1,
                     }}>
-                    {usernameSaving ? '儲存中…' : '儲存'}
+                    {usernameSaving ? a.saveUsernameSaving : a.saveUsername}
                   </button>
                   <button onClick={() => { setEditingUsername(false); setUsernameError('') }}
                     className="text-xs font-semibold"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-                    取消
+                    {a.cancel}
                   </button>
                 </div>
                 {usernameStatus === 'checking' && (
-                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>檢查中…</p>
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{a.checking}</p>
                 )}
                 {usernameStatus === 'available' && (
-                  <p className="text-xs" style={{ color: '#10B981' }}>✓ 可用</p>
+                  <p className="text-xs" style={{ color: '#10B981' }}>{a.available}</p>
                 )}
                 {usernameStatus === 'taken' && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>此用戶名已被使用</p>
+                  <p className="text-xs" style={{ color: '#EF4444' }}>{a.taken}</p>
                 )}
                 {usernameStatus === 'reserved' && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>系統保留,無法使用</p>
+                  <p className="text-xs" style={{ color: '#EF4444' }}>{a.reserved}</p>
                 )}
                 {usernameStatus === 'invalid' && newUsername.length >= 3 && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>格式不正確(英數、底線、減號、點;點不可在開頭/結尾)</p>
+                  <p className="text-xs" style={{ color: '#EF4444' }}>{a.invalid}</p>
                 )}
                 {usernameError && (
                   <p className="text-xs" style={{ color: '#EF4444' }}>{usernameError}</p>
                 )}
                 {newUsername !== user.username && usernameStatus === 'available' && (
                   <p className="text-xs" style={{ color: '#B45309', background: '#FEF3C7', border: '1px solid #FCD34D', padding: '6px 8px', borderRadius: 6 }}>
-                    ⚠ 改名後舊網址 beam.io/{user.username} 將失效
+                    {a.warnChange.replace('{old}', user.username)}
                   </p>
                 )}
               </div>
@@ -294,12 +293,12 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
           </div>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>聯絡信箱</label>
+          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{a.emailLabel}</label>
           <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"
             style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
         </div>
         <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-          <Save size={15} />{saved ? '已儲存 ✓' : saving ? '儲存中...' : '儲存信箱'}
+          <Save size={15} />{saved ? a.savedShort : saving ? a.savingShort : a.saveEmail}
         </button>
       </div>
 
@@ -307,8 +306,8 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
       <Link href="/admin" className="flex items-center gap-3 p-4 rounded-2xl transition-all"
         style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', textDecoration: 'none' }}>
         <div className="flex-1">
-          <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>個人資料與社群連結</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>已搬移至主頁編輯器，點擊前往設定</p>
+          <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>{a.profileMovedTitle}</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{a.profileMovedHint}</p>
         </div>
         <ArrowRight size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
       </Link>
@@ -316,14 +315,14 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
       {/* QR Code */}
       <div style={cardStyle}>
         <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>QR Code</h2>
-        <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>掃描即可直接開啟你的個人頁面</p>
+        <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>{qr.subtitle}</p>
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <div className="p-3 rounded-xl" style={{ background: 'white', border: '1px solid var(--color-border)' }}>
             <canvas ref={canvasRef} style={{ display: 'block', borderRadius: 8 }} />
           </div>
           <div className="flex-1 text-center sm:text-left">
             <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>{pageUrl}</p>
-            <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>下載 QR Code 分享在名片、社群貼文或印刷品上</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>{qr.downloadHint}</p>
             {qrReady && (
               <button onClick={() => {
                 const canvas = canvasRef.current
@@ -334,7 +333,7 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
                 link.click()
               }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
                 style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid #C3D9FF', cursor: 'pointer' }}>
-                <Download size={14} />下載 PNG
+                <Download size={14} />{qr.downloadBtn}
               </button>
             )}
           </div>
@@ -346,6 +345,8 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
 
 // ─── Tab 2: Password ───
 function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
+  const { dict } = useDict()
+  const p = dict.admin.settings.password
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -355,8 +356,8 @@ function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage(null)
-    if (newPassword !== confirmPassword) { setMessage({ type: 'error', text: '兩次密碼不一致' }); return }
-    if (newPassword.length < 6) { setMessage({ type: 'error', text: '密碼至少需要 6 個字元' }); return }
+    if (newPassword !== confirmPassword) { setMessage({ type: 'error', text: p.mismatch }); return }
+    if (newPassword.length < 6) { setMessage({ type: 'error', text: p.tooShort }); return }
 
     setSaving(true)
     const res = await fetch('/api/account/password', {
@@ -366,36 +367,36 @@ function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
     const data = await res.json()
     setSaving(false)
 
-    if (!res.ok) { setMessage({ type: 'error', text: data.error || '操作失敗' }); return }
-    setMessage({ type: 'success', text: '密碼已更新' })
+    if (!res.ok) { setMessage({ type: 'error', text: data.error || p.failed }); return }
+    setMessage({ type: 'success', text: p.updated })
     setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
   }
 
   return (
     <div style={cardStyle}>
-      <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>密碼管理</h2>
+      <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{p.sectionTitle}</h2>
       {!hasPassword && (
         <div className="rounded-xl p-3 mb-4" style={{ background: '#FFF7ED', border: '1px solid #FDBA74' }}>
-          <p className="text-sm" style={{ color: '#C2410C' }}>你尚未設定密碼。設定後可以使用密碼登入。</p>
+          <p className="text-sm" style={{ color: '#C2410C' }}>{p.noPasswordNote}</p>
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
         {hasPassword && (
           <div>
-            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>目前密碼</label>
+            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{p.currentLabel}</label>
             <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
               required style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
           </div>
         )}
         <div>
-          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>新密碼</label>
+          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{p.newLabel}</label>
           <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-            required minLength={6} placeholder="至少 6 個字元" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+            required minLength={6} placeholder={p.newPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
         </div>
         <div>
-          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>確認新密碼</label>
+          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{p.confirmLabel}</label>
           <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-            required minLength={6} placeholder="再輸入一次" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+            required minLength={6} placeholder={p.confirmPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
         </div>
         {message && (
           <p className="text-sm px-4 py-3 rounded-xl" style={{
@@ -405,7 +406,7 @@ function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
           }}>{message.text}</p>
         )}
         <button type="submit" disabled={saving} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-          <Lock size={15} />{saving ? '處理中...' : hasPassword ? '更新密碼' : '設定密碼'}
+          <Lock size={15} />{saving ? p.submitting : hasPassword ? p.submitUpdate : p.submitCreate}
         </button>
       </form>
     </div>
@@ -414,6 +415,8 @@ function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
 
 // ─── Tab 3: Team ───
 function TeamTab() {
+  const { dict } = useDict()
+  const tm = dict.admin.settings.team
   const [members, setMembers] = useState<TeamMember[]>([])
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('editor')
@@ -435,13 +438,13 @@ function TeamTab() {
     })
     const data = await res.json()
     setInviting(false)
-    if (!res.ok) { setError(data.error || '邀請失敗'); return }
+    if (!res.ok) { setError(data.error || tm.inviteFailed); return }
     setMembers(prev => [data, ...prev.filter(m => m.id !== data.id)])
     setEmail('')
   }
 
   const handleRemove = async (id: string) => {
-    if (!confirm('確定移除此成員？')) return
+    if (!confirm(tm.removeConfirm)) return
     await fetch(`/api/team?id=${id}`, { method: 'DELETE' })
     setMembers(prev => prev.filter(m => m.id !== id))
   }
@@ -457,14 +460,14 @@ function TeamTab() {
     }
   }
 
-  const ROLE_LABELS: Record<string, string> = { owner: '擁有者', editor: '編輯者', viewer: '檢視者' }
+  // ROLE_LABELS no longer needed — rendered via dict at the option level.
 
   return (
     <div className="space-y-6">
       {/* Invite form */}
       <div style={cardStyle}>
-        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>邀請成員</h2>
-        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>邀請團隊成員共同管理你的頁面</p>
+        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{tm.inviteTitle}</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>{tm.inviteHint}</p>
         <form onSubmit={handleInvite} className="flex gap-2 items-end">
           <div className="flex-1">
             <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>Email</label>
@@ -472,36 +475,35 @@ function TeamTab() {
               required placeholder="member@example.com" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
           </div>
           <div style={{ width: 120 }}>
-            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>角色</label>
+            <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{tm.roleLabel}</label>
             <div className="relative">
               <select value={role} onChange={e => setRole(e.target.value)}
                 style={{ ...inputStyle, appearance: 'none', cursor: 'pointer', paddingRight: 32 } as React.CSSProperties}>
-                <option value="editor">編輯者</option>
-                <option value="viewer">檢視者</option>
+                <option value="editor">{tm.roleEditor}</option>
+                <option value="viewer">{tm.roleViewer}</option>
               </select>
               <ChevronDown size={14} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--color-text-muted)' }} />
             </div>
           </div>
           <button type="submit" disabled={inviting} className="btn-primary flex-shrink-0"
             style={{ fontSize: 14, padding: '11px 18px', marginBottom: 0 }}>
-            <Plus size={15} />{inviting ? '...' : '邀請'}
+            <Plus size={15} />{inviting ? tm.inviting : tm.invite}
           </button>
         </form>
         {error && <p className="text-sm mt-2" style={{ color: '#E53E3E' }}>{error}</p>}
-        <div className="mt-3 rounded-lg p-3" style={{ background: 'var(--color-surface)', fontSize: 12, color: 'var(--color-text-muted)' }}>
-          <strong>角色說明：</strong>編輯者可以管理區塊和頁面內容，檢視者只能查看數據分析。
-        </div>
+        <div className="mt-3 rounded-lg p-3" style={{ background: 'var(--color-surface)', fontSize: 12, color: 'var(--color-text-muted)' }}
+          dangerouslySetInnerHTML={{ __html: tm.rolesExplain }} />
       </div>
 
       {/* Member list */}
       <div style={cardStyle}>
-        <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>成員列表</h2>
+        <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{tm.listTitle}</h2>
         {loading ? (
-          <div className="py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>載入中...</div>
+          <div className="py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>{tm.loading}</div>
         ) : members.length === 0 ? (
           <div className="py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
             <Users size={32} className="mx-auto mb-2 opacity-30" />
-            <p className="text-sm">尚未邀請任何成員</p>
+            <p className="text-sm">{tm.empty}</p>
           </div>
         ) : (
           <div>
@@ -511,7 +513,9 @@ function TeamTab() {
                 <div>
                   <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{m.memberEmail}</p>
                   <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                    {new Date(m.invitedAt).toLocaleDateString('zh-TW')} 加入 · {m.status === 'active' ? '已啟用' : '待接受'}
+                    {tm.memberJoinedTpl
+                      .replace('{date}', new Date(m.invitedAt).toLocaleDateString())
+                      .replace('{status}', m.status === 'active' ? tm.statusActive : tm.statusPending)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -519,8 +523,8 @@ function TeamTab() {
                     <select value={m.role} onChange={e => handleRoleChange(m.id, e.target.value)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg appearance-none pr-7"
                       style={{ border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
-                      <option value="editor">編輯者</option>
-                      <option value="viewer">檢視者</option>
+                      <option value="editor">{tm.roleEditor}</option>
+                      <option value="viewer">{tm.roleViewer}</option>
                     </select>
                     <ChevronDown size={10} style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                   </div>
@@ -540,18 +544,16 @@ function TeamTab() {
 
 // ─── Tab 4: Notifications ───
 function NotificationsTab() {
-  const NOTIFICATIONS = [
-    { label: '新訂閱通知', desc: '有人透過 Email 表單訂閱時通知你' },
-    { label: '新訂單通知', desc: '收到新的數位商品訂單時通知你' },
-    { label: '每週報告', desc: '每週一寄送過去 7 天的數據摘要' },
-  ]
+  const { dict } = useDict()
+  const n = dict.admin.settings.notifications
+  const NOTIFICATIONS = n.items
 
   return (
     <div style={cardStyle}>
-      <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>通知偏好</h2>
+      <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{n.sectionTitle}</h2>
       <div className="rounded-lg px-4 py-3 mb-5" style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
-        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>即將推出</p>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>Email 通知功能正在開發中，敬請期待。</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{n.comingSoonTitle}</p>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{n.comingSoonHint}</p>
       </div>
       <div className="space-y-1" style={{ opacity: 0.5, pointerEvents: 'none' }}>
         {NOTIFICATIONS.map(({ label, desc }) => (
@@ -574,6 +576,8 @@ function NotificationsTab() {
 
 // ─── Tab: Billing ───
 function BillingTab({ user }: { user: UserData }) {
+  const { dict } = useDict()
+  const b = dict.admin.settings.billing
   const searchParams = useSearchParams()
   const [upgrading, setUpgrading] = useState<'pro' | 'premium' | null>(null)
   const [interval, setIntervalState] = useState<'monthly' | 'annual'>('monthly')
@@ -588,7 +592,7 @@ function BillingTab({ user }: { user: UserData }) {
       })
       const data = await res.json()
       if (data.url) window.location.href = data.url
-      else { alert(data.error || '發生錯誤'); setUpgrading(null) }
+      else { alert(data.error || b.planError); setUpgrading(null) }
     } catch { setUpgrading(null) }
   }
 
@@ -602,7 +606,7 @@ function BillingTab({ user }: { user: UserData }) {
 
   const planLabel =
     user.effectivePlan === 'premium' ? 'Premium'
-    : user.effectivePlan === 'pro' ? (user.plan === 'pro_trial' ? 'Pro（試用中）' : 'Pro')
+    : user.effectivePlan === 'pro' ? (user.plan === 'pro_trial' ? b.planProTrial : 'Pro')
     : 'Free'
 
   const planBadgeStyle = {
@@ -623,7 +627,7 @@ function BillingTab({ user }: { user: UserData }) {
     <div className="space-y-6">
       {/* Current plan */}
       <div style={cardStyle}>
-        <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>目前方案</h2>
+        <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{b.currentPlanTitle}</h2>
         <div className="flex items-center gap-3 mb-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold"
             style={planBadgeStyle}>
@@ -635,15 +639,14 @@ function BillingTab({ user }: { user: UserData }) {
         {/* Trial info */}
         {user.plan === 'pro_trial' && user.trialDaysLeft > 0 && (
           <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
-            <p className="text-sm" style={{ color: '#92400E' }}>
-              試用剩餘 <strong>{user.trialDaysLeft} 天</strong>，到期後將自動降為 Free 方案。
-            </p>
+            <p className="text-sm" style={{ color: '#92400E' }}
+              dangerouslySetInnerHTML={{ __html: b.trialRemainingTpl.replace('{n}', String(user.trialDaysLeft)) }} />
           </div>
         )}
 
         {user.effectivePlan === 'premium' && (
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            如需取消訂閱或管理付款方式，請聯繫 hello@beam.io
+            {b.supportContact}
           </p>
         )}
       </div>
@@ -652,7 +655,7 @@ function BillingTab({ user }: { user: UserData }) {
       {user.effectivePlan !== 'premium' && (
         <div style={cardStyle}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>升級方案</h2>
+            <h2 className="font-bold" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{b.upgradeTitle}</h2>
             <div className="inline-flex rounded-lg p-1" style={{ background: '#F3F4F6' }}>
               <button onClick={() => setIntervalState('monthly')}
                 className="px-3 py-1.5 rounded-md text-xs font-semibold"
@@ -661,7 +664,7 @@ function BillingTab({ user }: { user: UserData }) {
                   color: interval === 'monthly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
                   boxShadow: interval === 'monthly' ? 'var(--shadow-sm)' : 'none',
                   cursor: 'pointer',
-                }}>月繳</button>
+                }}>{b.billingMonthly}</button>
               <button onClick={() => setIntervalState('annual')}
                 className="px-3 py-1.5 rounded-md text-xs font-semibold"
                 style={{
@@ -669,7 +672,7 @@ function BillingTab({ user }: { user: UserData }) {
                   color: interval === 'annual' ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
                   boxShadow: interval === 'annual' ? 'var(--shadow-sm)' : 'none',
                   cursor: 'pointer',
-                }}>年繳 <span style={{ color: '#22543D' }}>省 12%</span></button>
+                }}>{b.billingYearly} <span style={{ color: '#22543D' }}>{b.yearlyDiscount}</span></button>
             </div>
           </div>
 
@@ -679,23 +682,19 @@ function BillingTab({ user }: { user: UserData }) {
               <div className="rounded-xl p-5" style={{ border: '2px solid var(--color-primary)', background: 'var(--color-primary-light)' }}>
                 <div className="flex items-baseline gap-1 mb-1">
                   <span className="font-bold text-2xl" style={{ color: 'var(--color-primary)' }}>Pro</span>
-                  <span className="text-xs font-semibold" style={{ color: 'var(--color-primary)' }}>個人創作者</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--color-primary)' }}>{b.proTag}</span>
                 </div>
                 <div className="mb-3">
                   <span className="font-bold text-3xl" style={{ color: 'var(--color-text-primary)' }}>NT${proPrice}</span>
-                  <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}> /月</span>
+                  <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{b.perMonth}</span>
                 </div>
                 <ul className="space-y-1.5 text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>
-                  <li>10 個分頁、每頁 20 區塊</li>
-                  <li>90 天分析資料</li>
-                  <li>抽成降為 5%</li>
-                  <li>3 位團隊成員</li>
-                  <li>所有區塊類型</li>
+                  {b.proFeatures.map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
                 <button onClick={() => handleUpgrade('pro')} disabled={upgrading !== null}
                   className="w-full rounded-lg py-2.5 font-bold text-sm"
                   style={{ background: 'var(--color-primary)', color: 'white', border: 'none', cursor: 'pointer', opacity: upgrading ? 0.5 : 1 }}>
-                  {upgrading === 'pro' ? '跳轉中...' : `升級 Pro — NT$${proPrice}/月`}
+                  {upgrading === 'pro' ? b.redirecting : b.upgradeProBtn.replace('{price}', String(proPrice))}
                 </button>
               </div>
             )}
@@ -704,30 +703,25 @@ function BillingTab({ user }: { user: UserData }) {
             <div className="rounded-xl p-5" style={{ border: '2px solid #1A202C', background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', color: 'white' }}>
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="font-bold text-2xl" style={{ color: '#F6E05E' }}>Premium</span>
-                <span className="text-xs font-semibold opacity-70">小型品牌</span>
+                <span className="text-xs font-semibold opacity-70">{b.premiumTag}</span>
               </div>
               <div className="mb-3">
                 <span className="font-bold text-3xl">NT${premiumPrice}</span>
-                <span className="text-sm opacity-70"> /月</span>
+                <span className="text-sm opacity-70">{b.perMonth}</span>
               </div>
               <ul className="space-y-1.5 text-sm mb-5 opacity-90">
-                <li>無限分頁與區塊</li>
-                <li>無限分析資料</li>
-                <li>抽成降為 2%</li>
-                <li>無限團隊成員</li>
-                <li>自訂網域 / favicon / CSS</li>
-                <li>優先客服</li>
+                {b.premiumFeatures.map((f, i) => <li key={i}>{f}</li>)}
               </ul>
               <button onClick={() => handleUpgrade('premium')} disabled={upgrading !== null}
                 className="w-full rounded-lg py-2.5 font-bold text-sm"
                 style={{ background: '#F6E05E', color: '#1A202C', border: 'none', cursor: 'pointer', opacity: upgrading ? 0.5 : 1 }}>
-                {upgrading === 'premium' ? '跳轉中...' : `升級 Premium — NT$${premiumPrice}/月`}
+                {upgrading === 'premium' ? b.redirecting : b.upgradePremiumBtn.replace('{price}', String(premiumPrice))}
               </button>
             </div>
           </div>
 
           <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
-            想看完整功能比較？查看 <Link href="/pricing" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>定價頁</Link>
+            {b.compareLinkPrefix}<Link href="/pricing" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>{b.compareLinkText}</Link>
           </p>
         </div>
       )}
@@ -736,6 +730,9 @@ function BillingTab({ user }: { user: UserData }) {
 }
 
 function DangerTab({ username }: { username: string }) {
+  const { dict } = useDict()
+  const ex = dict.admin.settings.export
+  const dg = dict.admin.settings.danger
   const router = useRouter()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [confirmUsername, setConfirmUsername] = useState('')
@@ -770,32 +767,31 @@ function DangerTab({ username }: { username: string }) {
     <div className="space-y-6">
       {/* Export */}
       <div style={{ ...cardStyle, borderColor: 'var(--color-border)' }}>
-        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>匯出資料</h2>
-        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>下載你所有的頁面、區塊、訂閱者和訂單資料（JSON 格式）</p>
+        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>{ex.title}</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>{ex.subtitle}</p>
         <button onClick={handleExport} disabled={exporting}
           className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold"
           style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid #C3D9FF', cursor: 'pointer' }}>
-          <Download size={15} />{exporting ? '匯出中...' : '匯出全部資料'}
+          <Download size={15} />{exporting ? ex.running : ex.btn}
         </button>
       </div>
 
       {/* Delete account */}
       <div style={{ ...cardStyle, borderColor: '#FCA5A5' }}>
-        <h2 className="font-bold mb-2" style={{ color: '#E53E3E', fontSize: 17 }}>刪除帳號</h2>
-        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
-          永久刪除你的帳號和所有相關資料。此操作<strong>無法復原</strong>。
-        </p>
+        <h2 className="font-bold mb-2" style={{ color: '#E53E3E', fontSize: 17 }}>{dg.title}</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}
+          dangerouslySetInnerHTML={{ __html: dg.subtitle }} />
 
         {!showDeleteConfirm ? (
           <button onClick={() => setShowDeleteConfirm(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold"
             style={{ background: '#FFF5F5', color: '#E53E3E', border: '1px solid #FCA5A5', cursor: 'pointer' }}>
-            <Trash2 size={15} />刪除我的帳號
+            <Trash2 size={15} />{dg.btn}
           </button>
         ) : (
           <div className="rounded-xl p-4" style={{ background: '#FFF5F5', border: '1px solid #FCA5A5' }}>
             <p className="text-sm mb-3" style={{ color: '#E53E3E' }}>
-              請輸入你的用戶名稱 <strong>{username}</strong> 以確認刪除：
+              {dg.confirmPrefix}<strong>{username}</strong>{dg.confirmSuffix}
             </p>
             <input value={confirmUsername} onChange={e => setConfirmUsername(e.target.value)}
               placeholder={username} className="mb-3"
@@ -804,12 +800,12 @@ function DangerTab({ username }: { username: string }) {
               <button onClick={() => { setShowDeleteConfirm(false); setConfirmUsername('') }}
                 className="px-4 py-2 rounded-lg text-sm font-semibold"
                 style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                取消
+                {dg.cancel}
               </button>
               <button onClick={handleDelete} disabled={deleting || confirmUsername !== username}
                 className="px-4 py-2 rounded-lg text-sm font-semibold"
                 style={{ background: '#E53E3E', color: 'white', border: 'none', cursor: 'pointer', opacity: (deleting || confirmUsername !== username) ? 0.5 : 1 }}>
-                {deleting ? '刪除中...' : '確認刪除'}
+                {deleting ? dg.deleting : dg.confirmBtn}
               </button>
             </div>
           </div>

@@ -15,6 +15,7 @@
 import { useState } from 'react'
 import { X, Link2, Loader2, Download as DownloadIcon, Check, AlertTriangle, ExternalLink, Eye, Palette, Share2 } from 'lucide-react'
 import type { ImportedProfile, ImportedBlock, ImportedSocialLink } from '@/lib/importers/types'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {
   pageId: string | null
@@ -35,6 +36,8 @@ interface ApplyResult {
 }
 
 export function ImportModal({ pageId, onClose, onImported }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.importer
   const [step, setStep] = useState<Step>('input')
   const [sourceUrl, setSourceUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -60,7 +63,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? '匯入失敗')
+        setError(data.error ?? t.fail)
         setStep('input')
         return
       }
@@ -70,7 +73,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
       setSocialSelected(p.socialLinks.map(() => true))
       setStep('preview')
     } catch (err) {
-      setError(err instanceof Error ? err.message : '網路錯誤')
+      setError(err instanceof Error ? err.message : t.networkError)
       setStep('input')
     }
   }
@@ -96,7 +99,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? '匯入失敗')
+        setError(data.error ?? t.fail)
         setStep('preview')
         return
       }
@@ -104,7 +107,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
       setStep('done')
       onImported()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '網路錯誤')
+      setError(err instanceof Error ? err.message : t.networkError)
       setStep('preview')
     }
   }
@@ -132,10 +135,10 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
             </div>
             <div>
               <h2 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
-                從 Linktree / Portaly 匯入
+                {t.title}
               </h2>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                一鍵搬家,保留原有區塊與社群連結
+                {t.subtitle}
               </p>
             </div>
           </div>
@@ -155,7 +158,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                  貼上原本的 Linktree / Portaly 網址
+                  {t.urlLabel}
                 </label>
                 <div className="relative">
                   <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
@@ -170,7 +173,16 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                   />
                 </div>
                 <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                  目前支援 <code>linktr.ee</code> 與 <code>portaly.cc</code>
+                  {/* Render two `<code>` placeholders by splitting on the {linktree}/{portaly} markers. */}
+                  {(() => {
+                    const parts = t.urlHint
+                      .replace('{linktree}', '\x01linktr.ee\x01')
+                      .replace('{portaly}', '\x01portaly.cc\x01')
+                      .split('\x01')
+                    return parts.map((p, i) =>
+                      i % 2 === 1 ? <code key={i}>{p}</code> : <span key={i}>{p}</span>
+                    )
+                  })()}
                 </p>
               </div>
 
@@ -186,27 +198,27 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                   scrub their own DB rows without needing to ping support. */}
               <details className="rounded-lg p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
                 <summary className="cursor-pointer text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                  之前匯入結果不對?清理舊資料
+                  {t.cleanupSummary}
                 </summary>
                 <p className="text-xs mt-2 mb-2" style={{ color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                  早期版本匯入 Portaly 時可能把 CSS 樣式抓進 block 標題。點下方按鈕可一鍵清除受影響的 block。
+                  {t.cleanupHint}
                 </p>
                 <button onClick={async () => {
                     try {
                       const res = await fetch('/api/account/cleanup-imports', { method: 'POST' })
                       const data = await res.json()
                       if (res.ok) {
-                        alert(`已清理 ${data.fixed} 個、刪除 ${data.deleted} 個受影響的 block`)
+                        alert(t.cleanupSuccess.replace('{fixed}', String(data.fixed)).replace('{deleted}', String(data.deleted)))
                       } else {
-                        alert(`清理失敗:${data.error ?? '未知錯誤'}`)
+                        alert(t.cleanupFailed.replace('{error}', data.error ?? t.cleanupUnknown))
                       }
                     } catch (err) {
-                      alert(`清理失敗:${err instanceof Error ? err.message : '網路錯誤'}`)
+                      alert(t.cleanupFailed.replace('{error}', err instanceof Error ? err.message : t.networkError))
                     }
                   }}
                   className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                   style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-primary)' }}>
-                  一鍵清理
+                  {t.cleanupBtn}
                 </button>
               </details>
             </div>
@@ -216,8 +228,8 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
           {step === 'loading' && (
             <div className="py-12 flex flex-col items-center">
               <Loader2 size={28} className="animate-spin mb-3" style={{ color: 'var(--color-primary)' }} />
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>正在抓取公開資料…</p>
-              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>這通常需要 3–5 秒</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{t.fetchingTitle}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{t.fetchingHint}</p>
             </div>
           )}
 
@@ -228,30 +240,30 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
               {(profile.name || profile.bio || profile.avatarUrl) && (
                 <section>
                   <h3 className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                    個人資料
+                    {t.profileHeader}
                   </h3>
                   <div className="space-y-2 p-3 rounded-lg" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                     {profile.name && (
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" checked={importName} onChange={() => setImportName(v => !v)} className="w-4 h-4" style={{ accentColor: 'var(--color-primary)' }} />
-                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>名稱:<b className="ml-1">{profile.name}</b></span>
+                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{t.labelName}<b className="ml-1">{profile.name}</b></span>
                       </label>
                     )}
                     {profile.bio && (
                       <label className="flex items-start gap-2 cursor-pointer">
                         <input type="checkbox" checked={importBio} onChange={() => setImportBio(v => !v)} className="w-4 h-4 mt-0.5" style={{ accentColor: 'var(--color-primary)' }} />
-                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Bio:<span className="ml-1">{profile.bio}</span></span>
+                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{t.labelBio}<span className="ml-1">{profile.bio}</span></span>
                       </label>
                     )}
                     {profile.avatarUrl && (
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" checked={importAvatar} onChange={() => setImportAvatar(v => !v)} className="w-4 h-4" style={{ accentColor: 'var(--color-primary)' }} />
-                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>頭像</span>
+                        <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{t.labelAvatar}</span>
                         <img src={profile.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" />
                       </label>
                     )}
                     <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
-                      只會寫入目前為空的欄位,不會覆蓋你已經填過的內容
+                      {t.profileFootnote}
                     </p>
                   </div>
                 </section>
@@ -261,17 +273,17 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
               <section>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                    區塊 ({profile.blocks.length})
+                    {t.blocksHeader.replace('{n}', String(profile.blocks.length))}
                   </h3>
                   <div className="flex gap-2">
                     <button onClick={() => setBlockSelected(profile.blocks.map(() => true))}
-                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>全選</button>
+                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>{t.selectAll}</button>
                     <button onClick={() => setBlockSelected(profile.blocks.map(() => false))}
-                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>全不選</button>
+                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>{t.deselectAll}</button>
                   </div>
                 </div>
                 {profile.blocks.length === 0 ? (
-                  <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>沒有偵測到區塊</p>
+                  <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>{t.noBlocks}</p>
                 ) : (
                   <div className="space-y-1.5">
                     {profile.blocks.map((b: ImportedBlock, i: number) => {
@@ -284,7 +296,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                             <div className="flex items-center gap-1.5">
                               <span className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{b.title}</span>
                               {b.downgraded && (
-                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: '#FEF3C7', color: '#92400E' }}>降級為連結</span>
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: '#FEF3C7', color: '#92400E' }}>{t.downgraded}</span>
                               )}
                             </div>
                             {url && (
@@ -304,17 +316,17 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
               <section>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                    社群連結 ({profile.socialLinks.length})
+                    {t.socialHeader.replace('{n}', String(profile.socialLinks.length))}
                   </h3>
                   <div className="flex gap-2">
                     <button onClick={() => setSocialSelected(profile.socialLinks.map(() => true))}
-                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>全選</button>
+                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>{t.selectAll}</button>
                     <button onClick={() => setSocialSelected(profile.socialLinks.map(() => false))}
-                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>全不選</button>
+                      className="text-xs font-semibold" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>{t.deselectAll}</button>
                   </div>
                 </div>
                 {profile.socialLinks.length === 0 ? (
-                  <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>沒有偵測到社群連結</p>
+                  <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>{t.noSocials}</p>
                 ) : (
                   <div className="space-y-1.5">
                     {profile.socialLinks.map((s: ImportedSocialLink, i: number) => (
@@ -342,7 +354,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
           {step === 'applying' && (
             <div className="py-12 flex flex-col items-center">
               <Loader2 size={28} className="animate-spin mb-3" style={{ color: 'var(--color-primary)' }} />
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>正在匯入…</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{t.applying}</p>
             </div>
           )}
 
@@ -352,15 +364,18 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
               <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: '#DCFCE7' }}>
                 <Check size={24} style={{ color: '#16A34A' }} />
               </div>
-              <h3 className="font-bold text-base mb-1" style={{ color: 'var(--color-text-primary)' }}>匯入完成!</h3>
-              <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>
-                已新增 <b>{result.blocksCreated}</b> 個區塊、<b>{result.socialsCreated}</b> 個社群連結
-              </p>
+              <h3 className="font-bold text-base mb-1" style={{ color: 'var(--color-text-primary)' }}>{t.doneTitle}</h3>
+              <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}
+                dangerouslySetInnerHTML={{
+                  __html: t.doneSummary
+                    .replace('{blocks}', String(result.blocksCreated))
+                    .replace('{socials}', String(result.socialsCreated)),
+                }} />
               {(result.skippedByType > 0 || result.truncated > 0) && (
                 <div className="p-3 rounded-lg text-xs text-left mb-4" style={{ background: '#FEF3C7', border: '1px solid #FCD34D', color: '#92400E' }}>
-                  {result.skippedByType > 0 && <div>· {result.skippedByType} 個區塊因方案限制被略過</div>}
+                  {result.skippedByType > 0 && <div>{t.skipped.replace('{n}', String(result.skippedByType))}</div>}
                   {result.truncated > 0 && (
-                    <div>· {result.truncated} 個區塊超過頁面上限 ({result.maxBlocksPerPage})。升級 Pro 可匯入更多。</div>
+                    <div>{t.truncated.replace('{n}', String(result.truncated)).replace('{max}', String(result.maxBlocksPerPage))}</div>
                   )}
                 </div>
               )}
@@ -372,13 +387,13 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                   className="flex flex-col items-center gap-1 rounded-xl p-3 transition-colors"
                   style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF', color: 'var(--color-primary)', textDecoration: 'none' }}>
                   <Eye size={16} />
-                  <span className="text-xs font-bold">看公開頁</span>
+                  <span className="text-xs font-bold">{t.ctaView}</span>
                 </a>
                 <button onClick={() => { onClose() }}
                   className="flex flex-col items-center gap-1 rounded-xl p-3"
                   style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
                   <Palette size={16} />
-                  <span className="text-xs font-bold">調整外觀</span>
+                  <span className="text-xs font-bold">{t.ctaTheme}</span>
                 </button>
                 <button onClick={async () => {
                     if (typeof window !== 'undefined') {
@@ -389,7 +404,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                   className="flex flex-col items-center gap-1 rounded-xl p-3"
                   style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
                   <Share2 size={16} />
-                  <span className="text-xs font-bold">複製連結</span>
+                  <span className="text-xs font-bold">{t.ctaShare}</span>
                 </button>
               </div>
             </div>
@@ -402,11 +417,11 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
             <>
               <button onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg"
                 style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                取消
+                {t.cancelBtn}
               </button>
               <button onClick={handleFetchPreview} disabled={!sourceUrl.trim()} className="btn-primary"
                 style={{ fontSize: 14, padding: '8px 18px', opacity: sourceUrl.trim() ? 1 : 0.5 }}>
-                預覽內容
+                {t.previewBtn}
               </button>
             </>
           )}
@@ -414,17 +429,17 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
             <>
               <button onClick={() => setStep('input')} className="text-sm font-semibold px-4 py-2 rounded-lg"
                 style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                返回
+                {t.backBtn}
               </button>
               <button onClick={handleApply} disabled={!pageId} className="btn-primary"
                 style={{ fontSize: 14, padding: '8px 18px', opacity: pageId ? 1 : 0.5 }}>
-                確認匯入
+                {t.applyBtn}
               </button>
             </>
           )}
           {step === 'done' && (
             <button onClick={onClose} className="btn-primary" style={{ fontSize: 14, padding: '8px 18px' }}>
-              完成
+              {t.doneBtn}
             </button>
           )}
         </div>

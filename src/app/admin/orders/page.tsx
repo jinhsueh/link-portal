@@ -9,6 +9,7 @@ import {
 import Link from 'next/link'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { fromStripeAmount } from '@/lib/stripe'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Order {
   id: string
@@ -31,11 +32,11 @@ interface OrdersResponse {
   commissionByCode: Record<string, number>
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  paid:     { label: '已付款', color: '#22543D', bg: '#C6F6D5', icon: PackageCheck },
-  pending:  { label: '待付款', color: '#744210', bg: '#FEFCBF', icon: Clock },
-  failed:   { label: '已取消', color: '#742A2A', bg: '#FED7D7', icon: XCircle },
-  refunded: { label: '已退款', color: '#2A4365', bg: '#BEE3F8', icon: RotateCcw },
+const STATUS_CONFIG: Record<string, { color: string; bg: string; icon: React.ElementType }> = {
+  paid:     { color: '#22543D', bg: '#C6F6D5', icon: PackageCheck },
+  pending:  { color: '#744210', bg: '#FEFCBF', icon: Clock },
+  failed:   { color: '#742A2A', bg: '#FED7D7', icon: XCircle },
+  refunded: { color: '#2A4365', bg: '#BEE3F8', icon: RotateCcw },
 }
 
 const CURRENCY_LABELS: Record<string, string> = {
@@ -47,8 +48,8 @@ function formatAmount(amount: number, currency: string) {
   return `${label}${fromStripeAmount(amount).toLocaleString()}`
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString('zh-TW', {
+function formatDate(iso: string, locale?: string) {
+  return new Date(iso).toLocaleString(locale, {
     month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit',
   })
@@ -56,6 +57,11 @@ function formatDate(iso: string) {
 
 export default function OrdersPage() {
   const router = useRouter()
+  const { dict, locale } = useDict()
+  const o = dict.admin.orders
+  const STATUS_LABELS: Record<string, string> = {
+    paid: o.statusPaid, pending: o.statusPending, failed: o.statusFailed, refunded: o.statusRefunded,
+  }
   const [data, setData] = useState<OrdersResponse | null>(null)
   const [username, setUsername] = useState('')
   const [role, setRole] = useState('')
@@ -123,8 +129,8 @@ export default function OrdersPage() {
 
         {/* Page title */}
         <div className="mb-6">
-          <h1 className="font-bold text-2xl" style={{ color: 'var(--color-text-primary)' }}>訂單管理</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>所有透過 Stripe 金流產生的訂單記錄</p>
+          <h1 className="font-bold text-2xl" style={{ color: 'var(--color-text-primary)' }}>{o.pageTitle}</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>{o.subtitle}</p>
         </div>
 
         {/* Premium upsell banner */}
@@ -133,15 +139,15 @@ export default function OrdersPage() {
             style={{ background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 100%)', border: '1px solid #4A5568', color: 'white' }}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-bold text-base mb-1">升級 Premium 可省更多抽成</p>
+                <p className="font-bold text-base mb-1">{o.upsellTitle}</p>
                 <p className="text-sm opacity-80">
-                  目前 Pro 抽成 5%，本期已扣 {totalCommission}。升級 Premium 抽成降至 2%，月銷售 NT$8,300+ 即可回本。
+                  {o.upsellBody.replace('{commission}', totalCommission)}
                 </p>
               </div>
               <Link href="/admin/settings?tab=billing&upgrade=premium"
                 className="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap"
                 style={{ background: '#F6E05E', color: '#1A202C' }}>
-                升級 Premium
+                {o.upsellBtn}
               </Link>
             </div>
           </div>
@@ -150,10 +156,10 @@ export default function OrdersPage() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { label: '總訂單', value: String(data?.total ?? 0), icon: ShoppingBag, color: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
-            { label: '成功付款', value: String(paidOrders.length), icon: PackageCheck, color: '#22543D', bg: '#C6F6D5' },
-            { label: '總收入', value: totalRevenue, icon: TrendingUp, color: '#22543D', bg: '#C6F6D5' },
-            { label: '已扣抽成', value: totalCommission, icon: TrendingUp, color: '#744210', bg: '#FEFCBF' },
+            { label: o.metricTotal, value: String(data?.total ?? 0), icon: ShoppingBag, color: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
+            { label: o.metricPaid, value: String(paidOrders.length), icon: PackageCheck, color: '#22543D', bg: '#C6F6D5' },
+            { label: o.metricRevenue, value: totalRevenue, icon: TrendingUp, color: '#22543D', bg: '#C6F6D5' },
+            { label: o.metricCommission, value: totalCommission, icon: TrendingUp, color: '#744210', bg: '#FEFCBF' },
           ].map(({ label, value, icon: Icon, color, bg }) => (
             <div key={label} className="rounded-2xl p-5" style={{ background: 'white', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)' }}>
               <div className="flex items-center gap-3 mb-3">
@@ -175,12 +181,12 @@ export default function OrdersPage() {
               style={{ background: 'var(--color-primary-light)' }}>
               <ShoppingBag size={24} style={{ color: 'var(--color-primary)' }} />
             </div>
-            <p className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>還沒有訂單</p>
+            <p className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>{o.emptyTitle}</p>
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              在頁面中加入「數位商品」區塊，訪客購買後訂單會顯示在這裡
+              {o.emptyHint}
             </p>
             <Link href="/admin" className="btn-primary inline-flex mt-5" style={{ fontSize: 14, padding: '10px 22px' }}>
-              去新增商品
+              {o.emptyBtn}
             </Link>
           </div>
         ) : (
@@ -192,11 +198,11 @@ export default function OrdersPage() {
                 color: 'var(--color-text-muted)',
                 borderBottom: '1px solid var(--color-border)',
               }}>
-              <span>商品</span>
-              <span>買家 Email</span>
-              <span>金額</span>
-              <span>狀態</span>
-              <span>時間</span>
+              <span>{o.colProduct}</span>
+              <span>{o.colEmail}</span>
+              <span>{o.colAmount}</span>
+              <span>{o.colStatus}</span>
+              <span>{o.colDate}</span>
             </div>
 
             {data.orders.map((order, i) => {
@@ -215,7 +221,7 @@ export default function OrdersPage() {
                   {/* Product title */}
                   <div className="min-w-0">
                     <p className="font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>
-                      {order.productTitle ?? '未命名商品'}
+                      {order.productTitle ?? o.untitledProduct}
                     </p>
                     <p className="text-xs mt-0.5 font-mono truncate" style={{ color: 'var(--color-text-muted)' }}>
                       {order.stripeSessionId.slice(0, 24)}…
@@ -236,11 +242,11 @@ export default function OrdersPage() {
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold w-fit"
                     style={{ background: cfg.bg, color: cfg.color }}>
                     <Icon size={11} />
-                    {cfg.label}
+                    {STATUS_LABELS[order.status] ?? order.status}
                   </span>
 
                   {/* Date */}
-                  <p style={{ color: 'var(--color-text-muted)' }}>{formatDate(order.createdAt)}</p>
+                  <p style={{ color: 'var(--color-text-muted)' }}>{formatDate(order.createdAt, locale)}</p>
                 </div>
               )
             })}
