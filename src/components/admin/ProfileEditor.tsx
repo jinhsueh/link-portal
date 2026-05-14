@@ -5,6 +5,7 @@ import { Camera, X, Save, Check, ChevronDown, ChevronUp, AlertCircle } from 'luc
 import { SocialLinksEditor, type SocialLinksEditorHandle } from '@/components/admin/SocialLinksEditor'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 import { toast } from '@/components/ui/Toast'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface SocialLinkItem {
   id: string
@@ -33,6 +34,8 @@ interface Props {
 }
 
 export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksChange, defaultExpanded = false }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.profileEditor
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [name, setName] = useState(profile.name ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
@@ -172,9 +175,9 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
       onUpdate()
-      toast.success('已儲存')
+      toast.success(dict.toast.saved)
     } catch {
-      toast.error('儲存失敗,請再試一次')
+      toast.error(dict.toast.saveFailedRetry)
     }
     setSaving(false)
   }
@@ -214,7 +217,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
             {name || profile.username}
           </p>
           <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>
-            {bio || '點擊編輯個人資料與社群連結'}
+            {bio || t.header}
           </p>
         </div>
         {/* Social icons preview (collapsed) */}
@@ -237,7 +240,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
         <div className="px-5 pb-5 space-y-5" style={{ borderTop: '1px solid var(--color-border)' }}>
           {/* Banner */}
           <div className="pt-4">
-            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>頁面橫幅(選填)</p>
+            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{t.banner}</p>
             <div className="relative group rounded-xl overflow-hidden" style={{
               border: '1px solid var(--color-border)',
               background: bannerUrl ? 'transparent' : 'var(--color-surface)',
@@ -248,7 +251,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs"
                   style={{ color: 'var(--color-text-muted)' }}>
-                  尚未上傳橫幅
+                  {t.bannerEmpty}
                 </div>
               )}
               <button onClick={() => bannerInputRef.current?.click()} disabled={uploadingBanner}
@@ -268,7 +271,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
               <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handlePickBanner} />
             </div>
             <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-              建議尺寸 1200×400(3:1 寬比),會顯示在公開頁最上方。
+              {t.bannerHint}
             </p>
           </div>
 
@@ -301,16 +304,16 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePickAvatar} />
             </div>
             <div>
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>大頭照</p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>JPG、PNG、GIF、WebP，最大 4MB</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{t.avatar}</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{t.avatarHint}</p>
             </div>
           </div>
 
           {/* Name + Bio */}
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>顯示名稱</label>
-              <input value={name} onChange={e => { setName(e.target.value); onLiveChange?.({ name: e.target.value, bio, avatarUrl }) }} placeholder="你的名字"
+              <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{t.nameLabel}</label>
+              <input value={name} onChange={e => { setName(e.target.value); onLiveChange?.({ name: e.target.value, bio, avatarUrl }) }} placeholder={t.namePlaceholder}
                 style={{
                   width: '100%', padding: '10px 14px', fontSize: 14,
                   border: '1px solid var(--color-border)', borderRadius: 10,
@@ -320,8 +323,8 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
                 onBlur={e => (e.target.style.borderColor = 'var(--color-border)')} />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>個人簡介</label>
-              <textarea value={bio} onChange={e => { setBio(e.target.value); onLiveChange?.({ name, bio: e.target.value, avatarUrl }) }} placeholder="介紹自己..." rows={2}
+              <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{t.bioLabel}</label>
+              <textarea value={bio} onChange={e => { setBio(e.target.value); onLiveChange?.({ name, bio: e.target.value, avatarUrl }) }} placeholder={t.bioPlaceholder} rows={2}
                 style={{
                   width: '100%', padding: '10px 14px', fontSize: 14, resize: 'none',
                   border: '1px solid var(--color-border)', borderRadius: 10,
@@ -340,7 +343,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
           {/* Social Links — embedded mode means SocialLinksEditor renders
               without its own save/cancel; the parent's bar drives both. */}
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>社群連結</label>
+            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{t.socialLinksLabel}</label>
             <SocialLinksEditor
               ref={socialEditorRef}
               links={profile.socialLinks}
@@ -363,14 +366,14 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
               <div className="flex items-center gap-2 min-w-0">
                 <AlertCircle size={16} style={{ color: '#D97706', flexShrink: 0 }} />
                 <p className="text-sm font-semibold" style={{ color: '#92400E' }}>
-                  尚未儲存變動,記得按右側「全部儲存」
+                  {dict.admin.saveUnsaved}
                 </p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button onClick={handleCancelAll} disabled={saving}
                   className="text-sm font-semibold px-3 py-2 rounded-lg"
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-                  取消
+                  {dict.common.cancel}
                 </button>
                 <button onClick={handleSaveAll} disabled={saving}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold"
@@ -379,7 +382,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
                     color: 'white', border: 'none', cursor: 'pointer',
                     opacity: saving ? 0.7 : 1,
                   }}>
-                  {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : <><Save size={14} />全部儲存</>}
+                  {saved ? <><Check size={14} />{dict.common.saved}</> : saving ? dict.common.saving : <><Save size={14} />{dict.admin.saveAll}</>}
                 </button>
               </div>
             </div>
@@ -393,7 +396,7 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
           file={pendingAvatar}
           aspect={1}
           cropShape="round"
-          title="裁切大頭照"
+          title={t.avatar}
           onComplete={uploadCroppedAvatar}
           onCancel={() => {
             setPendingAvatar(null)

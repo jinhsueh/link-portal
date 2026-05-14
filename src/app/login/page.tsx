@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Link2, ArrowRight, Lock, Check, X } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'reserved'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { dict } = useDict()
+  const t = dict.auth
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +24,7 @@ export default function LoginPage() {
   // Only useful for signup (i.e. login mode); shows whether the entered
   // username is free, taken, invalid, or reserved.
   useEffect(() => {
-    const t = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       if (mode !== 'login') {
         setUsernameStatus('idle')
         return
@@ -46,7 +49,7 @@ export default function LoginPage() {
         else setUsernameStatus('taken')
       } catch { setUsernameStatus('idle') }
     }, 350)
-    return () => clearTimeout(t)
+    return () => clearTimeout(timer)
   }, [username, mode])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,7 +59,7 @@ export default function LoginPage() {
 
     if (mode === 'setPassword') {
       if (password !== confirmPassword) {
-        setError('兩次密碼不一致')
+        setError(t.passwordMismatch)
         setLoading(false)
         return
       }
@@ -66,7 +69,7 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password, setPassword: true }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || '發生錯誤'); setLoading(false); return }
+      if (!res.ok) { setError(data.error || t.genericError); setLoading(false); return }
       router.push('/admin')
       return
     }
@@ -86,7 +89,7 @@ export default function LoginPage() {
       return
     }
 
-    if (!res.ok) { setError(data.error || '發生錯誤'); setLoading(false); return }
+    if (!res.ok) { setError(data.error || t.genericError); setLoading(false); return }
     router.push('/admin')
   }
 
@@ -109,7 +112,7 @@ export default function LoginPage() {
           <h1 className="font-bold text-2xl" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
             Beam
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>建立你的個人傳送門</p>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{t.brandSubtitle}</p>
         </div>
 
         {/* Card */}
@@ -119,38 +122,38 @@ export default function LoginPage() {
             <>
               <div className="flex items-center gap-2 mb-2">
                 <Lock size={18} style={{ color: 'var(--color-primary)' }} />
-                <h2 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>設定密碼</h2>
+                <h2 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{t.setPasswordTitle}</h2>
               </div>
               <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
-                帳號 <strong>{username}</strong> 尚未設定密碼，請立即設定。
+                <strong>{username}</strong> {t.setPasswordSubtitle}
               </p>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>新密碼</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{t.newPasswordLabel}</label>
                   <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                    required minLength={6} placeholder="至少 6 個字元" style={inputStyle} />
+                    required minLength={6} placeholder={t.passwordMin} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>確認密碼</label>
+                  <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>{t.confirmPasswordLabel}</label>
                   <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-                    required minLength={6} placeholder="再輸入一次" style={inputStyle} />
+                    required minLength={6} placeholder={t.passwordRetype} style={inputStyle} />
                 </div>
                 {error && (
                   <p className="text-sm px-4 py-3 rounded-xl" style={{ color: '#E53E3E', background: '#FFF5F5', border: '1px solid #FED7D7' }}>{error}</p>
                 )}
                 <button type="submit" disabled={loading} className="btn-primary w-full justify-center"
                   style={{ padding: '13px 28px', opacity: loading ? 0.5 : 1 }}>
-                  {loading ? '處理中...' : '設定密碼並登入'}
+                  {loading ? dict.common.processing : t.submitSetPassword}
                 </button>
               </form>
             </>
           ) : (
             <>
-              <h2 className="font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>登入 / 註冊</h2>
+              <h2 className="font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>{t.loginRegisterTitle}</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    用戶名稱 <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>(英數字、底線、減號、點)</span>
+                    {t.usernameLabelExt} <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>({t.usernameAllowedChars})</span>
                   </label>
                   <div className="flex items-center overflow-hidden" style={{
                     border: `1px solid ${
@@ -169,7 +172,7 @@ export default function LoginPage() {
                       className="flex-1 px-3 py-3 text-sm focus:outline-none"
                       style={{ background: 'white', color: 'var(--color-text-primary)' }} />
                     {usernameStatus === 'checking' && (
-                      <span className="px-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>檢查中…</span>
+                      <span className="px-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>{t.checking}</span>
                     )}
                     {usernameStatus === 'available' && (
                       <Check size={16} className="mr-3" style={{ color: '#10B981' }} />
@@ -180,34 +183,34 @@ export default function LoginPage() {
                   </div>
                   {usernameStatus === 'taken' && (
                     <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>
-                      此用戶名已被使用 — 若是你的帳號,可繼續登入;否則請換一個
+                      {t.usernameTakenSwitch}
                     </p>
                   )}
                   {usernameStatus === 'reserved' && (
-                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>此用戶名為系統保留,請換一個</p>
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>{t.usernameReserved}</p>
                   )}
                   {usernameStatus === 'invalid' && username.length >= 3 && (
-                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>只能使用英數、底線、減號、點,3-30 字。點不能在開頭/結尾或連續</p>
+                    <p className="text-xs mt-1.5" style={{ color: '#EF4444' }}>{t.usernameRules}</p>
                   )}
                   {usernameStatus === 'available' && (
-                    <p className="text-xs mt-1.5" style={{ color: '#10B981' }}>✓ 可以使用</p>
+                    <p className="text-xs mt-1.5" style={{ color: '#10B981' }}>{t.usernameAvailable}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    Email <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>（註冊用，登入可略）</span>
+                    {t.emailLabel} <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>{t.emailNote}</span>
                   </label>
                   <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    placeholder="you@example.com" style={inputStyle} />
+                    placeholder={t.emailPlaceholder} style={inputStyle} />
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    密碼
+                    {t.passwordLabel}
                   </label>
                   <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                    required minLength={6} placeholder="至少 6 個字元" style={inputStyle} />
+                    required minLength={6} placeholder={t.passwordMin} style={inputStyle} />
                 </div>
 
                 {error && (
@@ -217,13 +220,13 @@ export default function LoginPage() {
                 <button type="submit" disabled={loading || username.length < 3}
                   className="btn-primary w-full justify-center"
                   style={{ padding: '13px 28px', opacity: (loading || username.length < 3) ? 0.5 : 1 }}>
-                  {loading ? '處理中...' : '進入後台'}
+                  {loading ? dict.common.processing : t.submitProceed}
                   {!loading && <ArrowRight size={16} />}
                 </button>
               </form>
 
               <p className="text-xs text-center mt-4" style={{ color: 'var(--color-text-muted)' }}>
-                首次使用？輸入用戶名和密碼即可註冊
+                {t.firstTimeHint}
               </p>
             </>
           )}

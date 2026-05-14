@@ -28,7 +28,21 @@
     "signIn": "เข้าสู่ระบบ",
     "signUp": "สมัครใหม่",
     "signOut": "ออกจากระบบ",
-    "settings": "ตั้งค่า"
+    "settings": "ตั้งค่า",
+    "remove": "ลบออก",
+    "add": "เพิ่ม",
+    "upload": "อัปโหลด",
+    "uploading": "กำลังอัปโหลด…",
+    "or": "หรือ",
+    "name": "ชื่อ",
+    "email": "อีเมล",
+    "username": "ชื่อผู้ใช้",
+    "password": "รหัสผ่าน",
+    "title": "หัวข้อ",
+    "description": "คำอธิบาย",
+    "url": "URL",
+    "placeholder": "ข้อความตัวอย่าง",
+    "processing": "กำลังประมวลผล…"
   },
 
   "nav": {
@@ -158,6 +172,25 @@
     "unpin": "เลิกปักหมุด",
     "saveUnsaved": "มีการแก้ไขที่ยังไม่บันทึก กด \"บันทึกทั้งหมด\" ทางขวา",
     "saveAll": "บันทึกทั้งหมด",
+    "batch": "ทำพร้อมกันหลายอัน",
+    "export": "ส่งออกบล็อก",
+    "import": "นำเข้า",
+    "content": "เนื้อหา",
+    "appearance": "ลุค",
+    "preview": "พรีวิว",
+    "mobile": "มือถือ",
+    "desktop": "คอมพิวเตอร์",
+    "livePreview": "พรีวิวเรียลไทม์",
+    "openInNewTab": "เปิดเต็มหน้าในแท็บใหม่",
+    "pageTabs": {
+      "manage": "จัดการหน้า",
+      "add": "เพิ่มหน้า",
+      "rename": "เปลี่ยนชื่อ",
+      "setDefault": "ตั้งเป็นค่าเริ่มต้น",
+      "setPassword": "ตั้งรหัสผ่าน",
+      "removePassword": "เอารหัสผ่านออก",
+      "delete": "ลบหน้านี้"
+    },
 
     "onboarding": {
       "title": "เริ่มต้นด่วน",
@@ -172,6 +205,80 @@
       "actionSettings": "ไปที่ตั้งค่า",
       "actionAppearance": "ไปที่ลุค",
       "actionCopy":     "คัดลอกลิงก์"
+    },
+
+    "profileEditor": {
+      "header": "คลิกเพื่อแก้ไขโปรไฟล์และโซเชียล",
+      "banner": "แบนเนอร์ของหน้า (ไม่บังคับ)",
+      "bannerHint": "แนะนำ 1200×400 (3:1) แสดงด้านบนสุดของหน้าสาธารณะ",
+      "bannerEmpty": "ยังไม่ได้อัปโหลดแบนเนอร์",
+      "avatar": "รูปโปรไฟล์",
+      "avatarHint": "JPG, PNG, GIF, WebP สูงสุด 4MB",
+      "nameLabel": "ชื่อแสดง",
+      "namePlaceholder": "ชื่อของคุณ",
+      "bioLabel": "เกี่ยวกับฉัน",
+      "bioPlaceholder": "แนะนำตัว…",
+      "socialLinksLabel": "ลิงก์โซเชียล",
+      "addSocial": "เพิ่มลิงก์โซเชียล",
+      "socialPlaceholder": "วาง URL โซเชียล",
+      "customLabel": "ป้ายชื่อกำหนดเอง (ไม่บังคับ)",
+      "socialHelp": "ลากตัวจับเพื่อจัดเรียง แตะอัปโหลดเพื่อใส่ไอคอน",
+      "uploadIcon": "อัปโหลดไอคอน",
+      "iconHint": "ขนาด 1:1, 512×512 ขึ้นไป (จะถูกตัดเป็นวงกลม) PNG / SVG พื้นโปร่งใสจะสวยที่สุด"
+    },
+
+    "themeEditor": {
+      "themeLabel": "ธีม",
+      "primaryColor": "สีแบรนด์",
+      "background": "พื้นหลัง",
+      "backgroundSolid": "สีเดียว",
+      "backgroundGradient": "ไล่ระดับ",
+      "backgroundImage": "รูปภาพ",
+      "buttonStyle": "สไตล์ปุ่ม",
+      "buttonOutline": "เส้นรอบ",
+      "buttonFilled": "สีทึบ",
+      "buttonSoft": "อ่อนโยน",
+      "buttonRadius": "รูปทรงมุม",
+      "buttonRounded": "มุมโค้ง",
+      "buttonPill": "พิลล์",
+      "buttonSquare": "มุมเหลี่ยม",
+      "fontStyle": "ฟอนต์",
+      "fontDefault": "ค่าเริ่มต้น",
+      "fontSerif": "เซริฟ",
+      "fontMono": "ฟอนต์ตายตัว",
+      "layoutLabel": "เลย์เอาต์",
+      "panelLabel": "แผงพื้นหลัง",
+      "panelNone": "ไม่มี",
+      "panelFrostedLight": "ฝ้าสีอ่อน",
+      "panelFrostedDark": "ฝ้าสีเข้ม",
+      "panelBrand": "ตามสีแบรนด์",
+      "panelCustom": "กำหนดเอง",
+      "cornerStyleLabel": "สไตล์มุม ✂️",
+      "cornerStyleHint": "เลือกการตัดมุมสำหรับการ์ดทุกบล็อก (ลิงก์, แบนเนอร์, สินค้า, คาร์รูเซล…)",
+      "cutTr": "ตัดมุมขวาบน",
+      "cutTl": "ตัดมุมซ้ายบน",
+      "cutBr": "ตัดมุมขวาล่าง",
+      "cutBl": "ตัดมุมซ้ายล่าง",
+      "cutDiagonal": "ตัดแนวทแยง",
+      "notched": "แบบตั๋ว",
+      "entranceLabel": "อนิเมชันเข้า 🎬",
+      "entranceHint": "การเคลื่อนไหวเมื่อบล็อกเข้าสู่มุมมอง ระบบเคารพการตั้งค่า reduced-motion อัตโนมัติ",
+      "entranceNone": "ไม่มี",
+      "entranceFade": "เฟด",
+      "entranceSlideUp": "เลื่อนขึ้น",
+      "entranceSlideLeft": "เลื่อนซ้าย",
+      "entranceSlideRight": "เลื่อนขวา",
+      "entranceScale": "ขยาย"
+    },
+
+    "addBlock": {
+      "title": "เพิ่มบล็อก",
+      "step1": "เลือกประเภทบล็อก",
+      "recommended": "แนะนำ",
+      "more": "เพิ่มเติม",
+      "step2": "ตั้งค่าบล็อก",
+      "submit": "เพิ่ม",
+      "selectType": "เลือกประเภทเพื่อดำเนินการต่อ"
     }
   },
 
@@ -187,7 +294,46 @@
     "submitLogin":     "เข้าสู่ระบบ",
     "submitSignup":    "สร้างบัญชี",
     "switchToSignup":  "ใหม่ที่นี่? สร้างบัญชี",
-    "switchToLogin":   "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"
+    "switchToLogin":   "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
+
+    "brandSubtitle":            "สร้างพอร์ทัลของคุณเอง",
+    "setPasswordTitle":         "ตั้งรหัสผ่าน",
+    "setPasswordSubtitle":      "ยังไม่มีรหัสผ่าน กรุณาตั้งทันที",
+    "newPasswordLabel":         "รหัสผ่านใหม่",
+    "confirmPasswordLabel":     "ยืนยันรหัสผ่าน",
+    "passwordMin":              "อย่างน้อย 6 ตัวอักษร",
+    "passwordRetype":           "พิมพ์อีกครั้ง",
+    "passwordMismatch":         "รหัสผ่านไม่ตรงกัน",
+    "genericError":             "เกิดข้อผิดพลาด",
+    "submitSetPassword":        "ตั้งรหัสผ่านและเข้าสู่ระบบ",
+    "loginRegisterTitle":       "เข้าสู่ระบบ / สมัครใหม่",
+    "usernameLabelExt":         "ชื่อผู้ใช้",
+    "usernameAllowedChars":     "ตัวอักษรอังกฤษ ตัวเลข _ - .",
+    "checking":                 "กำลังตรวจสอบ…",
+    "usernameTakenSwitch":      "ชื่อผู้ใช้นี้ถูกใช้แล้ว — ถ้าเป็นของคุณ ลงชื่อด้านล่างได้ มิฉะนั้นเลือกชื่ออื่น",
+    "usernameReserved":         "ชื่อผู้ใช้นี้ถูกสงวน",
+    "usernameRules":            "ตัวอักษรอังกฤษ ตัวเลข _ - . เท่านั้น 3-30 ตัวอักษร จุดห้ามอยู่หัว/ท้าย/ติดกัน",
+    "usernameAvailable":        "✓ ใช้ได้",
+    "emailNote":                "(สำหรับสมัครใหม่ ลงชื่อข้ามได้)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "เข้าหลังบ้าน",
+    "firstTimeHint":            "ครั้งแรก? กรอก username และรหัสผ่านเพื่อสมัครใหม่"
+  },
+
+  "toast": {
+    "saved": "บันทึกแล้ว",
+    "deleted": "ลบแล้ว",
+    "copiedLink": "คัดลอกลิงก์แล้ว",
+    "uploadSuccess": "อัปโหลดแล้ว",
+    "uploadFailed": "อัปโหลดล้มเหลว",
+    "applyTemplateSuccess": "ใช้ template แล้ว",
+    "movedTo": "ย้ายไปยัง",
+    "moveFailed": "ย้ายล้มเหลว กรุณาลองอีกครั้ง",
+    "scrapedImageSuccess": "ดึงรูปจาก URL แล้ว",
+    "scrapedImageFailed": "ดึงรูปไม่ได้",
+    "iconRemindSave": "อัปโหลดไอคอนแล้ว กด \"บันทึกทั้งหมด\" เพื่อยืนยัน",
+    "saveFailedRetry": "บันทึกล้มเหลว กรุณาลองอีกครั้ง",
+    "duplicateSocial": "URL นี้ถูกเพิ่มไปแล้ว"
   },
 
   "errors": {
@@ -198,6 +344,7 @@
     "saveFailed":       "บันทึกล้มเหลว",
     "usernameTaken":    "ชื่อผู้ใช้นี้ถูกใช้แล้ว",
     "usernameInvalid":  "รูปแบบชื่อผู้ใช้ไม่ถูกต้อง",
-    "duplicateSocial":  "URL นี้ถูกเพิ่มไปแล้ว"
+    "duplicateSocial":  "URL นี้ถูกเพิ่มไปแล้ว",
+    "checkoutFailed":   "เช็คเอาท์ล้มเหลว กรุณาลองภายหลัง"
   }
 }

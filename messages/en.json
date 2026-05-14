@@ -28,7 +28,21 @@
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign out",
-    "settings": "Settings"
+    "settings": "Settings",
+    "remove": "Remove",
+    "add": "Add",
+    "upload": "Upload",
+    "uploading": "Uploading…",
+    "or": "or",
+    "name": "Name",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "title": "Title",
+    "description": "Description",
+    "url": "URL",
+    "placeholder": "Placeholder",
+    "processing": "Processing…"
   },
 
   "nav": {
@@ -158,6 +172,25 @@
     "unpin": "Unpin",
     "saveUnsaved": "Unsaved changes. Click 'Save all' on the right.",
     "saveAll": "Save all",
+    "batch": "Batch",
+    "export": "Export blocks",
+    "import": "Import",
+    "content": "Content",
+    "appearance": "Appearance",
+    "preview": "Preview",
+    "mobile": "Mobile",
+    "desktop": "Desktop",
+    "livePreview": "Live preview",
+    "openInNewTab": "Open full page in new tab",
+    "pageTabs": {
+      "manage": "Manage pages",
+      "add": "Add page",
+      "rename": "Rename",
+      "setDefault": "Set as default",
+      "setPassword": "Set password",
+      "removePassword": "Remove password",
+      "delete": "Delete page"
+    },
 
     "onboarding": {
       "title": "Quick start",
@@ -172,6 +205,80 @@
       "actionSettings": "Go to settings",
       "actionAppearance": "Go to appearance",
       "actionCopy":     "Copy link"
+    },
+
+    "profileEditor": {
+      "header": "Click to edit profile + socials",
+      "banner": "Page banner (optional)",
+      "bannerHint": "Recommended size 1200×400 (3:1). Shows at the top of your public page.",
+      "bannerEmpty": "No banner yet",
+      "avatar": "Avatar",
+      "avatarHint": "JPG, PNG, GIF, WebP, max 4MB",
+      "nameLabel": "Display name",
+      "namePlaceholder": "Your name",
+      "bioLabel": "Bio",
+      "bioPlaceholder": "Introduce yourself…",
+      "socialLinksLabel": "Social links",
+      "addSocial": "Add social link",
+      "socialPlaceholder": "Paste social URL",
+      "customLabel": "Custom label (optional)",
+      "socialHelp": "Drag the handle to reorder. Click upload to add a custom icon.",
+      "uploadIcon": "Upload icon",
+      "iconHint": "Square 1:1, 512×512+ (auto-cropped to circle). Transparent PNG / SVG looks best."
+    },
+
+    "themeEditor": {
+      "themeLabel": "Theme",
+      "primaryColor": "Brand color",
+      "background": "Background",
+      "backgroundSolid": "Solid",
+      "backgroundGradient": "Gradient",
+      "backgroundImage": "Image",
+      "buttonStyle": "Button style",
+      "buttonOutline": "Outline",
+      "buttonFilled": "Filled",
+      "buttonSoft": "Soft",
+      "buttonRadius": "Corner shape",
+      "buttonRounded": "Rounded",
+      "buttonPill": "Pill",
+      "buttonSquare": "Square",
+      "fontStyle": "Font",
+      "fontDefault": "Default",
+      "fontSerif": "Serif",
+      "fontMono": "Mono",
+      "layoutLabel": "Layout",
+      "panelLabel": "Background panel",
+      "panelNone": "None",
+      "panelFrostedLight": "Frosted (light)",
+      "panelFrostedDark": "Frosted (dark)",
+      "panelBrand": "Brand-tinted",
+      "panelCustom": "Custom",
+      "cornerStyleLabel": "Corner style ✂️",
+      "cornerStyleHint": "Pick a cut-corner style for all card blocks (links, banners, products, carousel…).",
+      "cutTr": "Top-right cut",
+      "cutTl": "Top-left cut",
+      "cutBr": "Bottom-right cut",
+      "cutBl": "Bottom-left cut",
+      "cutDiagonal": "Diagonal cut",
+      "notched": "Ticket notched",
+      "entranceLabel": "Entrance animation 🎬",
+      "entranceHint": "Animation each block plays as it enters view. Respects the visitor's reduced-motion preference.",
+      "entranceNone": "None",
+      "entranceFade": "Fade",
+      "entranceSlideUp": "Slide up",
+      "entranceSlideLeft": "Slide left",
+      "entranceSlideRight": "Slide right",
+      "entranceScale": "Scale"
+    },
+
+    "addBlock": {
+      "title": "Add a new block",
+      "step1": "Pick a block type",
+      "recommended": "Recommended",
+      "more": "More",
+      "step2": "Set up the block",
+      "submit": "Add",
+      "selectType": "Select a type to continue"
     }
   },
 
@@ -187,7 +294,46 @@
     "submitLogin":     "Sign in",
     "submitSignup":    "Create account",
     "switchToSignup":  "New here? Create an account",
-    "switchToLogin":   "Already have an account? Sign in"
+    "switchToLogin":   "Already have an account? Sign in",
+
+    "brandSubtitle":            "Build your personal Beam page",
+    "setPasswordTitle":         "Set password",
+    "setPasswordSubtitle":      "doesn't have a password yet. Set one now.",
+    "newPasswordLabel":         "New password",
+    "confirmPasswordLabel":     "Confirm password",
+    "passwordMin":              "At least 6 characters",
+    "passwordRetype":           "Re-enter",
+    "passwordMismatch":         "Passwords don't match",
+    "genericError":             "Something went wrong",
+    "submitSetPassword":        "Set password and sign in",
+    "loginRegisterTitle":       "Sign in / Sign up",
+    "usernameLabelExt":         "Username",
+    "usernameAllowedChars":     "letters, numbers, _, -, .",
+    "checking":                 "Checking…",
+    "usernameTakenSwitch":      "This username is taken — if it's yours, sign in below. Otherwise pick another.",
+    "usernameReserved":         "This username is reserved.",
+    "usernameRules":            "Letters, numbers, _, -, . only. 3–30 chars. Dots can't lead, trail, or repeat.",
+    "usernameAvailable":        "✓ Available",
+    "emailNote":                "(for signup, optional for login)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "Continue to admin",
+    "firstTimeHint":            "First time? Just enter a username and password to sign up."
+  },
+
+  "toast": {
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "copiedLink": "Link copied",
+    "uploadSuccess": "Uploaded",
+    "uploadFailed": "Upload failed",
+    "applyTemplateSuccess": "Template applied",
+    "movedTo": "Moved to",
+    "moveFailed": "Move failed, please try again",
+    "scrapedImageSuccess": "Image fetched from URL",
+    "scrapedImageFailed": "Couldn't fetch image",
+    "iconRemindSave": "Icon uploaded. Click 'Save all' to apply.",
+    "saveFailedRetry": "Save failed, please try again",
+    "duplicateSocial": "That URL is already added"
   },
 
   "errors": {
@@ -198,6 +344,7 @@
     "saveFailed":       "Save failed, please try again",
     "usernameTaken":    "That username is taken",
     "usernameInvalid":  "Username format is invalid",
-    "duplicateSocial":  "That URL is already added"
+    "duplicateSocial":  "That URL is already added",
+    "checkoutFailed":   "Checkout failed, please try again later"
   }
 }

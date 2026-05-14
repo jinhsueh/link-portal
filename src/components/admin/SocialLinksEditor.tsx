@@ -19,6 +19,7 @@ import { SocialIcon } from '@/components/ui/SocialIcon'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
 import { toast } from '@/components/ui/Toast'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface SocialLinkItem {
   id: string
@@ -53,6 +54,8 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
   { links, onSave, onLinksChange, embedded = false }: Props,
   ref,
 ) {
+  const { dict } = useDict()
+  const t = dict.admin.profileEditor
   const [editing, setEditing] = useState(embedded)
   const [localLinks, setLocalLinks] = useState<SocialLinkItem[]>(links)
   const [newUrl, setNewUrl] = useState('')
@@ -91,7 +94,7 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
       // Customer feedback: silent rejection on dup URL felt like the button
       // was broken. Surface it with a toast — and keep the input populated
       // so the user can edit instead of retyping.
-      toast.error('這個網址已經加過了,不能重複新增')
+      toast.error(dict.toast.duplicateSocial)
       return
     }
     const platform = detectPlatform(url)
@@ -150,17 +153,17 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
       if (!res.ok) {
         // Surface upload failures (e.g. 4 MB limit, type rejection) instead of
         // silently swallowing them — users were assuming the feature was broken.
-        toast.error(data.error ?? '上傳失敗,請再試一次')
+        toast.error(data.error ?? dict.toast.uploadFailed)
       } else if (data.url) {
         setLocalLinks(prev => {
           const next = prev.map(l => l.id === linkId ? { ...l, iconUrl: data.url } : l)
           onLinksChange?.(next)
           return next
         })
-        toast.success('圖示已上傳,記得按「全部儲存」才會生效')
+        toast.success(dict.toast.iconRemindSave)
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '網路錯誤,上傳失敗')
+      toast.error(err instanceof Error ? err.message : dict.errors.networkError)
     }
     setUploadingId(null)
   }
@@ -238,7 +241,7 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
             <button onClick={handleStartEdit}
               className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg"
               style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-              <Pencil size={12} />編輯
+              <Pencil size={12} />{dict.common.edit}
             </button>
           </>
         ) : (
@@ -247,7 +250,7 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
             style={{ background: 'none', border: '1px dashed var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
-            <Plus size={14} />新增社群連結
+            <Plus size={14} />{t.addSocial}
           </button>
         )}
       </div>
@@ -295,7 +298,7 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
             value={newUrl}
             onChange={e => setNewUrl(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
-            placeholder="貼上社群連結 URL"
+            placeholder={t.socialPlaceholder}
             className="flex-1 min-w-0"
             style={{
               padding: '9px 12px', fontSize: 13,
@@ -311,14 +314,14 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
               background: newUrl.trim() ? 'var(--color-primary)' : '#E5E7EB',
               color: 'white', border: 'none', cursor: newUrl.trim() ? 'pointer' : 'default',
             }}>
-            <Plus size={13} />新增
+            <Plus size={13} />{dict.common.add}
           </button>
         </div>
         {detectedPlatform === 'custom' && newUrl.trim() && (
           <input
             value={newLabel}
             onChange={e => setNewLabel(e.target.value)}
-            placeholder="自訂名稱（選填）"
+            placeholder={t.customLabel}
             style={{
               width: '100%', padding: '8px 12px', fontSize: 13,
               border: '1px solid var(--color-border)', borderRadius: 10,
@@ -333,10 +336,10 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
       {/* Helper hint */}
       <div className="text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>
         {localLinks.length > 1 && (
-          <p>拖曳左側 <GripVertical size={11} className="inline" /> 排序、點 <Upload size={11} className="inline" /> 上傳自訂圖示</p>
+          <p>{t.socialHelp}</p>
         )}
         <p>
-          自訂圖示建議:**1:1 正方形,512×512 px 以上**(會自動裁成圓形顯示)。透明背景 PNG 或 SVG 視覺最佳。
+          {t.iconHint}
         </p>
       </div>
 
@@ -350,12 +353,12 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
               color: 'white', border: 'none', cursor: 'pointer',
               opacity: saving ? 0.7 : 1,
             }}>
-            {saved ? <><Check size={14} />已儲存</> : saving ? '儲存中...' : '全部儲存'}
+            {saved ? <><Check size={14} />{dict.common.saved}</> : saving ? dict.common.saving : dict.admin.saveAll}
           </button>
           <button onClick={handleCancel}
             className="text-sm font-semibold px-3 py-2"
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-            取消
+            {dict.common.cancel}
           </button>
         </div>
       )}
@@ -366,7 +369,7 @@ export const SocialLinksEditor = forwardRef<SocialLinksEditorHandle, Props>(func
           file={pendingIcon.file}
           aspect={1}
           cropShape="round"
-          title="裁切社群圖示"
+          title={t.uploadIcon}
           onComplete={handleIconCropped}
           onCancel={() => setPendingIcon(null)}
         />

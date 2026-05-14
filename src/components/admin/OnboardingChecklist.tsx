@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Check, X, Sparkles } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {
   hasBlocks: boolean
@@ -17,6 +18,8 @@ interface Props {
 }
 
 export function OnboardingChecklist({ hasBlocks, hasProfile, hasPickedStyle, username, onAddBlock, onGoToSettings, onGoToAppearance }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.onboarding
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('onboarding-dismissed') === 'true'
     return false
@@ -45,14 +48,13 @@ export function OnboardingChecklist({ hasBlocks, hasProfile, hasPickedStyle, use
   if (dismissed || allDone) return null
 
   const steps = [
-    { done: true, label: '建立帳號', action: null },
-    { done: hasBlocks, label: '加入你的第一個連結', action: onAddBlock, actionLabel: '新增區塊' },
-    { done: hasProfile, label: '設定大頭照和自我介紹', action: onGoToSettings, actionLabel: '前往設定' },
-    // New step: nudge users to customise their visual style so they don't
-    // stay on the default Beam blue + rounded corners forever. Without this,
-    // the default theme reads "範本未填" rather than "creator's brand".
-    { done: hasPickedStyle, label: '選一個視覺風格(切角 / 動畫 / 主題色)', action: onGoToAppearance, actionLabel: '前往外觀' },
-    { done: hasShared, label: '分享你的頁面連結', action: handleCopyLink, actionLabel: linkCopied ? '已複製！' : '複製連結' },
+    { done: true,            label: t.steps.createAccount, action: null },
+    { done: hasBlocks,       label: t.steps.addBlock,      action: onAddBlock,      actionLabel: t.actionAdd },
+    { done: hasProfile,      label: t.steps.setProfile,    action: onGoToSettings,  actionLabel: t.actionSettings },
+    // Nudge users to customise their visual style so they don't stay on the
+    // default Beam blue + rounded corners forever.
+    { done: hasPickedStyle,  label: t.steps.pickStyle,     action: onGoToAppearance, actionLabel: t.actionAppearance },
+    { done: hasShared,       label: t.steps.share,         action: handleCopyLink,  actionLabel: linkCopied ? dict.common.copied : t.actionCopy },
   ]
 
   const doneCount = steps.filter(s => s.done).length
@@ -65,7 +67,7 @@ export function OnboardingChecklist({ hasBlocks, hasProfile, hasPickedStyle, use
         <div className="flex items-center gap-2">
           <Sparkles size={16} style={{ color: 'var(--color-primary)' }} />
           <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-            快速開始
+            {t.title}
           </span>
           <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
             style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>

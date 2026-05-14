@@ -28,7 +28,21 @@
     "signIn": "ログイン",
     "signUp": "新規登録",
     "signOut": "ログアウト",
-    "settings": "設定"
+    "settings": "設定",
+    "remove": "削除",
+    "add": "追加",
+    "upload": "アップロード",
+    "uploading": "アップロード中…",
+    "or": "または",
+    "name": "名前",
+    "email": "メール",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "title": "タイトル",
+    "description": "説明",
+    "url": "URL",
+    "placeholder": "プレースホルダー",
+    "processing": "処理中…"
   },
 
   "nav": {
@@ -158,6 +172,25 @@
     "unpin": "固定を解除",
     "saveUnsaved": "未保存の変更があります。右側の「すべて保存」をクリック。",
     "saveAll": "すべて保存",
+    "batch": "一括操作",
+    "export": "ブロックをエクスポート",
+    "import": "インポート",
+    "content": "コンテンツ",
+    "appearance": "外観",
+    "preview": "プレビュー",
+    "mobile": "モバイル",
+    "desktop": "デスクトップ",
+    "livePreview": "ライブプレビュー",
+    "openInNewTab": "新しいタブで開く",
+    "pageTabs": {
+      "manage": "ページ管理",
+      "add": "ページ追加",
+      "rename": "名前を変更",
+      "setDefault": "デフォルトに設定",
+      "setPassword": "パスワードを設定",
+      "removePassword": "パスワードを削除",
+      "delete": "ページを削除"
+    },
 
     "onboarding": {
       "title": "クイックスタート",
@@ -172,6 +205,80 @@
       "actionSettings": "設定へ",
       "actionAppearance": "外観へ",
       "actionCopy":     "リンクをコピー"
+    },
+
+    "profileEditor": {
+      "header": "クリックしてプロフィールとソーシャルを編集",
+      "banner": "ページバナー (任意)",
+      "bannerHint": "推奨サイズ 1200×400 (3:1)。公開ページの最上部に表示されます。",
+      "bannerEmpty": "バナー未設定",
+      "avatar": "アイコン",
+      "avatarHint": "JPG、PNG、GIF、WebP、最大 4MB",
+      "nameLabel": "表示名",
+      "namePlaceholder": "あなたの名前",
+      "bioLabel": "自己紹介",
+      "bioPlaceholder": "自己紹介を入力…",
+      "socialLinksLabel": "ソーシャルリンク",
+      "addSocial": "ソーシャルリンクを追加",
+      "socialPlaceholder": "ソーシャル URL を貼り付け",
+      "customLabel": "カスタムラベル (任意)",
+      "socialHelp": "ハンドルをドラッグして並び替え、アップロードでカスタムアイコン追加。",
+      "uploadIcon": "アイコンをアップロード",
+      "iconHint": "正方形 1:1、512×512 以上推奨 (自動で円形に切り抜き)。透過 PNG / SVG が最も綺麗です。"
+    },
+
+    "themeEditor": {
+      "themeLabel": "テーマ",
+      "primaryColor": "ブランドカラー",
+      "background": "背景",
+      "backgroundSolid": "単色",
+      "backgroundGradient": "グラデーション",
+      "backgroundImage": "画像",
+      "buttonStyle": "ボタンスタイル",
+      "buttonOutline": "アウトライン",
+      "buttonFilled": "塗りつぶし",
+      "buttonSoft": "ソフト",
+      "buttonRadius": "角の形状",
+      "buttonRounded": "角丸",
+      "buttonPill": "ピル",
+      "buttonSquare": "角ばり",
+      "fontStyle": "フォント",
+      "fontDefault": "デフォルト",
+      "fontSerif": "セリフ",
+      "fontMono": "等幅",
+      "layoutLabel": "レイアウト",
+      "panelLabel": "背景パネル",
+      "panelNone": "なし",
+      "panelFrostedLight": "フロスト (ライト)",
+      "panelFrostedDark": "フロスト (ダーク)",
+      "panelBrand": "ブランド色",
+      "panelCustom": "カスタム",
+      "cornerStyleLabel": "コーナースタイル ✂️",
+      "cornerStyleHint": "すべてのカードブロック (リンク、バナー、商品、カルーセル…) のカット角を選択。",
+      "cutTr": "右上カット",
+      "cutTl": "左上カット",
+      "cutBr": "右下カット",
+      "cutBl": "左下カット",
+      "cutDiagonal": "対角カット",
+      "notched": "チケット型",
+      "entranceLabel": "登場アニメーション 🎬",
+      "entranceHint": "各ブロックが視界に入った時のアニメーション。ユーザーの「動作を減らす」設定を尊重します。",
+      "entranceNone": "なし",
+      "entranceFade": "フェード",
+      "entranceSlideUp": "上スライド",
+      "entranceSlideLeft": "左スライド",
+      "entranceSlideRight": "右スライド",
+      "entranceScale": "スケール"
+    },
+
+    "addBlock": {
+      "title": "新規ブロック",
+      "step1": "ブロックタイプを選択",
+      "recommended": "おすすめ",
+      "more": "もっと見る",
+      "step2": "ブロックを設定",
+      "submit": "追加",
+      "selectType": "タイプを選んで続行"
     }
   },
 
@@ -187,7 +294,46 @@
     "submitLogin":     "ログイン",
     "submitSignup":    "アカウント作成",
     "switchToSignup":  "はじめての方?新規登録",
-    "switchToLogin":   "アカウントをお持ちですか?ログイン"
+    "switchToLogin":   "アカウントをお持ちですか?ログイン",
+
+    "brandSubtitle":            "あなたのページを作ろう",
+    "setPasswordTitle":         "パスワードを設定",
+    "setPasswordSubtitle":      "にはまだパスワードがありません。すぐに設定してください。",
+    "newPasswordLabel":         "新しいパスワード",
+    "confirmPasswordLabel":     "パスワード確認",
+    "passwordMin":              "6 文字以上",
+    "passwordRetype":           "もう一度入力",
+    "passwordMismatch":         "パスワードが一致しません",
+    "genericError":             "エラーが発生しました",
+    "submitSetPassword":        "パスワードを設定してログイン",
+    "loginRegisterTitle":       "ログイン / 新規登録",
+    "usernameLabelExt":         "ユーザー名",
+    "usernameAllowedChars":     "英数字、_、-、.",
+    "checking":                 "確認中…",
+    "usernameTakenSwitch":      "このユーザー名は使用中です。あなたのものなら下記でログインを、そうでなければ別の名前を選んでください。",
+    "usernameReserved":         "このユーザー名は予約済みです。",
+    "usernameRules":            "英数字、_、-、. のみ。3〜30 文字。. は先頭・末尾・連続不可。",
+    "usernameAvailable":        "✓ 使用可能",
+    "emailNote":                "(新規登録用、ログイン時は省略可)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "管理画面へ",
+    "firstTimeHint":            "はじめての方は、ユーザー名とパスワードを入力すると新規登録できます。"
+  },
+
+  "toast": {
+    "saved": "保存しました",
+    "deleted": "削除しました",
+    "copiedLink": "リンクをコピーしました",
+    "uploadSuccess": "アップロードしました",
+    "uploadFailed": "アップロード失敗",
+    "applyTemplateSuccess": "テンプレートを適用しました",
+    "movedTo": "移動先:",
+    "moveFailed": "移動失敗、もう一度お試しください",
+    "scrapedImageSuccess": "URL から画像を取得しました",
+    "scrapedImageFailed": "画像を取得できませんでした",
+    "iconRemindSave": "アイコンをアップロードしました。「すべて保存」を押して適用してください。",
+    "saveFailedRetry": "保存失敗、もう一度お試しください",
+    "duplicateSocial": "この URL はすでに追加されています"
   },
 
   "errors": {
@@ -198,6 +344,7 @@
     "saveFailed":       "保存に失敗しました",
     "usernameTaken":    "このユーザー名はすでに使用されています",
     "usernameInvalid":  "ユーザー名の形式が正しくありません",
-    "duplicateSocial":  "この URL はすでに追加されています"
+    "duplicateSocial":  "この URL はすでに追加されています",
+    "checkoutFailed":   "決済に失敗しました。後ほど再試行してください"
   }
 }

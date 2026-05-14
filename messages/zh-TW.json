@@ -28,7 +28,21 @@
     "signIn": "登入",
     "signUp": "註冊",
     "signOut": "登出",
-    "settings": "設定"
+    "settings": "設定",
+    "remove": "移除",
+    "add": "新增",
+    "upload": "上傳",
+    "uploading": "上傳中…",
+    "or": "或",
+    "name": "名稱",
+    "email": "Email",
+    "username": "用戶名",
+    "password": "密碼",
+    "title": "標題",
+    "description": "說明",
+    "url": "網址",
+    "placeholder": "提示文字",
+    "processing": "處理中…"
   },
 
   "nav": {
@@ -158,6 +172,25 @@
     "unpin": "取消主推",
     "saveUnsaved": "尚未儲存變動,記得按右側「全部儲存」",
     "saveAll": "全部儲存",
+    "batch": "批次操作",
+    "export": "匯出區塊",
+    "import": "匯入",
+    "content": "內容",
+    "appearance": "外觀",
+    "preview": "預覽",
+    "mobile": "手機",
+    "desktop": "桌面",
+    "livePreview": "即時預覽",
+    "openInNewTab": "在新分頁開啟完整頁面",
+    "pageTabs": {
+      "manage": "管理分頁",
+      "add": "新增分頁",
+      "rename": "重新命名",
+      "setDefault": "設為預設",
+      "setPassword": "設定密碼",
+      "removePassword": "移除密碼",
+      "delete": "刪除分頁"
+    },
 
     "onboarding": {
       "title": "快速開始",
@@ -172,6 +205,80 @@
       "actionSettings": "前往設定",
       "actionAppearance": "前往外觀",
       "actionCopy":     "複製連結"
+    },
+
+    "profileEditor": {
+      "header": "點擊編輯個人資料與社群連結",
+      "banner": "頁面橫幅(選填)",
+      "bannerHint": "建議尺寸 1200×400(3:1 寬比),會顯示在公開頁最上方。",
+      "bannerEmpty": "尚未上傳橫幅",
+      "avatar": "大頭照",
+      "avatarHint": "JPG、PNG、GIF、WebP,最大 4MB",
+      "nameLabel": "顯示名稱",
+      "namePlaceholder": "你的名字",
+      "bioLabel": "個人簡介",
+      "bioPlaceholder": "介紹自己…",
+      "socialLinksLabel": "社群連結",
+      "addSocial": "新增社群連結",
+      "socialPlaceholder": "貼上社群連結 URL",
+      "customLabel": "自訂名稱(選填)",
+      "socialHelp": "拖曳左側排序、點上傳上傳自訂圖示",
+      "uploadIcon": "上傳圖示",
+      "iconHint": "自訂圖示建議: 1:1 正方形, 512×512 px 以上(會自動裁成圓形顯示)。透明背景 PNG 或 SVG 視覺最佳。"
+    },
+
+    "themeEditor": {
+      "themeLabel": "主題",
+      "primaryColor": "品牌色",
+      "background": "背景",
+      "backgroundSolid": "純色",
+      "backgroundGradient": "漸層",
+      "backgroundImage": "圖片",
+      "buttonStyle": "按鈕風格",
+      "buttonOutline": "線框",
+      "buttonFilled": "填滿",
+      "buttonSoft": "柔和",
+      "buttonRadius": "圓角",
+      "buttonRounded": "圓角",
+      "buttonPill": "膠囊",
+      "buttonSquare": "方角",
+      "fontStyle": "字型",
+      "fontDefault": "預設",
+      "fontSerif": "襯線",
+      "fontMono": "等寬",
+      "layoutLabel": "版面樣式",
+      "panelLabel": "底版",
+      "panelNone": "無",
+      "panelFrostedLight": "霧面淺色",
+      "panelFrostedDark": "霧面深色",
+      "panelBrand": "品牌色調",
+      "panelCustom": "自訂",
+      "cornerStyleLabel": "角落樣式 ✂️",
+      "cornerStyleHint": "選一個切角樣式給所有卡片區塊(連結、橫幅、商品、輪播…)。",
+      "cutTr": "右上切",
+      "cutTl": "左上切",
+      "cutBr": "右下切",
+      "cutBl": "左下切",
+      "cutDiagonal": "對角切",
+      "notched": "門票形",
+      "entranceLabel": "進場動畫 🎬",
+      "entranceHint": "每個區塊滑進畫面時的動效。系統會自動尊重使用者的「減少動態」偏好。",
+      "entranceNone": "無",
+      "entranceFade": "淡入",
+      "entranceSlideUp": "上滑",
+      "entranceSlideLeft": "左滑",
+      "entranceSlideRight": "右滑",
+      "entranceScale": "縮放"
+    },
+
+    "addBlock": {
+      "title": "新增區塊",
+      "step1": "選擇區塊類型",
+      "recommended": "推薦",
+      "more": "更多",
+      "step2": "設定區塊",
+      "submit": "新增",
+      "selectType": "選擇類型以繼續"
     }
   },
 
@@ -187,7 +294,46 @@
     "submitLogin":     "登入",
     "submitSignup":    "建立帳號",
     "switchToSignup":  "新來的?註冊一個",
-    "switchToLogin":   "已有帳號?登入"
+    "switchToLogin":   "已有帳號?登入",
+
+    "brandSubtitle":            "建立你的個人傳送門",
+    "setPasswordTitle":         "設定密碼",
+    "setPasswordSubtitle":      "尚未設定密碼,請立即設定。",
+    "newPasswordLabel":         "新密碼",
+    "confirmPasswordLabel":     "確認密碼",
+    "passwordMin":              "至少 6 個字元",
+    "passwordRetype":           "再輸入一次",
+    "passwordMismatch":         "兩次密碼不一致",
+    "genericError":             "發生錯誤",
+    "submitSetPassword":        "設定密碼並登入",
+    "loginRegisterTitle":       "登入 / 註冊",
+    "usernameLabelExt":         "用戶名稱",
+    "usernameAllowedChars":     "英數字、底線、減號、點",
+    "checking":                 "檢查中…",
+    "usernameTakenSwitch":      "此用戶名已被使用 — 若是你的帳號,可繼續登入;否則請換一個",
+    "usernameReserved":         "此用戶名為系統保留,請換一個",
+    "usernameRules":            "只能使用英數、底線、減號、點,3-30 字。點不能在開頭/結尾或連續",
+    "usernameAvailable":        "✓ 可以使用",
+    "emailNote":                "(註冊用,登入可略)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "進入後台",
+    "firstTimeHint":            "首次使用?輸入用戶名和密碼即可註冊"
+  },
+
+  "toast": {
+    "saved": "已儲存",
+    "deleted": "已刪除",
+    "copiedLink": "已複製連結",
+    "uploadSuccess": "已上傳",
+    "uploadFailed": "上傳失敗",
+    "applyTemplateSuccess": "已套用範本",
+    "movedTo": "已移至",
+    "moveFailed": "移動失敗,請再試一次",
+    "scrapedImageSuccess": "已從網址抓取商品圖",
+    "scrapedImageFailed": "抓圖失敗",
+    "iconRemindSave": "圖示已上傳,記得按「全部儲存」才會生效",
+    "saveFailedRetry": "儲存失敗,請再試一次",
+    "duplicateSocial": "這個網址已經加過了,不能重複新增"
   },
 
   "errors": {
@@ -198,6 +344,7 @@
     "saveFailed":       "儲存失敗,請再試一次",
     "usernameTaken":    "此用戶名已被使用",
     "usernameInvalid":  "用戶名格式不正確",
-    "duplicateSocial":  "這個網址已經加過了,不能重複新增"
+    "duplicateSocial":  "這個網址已經加過了,不能重複新增",
+    "checkoutFailed":   "結帳失敗,請稍後再試"
   }
 }
