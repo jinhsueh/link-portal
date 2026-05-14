@@ -1,11 +1,16 @@
 import { cache } from 'react'
 import { unstable_cache } from 'next/cache'
+import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
 import { prisma } from '@/lib/prisma'
 import { BlockData } from '@/types'
 import { PasswordGate } from '@/components/ui/PasswordGate'
 import { getEffectivePlan } from '@/lib/plan'
 import { ProfileView } from '@/components/profile/ProfileView'
+import { DictProvider } from '@/components/i18n/DictProvider'
+import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 // Co-locate this serverless function with the Turso DB (ap-northeast-1).
 // Without this, Vercel default-runs in iad1 (Virginia), and every Prisma
@@ -47,11 +52,41 @@ const getProfileCached = unstable_cache(
 // generateMetadata sibling share a single call to the data-cached fetcher.
 const getProfile = cache(async (username: string) => getProfileCached(username))
 
+/**
+ * Resolve the visitor's locale, matching the middleware logic:
+ *   1. lp_locale cookie (explicit preference)
+ *   2. Accept-Language header (browser preference)
+ *   3. DEFAULT_LOCALE fallback
+ *
+ * Public profiles don't carry a locale URL prefix, so we must do this
+ * lookup per request server-side. Result is passed into <DictProvider>
+ * so client components can read translated strings without prop drilling.
+ */
+async function resolveVisitorLocale(): Promise<Locale> {
+  const c = await cookies()
+  const cookieLocale = c.get('lp_locale')?.value
+  if (isLocale(cookieLocale)) return cookieLocale
+  const h = await headers()
+  const acceptLanguage = h.get('accept-language') ?? ''
+  if (!acceptLanguage) return DEFAULT_LOCALE
+  try {
+    const langs = new Negotiator({ headers: { 'accept-language': acceptLanguage } }).languages()
+    const matched = matchLocale(langs, LOCALES as unknown as string[], DEFAULT_LOCALE)
+    return isLocale(matched) ? matched : DEFAULT_LOCALE
+  } catch {
+    return DEFAULT_LOCALE
+  }
+}
+
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { username } = await params
   const { page: pageSlug } = await searchParams
-  const user = await getProfile(username)
+  const [user, locale] = await Promise.all([
+    getProfile(username),
+    resolveVisitorLocale(),
+  ])
   if (!user) notFound()
+  const dict = await getDictionary(locale)
 
   const now = new Date()
   const pages = user.pages.map(p => ({
@@ -87,7 +122,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const hasPassword = !!activePage.password
   const showWatermark = getEffectivePlan(user) === 'free'
 
-  const pageContent = (
+  const profileNode = (
     <ProfileView
       username={username}
       name={user.name}
@@ -102,15 +137,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     />
   )
 
-  if (hasPassword) {
-    return (
-      <PasswordGate username={username} pageId={activePage.id}>
-        {pageContent}
-      </PasswordGate>
-    )
-  }
-
-  return pageContent
+  // DictProvider wraps the WHOLE subtree — PasswordGate, ProfileView, and
+  // every block — so any client component below can call useDict(). Putting
+  // it at the top means the password gate's "Wrong password" / "Unlock"
+  // strings are also translated.
+  return (
+    <DictProvider value={{ dict, locale }}>
+      {hasPassword ? (
+        <PasswordGate username={username} pageId={activePage.id}>
+          {profileNode}
+        </PasswordGate>
+      ) : profileNode}
+    </DictProvider>
+  )
 }
 
 export async function generateMetadata({ params }: Props) {

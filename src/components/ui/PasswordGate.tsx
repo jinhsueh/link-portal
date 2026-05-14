@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Lock } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {
   username: string
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function PasswordGate({ username, pageId, children }: Props) {
+  const { dict } = useDict()
   const [password, setPassword] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [error, setError] = useState('')
@@ -30,10 +32,10 @@ export function PasswordGate({ username, pageId, children }: Props) {
       if (res.ok) {
         setUnlocked(true)
       } else {
-        setError('密碼錯誤')
+        setError(dict.profile.passwordGate.wrong)
       }
     } catch {
-      setError('驗證失敗，請稍後再試')
+      setError(dict.errors.networkError)
     }
     setChecking(false)
   }
@@ -48,17 +50,17 @@ export function PasswordGate({ username, pageId, children }: Props) {
           <Lock size={28} style={{ color: 'var(--color-primary)' }} />
         </div>
         <h1 className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-primary)' }}>
-          此頁面需要密碼
+          {dict.profile.passwordGate.title}
         </h1>
         <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
-          請輸入密碼以瀏覽 @{username} 的頁面
+          {dict.profile.passwordGate.subtitle} · @{username}
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="輸入密碼"
+            placeholder={dict.profile.passwordGate.placeholder}
             required
             className="w-full text-center text-sm px-4 py-3 focus:outline-none"
             style={{
@@ -72,7 +74,7 @@ export function PasswordGate({ username, pageId, children }: Props) {
           {error && <p className="text-xs" style={{ color: '#E53E3E' }}>{error}</p>}
           <button type="submit" disabled={checking} className="btn-primary w-full justify-center"
             style={{ fontSize: 14, padding: '12px 20px', opacity: checking ? 0.7 : 1 }}>
-            {checking ? '驗證中...' : '解鎖'}
+            {checking ? dict.common.loading : dict.profile.passwordGate.submit}
           </button>
         </form>
       </div>

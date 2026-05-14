@@ -4,6 +4,7 @@ import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselCo
 import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
+import { useDict } from '@/components/i18n/DictProvider'
 
 /**
  * Compute styles for text overlaid on an image (banner / carousel slide /
@@ -330,6 +331,7 @@ function renderInlineMarkdown(text: string): React.ReactNode {
 }
 
 function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
+  const { dict } = useDict()
   const content = block.content as {
     price?: number; currency?: string; description?: string; imageUrl?: string
   }
@@ -355,10 +357,10 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
         body: JSON.stringify({ blockId: block.id }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error ?? '結帳失敗，請稍後再試'); setLoading(false); return }
+      if (!res.ok) { setError(data.error ?? dict.profile.subscribeError); setLoading(false); return }
       window.location.href = data.url
     } catch {
-      setError('網路錯誤，請稍後再試')
+      setError(dict.errors.networkError)
       setLoading(false)
     }
   }
@@ -403,8 +405,8 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
           className="btn-primary w-full justify-center mt-4"
           style={{ fontSize: 14, padding: '11px 20px', opacity: (loading || displayPrice <= 0) ? 0.7 : 1 }}>
           {loading
-            ? <><Loader2 size={15} className="animate-spin" />處理中…</>
-            : <><ShoppingBag size={15} />立即購買</>}
+            ? <><Loader2 size={15} className="animate-spin" />{dict.profile.buyProcessing}</>
+            : <><ShoppingBag size={15} />{dict.profile.buy}</>}
         </button>
 
         {displayPrice <= 0 && (
@@ -504,6 +506,7 @@ function VideoBlock({ block }: { block: BlockData }) {
 }
 
 function EmailFormBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
+  const { dict } = useDict()
   const content = block.content as { placeholder?: string; buttonText?: string; webhookUrl?: string }
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -529,18 +532,18 @@ function EmailFormBlock({ block, pageId }: { block: BlockData; pageId?: string }
   if (submitted) return (
     <div className="w-full text-center px-5 py-4 font-semibold text-sm rounded-xl"
       style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid #C3D9FF' }}>
-      ✓ 已成功訂閱！
+      ✓ {dict.profile.subscribed}
     </div>
   )
 
   return (
     <form onSubmit={handleSubmit} className="w-full flex gap-2">
       <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-        placeholder={content.placeholder ?? '輸入你的 Email'}
+        placeholder={content.placeholder ?? dict.profile.subscribePlaceholder}
         className="flex-1 text-sm px-4 py-3 focus:outline-none"
         style={{ border: '1px solid var(--color-border)', borderRadius: 12, color: 'var(--color-text-primary)' }} />
       <button type="submit" className="btn-primary text-sm" style={{ padding: '10px 20px', borderRadius: 12 }}>
-        {content.buttonText ?? '訂閱'}
+        {content.buttonText ?? dict.profile.subscribe}
       </button>
     </form>
   )

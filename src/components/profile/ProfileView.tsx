@@ -7,6 +7,7 @@ import { SocialIcon } from '@/components/ui/SocialIcon'
 import { PageTracker } from '@/components/tracking/PageTracker'
 import { ShareBar } from '@/components/sharing/ShareBar'
 import { VisitorShareButton } from '@/components/profile/VisitorShareButton'
+import { useDict } from '@/components/i18n/DictProvider'
 import { parseTheme, themeToCSS, RICH_BLOCK_TYPES, computeBgPanelStyle } from '@/lib/theme'
 import { BlockData } from '@/types'
 import { Link2 } from 'lucide-react'
@@ -60,6 +61,11 @@ export function ProfileView({
   showWatermark = true,
   isDemo = false,
 }: ProfileViewProps) {
+  // Translated UI strings (watermark, share, page-level labels). Visitor
+  // locale is resolved by the server route and passed in via DictProvider.
+  // We don't translate user-authored content (block titles, bio) — that's
+  // the creator's responsibility.
+  const { dict } = useDict()
   // Initial active slug: prop takes priority, then default flag, then first.
   const initialSlug = activePageSlug
     ?? pages.find(p => p.isDefault)?.slug
@@ -275,7 +281,7 @@ export function ProfileView({
                   textDecoration: 'none',
                 }}>
                 <Link2 size={12} />
-                Beam
+                {dict.profile.watermark}
               </Link>
             </div>
           )}
@@ -469,7 +475,7 @@ export function ProfileView({
                 textDecoration: 'none',
               }}>
               <Link2 size={12} />
-              Beam
+              {dict.profile.watermark}
             </Link>
           </div>
         )}
