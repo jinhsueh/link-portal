@@ -6,6 +6,7 @@ import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDow
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
 import { PLATFORM_ICONS } from '@/components/ui/SocialIcon'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso } from '@/lib/calendar'
+import { useDict } from '@/components/i18n/DictProvider'
 
 const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
   { type: 'link',           icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
@@ -37,6 +38,8 @@ interface Props {
 }
 
 export function AddBlockModal({ onAdd, onClose }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.addBlockModal
   const [step, setStep] = useState<'pick' | 'fill'>('pick')
   const [selected, setSelected] = useState<BlockType | null>(null)
   const [title, setTitle] = useState('')
@@ -160,7 +163,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)' }}>
           <h2 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
-            {step === 'pick' ? '新增區塊' : '設定區塊'}
+            {step === 'pick' ? t.title : t.step2}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 4 }}>
             <X size={20} />
@@ -193,7 +196,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
             {/* More block types */}
             <p className="text-xs font-bold uppercase tracking-wider mb-3 px-1"
               style={{ color: 'var(--color-text-muted)' }}>
-              更多區塊
+              {t.more}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {MORE_TYPES.map(({ type, icon: Icon, label, description }) => (
@@ -549,11 +552,11 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
               <button type="button" onClick={() => setStep('pick')}
                 className="flex-1 py-2.5 font-semibold text-sm"
                 style={{ border: '1px solid var(--color-border)', borderRadius: 10, background: 'white', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
-                返回
+                {dict.common.back}
               </button>
               <button type="submit" className="btn-primary flex-1 justify-center"
                 style={{ borderRadius: 10, padding: '10px 20px', fontSize: 14 }}>
-                新增
+                {t.submit}
               </button>
             </div>
           </form>

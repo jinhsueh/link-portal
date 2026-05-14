@@ -229,6 +229,7 @@
 
     "themeEditor": {
       "themeLabel": "主題",
+      "presets": "快速套用",
       "primaryColor": "品牌色",
       "background": "背景",
       "backgroundSolid": "純色",
@@ -271,7 +272,7 @@
       "entranceScale": "縮放"
     },
 
-    "addBlock": {
+    "addBlockModal": {
       "title": "新增區塊",
       "step1": "選擇區塊類型",
       "recommended": "推薦",

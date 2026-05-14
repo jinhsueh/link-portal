@@ -11,6 +11,7 @@ import {
   verticalListSortingStrategy, arrayMove,
 } from '@dnd-kit/sortable'
 import { SortableBlock } from '@/components/blocks/SortableBlock'
+import { useDict } from '@/components/i18n/DictProvider'
 import { AddBlockModal } from '@/components/blocks/AddBlockModal'
 import { EditBlockModal } from '@/components/blocks/EditBlockModal'
 import { ScheduleModal } from '@/components/blocks/ScheduleModal'
@@ -43,6 +44,8 @@ interface UserData {
 type EditorMode = 'content' | 'appearance'
 
 export default function AdminPage() {
+  const { dict } = useDict()
+  const t = dict.admin
   const router = useRouter()
   const [user, setUser] = useState<UserData | null>(null)
   const [blocks, setBlocks] = useState<BlockData[]>([])
@@ -385,7 +388,7 @@ export default function AdminPage() {
             style={{ background: 'none', border: '1px dashed var(--color-border)', borderRadius: 8, cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}>
-            <Plus size={13} />新增分頁
+            <Plus size={13} />{t.pageTabs.add}
           </button>
         </div>
         {/* Actions for the active page — visually grouped on the right so
@@ -395,7 +398,7 @@ export default function AdminPage() {
           <div className="flex items-center gap-0.5 pl-2 ml-1 flex-shrink-0"
             style={{ borderLeft: '1px solid var(--color-border)' }}>
             <button onClick={() => handleRenamePage(activePage.id, activePage.name)}
-              title="重新命名"
+              title={t.pageTabs.rename}
               className="p-1.5 rounded transition-colors"
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
@@ -403,7 +406,7 @@ export default function AdminPage() {
               <Pencil size={14} />
             </button>
             <button onClick={() => handleTogglePassword(activePage.id)}
-              title={activePage.password ? '移除密碼' : '設定密碼'}
+              title={activePage.password ? t.pageTabs.removePassword : t.pageTabs.setPassword}
               className="p-1.5 rounded transition-colors"
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: activePage.password ? 'var(--color-primary)' : 'var(--color-text-muted)' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface)' }}
@@ -412,7 +415,7 @@ export default function AdminPage() {
             </button>
             {user.pages.length > 1 && (
               <button onClick={() => handleDeletePage(activePage.id)}
-                title="刪除此分頁"
+                title={t.pageTabs.delete}
                 className="p-1.5 rounded transition-colors"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#FFF5F5' }}
@@ -465,8 +468,8 @@ export default function AdminPage() {
           {/* Mode toggle: 內容 | 外觀 */}
           <div className="flex items-center gap-1 mb-5 p-1 rounded-xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'inline-flex' }}>
             {([
-              { mode: 'content' as EditorMode, label: '內容', icon: LayoutDashboard },
-              { mode: 'appearance' as EditorMode, label: '外觀', icon: Palette },
+              { mode: 'content' as EditorMode, label: t.content, icon: LayoutDashboard },
+              { mode: 'appearance' as EditorMode, label: t.appearance, icon: Palette },
             ]).map(({ mode, label, icon: Icon }) => (
               <button key={mode} onClick={() => setEditorMode(mode)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all"
@@ -536,28 +539,28 @@ export default function AdminPage() {
 
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>區塊管理</h1>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>拖曳調整順序，點擊眼睛隱藏區塊</p>
+                  <h1 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>{t.blockManagement}</h1>
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t.blockManagementHint}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => setShowImportModal(true)}
-                    className="p-2 rounded-lg transition-colors" title="從 Linktree / Portaly 匯入"
+                    className="p-2 rounded-lg transition-colors" title={t.importFromLinktree}
                     style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
                     <DownloadCloud size={15} />
                   </button>
                   {blocks.length > 0 && (
                     <>
                       <button onClick={() => { setBatchMode(!batchMode); setSelectedIds(new Set()) }}
-                        className="p-2 rounded-lg transition-colors" title="批次操作"
+                        className="p-2 rounded-lg transition-colors" title={t.batch}
                         style={{ background: batchMode ? 'var(--color-primary-light)' : 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: batchMode ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
                         <CheckSquare size={15} />
                       </button>
                       <button onClick={handleExport}
-                        className="p-2 rounded-lg transition-colors" title="匯出區塊"
+                        className="p-2 rounded-lg transition-colors" title={t.export}
                         style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
                         <Download size={15} />
                       </button>
-                      <label className="p-2 rounded-lg transition-colors" title="匯入區塊"
+                      <label className="p-2 rounded-lg transition-colors" title={t.import}
                         style={{ background: 'none', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
                         <Upload size={15} />
                         <input type="file" accept=".json" className="hidden" onChange={handleImport} />
@@ -565,7 +568,7 @@ export default function AdminPage() {
                     </>
                   )}
                   <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ fontSize: 14, padding: '10px 18px' }}>
-                    <Plus size={15} />新增區塊
+                    <Plus size={15} />{t.addBlock}
                   </button>
                 </div>
               </div>
@@ -640,7 +643,7 @@ export default function AdminPage() {
                       "從零開始" lives as a quiet ghost link to the right. */}
                   <div className="flex flex-col items-center gap-2 pt-5" style={{ borderTop: '1px dashed var(--color-border)' }}>
                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                      已經在用 Linktree 或 Portaly?
+                      {t.alreadyOnLinktree}
                     </p>
                     <button onClick={() => setShowImportModal(true)}
                       className="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-lg transition-all"
@@ -660,7 +663,7 @@ export default function AdminPage() {
                         (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 14px rgba(80,144,255,0.35)';
                       }}>
                       <DownloadCloud size={15} />
-                      <span>一鍵搬家 — 30 秒</span>
+                      <span>{t.importFromLinktree}</span>
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                         style={{ background: 'rgba(255,255,255,0.22)', color: 'white' }}>
                         推薦
@@ -669,7 +672,7 @@ export default function AdminPage() {
                     <button onClick={() => setShowAddModal(true)}
                       className="text-xs font-medium underline-offset-2 hover:underline"
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
-                      或從零開始建立
+                      {dict.common.or}{t.fromScratch}
                     </button>
                   </div>
                 </div>
@@ -729,13 +732,13 @@ export default function AdminPage() {
             {/* Device toggle */}
             <div className="flex items-center justify-between mb-3 gap-2">
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                即時預覽
+                {t.livePreview}
               </p>
               <div className="flex items-center gap-0.5 p-0.5 rounded-full" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                 {(['mobile', 'desktop'] as const).map(mode => (
                   <button key={mode}
                     onClick={() => setDeviceMode(mode)}
-                    title={mode === 'mobile' ? '手機' : '桌面'}
+                    title={mode === 'mobile' ? t.mobile : t.desktop}
                     className="px-2.5 py-1 rounded-full text-xs font-semibold"
                     style={{
                       background: deviceMode === mode ? 'white' : 'transparent',
@@ -744,7 +747,7 @@ export default function AdminPage() {
                       border: 'none', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}>
-                    {mode === 'mobile' ? '📱 手機' : '💻 桌面'}
+                    {mode === 'mobile' ? `📱 ${t.mobile}` : `💻 ${t.desktop}`}
                   </button>
                 ))}
               </div>
@@ -958,7 +961,7 @@ export default function AdminPage() {
                 <a href={`/${user.username}`} target="_blank" rel="noopener noreferrer"
                   className="text-xs font-semibold inline-flex items-center gap-1"
                   style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
-                  ↗ 在新分頁開啟完整頁面
+                  ↗ {t.openInNewTab}
                 </a>
               </div>
             )}

@@ -229,6 +229,7 @@
 
     "themeEditor": {
       "themeLabel": "Theme",
+      "presets": "Quick presets",
       "primaryColor": "Brand color",
       "background": "Background",
       "backgroundSolid": "Solid",
@@ -271,7 +272,7 @@
       "entranceScale": "Scale"
     },
 
-    "addBlock": {
+    "addBlockModal": {
       "title": "Add a new block",
       "step1": "Pick a block type",
       "recommended": "Recommended",

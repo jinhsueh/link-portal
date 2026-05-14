@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { PRESET_THEMES, DEFAULT_THEME, type PageTheme } from '@/lib/theme'
+import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {
   initialTheme: PageTheme
@@ -17,6 +18,8 @@ interface Props {
  * to `/api/me` PATCH `theme` so all pages share the same visual.
  */
 export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
+  const { dict } = useDict()
+  const t = dict.admin.themeEditor
   const [theme, setTheme] = useState<PageTheme>(initialTheme)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -65,7 +68,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       </div>
 
       {/* Presets */}
-      <Section title="快速套用">
+      <Section title={t.presets}>
         <div className="grid grid-cols-4 gap-3">
           {PRESET_THEMES.map(({ name, theme: preset }) => (
             <button key={name} onClick={() => applyPreset(preset)}
@@ -84,7 +87,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       </Section>
 
       {/* Primary Color */}
-      <Section title="主題色">
+      <Section title={t.primaryColor}>
         <div className="flex items-center gap-3">
           <input type="color" value={theme.primaryColor}
             onChange={e => updateTheme({ primaryColor: e.target.value })}
@@ -104,7 +107,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       </Section>
 
       {/* Background */}
-      <Section title="背景">
+      <Section title={t.background}>
         <div className="flex gap-2 mb-3">
           {(['solid', 'gradient'] as const).map(t => (
             <button key={t} onClick={() => updateTheme({ bgType: t })}
@@ -143,7 +146,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       </Section>
 
       {/* Layout — 底版 + 4-variant block layout */}
-      <Section title="版面樣式">
+      <Section title={t.layoutLabel}>
         {/* Layout variants — 4 presets. Combination of (narrow / wide) ×
             (single column / 2-col grid). */}
         <div className="grid grid-cols-2 gap-2 mb-3">
@@ -180,7 +183,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       </Section>
 
       {/* Button Style */}
-      <Section title="按鈕風格">
+      <Section title={t.buttonStyle}>
         <div className="flex gap-3 mb-4">
           {([
             { value: 'outline', label: '線框' },
@@ -225,7 +228,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
           here overrides buttonRadius's geometry. Visual previews use the
           same clip-path polygons as the public renderer so what they
           see is what they'll get. */}
-      <Section title="角落樣式 ✂️">
+      <Section title={t.cornerStyleLabel}>
         <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
           選一個切角樣式給所有卡片區塊(連結、橫幅、商品、輪播…)。
         </p>
@@ -260,7 +263,7 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
       {/* Phase 2 visual upgrade: Entrance animation (#動畫). Driven by
           IntersectionObserver in AnimatedBlock so blocks animate as the
           user scrolls down — closes the "Portaly feels alive" gap. */}
-      <Section title="進場動畫 🎬">
+      <Section title={t.entranceLabel}>
         <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>
           每個區塊滑進畫面時的動效。系統會自動尊重使用者的「減少動態」偏好。
         </p>

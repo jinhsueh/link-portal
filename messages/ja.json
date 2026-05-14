@@ -229,6 +229,7 @@
 
     "themeEditor": {
       "themeLabel": "テーマ",
+      "presets": "プリセット",
       "primaryColor": "ブランドカラー",
       "background": "背景",
       "backgroundSolid": "単色",
@@ -271,7 +272,7 @@
       "entranceScale": "スケール"
     },
 
-    "addBlock": {
+    "addBlockModal": {
       "title": "新規ブロック",
       "step1": "ブロックタイプを選択",
       "recommended": "おすすめ",

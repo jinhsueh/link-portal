@@ -229,6 +229,7 @@
 
     "themeEditor": {
       "themeLabel": "ธีม",
+      "presets": "พรีเซ็ต",
       "primaryColor": "สีแบรนด์",
       "background": "พื้นหลัง",
       "backgroundSolid": "สีเดียว",
@@ -271,7 +272,7 @@
       "entranceScale": "ขยาย"
     },
 
-    "addBlock": {
+    "addBlockModal": {
       "title": "เพิ่มบล็อก",
       "step1": "เลือกประเภทบล็อก",
       "recommended": "แนะนำ",
