@@ -1334,6 +1334,13 @@
     "colDate": "日期"
   },
 
+  "notFound": {
+    "heading": "找不到頁面",
+    "subheading": "這個網址還沒有人使用,趕快來搶佔吧!",
+    "ctaSignup": "免費註冊",
+    "ctaHome": "回首頁"
+  },
+
   "errors": {
     "unauthorized":     "請先登入",
     "notFound":         "找不到",

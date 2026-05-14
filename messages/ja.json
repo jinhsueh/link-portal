@@ -1334,6 +1334,13 @@
     "colDate": "日付"
   },
 
+  "notFound": {
+    "heading": "ページが見つかりません",
+    "subheading": "この URL はまだ誰も使っていません — 先に確保しましょう!",
+    "ctaSignup": "無料登録",
+    "ctaHome": "ホームへ"
+  },
+
   "errors": {
     "unauthorized":     "ログインしてください",
     "notFound":         "見つかりません",

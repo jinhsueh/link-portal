@@ -1334,6 +1334,13 @@
     "colDate": "Date"
   },
 
+  "notFound": {
+    "heading": "Page not found",
+    "subheading": "This URL isn't taken yet — claim it before someone else does!",
+    "ctaSignup": "Sign up free",
+    "ctaHome": "Home"
+  },
+
   "errors": {
     "unauthorized":     "Please sign in",
     "notFound":         "Not found",

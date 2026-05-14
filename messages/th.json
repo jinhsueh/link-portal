@@ -1334,6 +1334,13 @@
     "colDate": "วันที่"
   },
 
+  "notFound": {
+    "heading": "ไม่พบหน้านี้",
+    "subheading": "URL นี้ยังไม่มีใครใช้ — รีบจองก่อนคนอื่นเลย!",
+    "ctaSignup": "สมัครฟรี",
+    "ctaHome": "กลับหน้าหลัก"
+  },
+
   "errors": {
     "unauthorized":     "กรุณาเข้าสู่ระบบ",
     "notFound":         "ไม่พบ",
