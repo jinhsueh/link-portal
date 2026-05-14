@@ -132,6 +132,12 @@
   },
 
   "profile": {
+    "productNoPrice": "ยังไม่ได้ตั้งราคาสินค้า",
+    "watchVideo": "ดูวิดีโอ",
+    "countdownEnded": "สิ้นสุดแล้ว",
+    "countdownDay": "วัน",
+    "addToGoogleCal": "เพิ่มใน Google Calendar",
+    "downloadIcsTitle": "ดาวน์โหลด .ics สำหรับ Apple / Outlook",
     "watermark": "สร้างด้วย Beam",
     "share": "แชร์",
     "subscribe": "สมัคร",
@@ -152,6 +158,118 @@
       "google": "Google Calendar",
       "ics": "ดาวน์โหลด .ics"
     }
+  },
+
+  "demo": {
+    "metaTitle": "Mia | Beam Demo",
+    "metaDescription": "หน้าเดียวแสดงทุกสิ่งที่ Beam ทำได้ — ลิงก์ สินค้า วิดีโอ ฟอร์ม Podcast ติดต่อร่วมงาน",
+    "pageMain": "หน้าหลัก",
+    "pageCollab": "ร่วมงาน"
+  },
+
+  "pricing": {
+    "navSignIn": "เข้าสู่ระบบ / สมัคร →",
+    "heroTag": "เลือกแพ็กเกจที่เหมาะกับคุณ",
+    "heroTitle": "แพ็กเกจที่เติบโตไปกับคุณ",
+    "heroSubtitle": "ตั้งแต่ครีเอเตอร์มือใหม่ถึงทีมแบรนด์ — Beam เคียงข้างทุกก้าว",
+    "billingMonthly": "รายเดือน",
+    "billingAnnual": "รายปี",
+    "yearlyDiscount": "ประหยัด 12%",
+    "popular": "ยอดนิยมที่สุด",
+    "freeTag": "สำหรับครีเอเตอร์มือใหม่",
+    "freePeriod": "/ ฟรีตลอด",
+    "freeCta": "เริ่มฟรี",
+    "freeFeatures": [
+      "1 หน้า",
+      "12 บล็อก",
+      "ข้อมูลวิเคราะห์ 30 วัน",
+      "ขายสินค้าได้ (ค่าธรรมเนียม 10%)",
+      "บล็อกพื้นฐาน 6 แบบ"
+    ],
+    "proTag": "ครีเอเตอร์ / KOL / ฟรีแลนซ์",
+    "perMonth": "/ เดือน",
+    "annualSave": "รายปี NT${total}, เฉลี่ยประหยัด NT${saved}/เดือน",
+    "proCta": "อัปเกรดเป็น Pro",
+    "proFeatures": [
+      "10 หน้า",
+      "20 บล็อก/หน้า",
+      "ข้อมูลวิเคราะห์ 90 วัน + ติดตาม UTM",
+      "<strong>ค่าธรรมเนียม 5%</strong> (ครึ่งหนึ่งของ Free)",
+      "บล็อกขั้นสูงทุกประเภท",
+      "เอา watermark ออก",
+      "สมาชิกทีม 3 คน"
+    ],
+    "premiumTag": "แบรนด์ / เอเจนซี่ / ร้านค้า",
+    "premiumCta": "อัปเกรดเป็น Premium",
+    "premiumFeatures": [
+      "<strong>หน้าและบล็อกไม่จำกัด</strong>",
+      "เก็บข้อมูลวิเคราะห์ไม่จำกัด",
+      "<strong>ค่าธรรมเนียมต่ำเพียง 2%</strong>",
+      "โดเมนเอง mybrand.com",
+      "favicon และ CSS เอง",
+      "สมาชิกทีมไม่จำกัด",
+      "ซัพพอร์ตเร่งด่วน"
+    ],
+    "roiTitle": "ขายมากขึ้น ประหยัดมากขึ้น",
+    "roiSubtitle": "ยอดขายต่อเดือนสูงขึ้น ค่าธรรมเนียมต่ำของ Premium ยิ่งคุ้ม",
+    "roiColSales": "ยอดขายต่อเดือน",
+    "roiColFree": "Free (10%)",
+    "roiColPro": "Pro (5% + ค่าธรรมเนียม)",
+    "roiColPremium": "Premium (2% + ค่าธรรมเนียม)",
+    "roiFootnote": "สีเขียวคือแพ็กเกจที่คุ้มที่สุดตามยอดขาย ยอดเกิน NT$8,000/เดือน อัปเกรด Premium คุ้มทุน",
+    "compareTitle": "เปรียบเทียบฟีเจอร์ครบ",
+    "compareColFeature": "ฟีเจอร์",
+    "features": [
+      {
+        "section": "ฟังก์ชันหลัก",
+        "items": [
+          { "label": "จำนวนหน้า",                                                "free": "1",      "pro": "10",    "premium": "ไม่จำกัด" },
+          { "label": "บล็อกต่อหน้า",                                             "free": "12",     "pro": "20",    "premium": "ไม่จำกัด" },
+          { "label": "บล็อกพื้นฐาน (ลิงก์ วิดีโอ แบนเนอร์ หัวข้อ FAQ นับถอยหลัง)", "free": true, "pro": true, "premium": true },
+          { "label": "บล็อกขั้นสูง (สินค้า ฟอร์มอีเมล คาร์รูเซล แผนที่ HTML)",     "free": false, "pro": true, "premium": true },
+          { "label": "หน้าป้องกันรหัสผ่าน",                                       "free": true,     "pro": true,    "premium": true },
+          { "label": "ธีมพรีเซ็ตและสีคัสตอม",                                      "free": true,     "pro": true,    "premium": true },
+          { "label": "ตั้งเวลาเผยแพร่",                                            "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "ขายสินค้า",
+        "items": [
+          { "label": "ขายสินค้าดิจิทัล",                                          "free": true,     "pro": true,    "premium": true },
+          { "label": "ค่าธรรมเนียมแพลตฟอร์ม",                                    "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "จัดการคำสั่งซื้อ",                                          "free": true,     "pro": true,    "premium": true },
+          { "label": "เชื่อม Stripe",                                              "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "วิเคราะห์ข้อมูล",
+        "items": [
+          { "label": "เก็บข้อมูลย้อนหลัง",                                        "free": "30 วัน", "pro": "90 วัน", "premium": "ไม่จำกัด" },
+          { "label": "คลิก / แสดง / CTR",                                         "free": true,     "pro": true,    "premium": true },
+          { "label": "ติดตาม UTM",                                                "free": false,    "pro": true,    "premium": true },
+          { "label": "วิเคราะห์ Referrer",                                        "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "แบรนด์และโดเมน",
+        "items": [
+          { "label": "เอา watermark Beam ออก",                                    "free": false,    "pro": true,    "premium": true },
+          { "label": "favicon เอง",                                                "free": false,    "pro": false,   "premium": true },
+          { "label": "โดเมนเอง (mybrand.com)",                                    "free": false,    "pro": false,   "premium": true },
+          { "label": "CSS เอง",                                                    "free": false,    "pro": false,   "premium": true }
+        ]
+      },
+      {
+        "section": "ทีมและซัพพอร์ต",
+        "items": [
+          { "label": "สมาชิกทีม",                                                  "free": "—",      "pro": "3 คน",  "premium": "ไม่จำกัด" },
+          { "label": "ซัพพอร์ตอีเมล",                                              "free": true,     "pro": true,    "premium": true },
+          { "label": "ซัพพอร์ตเร่งด่วน",                                          "free": false,    "pro": false,   "premium": true }
+        ]
+      }
+    ],
+    "ctaTitle": "พร้อมเริ่มแล้วใช่ไหม?",
+    "ctaBtn": "สร้างหน้าของคุณ — ฟรี"
   },
 
   "admin": {

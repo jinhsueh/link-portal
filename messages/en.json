@@ -132,6 +132,12 @@
   },
 
   "profile": {
+    "productNoPrice": "Price not set yet",
+    "watchVideo": "Watch video",
+    "countdownEnded": "Ended",
+    "countdownDay": "d",
+    "addToGoogleCal": "Add to Google Calendar",
+    "downloadIcsTitle": "Download .ics for Apple / Outlook",
     "watermark": "Made with Beam",
     "share": "Share",
     "subscribe": "Subscribe",
@@ -152,6 +158,118 @@
       "google": "Google Calendar",
       "ics": "Download .ics"
     }
+  },
+
+  "demo": {
+    "metaTitle": "Mia | Beam Demo",
+    "metaDescription": "A single page showing everything Beam can do — links, products, video, forms, podcast, collabs.",
+    "pageMain": "Home",
+    "pageCollab": "Collabs"
+  },
+
+  "pricing": {
+    "navSignIn": "Sign in / Sign up →",
+    "heroTag": "Pick the plan that fits you",
+    "heroTitle": "Plans that grow with you",
+    "heroSubtitle": "From day-one creator to brand team — Beam scales with you",
+    "billingMonthly": "Monthly",
+    "billingAnnual": "Yearly",
+    "yearlyDiscount": "Save 12%",
+    "popular": "Most popular",
+    "freeTag": "For beginners",
+    "freePeriod": "/ free forever",
+    "freeCta": "Start free",
+    "freeFeatures": [
+      "1 page",
+      "12 blocks",
+      "30-day analytics",
+      "Sell products (10% commission)",
+      "6 basic block types"
+    ],
+    "proTag": "Creators / KOLs / Freelancers",
+    "perMonth": "/ mo",
+    "annualSave": "NT${total}/yr — save NT${saved}/mo",
+    "proCta": "Upgrade to Pro",
+    "proFeatures": [
+      "10 pages",
+      "20 blocks per page",
+      "90-day analytics + UTM tracking",
+      "<strong>5% commission</strong> (half of Free)",
+      "All advanced block types",
+      "Remove watermark",
+      "3 team members"
+    ],
+    "premiumTag": "Brands / Agencies / Shops",
+    "premiumCta": "Upgrade to Premium",
+    "premiumFeatures": [
+      "<strong>Unlimited pages and blocks</strong>",
+      "Unlimited analytics history",
+      "<strong>2% ultra-low commission</strong>",
+      "Custom domain mybrand.com",
+      "Custom favicon & CSS",
+      "Unlimited team members",
+      "Priority support"
+    ],
+    "roiTitle": "Sell more, save more",
+    "roiSubtitle": "The more you sell, the better Premium's low commission gets",
+    "roiColSales": "Monthly sales",
+    "roiColFree": "Free (10%)",
+    "roiColPro": "Pro (5% + fee)",
+    "roiColPremium": "Premium (2% + fee)",
+    "roiFootnote": "Green marks the best plan at that sales level. Past NT$8,000/mo, Premium pays for itself.",
+    "compareTitle": "Full feature comparison",
+    "compareColFeature": "Feature",
+    "features": [
+      {
+        "section": "Core",
+        "items": [
+          { "label": "Pages",                                            "free": "1",      "pro": "10",    "premium": "Unlimited" },
+          { "label": "Blocks per page",                                  "free": "12",     "pro": "20",    "premium": "Unlimited" },
+          { "label": "Basic blocks (link, video, banner, heading, FAQ, countdown)", "free": true, "pro": true, "premium": true },
+          { "label": "Advanced blocks (product, email form, carousel, map, HTML)", "free": false, "pro": true, "premium": true },
+          { "label": "Password-protected pages",                         "free": true,     "pro": true,    "premium": true },
+          { "label": "Theme presets & custom colors",                    "free": true,     "pro": true,    "premium": true },
+          { "label": "Scheduled publishing",                             "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "Selling",
+        "items": [
+          { "label": "Sell digital products",                            "free": true,     "pro": true,    "premium": true },
+          { "label": "Platform commission",                              "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "Order management",                                 "free": true,     "pro": true,    "premium": true },
+          { "label": "Stripe integration",                               "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "Analytics",
+        "items": [
+          { "label": "Data retention",                                   "free": "30 days", "pro": "90 days", "premium": "Unlimited" },
+          { "label": "Click / view / CTR",                               "free": true,     "pro": true,    "premium": true },
+          { "label": "UTM source tracking",                              "free": false,    "pro": true,    "premium": true },
+          { "label": "Referrer analytics",                               "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "Branding & domain",
+        "items": [
+          { "label": "Remove Beam watermark",                            "free": false,    "pro": true,    "premium": true },
+          { "label": "Custom favicon",                                   "free": false,    "pro": false,   "premium": true },
+          { "label": "Custom domain (mybrand.com)",                      "free": false,    "pro": false,   "premium": true },
+          { "label": "Custom CSS",                                       "free": false,    "pro": false,   "premium": true }
+        ]
+      },
+      {
+        "section": "Team & support",
+        "items": [
+          { "label": "Team members",                                     "free": "—",      "pro": "3",     "premium": "Unlimited" },
+          { "label": "Email support",                                    "free": true,     "pro": true,    "premium": true },
+          { "label": "Priority support",                                 "free": false,    "pro": false,   "premium": true }
+        ]
+      }
+    ],
+    "ctaTitle": "Ready to start?",
+    "ctaBtn": "Build your page — free"
   },
 
   "admin": {

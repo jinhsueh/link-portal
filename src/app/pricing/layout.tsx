@@ -1,21 +1,45 @@
 import type { Metadata } from 'next'
+import { cookies, headers } from 'next/headers'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
 import { SITE_URL, SITE_NAME } from '@/lib/site'
 import { PLAN_PRICING } from '@/lib/plan'
+import { DictProvider } from '@/components/i18n/DictProvider'
+import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 export const metadata: Metadata = {
-  title: '定價方案｜Free / Pro / Premium',
+  title: 'Pricing｜Free / Pro / Premium',
   description:
-    'Beam 提供永久免費的基礎方案，Pro NT$159/月、Premium NT$249/月。比較三個方案的功能差異，選擇適合你的 Link in Bio 工具。',
+    'Beam offers a forever-free plan, Pro at NT$159/mo, and Premium at NT$249/mo. Compare features across three plans and pick the right Link in Bio for you.',
   alternates: { canonical: '/pricing' },
   openGraph: {
-    title: 'Beam 定價方案 — 永久免費起',
-    description: 'Free / Pro NT$159 / Premium NT$249，比較三個方案功能選擇最適合的。',
+    title: 'Beam Pricing — Free forever',
+    description: 'Free / Pro NT$159 / Premium NT$249 — compare features across the three plans.',
     url: '/pricing',
     type: 'website',
   },
 }
 
-export default function PricingLayout({ children }: { children: React.ReactNode }) {
+async function resolveLocale(): Promise<Locale> {
+  const c = await cookies()
+  const cookieLocale = c.get('lp_locale')?.value
+  if (isLocale(cookieLocale)) return cookieLocale
+  const h = await headers()
+  const acceptLanguage = h.get('accept-language') ?? ''
+  if (!acceptLanguage) return DEFAULT_LOCALE
+  try {
+    const langs = new Negotiator({ headers: { 'accept-language': acceptLanguage } }).languages()
+    const matched = matchLocale(langs, LOCALES as unknown as string[], DEFAULT_LOCALE)
+    return isLocale(matched) ? matched : DEFAULT_LOCALE
+  } catch {
+    return DEFAULT_LOCALE
+  }
+}
+
+export default async function PricingLayout({ children }: { children: React.ReactNode }) {
+  const locale = await resolveLocale()
+  const dict = await getDictionary(locale)
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -25,13 +49,13 @@ export default function PricingLayout({ children }: { children: React.ReactNode 
           {
             '@type': 'ListItem',
             position: 1,
-            name: '首頁',
+            name: 'Home',
             item: SITE_URL,
           },
           {
             '@type': 'ListItem',
             position: 2,
-            name: '定價',
+            name: 'Pricing',
             item: `${SITE_URL}/pricing`,
           },
         ],
@@ -39,9 +63,9 @@ export default function PricingLayout({ children }: { children: React.ReactNode 
       {
         '@type': 'Product',
         '@id': `${SITE_URL}/pricing#product`,
-        name: `${SITE_NAME} 訂閱方案`,
+        name: `${SITE_NAME} subscription plans`,
         description:
-          'Beam 提供 Free、Pro、Premium 三種方案，滿足從入門創作者到品牌團隊的需求。',
+          'Beam offers Free, Pro, and Premium plans — fitting beginners through brand teams.',
         brand: { '@type': 'Brand', name: SITE_NAME },
         offers: {
           '@type': 'AggregateOffer',
@@ -81,12 +105,12 @@ export default function PricingLayout({ children }: { children: React.ReactNode 
   }
 
   return (
-    <>
+    <DictProvider value={{ dict, locale }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {children}
-    </>
+    </DictProvider>
   )
 }

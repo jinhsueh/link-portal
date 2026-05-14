@@ -132,6 +132,12 @@
   },
 
   "profile": {
+    "productNoPrice": "価格未設定",
+    "watchVideo": "動画を見る",
+    "countdownEnded": "終了しました",
+    "countdownDay": "日",
+    "addToGoogleCal": "Google カレンダーに追加",
+    "downloadIcsTitle": "Apple / Outlook 用 .ics をダウンロード",
     "watermark": "Beam で作成",
     "share": "シェア",
     "subscribe": "登録",
@@ -152,6 +158,118 @@
       "google": "Google カレンダー",
       "ics": ".ics をダウンロード"
     }
+  },
+
+  "demo": {
+    "metaTitle": "Mia | Beam デモ",
+    "metaDescription": "1ページで Beam の機能を全部紹介 — リンク・商品・動画・フォーム・Podcast・コラボ問い合わせ",
+    "pageMain": "ホーム",
+    "pageCollab": "コラボ"
+  },
+
+  "pricing": {
+    "navSignIn": "ログイン / 新規登録 →",
+    "heroTag": "あなたに合うプランを選ぼう",
+    "heroTitle": "成長に合わせて選べるプラン",
+    "heroSubtitle": "ビギナークリエイターからブランドチームまで、Beam がずっと伴走",
+    "billingMonthly": "月払い",
+    "billingAnnual": "年払い",
+    "yearlyDiscount": "12%お得",
+    "popular": "人気No.1",
+    "freeTag": "初めてのクリエイター向け",
+    "freePeriod": "/ ずっと無料",
+    "freeCta": "無料で始める",
+    "freeFeatures": [
+      "1 ページ",
+      "12 ブロック",
+      "30日分の分析",
+      "商品販売可(手数料 10%)",
+      "基本ブロック 6種"
+    ],
+    "proTag": "個人クリエイター / KOL / フリーランス",
+    "perMonth": "/ 月",
+    "annualSave": "年払い NT${total}、月あたり NT${saved} お得",
+    "proCta": "Pro にアップグレード",
+    "proFeatures": [
+      "10 ページ",
+      "1ページあたり 20 ブロック",
+      "90日分析 + UTM 追跡",
+      "<strong>手数料 5%</strong>(Free の半分)",
+      "全ての高度なブロックタイプ",
+      "ウォーターマーク削除",
+      "チームメンバー 3人"
+    ],
+    "premiumTag": "ブランド / 代理店 / 店舗",
+    "premiumCta": "Premium にアップグレード",
+    "premiumFeatures": [
+      "<strong>ページ・ブロック無制限</strong>",
+      "分析データ無制限",
+      "<strong>手数料 2% 超低</strong>",
+      "カスタムドメイン mybrand.com",
+      "カスタム favicon と CSS",
+      "チームメンバー無制限",
+      "優先サポート"
+    ],
+    "roiTitle": "売れば売るほど、お得に",
+    "roiSubtitle": "月商が増えるほど Premium の低手数料が効いてくる",
+    "roiColSales": "月商",
+    "roiColFree": "Free (10%)",
+    "roiColPro": "Pro (5% + 月額)",
+    "roiColPremium": "Premium (2% + 月額)",
+    "roiFootnote": "緑のセルがその月商で最もお得なプラン。月商 NT$8,000 を超えると Premium が回収可能。",
+    "compareTitle": "全機能の比較",
+    "compareColFeature": "機能",
+    "features": [
+      {
+        "section": "コア機能",
+        "items": [
+          { "label": "ページ数",                                          "free": "1",      "pro": "10",    "premium": "無制限" },
+          { "label": "1ページあたりのブロック数",                          "free": "12",     "pro": "20",    "premium": "無制限" },
+          { "label": "基本ブロック(リンク、動画、バナー、見出し、FAQ、カウントダウン)", "free": true, "pro": true, "premium": true },
+          { "label": "高度なブロック(商品、メールフォーム、カルーセル、地図、HTML)",  "free": false, "pro": true, "premium": true },
+          { "label": "パスワード保護",                                     "free": true,     "pro": true,    "premium": true },
+          { "label": "テーマプリセット&カスタム色",                        "free": true,     "pro": true,    "premium": true },
+          { "label": "公開スケジュール",                                   "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "販売",
+        "items": [
+          { "label": "デジタル商品の販売",                                 "free": true,     "pro": true,    "premium": true },
+          { "label": "プラットフォーム手数料",                              "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "注文管理",                                            "free": true,     "pro": true,    "premium": true },
+          { "label": "Stripe 連携",                                         "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "分析",
+        "items": [
+          { "label": "データ保持期間",                                     "free": "30日",   "pro": "90日",  "premium": "無制限" },
+          { "label": "クリック / 表示 / CTR",                              "free": true,     "pro": true,    "premium": true },
+          { "label": "UTM 経路追跡",                                       "free": false,    "pro": true,    "premium": true },
+          { "label": "リファラー分析",                                     "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "ブランドとドメイン",
+        "items": [
+          { "label": "Beam ウォーターマーク削除",                          "free": false,    "pro": true,    "premium": true },
+          { "label": "カスタム favicon",                                    "free": false,    "pro": false,   "premium": true },
+          { "label": "カスタムドメイン(mybrand.com)",                      "free": false,    "pro": false,   "premium": true },
+          { "label": "カスタム CSS",                                        "free": false,    "pro": false,   "premium": true }
+        ]
+      },
+      {
+        "section": "チームとサポート",
+        "items": [
+          { "label": "チームメンバー",                                     "free": "—",      "pro": "3人",   "premium": "無制限" },
+          { "label": "メールサポート",                                     "free": true,     "pro": true,    "premium": true },
+          { "label": "優先サポート",                                       "free": false,    "pro": false,   "premium": true }
+        ]
+      }
+    ],
+    "ctaTitle": "始める準備はできた?",
+    "ctaBtn": "ページを無料で作る"
   },
 
   "admin": {

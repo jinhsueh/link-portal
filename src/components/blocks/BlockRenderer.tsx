@@ -411,7 +411,7 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
 
         {displayPrice <= 0 && (
           <p className="text-center text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
-            商品尚未設定價格
+            {dict.profile.productNoPrice}
           </p>
         )}
       </div>
@@ -420,6 +420,7 @@ function ProductBlock({ block, pageId }: { block: BlockData; pageId?: string }) 
 }
 
 function VideoBlock({ block }: { block: BlockData }) {
+  const { dict } = useDict()
   const content = block.content as VideoContent & { platform?: string }
   const platform = content.platform ?? 'youtube'
   const embedId = content.embedId ?? ''
@@ -498,7 +499,7 @@ function VideoBlock({ block }: { block: BlockData }) {
       className="flex items-center justify-between w-full"
       style={{ padding: '16px 20px', background: 'white', border: '1px solid var(--color-border)', borderRadius: 12, textDecoration: 'none', boxShadow: 'var(--shadow-sm)' }}>
       <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-        🎬 {block.title ?? '觀看影片'}
+        🎬 {block.title ?? dict.profile.watchVideo}
       </span>
       <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
     </a>
@@ -550,6 +551,7 @@ function EmailFormBlock({ block, pageId }: { block: BlockData; pageId?: string }
 }
 
 function CountdownBlock({ block }: { block: BlockData }) {
+  const { dict } = useDict()
   const content = block.content as { targetDate: string; label?: string; expiredText?: string }
   const [remaining, setRemaining] = useState('')
   const [expired, setExpired] = useState(false)
@@ -559,12 +561,12 @@ function CountdownBlock({ block }: { block: BlockData }) {
       const target = new Date(content.targetDate).getTime()
       const now = Date.now()
       const diff = target - now
-      if (diff <= 0) { setExpired(true); setRemaining(content.expiredText ?? '已結束'); return }
+      if (diff <= 0) { setExpired(true); setRemaining(content.expiredText ?? dict.profile.countdownEnded); return }
       const d = Math.floor(diff / 86400000)
       const h = Math.floor((diff % 86400000) / 3600000)
       const m = Math.floor((diff % 3600000) / 60000)
       const s = Math.floor((diff % 60000) / 1000)
-      setRemaining(`${d > 0 ? d + '天 ' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
+      setRemaining(`${d > 0 ? d + dict.profile.countdownDay + ' ' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
     }
     update()
     const id = setInterval(update, 1000)
@@ -1003,6 +1005,7 @@ function sanitizeEmbed(html: string): string {
 }
 
 function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: string }) {
+  const { dict } = useDict()
   const content = block.content as CalendarEventContent
   if (!content?.startDate || !content?.timezone) return null
 
@@ -1074,7 +1077,7 @@ function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: stri
           className="btn-primary flex-1 justify-center"
           style={{ borderRadius: 10, padding: '10px 14px', fontSize: 13 }}>
           <CalendarPlus size={14} />
-          加入 Google 日曆
+          {dict.profile.addToGoogleCal}
         </button>
         <button onClick={handleIcs}
           className="flex-shrink-0 flex items-center gap-1.5 justify-center font-semibold"
@@ -1085,7 +1088,7 @@ function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: stri
             color: 'var(--theme-text, var(--color-text-primary))',
             cursor: 'pointer',
           }}
-          title="下載 .ics 給 Apple / Outlook">
+          title={dict.profile.downloadIcsTitle}>
           <Download size={14} />
           .ics
         </button>

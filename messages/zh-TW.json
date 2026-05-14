@@ -132,6 +132,12 @@
   },
 
   "profile": {
+    "productNoPrice": "商品尚未設定價格",
+    "watchVideo": "觀看影片",
+    "countdownEnded": "已結束",
+    "countdownDay": "天",
+    "addToGoogleCal": "加入 Google 日曆",
+    "downloadIcsTitle": "下載 .ics 給 Apple / Outlook",
     "watermark": "由 Beam 製作",
     "share": "分享",
     "subscribe": "訂閱",
@@ -152,6 +158,118 @@
       "google": "Google Calendar",
       "ics": "下載 .ics"
     }
+  },
+
+  "demo": {
+    "metaTitle": "Mia 米亞 | Beam Demo",
+    "metaDescription": "一頁展示 Beam 能做的所有事 — 連結、商品、影片、表單、Podcast、合作邀約。",
+    "pageMain": "主頁",
+    "pageCollab": "合作邀約"
+  },
+
+  "pricing": {
+    "navSignIn": "登入 / 註冊 →",
+    "heroTag": "選擇最適合你的方案",
+    "heroTitle": "成長到哪,方案跟到哪",
+    "heroSubtitle": "從新手創作者到品牌商家,每一步 Beam 都陪你",
+    "billingMonthly": "月繳",
+    "billingAnnual": "年繳",
+    "yearlyDiscount": "省 12%",
+    "popular": "最受歡迎",
+    "freeTag": "新手創作者入門",
+    "freePeriod": "/ 永久免費",
+    "freeCta": "免費開始使用",
+    "freeFeatures": [
+      "1 個頁面",
+      "12 個區塊",
+      "30 天數據分析",
+      "可販售商品（10% 抽成）",
+      "6 種基本區塊類型"
+    ],
+    "proTag": "個人創作者 / KOL / Freelancer",
+    "perMonth": "/ 月",
+    "annualSave": "年繳 NT${total},月均省 NT${saved}",
+    "proCta": "升級 Pro",
+    "proFeatures": [
+      "10 個頁面",
+      "20 個區塊 / 頁",
+      "90 天數據 + UTM 追蹤",
+      "<strong>5% 商品抽成</strong>(Free 的一半)",
+      "所有進階區塊類型",
+      "移除浮水印",
+      "3 人團隊協作"
+    ],
+    "premiumTag": "品牌 / Agency / 商家",
+    "premiumCta": "升級 Premium",
+    "premiumFeatures": [
+      "<strong>無限頁面與區塊</strong>",
+      "無限數據保留",
+      "<strong>2% 超低抽成</strong>",
+      "自訂網域 mybrand.com",
+      "自訂 Favicon 與 CSS",
+      "無限團隊成員",
+      "優先客服支援"
+    ],
+    "roiTitle": "賣越多,省越多",
+    "roiSubtitle": "月銷售額越高,Premium 的低抽成越划算",
+    "roiColSales": "月銷售額",
+    "roiColFree": "Free (10%)",
+    "roiColPro": "Pro (5% + 月費)",
+    "roiColPremium": "Premium (2% + 月費)",
+    "roiFootnote": "綠色標記為該銷售額下最划算的方案。月銷售超過 NT$8,000 即適合升級 Premium。",
+    "compareTitle": "完整功能比較",
+    "compareColFeature": "功能",
+    "features": [
+      {
+        "section": "核心功能",
+        "items": [
+          { "label": "頁面數量",                                          "free": "1",      "pro": "10",    "premium": "無限" },
+          { "label": "每頁區塊數",                                        "free": "12",     "pro": "20",    "premium": "無限" },
+          { "label": "基本區塊(連結、影片、橫幅、標題、FAQ、倒數)",     "free": true,     "pro": true,    "premium": true },
+          { "label": "進階區塊(商品、Email 表單、輪播、地圖、HTML)",    "free": false,    "pro": true,    "premium": true },
+          { "label": "密碼保護頁面",                                       "free": true,     "pro": true,    "premium": true },
+          { "label": "主題預設與自訂色彩",                                 "free": true,     "pro": true,    "premium": true },
+          { "label": "排程發佈",                                            "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "商品販售",
+        "items": [
+          { "label": "可販售數位商品",                                     "free": true,     "pro": true,    "premium": true },
+          { "label": "平台抽成",                                            "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "訂單管理後台",                                       "free": true,     "pro": true,    "premium": true },
+          { "label": "Stripe 金流串接",                                     "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "數據分析",
+        "items": [
+          { "label": "分析資料保留",                                       "free": "30 天",  "pro": "90 天", "premium": "無限" },
+          { "label": "點擊 / 曝光 / CTR",                                  "free": true,     "pro": true,    "premium": true },
+          { "label": "來源追蹤(UTM)",                                     "free": false,    "pro": true,    "premium": true },
+          { "label": "Referrer 分析",                                      "free": true,     "pro": true,    "premium": true }
+        ]
+      },
+      {
+        "section": "品牌與網域",
+        "items": [
+          { "label": "移除 Beam 浮水印",                                    "free": false,    "pro": true,    "premium": true },
+          { "label": "自訂 Favicon",                                        "free": false,    "pro": false,   "premium": true },
+          { "label": "自訂網域(mybrand.com)",                              "free": false,    "pro": false,   "premium": true },
+          { "label": "自訂 CSS",                                            "free": false,    "pro": false,   "premium": true }
+        ]
+      },
+      {
+        "section": "團隊與支援",
+        "items": [
+          { "label": "團隊協作成員",                                       "free": "—",      "pro": "3 人",  "premium": "無限" },
+          { "label": "電子郵件支援",                                       "free": true,     "pro": true,    "premium": true },
+          { "label": "優先客服",                                            "free": false,    "pro": false,   "premium": true }
+        ]
+      }
+    ],
+    "ctaTitle": "準備好開始了嗎?",
+    "ctaBtn": "免費建立你的頁面"
   },
 
   "admin": {

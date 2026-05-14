@@ -1,15 +1,40 @@
 import type { Metadata } from 'next'
+import { cookies, headers } from 'next/headers'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
 import { ProfileView, type ProfileViewProps } from '@/components/profile/ProfileView'
+import { DictProvider } from '@/components/i18n/DictProvider'
 import { BlockData } from '@/types'
+import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 // Static demo profile — does NOT depend on the database.
 // Used by the landing page hero iframe and as a permanent showcase URL.
 // To preview a real, dynamic profile, log in and visit /<your-username>.
 
-export const metadata: Metadata = {
-  title: 'Mia 米亞 | Beam Demo',
-  description: '一頁展示 Beam 能做的所有事 — 連結、商品、影片、表單、Podcast、合作邀約。',
-  robots: { index: false, follow: true },
+async function resolveLocale(): Promise<Locale> {
+  const c = await cookies()
+  const cookieLocale = c.get('lp_locale')?.value
+  if (isLocale(cookieLocale)) return cookieLocale
+  const h = await headers()
+  const acceptLanguage = h.get('accept-language') ?? ''
+  if (!acceptLanguage) return DEFAULT_LOCALE
+  try {
+    const langs = new Negotiator({ headers: { 'accept-language': acceptLanguage } }).languages()
+    const matched = matchLocale(langs, LOCALES as unknown as string[], DEFAULT_LOCALE)
+    return isLocale(matched) ? matched : DEFAULT_LOCALE
+  } catch {
+    return DEFAULT_LOCALE
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await resolveLocale()
+  const dict = await getDictionary(locale)
+  return {
+    title: dict.demo.metaTitle,
+    description: dict.demo.metaDescription,
+    robots: { index: false, follow: true },
+  }
 }
 
 const THEME_JSON = JSON.stringify({
@@ -250,5 +275,22 @@ interface DemoPageProps {
 
 export default async function DemoPage({ searchParams }: DemoPageProps) {
   const { page: pageSlug } = await searchParams
-  return <ProfileView {...DEMO_PROFILE} activePageSlug={pageSlug} />
+  const locale = await resolveLocale()
+  const dict = await getDictionary(locale)
+  // Override the two page tab names with locale-translated versions so the
+  // tab strip reads "Home / Collabs" in English instead of the Chinese
+  // originals. The block contents remain in their persona language (the
+  // demo is intentionally a Taiwanese KOL showcase).
+  const localized: ProfileViewProps = {
+    ...DEMO_PROFILE,
+    pages: DEMO_PROFILE.pages?.map((p, i) => ({
+      ...p,
+      name: i === 0 ? dict.demo.pageMain : dict.demo.pageCollab,
+    })),
+  }
+  return (
+    <DictProvider value={{ dict, locale }}>
+      <ProfileView {...localized} activePageSlug={pageSlug} />
+    </DictProvider>
+  )
 }
