@@ -1030,12 +1030,74 @@
     },
 
     "templates": {
-      "brand-site": { "name": "品牌官網風",      "description": "Hero banner + 圖文卡片 storytelling,適合 SaaS / 顧問 / 品牌" },
-      "kol":        { "name": "KOL / 創作者風",  "description": "大圖片 hero + 雙欄圖片組合,影片 + 商品,展現作品集" },
-      "portfolio":  { "name": "作品集 / 攝影風", "description": "極簡卡片 + 大量圖片格,適合設計師、攝影師、藝術家" },
-      "creator":    { "name": "IG / YouTube 創作者", "description": "社群連結 + 最新影片 + 合作邀約" },
-      "seller":     { "name": "線上課程 / 數位商品", "description": "商品列表 + 預購倒數 + 名單蒐集" },
-      "podcaster":  { "name": "Podcast 主持人",  "description": "收聽平台 + 訂閱 + 贊助" }
+      "brand-site": {
+        "name": "品牌官網風",
+        "description": "Hero banner + 圖文卡片 storytelling,適合 SaaS / 顧問 / 品牌",
+        "blocks": [
+          { "title": "我們相信好品牌,值得被看見", "content": { "caption": "專注於數位轉型的策略合作夥伴" } },
+          { "title": "🤖 AI 顧問服務",       "content": { "description": "從策略到落地一條龍,協助你把 AI 變成真實營收。已幫 200+ 品牌成功導入。",                "ctaLabel": "了解更多" } },
+          { "title": "✨ 自動化平台",        "content": { "description": "把重複工作交給 AI,把時間還給創造力。整合 LINE / IG / Email,一鍵啟動。",            "ctaLabel": "查看方案" } },
+          { "title": "📊 數據分析",          "content": { "description": "顧客行為分析、活動成效追蹤、即時 dashboard。讓決策有根據。",                          "ctaLabel": "預約諮詢" } },
+          { "title": "訂閱我們的最新動態",    "content": { "placeholder": "輸入 Email", "buttonText": "訂閱", "description": "每月一封,精選案例 + 產品更新。" } }
+        ]
+      },
+      "kol": {
+        "name": "KOL / 創作者風",
+        "description": "大圖片 hero + 雙欄圖片組合,影片 + 商品,展現作品集",
+        "blocks": [
+          { "title": "生活美學 × 穿搭靈感", "content": { "caption": "IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作歡迎私訊" } },
+          { "title": "近期作品",            "content": { "cellTitles": ["春夏穿搭", "咖啡日常", "旅行紀錄", "美妝開箱"] } },
+          { "title": "🎬 YouTube 頻道",     "content": {} },
+          { "title": "☕ 請我喝杯咖啡",      "content": {} },
+          { "title": "加入我的週報名單",     "content": { "placeholder": "輸入 Email", "buttonText": "訂閱", "description": "每週分享私藏好物 + 限時折扣碼" } }
+        ]
+      },
+      "portfolio": {
+        "name": "作品集 / 攝影風",
+        "description": "極簡卡片 + 大量圖片格,適合設計師、攝影師、藝術家",
+        "blocks": [
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",                "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",          "content": { "description": "十年累積的視覺語言,專注於品牌敘事與產品攝影。\n\n服務客戶包含 Apple、Nike、星巴克。", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ 合作洽詢",     "content": {} }
+        ]
+      },
+      "creator": {
+        "name": "IG / YouTube 創作者",
+        "description": "社群連結 + 最新影片 + 合作邀約",
+        "blocks": [
+          { "title": "主要內容",           "content": { "text": "主要內容" } },
+          { "title": "我的 YouTube 頻道",  "content": {} },
+          { "title": "最新合作 / Sponsored", "content": {} },
+          { "title": "聯絡我",             "content": { "text": "聯絡我" } },
+          { "title": "訂閱電子報",         "content": { "placeholder": "輸入你的 Email", "buttonText": "訂閱" } },
+          { "title": "商業合作邀約",       "content": {} }
+        ]
+      },
+      "seller": {
+        "name": "線上課程 / 數位商品",
+        "description": "商品列表 + 預購倒數 + 名單蒐集",
+        "blocks": [
+          { "title": "🔥 限時優惠", "content": { "text": "🔥 限時優惠" } },
+          { "title": "優惠結束倒數", "content": { "label": "優惠結束倒數" } },
+          { "title": "主打商品",     "content": { "description": "替換成你的商品介紹" } },
+          { "title": "更多資源",     "content": { "text": "更多資源" } },
+          { "title": "免費資源下載",  "content": {} },
+          { "title": "訂閱新品通知",  "content": { "placeholder": "輸入 Email", "buttonText": "訂閱" } }
+        ]
+      },
+      "podcaster": {
+        "name": "Podcast 主持人",
+        "description": "收聽平台 + 訂閱 + 贊助",
+        "blocks": [
+          { "title": "收聽平台",        "content": { "text": "收聽平台" } },
+          { "title": "🎵 Spotify",      "content": {} },
+          { "title": "🎧 Apple Podcasts", "content": {} },
+          { "title": "▶️ YouTube",       "content": {} },
+          { "title": "支持我們",         "content": { "text": "支持我們" } },
+          { "title": "☕ 請我們喝杯咖啡",  "content": {} }
+        ]
+      }
     },
 
     "page": {

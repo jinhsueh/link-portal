@@ -1030,12 +1030,74 @@
     },
 
     "templates": {
-      "brand-site": { "name": "เว็บแบรนด์",          "description": "Hero banner + การ์ดเล่าเรื่อง เหมาะกับ SaaS / ที่ปรึกษา / แบรนด์" },
-      "kol":        { "name": "KOL / ครีเอเตอร์",   "description": "Hero ใหญ่ + ตาราง 2 คอลัมน์ + วิดีโอ + สินค้า โชว์พอร์ตโฟลิโอ" },
-      "portfolio":  { "name": "พอร์ตโฟลิโอ / ภาพถ่าย", "description": "การ์ดมินิมอล + ตารางรูป เหมาะกับดีไซเนอร์ ช่างภาพ ศิลปิน" },
-      "creator":    { "name": "ครีเอเตอร์ IG / YouTube", "description": "ลิงก์โซเชียล + วิดีโอล่าสุด + ติดต่อร่วมงาน" },
-      "seller":     { "name": "คอร์ส / สินค้าดิจิทัล", "description": "รายการสินค้า + นับถอยหลังพรีออเดอร์ + เก็บอีเมล" },
-      "podcaster":  { "name": "Podcaster",             "description": "แพลตฟอร์มฟัง + สมัคร + สนับสนุน" }
+      "brand-site": {
+        "name": "เว็บแบรนด์",
+        "description": "Hero banner + การ์ดเล่าเรื่อง เหมาะกับ SaaS / ที่ปรึกษา / แบรนด์",
+        "blocks": [
+          { "title": "แบรนด์ที่ดีสมควรถูกมองเห็น", "content": { "caption": "พาร์ทเนอร์เชิงกลยุทธ์เพื่อการเปลี่ยนผ่านสู่ดิจิทัล" } },
+          { "title": "🤖 ที่ปรึกษา AI",       "content": { "description": "จากกลยุทธ์ถึงลงมือทำ ครบจบที่เดียว ช่วยเปลี่ยน AI ให้เป็นรายได้จริง 200+ แบรนด์ใช้แล้ว",          "ctaLabel": "ดูเพิ่มเติม" } },
+          { "title": "✨ แพลตฟอร์มอัตโนมัติ",  "content": { "description": "ส่งงานซ้ำให้ AI ทำ คืนเวลาให้ความคิดสร้างสรรค์ รวม LINE / IG / Email คลิกเดียวเริ่มได้",      "ctaLabel": "ดูแพ็กเกจ" } },
+          { "title": "📊 วิเคราะห์ข้อมูล",     "content": { "description": "วิเคราะห์พฤติกรรมลูกค้า ติดตามผลแคมเปญ dashboard เรียลไทม์ ตัดสินใจอย่างมีข้อมูล",        "ctaLabel": "นัดคุย" } },
+          { "title": "รับข่าวสารล่าสุด",       "content": { "placeholder": "กรอกอีเมล", "buttonText": "สมัคร", "description": "เดือนละ 1 ฉบับ คัดสรรเคสสตัดี้ + อัปเดตผลิตภัณฑ์" } }
+        ]
+      },
+      "kol": {
+        "name": "KOL / ครีเอเตอร์",
+        "description": "Hero ใหญ่ + ตาราง 2 คอลัมน์ + วิดีโอ + สินค้า โชว์พอร์ตโฟลิโอ",
+        "blocks": [
+          { "title": "ไลฟ์สไตล์ × แรงบันดาลใจ", "content": { "caption": "ผู้ติดตาม IG 120K ✦ YouTube รายสัปดาห์ ✦ ติดต่อร่วมงานได้" } },
+          { "title": "ผลงานล่าสุด",              "content": { "cellTitles": ["สไตล์ฤดูใบไม้ผลิ", "ไดอารี่กาแฟ", "บันทึกการเดินทาง", "แกะกล่องเครื่องสำอาง"] } },
+          { "title": "🎬 ช่อง YouTube",          "content": {} },
+          { "title": "☕ เลี้ยงกาแฟ",            "content": {} },
+          { "title": "สมัครรับจดหมายรายสัปดาห์", "content": { "placeholder": "กรอกอีเมล", "buttonText": "สมัคร", "description": "รายสัปดาห์ ของเด็ดส่วนตัว + โค้ดส่วนลดลิมิเต็ด" } }
+        ]
+      },
+      "portfolio": {
+        "name": "พอร์ตโฟลิโอ / ภาพถ่าย",
+        "description": "การ์ดมินิมอล + ตารางรูป เหมาะกับดีไซเนอร์ ช่างภาพ ศิลปิน",
+        "blocks": [
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",                "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",          "content": { "description": "สั่งสมภาษาภาพถ่ายมา 10 ปี เน้นการเล่าเรื่องแบรนด์และถ่ายภาพสินค้า\n\nลูกค้ามี Apple, Nike, Starbucks", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ ติดต่อร่วมงาน", "content": {} }
+        ]
+      },
+      "creator": {
+        "name": "ครีเอเตอร์ IG / YouTube",
+        "description": "ลิงก์โซเชียล + วิดีโอล่าสุด + ติดต่อร่วมงาน",
+        "blocks": [
+          { "title": "เนื้อหาหลัก",         "content": { "text": "เนื้อหาหลัก" } },
+          { "title": "ช่อง YouTube ของฉัน", "content": {} },
+          { "title": "ร่วมงานล่าสุด / Sponsored", "content": {} },
+          { "title": "ติดต่อ",              "content": { "text": "ติดต่อ" } },
+          { "title": "สมัครรับจดหมาย",       "content": { "placeholder": "กรอกอีเมล", "buttonText": "สมัคร" } },
+          { "title": "ติดต่อร่วมงานธุรกิจ",  "content": {} }
+        ]
+      },
+      "seller": {
+        "name": "คอร์ส / สินค้าดิจิทัล",
+        "description": "รายการสินค้า + นับถอยหลังพรีออเดอร์ + เก็บอีเมล",
+        "blocks": [
+          { "title": "🔥 ลิมิเต็ด",    "content": { "text": "🔥 ลิมิเต็ด" } },
+          { "title": "นับถอยหลังจบโปร", "content": { "label": "นับถอยหลังจบโปร" } },
+          { "title": "สินค้าเด่น",     "content": { "description": "เปลี่ยนเป็นคำอธิบายสินค้าของคุณ" } },
+          { "title": "ทรัพยากรอื่น",   "content": { "text": "ทรัพยากรอื่น" } },
+          { "title": "ดาวน์โหลดฟรี",   "content": {} },
+          { "title": "แจ้งเตือนสินค้าใหม่", "content": { "placeholder": "กรอกอีเมล", "buttonText": "สมัคร" } }
+        ]
+      },
+      "podcaster": {
+        "name": "Podcaster",
+        "description": "แพลตฟอร์มฟัง + สมัคร + สนับสนุน",
+        "blocks": [
+          { "title": "ฟังบนแพลตฟอร์ม",    "content": { "text": "ฟังบนแพลตฟอร์ม" } },
+          { "title": "🎵 Spotify",       "content": {} },
+          { "title": "🎧 Apple Podcasts", "content": {} },
+          { "title": "▶️ YouTube",       "content": {} },
+          { "title": "สนับสนุนเรา",       "content": { "text": "สนับสนุนเรา" } },
+          { "title": "☕ เลี้ยงกาแฟพวกเรา", "content": {} }
+        ]
+      }
     },
 
     "page": {

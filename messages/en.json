@@ -1030,12 +1030,74 @@
     },
 
     "templates": {
-      "brand-site": { "name": "Brand site",        "description": "Hero banner + storytelling cards. For SaaS, consultants, brands." },
-      "kol":        { "name": "KOL / Creator",     "description": "Big hero + 2-column image grid + video + product. Showcase your work." },
-      "portfolio":  { "name": "Portfolio / Photo", "description": "Minimal cards + image grid. For designers, photographers, artists." },
-      "creator":    { "name": "IG / YouTube creator", "description": "Social links + latest video + collab inquiries." },
-      "seller":     { "name": "Course / Product",  "description": "Product list + countdown + email capture." },
-      "podcaster":  { "name": "Podcaster",         "description": "Listen platforms + subscribe + tip jar." }
+      "brand-site": {
+        "name": "Brand site",
+        "description": "Hero banner + storytelling cards. For SaaS, consultants, brands.",
+        "blocks": [
+          { "title": "Great brands deserve to be seen", "content": { "caption": "Your strategic partner for digital transformation" } },
+          { "title": "🤖 AI advisory",        "content": { "description": "Strategy to execution, end-to-end — turning AI into real revenue. 200+ brands shipped.",                   "ctaLabel": "Learn more" } },
+          { "title": "✨ Automation platform", "content": { "description": "Hand off repetitive work to AI, get your creative time back. LINE / IG / Email integrations, one-click setup.", "ctaLabel": "See plans" } },
+          { "title": "📊 Analytics",          "content": { "description": "Customer behavior analysis, campaign performance, real-time dashboards. Decisions backed by data.",          "ctaLabel": "Book a call" } },
+          { "title": "Subscribe to updates",  "content": { "placeholder": "Your email", "buttonText": "Subscribe", "description": "One email a month. Curated case studies and product updates." } }
+        ]
+      },
+      "kol": {
+        "name": "KOL / Creator",
+        "description": "Big hero + 2-column image grid + video + product. Showcase your work.",
+        "blocks": [
+          { "title": "Lifestyle × Style inspo",  "content": { "caption": "120K IG followers ✦ Weekly YouTube ✦ Open to collabs" } },
+          { "title": "Recent work",              "content": { "cellTitles": ["Spring style", "Coffee diaries", "Travel notes", "Beauty unboxing"] } },
+          { "title": "🎬 YouTube channel",  "content": {} },
+          { "title": "☕ Buy me a coffee",  "content": {} },
+          { "title": "Join my newsletter",  "content": { "placeholder": "Your email", "buttonText": "Subscribe", "description": "Weekly: hidden gems + members-only discount codes" } }
+        ]
+      },
+      "portfolio": {
+        "name": "Portfolio / Photo",
+        "description": "Minimal cards + image grid. For designers, photographers, artists.",
+        "blocks": [
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",               "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",           "content": { "description": "A decade of visual language, focused on brand storytelling and product photography.\n\nClients include Apple, Nike, Starbucks.", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ Inquiries",   "content": {} }
+        ]
+      },
+      "creator": {
+        "name": "IG / YouTube creator",
+        "description": "Social links + latest video + collab inquiries.",
+        "blocks": [
+          { "title": "Main content",        "content": { "text": "Main content" } },
+          { "title": "My YouTube channel",  "content": {} },
+          { "title": "Latest collab / Sponsored", "content": {} },
+          { "title": "Contact",             "content": { "text": "Contact" } },
+          { "title": "Newsletter",          "content": { "placeholder": "Your email", "buttonText": "Subscribe" } },
+          { "title": "Brand collabs",       "content": {} }
+        ]
+      },
+      "seller": {
+        "name": "Course / Product",
+        "description": "Product list + countdown + email capture.",
+        "blocks": [
+          { "title": "🔥 Limited offer", "content": { "text": "🔥 Limited offer" } },
+          { "title": "Offer ends in",    "content": { "label": "Offer ends in" } },
+          { "title": "Headline product", "content": { "description": "Replace with your product description" } },
+          { "title": "More resources",   "content": { "text": "More resources" } },
+          { "title": "Free download",    "content": {} },
+          { "title": "Get launch alerts", "content": { "placeholder": "Your email", "buttonText": "Subscribe" } }
+        ]
+      },
+      "podcaster": {
+        "name": "Podcaster",
+        "description": "Listen platforms + subscribe + tip jar.",
+        "blocks": [
+          { "title": "Listen on",       "content": { "text": "Listen on" } },
+          { "title": "🎵 Spotify",      "content": {} },
+          { "title": "🎧 Apple Podcasts", "content": {} },
+          { "title": "▶️ YouTube",      "content": {} },
+          { "title": "Support us",       "content": { "text": "Support us" } },
+          { "title": "☕ Buy us a coffee", "content": {} }
+        ]
+      }
     },
 
     "page": {

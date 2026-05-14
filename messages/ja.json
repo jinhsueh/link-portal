@@ -1030,12 +1030,74 @@
     },
 
     "templates": {
-      "brand-site": { "name": "ブランドサイト風",      "description": "Hero バナー + ストーリーカード。SaaS、コンサル、ブランド向け" },
-      "kol":        { "name": "KOL / クリエイター風", "description": "大きな hero + 2カラム画像 + 動画 + 商品。作品集として展開" },
-      "portfolio":  { "name": "ポートフォリオ / 写真",  "description": "ミニマルカード + 多数の画像グリッド。デザイナー、写真家、アーティスト向け" },
-      "creator":    { "name": "IG / YouTube クリエイター", "description": "ソーシャルリンク + 最新動画 + コラボお問い合わせ" },
-      "seller":     { "name": "オンライン講座 / デジタル商品", "description": "商品リスト + 予約カウントダウン + メール収集" },
-      "podcaster":  { "name": "Podcast ホスト",         "description": "再生プラットフォーム + 購読 + サポート" }
+      "brand-site": {
+        "name": "ブランドサイト風",
+        "description": "Hero バナー + ストーリーカード。SaaS、コンサル、ブランド向け",
+        "blocks": [
+          { "title": "良いブランドは見つけられる価値がある", "content": { "caption": "デジタル変革のための戦略パートナー" } },
+          { "title": "🤖 AI コンサルティング", "content": { "description": "戦略から実装まで一貫支援、AIを実際の売上に変える。200以上のブランドで実績。",                  "ctaLabel": "詳しく見る" } },
+          { "title": "✨ 自動化プラットフォーム", "content": { "description": "繰り返し作業はAIへ、創造の時間を取り戻そう。LINE / IG / Email 統合、ワンクリック起動。", "ctaLabel": "プランを見る" } },
+          { "title": "📊 アナリティクス",       "content": { "description": "顧客行動分析、キャンペーン効果、リアルタイムダッシュボード。根拠ある意思決定を。",        "ctaLabel": "相談予約" } },
+          { "title": "最新情報を購読",          "content": { "placeholder": "メールアドレス", "buttonText": "登録", "description": "月1通、厳選事例 + 製品アップデート。" } }
+        ]
+      },
+      "kol": {
+        "name": "KOL / クリエイター風",
+        "description": "大きな hero + 2カラム画像 + 動画 + 商品。作品集として展開",
+        "blocks": [
+          { "title": "ライフスタイル × スタイル",  "content": { "caption": "IG 12万フォロワー ✦ YouTube 毎週更新 ✦ コラボ歓迎、DMください" } },
+          { "title": "最近の作品",                  "content": { "cellTitles": ["春夏コーデ", "コーヒー日記", "旅の記録", "コスメ開封"] } },
+          { "title": "🎬 YouTube チャンネル",       "content": {} },
+          { "title": "☕ コーヒーをおごる",         "content": {} },
+          { "title": "週報リストに参加",            "content": { "placeholder": "メールアドレス", "buttonText": "登録", "description": "毎週、お気に入り + 期間限定クーポン" } }
+        ]
+      },
+      "portfolio": {
+        "name": "ポートフォリオ / 写真",
+        "description": "ミニマルカード + 多数の画像グリッド。デザイナー、写真家、アーティスト向け",
+        "blocks": [
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",                "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",          "content": { "description": "10年の視覚言語の蓄積、ブランドストーリーテリングと製品撮影に特化。\n\nクライアントには Apple、Nike、スターバックスを含む。", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ お問い合わせ",  "content": {} }
+        ]
+      },
+      "creator": {
+        "name": "IG / YouTube クリエイター",
+        "description": "ソーシャルリンク + 最新動画 + コラボお問い合わせ",
+        "blocks": [
+          { "title": "メインコンテンツ",       "content": { "text": "メインコンテンツ" } },
+          { "title": "私の YouTube チャンネル", "content": {} },
+          { "title": "最新コラボ / Sponsored",  "content": {} },
+          { "title": "お問い合わせ",            "content": { "text": "お問い合わせ" } },
+          { "title": "ニュースレター登録",       "content": { "placeholder": "メールアドレス", "buttonText": "登録" } },
+          { "title": "ビジネスコラボのご相談",    "content": {} }
+        ]
+      },
+      "seller": {
+        "name": "オンライン講座 / デジタル商品",
+        "description": "商品リスト + 予約カウントダウン + メール収集",
+        "blocks": [
+          { "title": "🔥 期間限定オファー", "content": { "text": "🔥 期間限定オファー" } },
+          { "title": "オファー終了まで",    "content": { "label": "オファー終了まで" } },
+          { "title": "メイン商品",          "content": { "description": "あなたの商品紹介に書き換えてください" } },
+          { "title": "その他リソース",      "content": { "text": "その他リソース" } },
+          { "title": "無料ダウンロード",     "content": {} },
+          { "title": "新商品通知を購読",     "content": { "placeholder": "メールアドレス", "buttonText": "登録" } }
+        ]
+      },
+      "podcaster": {
+        "name": "Podcast ホスト",
+        "description": "再生プラットフォーム + 購読 + サポート",
+        "blocks": [
+          { "title": "再生プラットフォーム", "content": { "text": "再生プラットフォーム" } },
+          { "title": "🎵 Spotify",          "content": {} },
+          { "title": "🎧 Apple Podcasts",   "content": {} },
+          { "title": "▶️ YouTube",          "content": {} },
+          { "title": "応援する",            "content": { "text": "応援する" } },
+          { "title": "☕ コーヒーをおごる",   "content": {} }
+        ]
+      }
     },
 
     "page": {

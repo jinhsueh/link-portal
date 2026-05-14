@@ -26,7 +26,7 @@ import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
 import { DownloadCloud, Sparkles } from 'lucide-react'
 import { ProfileView } from '@/components/profile/ProfileView'
-import { getPageTemplates } from '@/lib/block-templates'
+import { getPageTemplates, type TemplateLocaleEntry } from '@/lib/block-templates'
 import { toast } from '@/components/ui/Toast'
 import { DEFAULT_THEME, type PageTheme } from '@/lib/theme'
 
@@ -50,7 +50,7 @@ export default function AdminPage() {
   // on `t.templates` so the array isn't rebuilt every render — though even
   // a fresh array per render is cheap (6 entries, no React keys depend on
   // identity besides id which is stable).
-  const PAGE_TEMPLATES = getPageTemplates(t.templates as unknown as Record<string, { name: string; description: string } | undefined>)
+  const PAGE_TEMPLATES = getPageTemplates(t.templates as unknown as Record<string, TemplateLocaleEntry | undefined>)
   const router = useRouter()
   const [user, setUser] = useState<UserData | null>(null)
   const [blocks, setBlocks] = useState<BlockData[]>([])

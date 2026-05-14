@@ -313,25 +313,66 @@ export const PAGE_TEMPLATE_SKELETONS: PageTemplateSkeleton[] = [
 ]
 
 /**
- * Resolve full PageTemplate objects (with localized name + description) from
- * the static skeletons + a dict. Used by the empty-state template chooser
- * in /admin/page.tsx so the picker renders in the visitor's chosen locale.
+ * Locale-aware overrides for a template entry in the dict. Each block's
+ * `title` and selected `content` text fields can be overridden; image URLs
+ * and other structural content stay in the skeleton.
  *
- * The dict slot is expected at `dict.admin.templates[id]` and must contain
- * `name` + `description`. Falls back to the template id and an empty
- * description if a locale is missing an entry (defensive — shouldn't happen).
+ * Special case: `content.cellTitles` is a string[] that, when present,
+ * overrides the `title` of each cell in the skeleton's `content.cells`
+ * array (used by image_grid blocks) without touching the cell's image URL
+ * or linkUrl.
+ */
+export interface TemplateLocaleEntry {
+  name: string
+  description: string
+  blocks?: Array<{
+    title?: string
+    content?: Record<string, unknown> & { cellTitles?: string[] }
+  }>
+}
+
+/**
+ * Resolve full PageTemplate objects (with localized name, description, and
+ * block titles + content text) from the static skeletons + a dict slot.
+ * Used by the empty-state template chooser in /admin/page.tsx so the
+ * picker AND the blocks it creates render in the visitor's chosen locale.
+ *
+ * The dict slot is expected at `dict.admin.templates[id]`. Falls back to
+ * the skeleton's seed values for anything missing in the dict (defensive —
+ * shouldn't happen with a properly-populated locale file).
  */
 export function getPageTemplates(
-  templatesDict: Record<string, { name: string; description: string } | undefined>,
+  templatesDict: Record<string, TemplateLocaleEntry | undefined>,
 ): PageTemplate[] {
   return PAGE_TEMPLATE_SKELETONS.map(sk => {
     const meta = templatesDict[sk.id]
+    const localizedBlocks = meta?.blocks ?? []
     return {
       id: sk.id,
       emoji: sk.emoji,
       name: meta?.name ?? sk.id,
       description: meta?.description ?? '',
-      blocks: sk.blocks,
+      blocks: sk.blocks.map((b, i) => {
+        const lb = localizedBlocks[i]
+        if (!lb) return b
+        // Start from skeleton's content, layer localized overrides on top.
+        let content: Record<string, unknown> = { ...b.content, ...(lb.content ?? {}) }
+        // Special case: cellTitles overrides per-cell .title without
+        // replacing the whole cells array (which carries image URLs).
+        const cellTitles = lb.content?.cellTitles
+        if (Array.isArray(cellTitles) && Array.isArray(b.content.cells)) {
+          content.cells = (b.content.cells as Array<Record<string, unknown>>).map((cell, j) => ({
+            ...cell,
+            title: cellTitles[j] ?? cell.title,
+          }))
+          delete (content as { cellTitles?: unknown }).cellTitles
+        }
+        return {
+          type: b.type,
+          title: lb.title ?? b.title,
+          content,
+        }
+      }),
     }
   })
 }
