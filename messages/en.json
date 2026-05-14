@@ -449,6 +449,10 @@
       "actionAppearance": "Go to appearance",
       "actionCopy":     "Copy link"
     },
+    "trialBadge": "Pro Trial {days}d",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "shareThisPage": "Share this page",
 
     "profileEditor": {
       "header": "Click to edit profile + socials",

@@ -11,7 +11,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { role } = await req.json()
 
   if (!['editor', 'viewer'].includes(role)) {
-    return NextResponse.json({ error: '角色必須是 editor 或 viewer' }, { status: 400 })
+    return NextResponse.json({ error: 'Role must be editor or viewer.' }, { status: 400 })
   }
 
   const member = await prisma.teamMember.findUnique({ where: { id } })

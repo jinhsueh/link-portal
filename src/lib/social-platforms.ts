@@ -18,7 +18,7 @@ export const PLATFORMS: PlatformConfig[] = [
   { id: 'pinterest',  label: 'Pinterest',   color: '#E60023', patterns: [/pinterest\.com/i, /pin\.it/i] },
   { id: 'telegram',   label: 'Telegram',    color: '#0088CC', patterns: [/t\.me/i, /telegram\.org/i] },
   { id: 'whatsapp',   label: 'WhatsApp',    color: '#25D366', patterns: [/wa\.me/i, /whatsapp\.com/i, /api\.whatsapp\.com/i] },
-  { id: 'xiaohongshu',label: '小紅書',      color: '#FF2442', patterns: [/xiaohongshu\.com/i, /xhslink\.com/i, /xhs\.link/i] },
+  { id: 'xiaohongshu',label: 'Xiaohongshu', color: '#FF2442', patterns: [/xiaohongshu\.com/i, /xhslink\.com/i, /xhs\.link/i] },
   { id: 'bilibili',   label: 'Bilibili',    color: '#00A1D6', patterns: [/bilibili\.com/i, /b23\.tv/i] },
   { id: 'discord',    label: 'Discord',     color: '#5865F2', patterns: [/discord\.gg/i, /discord\.com/i] },
 ]

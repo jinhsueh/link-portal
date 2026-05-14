@@ -449,6 +449,10 @@
       "actionAppearance": "前往外觀",
       "actionCopy":     "複製連結"
     },
+    "trialBadge": "Pro Trial {days}天",
+    "darkMode": "深色模式",
+    "lightMode": "淺色模式",
+    "shareThisPage": "分享此頁面",
 
     "profileEditor": {
       "header": "點擊編輯個人資料與社群連結",

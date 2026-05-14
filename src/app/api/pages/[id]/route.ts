@@ -49,7 +49,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   // Prevent deleting the last page
   const count = await prisma.page.count({ where: { userId: session.id } })
   if (count <= 1) {
-    return NextResponse.json({ error: '至少需要保留一個分頁' }, { status: 400 })
+    return NextResponse.json({ error: 'At least one page is required.' }, { status: 400 })
   }
 
   await prisma.page.delete({ where: { id } })

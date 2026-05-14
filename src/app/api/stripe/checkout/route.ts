@@ -28,9 +28,9 @@ export async function POST(req: NextRequest) {
     }
     const price = content.price ?? 0
     const currency = toCurrencyCode(content.currency ?? 'NT$')
-    const title = block.title ?? '商品'
+    const title = block.title ?? 'Product'
 
-    if (price <= 0) return NextResponse.json({ error: '商品金額必須大於 0' }, { status: 400 })
+    if (price <= 0) return NextResponse.json({ error: 'Product price must be greater than 0.' }, { status: 400 })
 
     const stripe = getStripe()
 

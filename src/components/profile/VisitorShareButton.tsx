@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Share2, Check } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 /**
  * Floating share button for *visitors* (not the page owner).
@@ -15,6 +16,7 @@ import { Share2, Check } from 'lucide-react'
  * there at all bumps conversion on shareable creators.
  */
 export function VisitorShareButton({ shareUrl, shareTitle }: { shareUrl: string; shareTitle: string }) {
+  const { dict } = useDict()
   const [shared, setShared] = useState(false)
 
   const handleShare = async () => {
@@ -36,7 +38,7 @@ export function VisitorShareButton({ shareUrl, shareTitle }: { shareUrl: string;
 
   return (
     <button onClick={handleShare}
-      aria-label="分享此頁面"
+      aria-label={dict.admin.shareThisPage}
       className="fixed z-30 rounded-full flex items-center justify-center transition-all"
       style={{
         bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',

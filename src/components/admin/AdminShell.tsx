@@ -112,7 +112,7 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
                 {effectivePlan === 'premium'
                   ? 'Premium'
                   : effectivePlan === 'pro'
-                    ? (trialDaysLeft && trialDaysLeft > 0 ? `Pro Trial ${trialDaysLeft}天` : 'Pro')
+                    ? (trialDaysLeft && trialDaysLeft > 0 ? dict.admin.trialBadge.replace('{days}', String(trialDaysLeft)) : 'Pro')
                     : 'Free'
                 }
               </span>
@@ -129,7 +129,7 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
                 <ExternalLink size={14} /><span className="hidden sm:inline">{dict.common.preview}</span>
               </a>
             )}
-            <button onClick={toggleDark} style={navLinkStyle()} title={dark ? '淺色模式' : '深色模式'}>
+            <button onClick={toggleDark} style={navLinkStyle()} title={dark ? dict.admin.lightMode : dict.admin.darkMode}>
               {dark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
             <button onClick={handleLogout} style={navLinkStyle()}

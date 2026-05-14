@@ -37,10 +37,10 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
     if (tier === 'pro' && user.plan === 'pro') {
-      return NextResponse.json({ error: '你已經是 Pro 會員' }, { status: 400 })
+      return NextResponse.json({ error: 'You are already a Pro member.' }, { status: 400 })
     }
     if (tier === 'premium' && user.plan === 'premium') {
-      return NextResponse.json({ error: '你已經是 Premium 會員' }, { status: 400 })
+      return NextResponse.json({ error: 'You are already a Premium member.' }, { status: 400 })
     }
 
     const stripe = getStripe()

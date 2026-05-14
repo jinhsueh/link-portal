@@ -9,7 +9,7 @@ export async function DELETE(req: Request) {
 
   const { confirmUsername } = await req.json()
   if (confirmUsername !== session.username) {
-    return NextResponse.json({ error: '用戶名不正確，無法刪除帳號' }, { status: 400 })
+    return NextResponse.json({ error: 'Username does not match — account not deleted.' }, { status: 400 })
   }
 
   // Cascade delete handles all related data

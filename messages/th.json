@@ -449,6 +449,10 @@
       "actionAppearance": "ไปที่ลุค",
       "actionCopy":     "คัดลอกลิงก์"
     },
+    "trialBadge": "ทดลอง Pro เหลือ {days} วัน",
+    "darkMode": "โหมดมืด",
+    "lightMode": "โหมดสว่าง",
+    "shareThisPage": "แชร์หน้านี้",
 
     "profileEditor": {
       "header": "คลิกเพื่อแก้ไขโปรไฟล์และโซเชียล",

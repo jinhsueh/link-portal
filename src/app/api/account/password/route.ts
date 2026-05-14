@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const { currentPassword, newPassword } = await req.json()
 
   if (!newPassword || newPassword.length < 6) {
-    return NextResponse.json({ error: '新密碼至少需要 6 個字元' }, { status: 400 })
+    return NextResponse.json({ error: 'New password must be at least 6 characters.' }, { status: 400 })
   }
 
   const user = await prisma.user.findUnique({
@@ -23,11 +23,11 @@ export async function POST(req: Request) {
   // If user has a password, verify current password
   if (user.passwordHash) {
     if (!currentPassword) {
-      return NextResponse.json({ error: '請輸入目前密碼' }, { status: 400 })
+      return NextResponse.json({ error: 'Please enter your current password.' }, { status: 400 })
     }
     const valid = await bcrypt.compare(currentPassword, user.passwordHash)
     if (!valid) {
-      return NextResponse.json({ error: '目前密碼不正確' }, { status: 400 })
+      return NextResponse.json({ error: 'Current password is incorrect.' }, { status: 400 })
     }
   }
 

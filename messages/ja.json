@@ -449,6 +449,10 @@
       "actionAppearance": "外観へ",
       "actionCopy":     "リンクをコピー"
     },
+    "trialBadge": "Pro トライアル残り{days}日",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
+    "shareThisPage": "このページをシェア",
 
     "profileEditor": {
       "header": "クリックしてプロフィールとソーシャルを編集",

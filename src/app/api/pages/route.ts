@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
   const limits = getPlanLimits(user!)
   if (count >= limits.maxPages) {
     const msg = limits.maxPages === 1
-      ? '免費方案最多 1 個分頁，請升級 Pro'
-      : `目前方案最多 ${limits.maxPages} 個分頁，請升級 Premium 解除限制`
+      ? 'The free plan supports 1 page — upgrade to Pro for more.'
+      : `Your plan allows up to ${limits.maxPages} pages — upgrade to Premium for unlimited.`
     return NextResponse.json({ error: msg, upgrade: true }, { status: 403 })
   }
 

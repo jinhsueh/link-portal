@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   if (!isBlockTypeAllowed(effectivePlan, type)) {
     return NextResponse.json(
-      { error: '此區塊類型需要 Pro 方案，請升級', upgrade: true },
+      { error: 'This block type requires the Pro plan — please upgrade.', upgrade: true },
       { status: 403 }
     )
   }
@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
   const blockCount = await prisma.block.count({ where: { pageId } })
   if (blockCount >= limits.maxBlocksPerPage) {
     const msg = limits.maxBlocksPerPage === Infinity
-      ? '已達區塊上限'
-      : `目前方案每頁最多 ${limits.maxBlocksPerPage} 個區塊，請升級解除限制`
+      ? 'Block limit reached.'
+      : `Your plan allows up to ${limits.maxBlocksPerPage} blocks per page — upgrade to unlock more.`
     return NextResponse.json({ error: msg, upgrade: true }, { status: 403 })
   }
 
