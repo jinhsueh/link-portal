@@ -881,7 +881,9 @@
         "savedShort": "Saved ✓",
         "savingShort": "Saving…",
         "profileMovedTitle": "Profile and social links",
-        "profileMovedHint": "Moved to the main editor — click to go there"
+        "profileMovedHint": "Moved to the main editor — click to go there",
+        "languageSectionTitle": "Interface language",
+        "languageSectionHint": "Affects this admin area, settings, and your public page chrome (subscribe button, watermark…)."
       },
       "qr": {
         "subtitle": "Scan to open your public page",

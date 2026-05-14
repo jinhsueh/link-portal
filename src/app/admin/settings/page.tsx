@@ -7,6 +7,7 @@ import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plu
 import { AdminShell } from '@/components/admin/AdminShell'
 import { PLAN_PRICING } from '@/lib/plan'
 import { useDict } from '@/components/i18n/DictProvider'
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 
 const TAB_IDS = ['account', 'billing', 'password', 'notifications', 'danger'] as const
 const TAB_ICONS = { account: User, billing: CreditCard, password: Lock, notifications: Bell, danger: AlertTriangle } as const
@@ -311,6 +312,20 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
         </div>
         <ArrowRight size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
       </Link>
+
+      {/* Language picker — affects the whole admin + public chrome via the
+          lp_locale cookie. Reuses the same dropdown component used on the
+          landing pages; refresh()-based navigation when we're not on a
+          locale-prefixed route keeps the user on /admin/settings. */}
+      <div style={cardStyle}>
+        <h2 className="font-bold mb-2" style={{ color: 'var(--color-text-primary)', fontSize: 17 }}>
+          {a.languageSectionTitle}
+        </h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+          {a.languageSectionHint}
+        </p>
+        <LanguageSwitcher />
+      </div>
 
       {/* QR Code */}
       <div style={cardStyle}>

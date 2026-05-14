@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Globe, Check, ChevronDown } from 'lucide-react'
 import { LOCALES, LOCALE_META, type Locale, isLocale } from '@/lib/i18n'
+import { useDict } from '@/components/i18n/DictProvider'
 
 /**
  * Header language switcher. Picking a locale:
@@ -22,13 +23,19 @@ import { LOCALES, LOCALE_META, type Locale, isLocale } from '@/lib/i18n'
 export function LanguageSwitcher() {
   const router = useRouter()
   const pathname = usePathname()
+  const { locale: ctxLocale } = useDict()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // Derive current locale from URL
-  const currentLocale = (LOCALES as readonly string[]).find(
+  // Derive current locale from URL first, fall back to DictProvider context.
+  // The URL form (/en, /ja…) is preferred so the switcher reflects what's
+  // actually being rendered. On routes WITHOUT a locale prefix (/admin,
+  // /<username>) we fall back to the context locale (resolved server-side
+  // from cookie or Accept-Language by the wrapping layout).
+  const urlLocale = (LOCALES as readonly string[]).find(
     l => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
   ) as Locale | undefined
+  const currentLocale: Locale | undefined = urlLocale ?? ctxLocale
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -47,11 +54,20 @@ export function LanguageSwitcher() {
     document.cookie = `lp_locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
     setOpen(false)
 
-    // Rewrite the locale segment in the pathname when one is present, else
-    // just go to the locale root. Preserves sub-path like /en/pricing → /ja/pricing.
-    if (currentLocale) {
-      const rest = pathname.replace(`/${currentLocale}`, '') || '/'
+    // 3 navigation paths:
+    //   1. URL has a locale prefix (/en, /ja…) → rewrite that segment, keep
+    //      sub-path so /en/pricing → /ja/pricing.
+    //   2. URL has NO locale prefix but is locale-agnostic (/admin/*, /pricing,
+    //      etc.) → stay on the SAME path and just refresh. The cookie was just
+    //      set, so the server-rendered layout will pick the new locale up.
+    //   3. Bare landing (no path) → go to the locale root.
+    if (urlLocale) {
+      const rest = pathname.replace(`/${urlLocale}`, '') || '/'
       router.push(`/${locale}${rest === '/' ? '' : rest}`)
+    } else if (pathname && pathname !== '/') {
+      // Reload the current page so the DictProvider layout re-resolves locale
+      // from the freshly-written cookie. router.refresh() preserves the URL.
+      router.refresh()
     } else {
       router.push(`/${locale}`)
     }

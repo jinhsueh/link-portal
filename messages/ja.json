@@ -881,7 +881,9 @@
         "savedShort": "保存しました ✓",
         "savingShort": "保存中...",
         "profileMovedTitle": "プロフィールとソーシャルリンク",
-        "profileMovedHint": "メインエディタへ移動しました。クリックで開きます"
+        "profileMovedHint": "メインエディタへ移動しました。クリックで開きます",
+        "languageSectionTitle": "表示言語",
+        "languageSectionHint": "管理画面、設定、公開ページのUI(購読ボタン、ウォーターマーク…)に反映されます。"
       },
       "qr": {
         "subtitle": "スキャンしてあなたの公開ページへ",

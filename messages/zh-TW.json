@@ -881,7 +881,9 @@
         "savedShort": "已儲存 ✓",
         "savingShort": "儲存中...",
         "profileMovedTitle": "個人資料與社群連結",
-        "profileMovedHint": "已搬移至主頁編輯器,點擊前往設定"
+        "profileMovedHint": "已搬移至主頁編輯器,點擊前往設定",
+        "languageSectionTitle": "介面語言",
+        "languageSectionHint": "影響後台、設定頁、公開頁的介面文字(訂閱按鈕、浮水印…)。"
       },
       "qr": {
         "subtitle": "掃描即可直接開啟你的個人頁面",
