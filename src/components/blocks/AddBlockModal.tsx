@@ -8,27 +8,28 @@ import { PLATFORM_ICONS } from '@/components/ui/SocialIcon'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso } from '@/lib/calendar'
 import { useDict } from '@/components/i18n/DictProvider'
 
-const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
-  { type: 'link',           icon: ExternalLink, label: '連結按鈕', description: '加入 IG、YouTube 等連結' },
-  { type: 'product',        icon: ShoppingBag,  label: '數位商品', description: '販售課程、模板等產品' },
-  { type: 'calendar_event', icon: CalendarPlus, label: '加入日曆', description: '快閃、直播、團購結單' },
-  { type: 'email_form',     icon: Mail,         label: 'Email 表單', description: '蒐集粉絲名單' },
+// Block type icon registry + ordering. Labels and descriptions are
+// looked up from dict.admin.blockTypes[type] at render time, since they
+// depend on the active locale.
+const RECOMMENDED_TYPES: { type: BlockType; icon: React.ElementType }[] = [
+  { type: 'link',           icon: ExternalLink },
+  { type: 'product',        icon: ShoppingBag },
+  { type: 'calendar_event', icon: CalendarPlus },
+  { type: 'email_form',     icon: Mail },
 ]
 
-const MORE_TYPES: { type: BlockType; icon: React.ElementType; label: string; description: string }[] = [
-  { type: 'banner',     icon: Image,        label: '橫幅看板', description: '圖片橫幅區塊' },
-  { type: 'heading',    icon: AlignLeft,    label: '標題文字', description: '分頁標題或說明' },
-  { type: 'video',      icon: Video,        label: '影片',     description: '嵌入 YouTube / Spotify' },
-  { type: 'countdown',  icon: Timer,        label: '倒數計時', description: '活動或限時優惠' },
-  { type: 'faq',        icon: HelpCircle,   label: 'FAQ 問答', description: '常見問題摺疊' },
-  { type: 'carousel',   icon: Images,       label: '圖片輪播', description: '多張圖滑動展示' },
-  { type: 'image_grid', icon: LayoutGrid,   label: '雙欄圖片', description: '兩欄式並排展示' },
-  { type: 'feature_card', icon: Newspaper,  label: '圖文卡片', description: '圖左文右,storytelling 風' },
-  { type: 'map',        icon: MapPin,       label: '地圖嵌入', description: 'Google Maps' },
-  { type: 'embed',      icon: Code,         label: 'HTML 嵌入', description: '自訂 iframe / HTML' },
+const MORE_TYPES: { type: BlockType; icon: React.ElementType }[] = [
+  { type: 'banner',       icon: Image },
+  { type: 'heading',      icon: AlignLeft },
+  { type: 'video',        icon: Video },
+  { type: 'countdown',    icon: Timer },
+  { type: 'faq',          icon: HelpCircle },
+  { type: 'carousel',     icon: Images },
+  { type: 'image_grid',   icon: LayoutGrid },
+  { type: 'feature_card', icon: Newspaper },
+  { type: 'map',          icon: MapPin },
+  { type: 'embed',        icon: Code },
 ]
-
-const BLOCK_TYPES = [...RECOMMENDED_TYPES, ...MORE_TYPES]
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
 
@@ -178,7 +179,9 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
               推薦
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-              {RECOMMENDED_TYPES.map(({ type, icon: Icon, label, description }) => (
+              {RECOMMENDED_TYPES.map(({ type, icon: Icon }) => {
+                const meta = dict.admin.blockTypes[type] ?? { label: type, description: '' }
+                return (
                 <button key={type} onClick={() => { setSelected(type); setStep('fill') }}
                   className="flex flex-col items-center gap-2 text-center transition-all"
                   style={{ padding: 16, borderRadius: 12, border: '2px solid var(--color-primary)', background: 'var(--color-primary-light)', cursor: 'pointer' }}
@@ -188,10 +191,11 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                     style={{ background: 'var(--gradient-blue)' }}>
                     <Icon size={18} color="white" />
                   </div>
-                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
-                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{description}</span>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{meta.label}</span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{meta.description}</span>
                 </button>
-              ))}
+                )
+              })}
             </div>
             {/* More block types */}
             <p className="text-xs font-bold uppercase tracking-wider mb-3 px-1"
@@ -199,7 +203,9 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
               {t.more}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {MORE_TYPES.map(({ type, icon: Icon, label, description }) => (
+              {MORE_TYPES.map(({ type, icon: Icon }) => {
+                const meta = dict.admin.blockTypes[type] ?? { label: type, description: '' }
+                return (
                 <button key={type} onClick={() => { setSelected(type); setStep('fill') }}
                   className="flex flex-col items-center gap-2 text-center transition-all"
                   style={{ padding: 16, borderRadius: 12, border: '1px solid var(--color-border)', background: 'white', cursor: 'pointer' }}
@@ -209,10 +215,11 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
                     style={{ background: 'var(--gradient-blue)' }}>
                     <Icon size={18} color="white" />
                   </div>
-                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
-                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{description}</span>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{meta.label}</span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{meta.description}</span>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
         ) : (

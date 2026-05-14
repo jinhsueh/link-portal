@@ -142,7 +142,7 @@ export default function AdminPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('確定刪除此區塊？')) return
+    if (!confirm(t.page.deleteBlockConfirm)) return
     setBlocks(prev => prev.filter(b => b.id !== id))
     await fetch(`/api/blocks/${id}`, { method: 'DELETE' })
   }
@@ -170,7 +170,7 @@ export default function AdminPage() {
     for (const b of tpl.blocks) {
       await handleAdd(b.type, b.title, b.content)
     }
-    toast.success(`已套用「${tpl.name}」範本`)
+    toast.success(t.page.appliedTemplate.replace('{name}', tpl.name))
   }
 
   // Move a block to another page. The destination block joins the bottom
@@ -188,10 +188,10 @@ export default function AdminPage() {
         body: JSON.stringify({ pageId: destPageId }),
       })
       if (!res.ok) throw new Error('move failed')
-      toast.success(`已移至「${destPage.name}」`)
+      toast.success(t.page.movedToPage.replace('{name}', destPage.name))
       loadUser(activePageId ?? undefined)
     } catch {
-      toast.error('移動失敗,請再試一次')
+      toast.error(t.page.moveFailed)
       loadUser(activePageId ?? undefined)
     }
   }
@@ -202,7 +202,7 @@ export default function AdminPage() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: user.id, pageId: activePageId,
-        type: block.type, title: (block.title ?? '') + '（副本）',
+        type: block.type, title: (block.title ?? '') + t.page.duplicateSuffix,
         content: block.content,
       }),
     })
@@ -228,7 +228,7 @@ export default function AdminPage() {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pinned }),
     })
-    toast.success(pinned ? '已設為主推' : '已取消主推')
+    toast.success(pinned ? t.page.pinned : t.page.unpinned)
   }
 
   const handleSchedule = async (id: string, scheduleStart: string | null, scheduleEnd: string | null) => {
@@ -258,7 +258,7 @@ export default function AdminPage() {
   }
 
   const handleBatchDelete = async () => {
-    if (!confirm(`確定刪除 ${selectedIds.size} 個區塊？`)) return
+    if (!confirm(t.page.batchDeleteConfirm.replace('{count}', String(selectedIds.size)))) return
     const ids = Array.from(selectedIds)
     setBlocks(prev => prev.filter(b => !ids.includes(b.id)))
     await Promise.all(ids.map(id => fetch(`/api/blocks/${id}`, { method: 'DELETE' })))
@@ -290,12 +290,12 @@ export default function AdminPage() {
         })
       }
       await loadUser(activePageId)
-    } catch { alert('匯入失敗：檔案格式不正確') }
+    } catch { alert(t.page.importFailed) }
     e.target.value = ''
   }
 
   const handleAddPage = async () => {
-    const name = prompt('新分頁名稱：')
+    const name = prompt(t.page.newPagePrompt)
     if (!name?.trim()) return
     const res = await fetch('/api/pages', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -308,7 +308,7 @@ export default function AdminPage() {
   }
 
   const handleRenamePage = async (pageId: string, currentName: string) => {
-    const name = prompt('重新命名分頁：', currentName)
+    const name = prompt(t.page.renamePagePrompt, currentName)
     if (!name?.trim() || name.trim() === currentName) return
     await fetch(`/api/pages/${pageId}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
@@ -322,13 +322,13 @@ export default function AdminPage() {
     if (!page) return
     const currentPw = (page as unknown as { password?: string }).password
     if (currentPw) {
-      if (!confirm('確定移除密碼保護？')) return
+      if (!confirm(t.page.removePasswordConfirm)) return
       await fetch(`/api/pages/${pageId}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: '' }),
       })
     } else {
-      const pw = prompt('設定頁面密碼：')
+      const pw = prompt(t.page.setPasswordPrompt)
       if (!pw?.trim()) return
       await fetch(`/api/pages/${pageId}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
@@ -339,12 +339,12 @@ export default function AdminPage() {
   }
 
   const handleDeletePage = async (pageId: string) => {
-    if (!confirm('確定刪除此分頁？所有區塊也會一併刪除。')) return
+    if (!confirm(t.page.deletePageConfirm)) return
     const res = await fetch(`/api/pages/${pageId}`, { method: 'DELETE' })
     if (res.ok) await loadUser()
     else {
       const data = await res.json()
-      alert(data.error ?? '刪除失敗')
+      alert(data.error ?? t.page.deletePageFailed)
     }
   }
 
@@ -460,7 +460,7 @@ export default function AdminPage() {
                   color: 'white', border: 'none', cursor: 'pointer',
                   transition: 'background 0.2s',
                 }}>
-                {linkCopied ? <><Check size={12} />已複製</> : <><Copy size={12} />複製連結</>}
+                {linkCopied ? <><Check size={12} />{t.page.copied}</> : <><Copy size={12} />{t.page.copyLink}</>}
               </button>
             </div>
           )}
@@ -578,18 +578,18 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3 mb-4 p-3 rounded-xl"
                   style={{ background: 'var(--color-primary-light)', border: '1px solid #C3D9FF' }}>
                   <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>
-                    已選取 {selectedIds.size} 個區塊
+                    {t.page.selectedCount.replace('{n}', String(selectedIds.size))}
                   </span>
                   <div className="flex-1" />
                   <button onClick={handleBatchHide}
                     className="flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg"
                     style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
-                    <EyeOff size={13} />隱藏
+                    <EyeOff size={13} />{t.page.batchHide}
                   </button>
                   <button onClick={handleBatchDelete}
                     className="flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg"
                     style={{ background: '#FFF5F5', border: '1px solid #FCA5A5', cursor: 'pointer', color: '#E53E3E' }}>
-                    <TrashIcon size={13} />刪除
+                    <TrashIcon size={13} />{t.page.batchDelete}
                   </button>
                 </div>
               )}
@@ -602,8 +602,8 @@ export default function AdminPage() {
                       style={{ background: 'var(--color-primary-light)' }}>
                       <Sparkles size={22} style={{ color: 'var(--color-primary)' }} />
                     </div>
-                    <p className="font-bold mb-1" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>30 秒上線你的頁面</p>
-                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>選一個範本快速開始 — 之後想改什麼都可以</p>
+                    <p className="font-bold mb-1" style={{ color: 'var(--color-text-primary)', fontSize: 16 }}>{t.page.emptyStateTitle}</p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t.page.emptyStateSubtitle}</p>
                   </div>
 
                   {/* Template chooser */}
@@ -666,7 +666,7 @@ export default function AdminPage() {
                       <span>{t.importFromLinktree}</span>
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                         style={{ background: 'rgba(255,255,255,0.22)', color: 'white' }}>
-                        推薦
+                        {t.page.recommendedTag}
                       </span>
                     </button>
                     <button onClick={() => setShowAddModal(true)}
@@ -827,7 +827,7 @@ export default function AdminPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'var(--color-text-muted)', fontSize: 13,
                   }}>
-                    載入中…
+                    {t.page.loading}
                   </div>
                 )
               ) : (
@@ -924,7 +924,7 @@ export default function AdminPage() {
                           <span style={{ opacity: 0.5 }}>›</span>
                         </div>
                       )) : (
-                        ['我的 YouTube 頻道', '最新文章', '合作洽詢'].map(text => (
+                        t.page.themePreviewSamples.map(text => (
                           <div key={text} className="flex items-center justify-between text-sm font-semibold"
                             style={{
                               padding: '12px 16px',

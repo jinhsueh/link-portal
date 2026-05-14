@@ -5,6 +5,7 @@ import { BlockData, BlockType } from '@/types'
 import { X, ChevronDown, Upload, Eye } from 'lucide-react'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso, utcIsoToLocal } from '@/lib/calendar'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
+import { useDict } from '@/components/i18n/DictProvider'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { toast } from '@/components/ui/Toast'
 
@@ -17,6 +18,9 @@ interface Props {
 }
 
 export function EditBlockModal({ block, onSave, onClose }: Props) {
+  const { dict } = useDict()
+  // Short alias — the dict path is long and repeated heavily in this modal.
+  const t = dict.admin.editBlockModal
   const content = block.content as Record<string, unknown>
 
   // Common
@@ -68,8 +72,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [scrapingProductImg, setScrapingProductImg] = useState(false)
 
   // Email
-  const [placeholder, setPlaceholder] = useState((content.placeholder as string) ?? '輸入你的 Email')
-  const [buttonText, setButtonText] = useState((content.buttonText as string) ?? '訂閱')
+  // NOTE: defaults are dict-driven (see below). The state initialisers use the
+  // raw stored value if present, otherwise fall back to the locale-aware
+  // placeholder we resolve from `dict.admin.editBlockModal.email.*`.
+  const [placeholder, setPlaceholder] = useState((content.placeholder as string) ?? '')
+  const [buttonText, setButtonText] = useState((content.buttonText as string) ?? '')
   const [webhookUrl, setWebhookUrl] = useState((content.webhookUrl as string) ?? '')
 
   // Video
@@ -272,7 +279,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     }
 
     onSave(block.id, block.type === 'heading' ? text : title, newContent)
-    toast.success('已儲存')
+    toast.success(dict.toast.saved)
     onClose()
   }
 
@@ -348,13 +355,25 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [calUrl, setCalUrl] = useState((content.url as string) ?? '')
   const [calIconUrl, setCalIconUrl] = useState((content.iconUrl as string) ?? '')
 
+  // Block type label comes from the locale dict. Keeping a typed local
+  // alias so existing TYPE_LABELS[block.type] sites keep working without
+  // a sweep. Falls back to block.type when a key is missing (defensive).
   const TYPE_LABELS: Record<BlockType, string> = {
-    link: '連結按鈕', banner: '橫幅看板', video: '影片',
-    email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
-    countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
-    feature_card: '圖文卡片',
-    map: '地圖嵌入', embed: 'HTML 嵌入',
-    calendar_event: '加入日曆',
+    link:           dict.admin.blockTypes.link.label,
+    banner:         dict.admin.blockTypes.banner.label,
+    video:          dict.admin.blockTypes.video.label,
+    email_form:     dict.admin.blockTypes.email_form.label,
+    product:        dict.admin.blockTypes.product.label,
+    heading:        dict.admin.blockTypes.heading.label,
+    social:         dict.admin.blockTypes.social.label,
+    countdown:      dict.admin.blockTypes.countdown.label,
+    faq:            dict.admin.blockTypes.faq.label,
+    carousel:       dict.admin.blockTypes.carousel.label,
+    image_grid:     dict.admin.blockTypes.image_grid.label,
+    feature_card:   dict.admin.blockTypes.feature_card.label,
+    map:            dict.admin.blockTypes.map.label,
+    embed:          dict.admin.blockTypes.embed.label,
+    calendar_event: dict.admin.blockTypes.calendar_event.label,
   }
 
   // ── Inline preview ──
@@ -393,7 +412,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         break
       case 'heading':
         previewContent = {
-          text: text || '標題預覽', size,
+          text: text || dict.admin.editBlockModal.headingPreview, size,
           ...(headingColor ? { color: headingColor } : {}),
           ...(headingAlign !== 'center' ? { align: headingAlign } : {}),
         }
@@ -502,7 +521,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)' }}>
           <h2 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
-            編輯{TYPE_LABELS[block.type]}
+            {t.editPrefix}{TYPE_LABELS[block.type]}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 4 }}>
             <X size={20} />
@@ -519,7 +538,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             <div className="rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
               <div className="flex items-center gap-1.5 mb-3 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', letterSpacing: '0.1em' }}>
                 <Eye size={11} />
-                即時預覽
+                {t.livePreview}
               </div>
               <div className="pointer-events-none select-none">
                 <BlockRenderer block={previewBlock} btnStyle="outline" />
@@ -530,17 +549,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── LINK ── */}
           {block.type === 'link' && (
             <>
-              <Field label="標題">
+              <Field label={t.fields.title}>
                 <input value={title} onChange={e => setTitle(e.target.value)} required
-                  placeholder="顯示名稱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.fields.displayNamePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="連結網址">
+              <Field label={t.fields.url}>
                 <input value={url} onChange={e => setUrl(e.target.value)} required
                   placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="描述（選填）">
+              <Field label={t.fields.descriptionOptional}>
                 <input value={linkDesc} onChange={e => setLinkDesc(e.target.value)}
-                  placeholder="簡短描述文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.fields.shortDescPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
 
               {/* Customization — flat instead of hidden in <details> because
@@ -552,33 +571,33 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     onChange={e => setLinkHideIcon(e.target.checked)}
                     style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
                   <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                    隱藏左側 icon
+                    {t.link.hideLeftIcon}
                   </span>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      按鈕背景色
+                      {t.link.buttonBg}
                     </label>
                     <div className="flex items-center gap-2">
                       <input type="color" value={linkBgColor || '#FFFFFF'}
                         onChange={e => setLinkBgColor(e.target.value)}
                         style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
                       <input value={linkBgColor} onChange={e => setLinkBgColor(e.target.value)}
-                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        placeholder={t.defaultPlaceholder} style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
                         onFocus={focusIn} onBlur={focusOut} />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      文字色
+                      {t.link.textColor}
                     </label>
                     <div className="flex items-center gap-2">
                       <input type="color" value={linkTextColor || '#1A1A2E'}
                         onChange={e => setLinkTextColor(e.target.value)}
                         style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
                       <input value={linkTextColor} onChange={e => setLinkTextColor(e.target.value)}
-                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        placeholder={t.defaultPlaceholder} style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
                         onFocus={focusIn} onBlur={focusOut} />
                     </div>
                   </div>
@@ -588,14 +607,14 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     onClick={() => { setLinkBgColor(''); setLinkTextColor('') }}
                     className="text-xs font-semibold"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: 0 }}>
-                    重設為主題預設色
+                    {t.resetThemeDefault}
                   </button>
                 )}
 
                 {/* ── Custom icon upload (replaces auto-fetched favicon) ── */}
                 <div className="pt-3" style={{ borderTop: '1px dashed var(--color-border)' }}>
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                    自訂左側 icon(取代自動抓取的網站圖示)
+                    {t.link.customIcon}
                   </label>
                   <div className="flex items-center gap-2">
                     {linkIconUrl && (
@@ -604,7 +623,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     )}
                     <label className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
                       style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
-                      <Upload size={12} /> {uploading ? '上傳中…' : (linkIconUrl ? '更換' : '上傳 icon')}
+                      <Upload size={12} /> {uploading ? t.uploadEllipsis : (linkIconUrl ? t.link.iconChange : t.link.uploadIcon)}
                       <input type="file" accept="image/*" className="hidden"
                         onChange={e => {
                           const f = e.target.files?.[0]
@@ -616,7 +635,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                       <button type="button" onClick={() => setLinkIconUrl('')}
                         className="text-xs font-semibold"
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E53E3E', padding: '4px 6px' }}>
-                        移除
+                        {t.remove}
                       </button>
                     )}
                   </div>
@@ -626,21 +645,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      標題字型大小
+                      {t.link.titleSize}
                     </label>
                     <select value={linkTitleSize} onChange={e => setLinkTitleSize(parseInt(e.target.value))}
                       style={{ ...inputStyle, padding: '8px 10px', fontSize: 12 }}
                       onFocus={focusIn} onBlur={focusOut}>
-                      <option value={12}>小 (12px)</option>
-                      <option value={14}>標準 (14px)</option>
-                      <option value={16}>大 (16px)</option>
-                      <option value={18}>特大 (18px)</option>
-                      <option value={20}>超大 (20px)</option>
+                      <option value={12}>{t.link.sizeSmall}</option>
+                      <option value={14}>{t.link.sizeStandard}</option>
+                      <option value={16}>{t.link.sizeLarge}</option>
+                      <option value={18}>{t.link.sizeXL}</option>
+                      <option value={20}>{t.link.sizeXXL}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      標題對齊
+                      {t.link.titleAlign}
                     </label>
                     <div className="flex gap-1">
                       {(['left', 'center', 'right'] as const).map(a => (
@@ -652,7 +671,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                             color: linkTitleAlign === a ? 'white' : 'var(--color-text-secondary)',
                             border: '1px solid var(--color-border)', cursor: 'pointer',
                           }}>
-                          {a === 'left' ? '左' : a === 'center' ? '中' : '右'}
+                          {a === 'left' ? t.link.alignLeft : a === 'center' ? t.link.alignCenter : t.link.alignRight}
                         </button>
                       ))}
                     </div>
@@ -663,20 +682,20 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      邊框顏色
+                      {t.link.borderColor}
                     </label>
                     <div className="flex items-center gap-2">
                       <input type="color" value={linkBorderColor || '#E5E7EB'}
                         onChange={e => setLinkBorderColor(e.target.value)}
                         style={{ width: 36, height: 36, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
                       <input value={linkBorderColor} onChange={e => setLinkBorderColor(e.target.value)}
-                        placeholder="預設" style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
+                        placeholder={t.defaultPlaceholder} style={{ ...inputStyle, padding: '8px 10px', fontSize: 12, flex: 1 }}
                         onFocus={focusIn} onBlur={focusOut} />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                      邊框粗細(px)
+                      {t.link.borderWidth}
                     </label>
                     <input type="number" min={0} max={6} value={linkBorderWidth}
                       onChange={e => setLinkBorderWidth(Math.min(6, Math.max(0, parseInt(e.target.value) || 0)))}
@@ -688,13 +707,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 {/* ── Hover animation ── */}
                 <div>
                   <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-                    滑鼠移過動態效果
+                    {t.link.hoverEffect}
                   </label>
                   <div className="grid grid-cols-3 gap-1">
                     {([
-                      { value: 'none', label: '無' },
-                      { value: 'bounce', label: '彈跳' },
-                      { value: 'scale', label: '放大' },
+                      { value: 'none', label: t.link.hoverNone },
+                      { value: 'bounce', label: t.link.hoverBounce },
+                      { value: 'scale', label: t.link.hoverScale },
                     ] as const).map(opt => (
                       <button key={opt.value} type="button"
                         onClick={() => setLinkAnimation(opt.value)}
@@ -716,18 +735,18 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── BANNER ── */}
           {block.type === 'banner' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="橫幅標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.banner.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="橫幅圖片">
+              <Field label={t.banner.imageLabel}>
                 <div className="flex gap-2 items-center">
                   <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} required
-                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.banner.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
                   <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                     style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                     <Upload size={14} />
-                    {uploading ? '...' : '上傳'}
+                    {uploading ? t.uploadingShort : t.upload}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={e => {
                         const f = e.target.files?.[0]
@@ -741,21 +760,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
                 )}
               </Field>
-              <Field label="點擊連結（選填）">
+              <Field label={t.banner.linkLabel}>
                 <input value={linkUrl} onChange={e => setLinkUrl(e.target.value)}
                   placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="Alt 文字（選填）">
+              <Field label={t.banner.altLabel}>
                 <input value={alt} onChange={e => setAlt(e.target.value)}
-                  placeholder="圖片替代文字" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.banner.altPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="說明文字（選填）">
+              <Field label={t.banner.captionLabel}>
                 <textarea value={bannerCaption} onChange={e => setBannerCaption(e.target.value)}
-                  placeholder="會顯示在公開頁的圖片下方,支援換行" rows={2}
+                  placeholder={t.banner.captionPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              {/* 圖片蓋字 toggle (Phase 2 visual upgrade #3) */}
+              {/* Text-overlay toggle (Phase 2 visual upgrade #3) */}
               <OverlayToggle
                 value={bannerOverlay}
                 position={bannerOverlayPos}
@@ -768,17 +787,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── HEADING ── */}
           {block.type === 'heading' && (
             <>
-              <Field label="標題文字(支援多行 / **粗體** / [連結文字](網址))">
+              <Field label={t.heading.textLabel}>
                 <textarea value={text} onChange={e => setText(e.target.value)} required
-                  placeholder={'標題文字\n第二行也可以\n**粗體** 或 [連結文字](https://...)'}
+                  placeholder={t.heading.textPlaceholder}
                   rows={4}
                   style={{ ...inputStyle, resize: 'vertical', minHeight: 90 } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
                 <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                  ✨ 換行直接 Enter、粗體用 <code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>**字**</code>、超連結用 <code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>[文字](網址)</code>
+                  {t.heading.textHelpA}<code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>**…**</code>{t.heading.textHelpBoldHint}<code style={{ background: 'var(--color-surface)', padding: '1px 4px', borderRadius: 4 }}>[…](url)</code>{t.heading.textHelpLinkHint}
                 </p>
               </Field>
-              <Field label="文字大小">
+              <Field label={t.heading.sizeLabel}>
                 <div className="flex gap-2">
                   {(['sm', 'md', 'lg'] as const).map(s => (
                     <button key={s} type="button" onClick={() => setSize(s)}
@@ -789,12 +808,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         border: `1px solid ${size === s ? 'var(--color-primary)' : 'var(--color-border)'}`,
                         cursor: 'pointer',
                       }}>
-                      {{ sm: '小', md: '中', lg: '大' }[s]}
+                      {{ sm: t.heading.sizeSm, md: t.heading.sizeMd, lg: t.heading.sizeLg }[s]}
                     </button>
                   ))}
                 </div>
               </Field>
-              <Field label="文字對齊">
+              <Field label={t.heading.alignLabel}>
                 <div className="flex gap-2">
                   {(['left', 'center', 'right'] as const).map(a => (
                     <button key={a} type="button" onClick={() => setHeadingAlign(a)}
@@ -805,24 +824,24 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         border: `1px solid ${headingAlign === a ? 'var(--color-primary)' : 'var(--color-border)'}`,
                         cursor: 'pointer',
                       }}>
-                      {a === 'left' ? '左' : a === 'center' ? '中' : '右'}
+                      {a === 'left' ? t.heading.alignLeft : a === 'center' ? t.heading.alignCenter : t.heading.alignRight}
                     </button>
                   ))}
                 </div>
               </Field>
-              <Field label="文字顏色(選填)">
+              <Field label={t.heading.colorLabel}>
                 <div className="flex items-center gap-2">
                   <input type="color" value={headingColor || '#1A1A2E'}
                     onChange={e => setHeadingColor(e.target.value)}
                     style={{ width: 40, height: 40, border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer', padding: 2, background: 'none' }} />
                   <input value={headingColor} onChange={e => setHeadingColor(e.target.value)}
-                    placeholder="預設(主題色)" style={{ ...inputStyle, flex: 1 }}
+                    placeholder={t.heading.colorPlaceholder} style={{ ...inputStyle, flex: 1 }}
                     onFocus={focusIn} onBlur={focusOut} />
                   {headingColor && (
                     <button type="button" onClick={() => setHeadingColor('')}
                       className="text-xs font-semibold flex-shrink-0"
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '4px 8px' }}>
-                      重設
+                      {t.reset}
                     </button>
                   )}
                 </div>
@@ -833,17 +852,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── PRODUCT ── */}
           {block.type === 'product' && (
             <>
-              <Field label="商品名稱">
+              <Field label={t.product.nameLabel}>
                 <input value={title} onChange={e => setTitle(e.target.value)} required
-                  placeholder="例：Notion 模板包" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.product.namePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="商品描述（選填）">
+              <Field label={t.product.descLabel}>
                 <textarea value={productDesc} onChange={e => setProductDesc(e.target.value)}
-                  placeholder="簡短說明…" rows={2}
+                  placeholder={t.product.descPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="售價">
+              <Field label={t.product.priceLabel}>
                 <div className="flex gap-2">
                   <div className="relative" style={{ flexShrink: 0 }}>
                     <select value={currency} onChange={e => setCurrency(e.target.value)}
@@ -860,20 +879,20 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 </div>
               </Field>
               {/* Optional checkout URL — also doubles as the source for the
-                  "從網址抓圖" auto-fetch below. */}
-              <Field label="購買連結(選填)">
+                  auto-fetch button below. */}
+              <Field label={t.product.checkoutLabel}>
                 <input value={productCheckoutUrl} onChange={e => setProductCheckoutUrl(e.target.value)}
-                  placeholder="https://stripe.com/... 或 https://gumroad.com/..."
+                  placeholder={t.product.checkoutPlaceholder}
                   style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="商品圖片（選填）">
+              <Field label={t.product.imageLabel}>
                 <div className="flex gap-2 items-center">
                   <input value={productImg} onChange={e => setProductImg(e.target.value)}
-                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.product.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
                   <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                     style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                     <Upload size={14} />
-                    {uploading ? '...' : '上傳'}
+                    {uploading ? t.uploadingShort : t.upload}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={e => {
                         const f = e.target.files?.[0]
@@ -894,19 +913,19 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         const data = await res.json()
                         if (res.ok && data.image) {
                           setProductImg(data.image)
-                          toast.success('已從網址抓取商品圖')
+                          toast.success(t.product.scrapeSuccess)
                         } else {
-                          toast.error(data.error ?? '抓圖失敗')
+                          toast.error(data.error ?? t.product.scrapeFailed)
                         }
                       } catch {
-                        toast.error('網路錯誤,請再試一次')
+                        toast.error(t.product.scrapeNetwork)
                       }
                       setScrapingProductImg(false)
                     }}
                     disabled={scrapingProductImg}
                     className="mt-2 text-xs font-semibold flex items-center gap-1"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '4px 0' }}>
-                    {scrapingProductImg ? '抓取中…' : '🔍 從購買連結自動抓圖'}
+                    {scrapingProductImg ? t.product.scrapeRunning : t.product.scrapeButton}
                   </button>
                 )}
                 {productImg && (
@@ -920,15 +939,15 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── EMAIL FORM ── */}
           {block.type === 'email_form' && (
             <>
-              <Field label="輸入框 placeholder">
+              <Field label={t.email.placeholderLabel}>
                 <input value={placeholder} onChange={e => setPlaceholder(e.target.value)}
-                  placeholder="輸入你的 Email" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.email.placeholderDefault} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="按鈕文字">
+              <Field label={t.email.buttonLabel}>
                 <input value={buttonText} onChange={e => setButtonText(e.target.value)}
-                  placeholder="訂閱" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.email.buttonDefault} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="Webhook 網址（選填）">
+              <Field label={t.email.webhookLabel}>
                 <input value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)}
                   placeholder="https://hooks.zapier.com/..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
@@ -938,20 +957,20 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── VIDEO ── */}
           {block.type === 'video' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="影片標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.video.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="YouTube / TikTok / Spotify 網址">
+              <Field label={t.video.urlLabel}>
                 <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} required
                   placeholder="https://youtube.com/watch?v=..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)', marginTop: -8 }}>
-                支援 youtube.com, youtu.be, tiktok.com, open.spotify.com 連結
+                {t.video.urlHint}
               </p>
-              <Field label="說明文字（選填）">
+              <Field label={t.video.descLabel}>
                 <textarea value={videoDescription} onChange={e => setVideoDescription(e.target.value)}
-                  placeholder="顯示在標題下方的小字說明" rows={2}
+                  placeholder={t.video.descPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
@@ -961,21 +980,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── COUNTDOWN ── */}
           {block.type === 'countdown' && (
             <>
-              <Field label="標題">
+              <Field label={t.fields.title}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="倒數標題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.countdown.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="目標時間">
+              <Field label={t.countdown.targetLabel}>
                 <input type="datetime-local" value={targetDate} onChange={e => setTargetDate(e.target.value)}
                   required style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="倒數標籤（選填）">
+              <Field label={t.countdown.tagLabel}>
                 <input value={countdownLabel} onChange={e => setCountdownLabel(e.target.value)}
-                  placeholder="即將開始" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.countdown.tagPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="結束後顯示文字（選填）">
+              <Field label={t.countdown.endTextLabel}>
                 <input value={expiredText} onChange={e => setExpiredText(e.target.value)}
-                  placeholder="已結束" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.countdown.endTextPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
             </>
           )}
@@ -983,29 +1002,29 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── FAQ ── */}
           {block.type === 'faq' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="常見問題" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.faq.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               {faqItems.map((item, i) => (
                 <div key={i} className="rounded-xl p-3" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>問題 {i + 1}</span>
+                    <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>{t.faq.questionNumber.replace('{n}', String(i + 1))}</span>
                     {faqItems.length > 1 && (
                       <button type="button" onClick={() => setFaqItems(prev => prev.filter((_, j) => j !== i))}
-                        className="text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>刪除</button>
+                        className="text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>{t.faq.deleteItem}</button>
                     )}
                   </div>
                   <input value={item.question} onChange={e => setFaqItems(prev => prev.map((it, j) => j === i ? { ...it, question: e.target.value } : it))}
-                    placeholder="問題" style={{ ...inputStyle, marginBottom: 8 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.faq.questionPlaceholder} style={{ ...inputStyle, marginBottom: 8 }} onFocus={focusIn} onBlur={focusOut} />
                   <textarea value={item.answer} onChange={e => setFaqItems(prev => prev.map((it, j) => j === i ? { ...it, answer: e.target.value } : it))}
-                    placeholder="答案" rows={2} style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.faq.answerPlaceholder} rows={2} style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
                 </div>
               ))}
               <button type="button" onClick={() => setFaqItems(prev => [...prev, { question: '', answer: '' }])}
                 className="w-full py-2 text-sm font-semibold rounded-lg"
                 style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
-                + 新增問答
+                {t.faq.addItem}
               </button>
             </>
           )}
@@ -1013,13 +1032,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── CAROUSEL ── */}
           {block.type === 'carousel' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="圖片輪播" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.carousel.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="圖片說明（選填）">
+              <Field label={t.carousel.captionLabel}>
                 <textarea value={carouselCaption} onChange={e => setCarouselCaption(e.target.value)}
-                  placeholder="例:本季穿搭精選 / 春夏新品" rows={2}
+                  placeholder={t.carousel.captionPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
                 {/* Clarify what this field is for — customer feedback was that
@@ -1028,7 +1047,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     there's a title or caption), AND it doubles as alt-text
                     fallback for screen readers + search engines. */}
                 <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                  ✨ 顯示在輪播圖片下方;有設定標題時才會出現。也用於 Google 收錄與無障礙朗讀。
+                  {t.carousel.captionHelp}
                 </p>
               </Field>
               {carouselImages.map((img, i) => (
@@ -1037,11 +1056,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>#{i + 1}</span>
                     <div className="flex gap-2 flex-1">
                       <input value={img.url} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, url: e.target.value } : im))}
-                        placeholder="圖片網址" style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                        placeholder={t.carousel.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                       <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
                         style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                         <Upload size={12} />
-                        {uploading ? '...' : '上傳'}
+                        {uploading ? t.uploadingShort : t.upload}
                         <input type="file" accept="image/*" className="hidden"
                           onChange={e => {
                             const f = e.target.files?.[0]
@@ -1056,9 +1075,9 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     )}
                   </div>
                   <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
-                    placeholder="點擊連結（選填）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.carousel.linkPlaceholder} style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                   <input value={img.caption ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, caption: e.target.value } : im))}
-                    placeholder="此張圖片說明（選填,優先於整體說明）" style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.carousel.perImageCaptionPlaceholder} style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                   {img.url && (
                     <img src={img.url} alt={`Preview ${i + 1}`} className="rounded-lg"
                       style={{ width: '100%', height: 80, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
@@ -1068,7 +1087,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <button type="button" onClick={() => setCarouselImages(prev => [...prev, { url: '' }])}
                 className="w-full py-2 text-sm font-semibold rounded-lg"
                 style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
-                + 新增圖片
+                {t.carousel.addImage}
               </button>
               <OverlayToggle
                 value={carouselOverlay}
@@ -1082,29 +1101,29 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── IMAGE GRID (2-column, Portaly-style) ── */}
           {block.type === 'image_grid' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="例:春夏新品" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.imageGrid.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                每張圖以 1:1 正方形顯示,並排成兩欄。每張圖可設定點擊連結。
+                {t.imageGrid.help}
               </p>
               {gridCells.map((cell, i) => (
                 <div key={i} className="rounded-xl p-3 space-y-2"
                   style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>
-                      第 {i + 1} 格
+                      {t.imageGrid.cellNumber.replace('{n}', String(i + 1))}
                     </span>
                     <input value={cell.url}
                       onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, url: e.target.value } : c))}
-                      placeholder="圖片網址"
+                      placeholder={t.imageGrid.imageUrlPlaceholder}
                       style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }}
                       onFocus={focusIn} onBlur={focusOut} />
                     <label className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
                       style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                       <Upload size={12} />
-                      {uploading ? '...' : '上傳'}
+                      {uploading ? t.uploadingShort : t.upload}
                       <input type="file" accept="image/*" className="hidden"
                         onChange={e => {
                           const f = e.target.files?.[0]
@@ -1121,14 +1140,14 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                   </div>
                   <input value={cell.linkUrl ?? ''}
                     onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, linkUrl: e.target.value } : c))}
-                    placeholder="點擊連結（選填）"
+                    placeholder={t.imageGrid.linkPlaceholder}
                     style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }}
                     onFocus={focusIn} onBlur={focusOut} />
                   {/* Per-cell title — only meaningful when overlayText is on,
                       since otherwise grid cells are pure thumbnails. */}
                   <input value={cell.title ?? ''}
                     onChange={e => setGridCells(prev => prev.map((c, j) => j === i ? { ...c, title: e.target.value } : c))}
-                    placeholder="格子標題(會蓋在圖上,需開啟下方圖片蓋字)"
+                    placeholder={t.imageGrid.cellTitlePlaceholder}
                     style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }}
                     onFocus={focusIn} onBlur={focusOut} />
                   {cell.url && (
@@ -1141,7 +1160,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 onClick={() => setGridCells(prev => [...prev, { url: '' }])}
                 className="w-full py-2 text-sm font-semibold rounded-lg"
                 style={{ border: '1px dashed var(--color-border)', background: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}>
-                + 新增格子
+                {t.imageGrid.addCell}
               </button>
               <OverlayToggle
                 value={gridOverlay}
@@ -1155,18 +1174,18 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── FEATURE CARD (Portaly-style image-left, text-right) ── */}
           {block.type === 'feature_card' && (
             <>
-              <Field label="標題">
+              <Field label={t.fields.title}>
                 <input value={title} onChange={e => setTitle(e.target.value)} required
-                  placeholder="例:AI 顧問服務" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.featureCard.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="圖片">
+              <Field label={t.featureCard.imageLabel}>
                 <div className="flex gap-2 items-center">
                   <input value={fcImageUrl} onChange={e => setFcImageUrl(e.target.value)} required
-                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.featureCard.imageUrlPlaceholder} style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
                   <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                     style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                     <Upload size={14} />
-                    {uploading ? '...' : '上傳'}
+                    {uploading ? t.uploadingShort : t.upload}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={e => {
                         const f = e.target.files?.[0]
@@ -1180,13 +1199,13 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     style={{ width: '100%', height: 100, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
                 )}
               </Field>
-              <Field label="說明文字（選填）">
+              <Field label={t.featureCard.descLabel}>
                 <textarea value={fcDescription} onChange={e => setFcDescription(e.target.value)}
-                  placeholder="這段文字會顯示在圖片旁邊,支援多行" rows={3}
+                  placeholder={t.featureCard.descPlaceholder} rows={3}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="圖片位置">
+              <Field label={t.featureCard.positionLabel}>
                 <div className="flex gap-2">
                   {(['left', 'right'] as const).map(pos => (
                     <button key={pos} type="button"
@@ -1198,21 +1217,21 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         border: `1px solid ${fcImagePosition === pos ? 'var(--color-primary)' : 'var(--color-border)'}`,
                         cursor: 'pointer',
                       }}>
-                      {pos === 'left' ? '🖼️ 圖在左' : '圖在右 🖼️'}
+                      {pos === 'left' ? t.featureCard.imageLeft : t.featureCard.imageRight}
                     </button>
                   ))}
                 </div>
                 <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                  💡 連續多張圖文卡片時,左右交替排列(例如:左、右、左)會更有節奏感。
+                  {t.featureCard.positionHint}
                 </p>
               </Field>
               {/* Optional CTA — when both label + URL set, the whole card becomes
                   clickable; otherwise it's a static info card. */}
-              <Field label="CTA 按鈕文字（選填）">
+              <Field label={t.featureCard.ctaLabel}>
                 <input value={fcCtaLabel} onChange={e => setFcCtaLabel(e.target.value)}
-                  placeholder="例:了解更多 / 立即報名" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.featureCard.ctaPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="CTA 連結網址（選填）">
+              <Field label={t.featureCard.ctaUrlLabel}>
                 <input value={fcCtaUrl} onChange={e => setFcCtaUrl(e.target.value)}
                   placeholder="https://..." style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
@@ -1222,22 +1241,23 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── MAP ── */}
           {block.type === 'map' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="例:公司位置" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.map.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              {/* Customer feedback: 標題塞太多文字會醜,需要單獨的說明欄位 */}
-              <Field label="說明文字（選填）">
+              {/* Customer feedback: cramming everything into the title looks
+                  ugly — we need a separate description field. */}
+              <Field label={t.map.descLabel}>
                 <textarea value={mapDescription} onChange={e => setMapDescription(e.target.value)}
-                  placeholder="例:週一到週五 10am–7pm,門口請按電鈴" rows={2}
+                  placeholder={t.map.descPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="地點或地址">
+              <Field label={t.map.addressLabel}>
                 <input value={mapQuery} onChange={e => setMapQuery(e.target.value)}
-                  required placeholder="台北 101" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  required placeholder={t.map.addressPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="縮放等級">
+              <Field label={t.map.zoomLabel}>
                 <input type="number" min="1" max="20" value={mapZoom} onChange={e => setMapZoom(e.target.value)}
                   style={{ ...inputStyle, width: 100 }} onFocus={focusIn} onBlur={focusOut} />
               </Field>
@@ -1247,64 +1267,64 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── CALENDAR EVENT ── */}
           {block.type === 'calendar_event' && (
             <>
-              <Field label="活動名稱">
+              <Field label={t.calendar.eventNameLabel}>
                 <input value={title} onChange={e => setTitle(e.target.value)} required
-                  placeholder="例：春季快閃店開張" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.calendar.eventNamePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
               <div className="flex items-center gap-2" style={{ padding: '0 2px' }}>
                 <input type="checkbox" id="edit-cal-allday" checked={calAllDay}
                   onChange={e => setCalAllDay(e.target.checked)}
                   style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
                 <label htmlFor="edit-cal-allday" className="text-sm" style={{ color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
-                  全天事件
+                  {t.calendar.allDay}
                 </label>
               </div>
-              <Field label="開始時間">
+              <Field label={t.calendar.startLabel}>
                 <input type={calAllDay ? 'date' : 'datetime-local'} value={calStart}
                   onChange={e => setCalStart(e.target.value)} required
                   style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="結束時間（選填，預設 +1 小時）">
+              <Field label={t.calendar.endLabel}>
                 <input type={calAllDay ? 'date' : 'datetime-local'} value={calEnd}
                   onChange={e => setCalEnd(e.target.value)}
                   style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="時區">
+              <Field label={t.calendar.timezoneLabel}>
                 <div className="relative">
                   <select value={calTimezone} onChange={e => setCalTimezone(e.target.value)}
                     style={{ ...inputStyle, appearance: 'none', paddingRight: 36, cursor: 'pointer' } as React.CSSProperties}
                     onFocus={focusIn} onBlur={focusOut}>
-                    {!POPULAR_TIMEZONES.some(t => t.id === calTimezone) && (
+                    {!POPULAR_TIMEZONES.some(tz => tz.id === calTimezone) && (
                       <option value={calTimezone}>{calTimezone}</option>
                     )}
-                    {POPULAR_TIMEZONES.map(t => (
-                      <option key={t.id} value={t.id}>{t.label}</option>
+                    {POPULAR_TIMEZONES.map(tz => (
+                      <option key={tz.id} value={tz.id}>{tz.label}</option>
                     ))}
                   </select>
                   <ChevronDown size={14} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--color-text-muted)' }} />
                 </div>
               </Field>
-              <Field label="地點（選填）">
+              <Field label={t.calendar.locationLabel}>
                 <input value={calLocation} onChange={e => setCalLocation(e.target.value)}
-                  placeholder="台北 101、IG Live、Zoom 連結…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.calendar.locationPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="描述（選填）">
+              <Field label={t.calendar.descLabel}>
                 <textarea value={calDescription} onChange={e => setCalDescription(e.target.value)}
-                  placeholder="活動重點、注意事項…" rows={2}
+                  placeholder={t.calendar.descPlaceholder} rows={2}
                   style={{ ...inputStyle, resize: 'none' } as React.CSSProperties} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="活動連結（選填）">
+              <Field label={t.calendar.linkLabel}>
                 <input value={calUrl} onChange={e => setCalUrl(e.target.value)}
                   placeholder="https://…" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="活動圖示（選填,取代預設日曆 icon）">
+              <Field label={t.calendar.iconLabel}>
                 <div className="flex gap-2 items-center">
                   <input value={calIconUrl} onChange={e => setCalIconUrl(e.target.value)}
-                    placeholder="圖片網址或上傳" style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
+                    placeholder={t.calendar.iconUrlPlaceholder} style={{ ...inputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} />
                   <label className="flex-shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                     style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', cursor: 'pointer', border: '1px solid var(--color-border)' }}>
                     <Upload size={14} />
-                    {uploading ? '...' : '上傳'}
+                    {uploading ? t.uploadingShort : t.upload}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={handleCalIconPick} />
                   </label>
@@ -1314,7 +1334,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                     style={{ width: 52, height: 52, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
                 )}
                 <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
-                  上傳後會跳出裁切視窗(1:1 正方形)
+                  {t.calendar.iconCropHint}
                 </p>
               </Field>
             </>
@@ -1323,17 +1343,17 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           {/* ── EMBED ── */}
           {block.type === 'embed' && (
             <>
-              <Field label="標題（選填）">
+              <Field label={t.fields.titleOptional}>
                 <input value={title} onChange={e => setTitle(e.target.value)}
-                  placeholder="嵌入內容" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  placeholder={t.embed.titlePlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="HTML / iframe 程式碼">
+              <Field label={t.embed.htmlLabel}>
                 <textarea value={embedHtml} onChange={e => setEmbedHtml(e.target.value)}
                   required placeholder='<iframe src="..." />' rows={4}
                   style={{ ...inputStyle, resize: 'none', fontFamily: 'monospace', fontSize: 12 } as React.CSSProperties}
                   onFocus={focusIn} onBlur={focusOut} />
               </Field>
-              <Field label="高度 (px)">
+              <Field label={t.embed.heightLabel}>
                 <input type="number" min="100" max="800" value={embedHeight} onChange={e => setEmbedHeight(e.target.value)}
                   style={{ ...inputStyle, width: 120 }} onFocus={focusIn} onBlur={focusOut} />
               </Field>
@@ -1345,11 +1365,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             <button type="button" onClick={onClose}
               className="flex-1 py-2.5 font-semibold text-sm"
               style={{ border: '1px solid var(--color-border)', borderRadius: 10, background: 'white', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
-              取消
+              {t.cancel}
             </button>
             <button type="submit" className="btn-primary flex-1 justify-center"
               style={{ borderRadius: 10, padding: '10px 20px', fontSize: 14 }}>
-              儲存
+              {t.save}
             </button>
           </div>
         </form>
@@ -1362,7 +1382,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           file={pendingCalIcon}
           aspect={1}
           cropShape="rect"
-          title="裁切活動圖示"
+          title={t.cropper.eventIcon}
           onComplete={uploadCroppedCalIcon}
           onCancel={() => setPendingCalIcon(null)}
         />
@@ -1385,12 +1405,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           cropShape={pendingBlockImage.kind === 'link-icon' ? 'round' : 'rect'}
           viewportPreview={pendingBlockImage.kind === 'banner' ? 'banner' : undefined}
           title={
-            pendingBlockImage.kind === 'banner' ? '裁切橫幅圖片'
-            : pendingBlockImage.kind === 'product' ? '裁切商品圖片'
-            : pendingBlockImage.kind === 'link-icon' ? '裁切連結 icon'
-            : pendingBlockImage.kind === 'grid' ? `裁切第 ${pendingBlockImage.index + 1} 格圖片`
-            : pendingBlockImage.kind === 'feature' ? '裁切圖文卡片圖片(4:3)'
-            : `裁切第 ${pendingBlockImage.index + 1} 張圖片`
+            pendingBlockImage.kind === 'banner' ? t.cropper.banner
+            : pendingBlockImage.kind === 'product' ? t.cropper.product
+            : pendingBlockImage.kind === 'link-icon' ? t.cropper.linkIcon
+            : pendingBlockImage.kind === 'grid' ? t.cropper.grid.replace('{n}', String(pendingBlockImage.index + 1))
+            : pendingBlockImage.kind === 'feature' ? t.cropper.feature
+            : t.cropper.carousel.replace('{n}', String(pendingBlockImage.index + 1))
           }
           onComplete={uploadCroppedBlockImage}
           onCancel={() => setPendingBlockImage(null)}
@@ -1412,10 +1432,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 /**
- * OverlayToggle — shared "文字蓋在圖片上" control used by banner / carousel /
+ * OverlayToggle — shared "text overlay" control used by banner / carousel /
  * image_grid forms. Keeps the visual / wording consistent across the three
  * blocks so users learn the pattern once. Position picker only shows when
  * overlay is on (no point picking a position for hidden text).
+ *
+ * Reads dict via useDict() so the wording is locale-aware.
  */
 function OverlayToggle({
   value, position, onValueChange, onPositionChange,
@@ -1425,6 +1447,8 @@ function OverlayToggle({
   onValueChange: (v: boolean) => void
   onPositionChange: (p: 'bottom-left' | 'bottom-center' | 'center') => void
 }) {
+  const { dict } = useDict()
+  const ot = dict.admin.editBlockModal.overlay
   return (
     <div className="rounded-xl p-4 space-y-3"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
@@ -1434,23 +1458,23 @@ function OverlayToggle({
           style={{ width: 16, height: 16, accentColor: 'var(--color-primary)', marginTop: 2 }} />
         <div>
           <span className="text-sm font-semibold block" style={{ color: 'var(--color-text-primary)' }}>
-            文字蓋在圖片上(Portaly 風格 hero card)
+            {ot.title}
           </span>
           <span className="text-xs block mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-            開啟後標題與說明會浮在圖上,自動加深色漸層讓文字讀得清楚。
+            {ot.hint}
           </span>
         </div>
       </label>
       {value && (
         <div>
           <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
-            文字位置
+            {ot.positionLabel}
           </label>
           <div className="grid grid-cols-3 gap-1">
             {([
-              { value: 'bottom-left', label: '左下' },
-              { value: 'bottom-center', label: '正下' },
-              { value: 'center', label: '正中' },
+              { value: 'bottom-left', label: ot.posBottomLeft },
+              { value: 'bottom-center', label: ot.posBottomCenter },
+              { value: 'center', label: ot.posCenter },
             ] as const).map(opt => (
               <button key={opt.value} type="button"
                 onClick={() => onPositionChange(opt.value)}

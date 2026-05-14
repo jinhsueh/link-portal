@@ -10,6 +10,7 @@ import {
   Code, CalendarPlus, MoreHorizontal, Star, FolderInput, ChevronRight, LayoutGrid,
   Newspaper,
 } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
 const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   link: ExternalLink, banner: Image, video: Video,
@@ -18,14 +19,6 @@ const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   feature_card: Newspaper,
   map: MapPin, embed: Code,
   calendar_event: CalendarPlus,
-}
-const TYPE_LABELS: Record<BlockType, string> = {
-  link: '連結按鈕', banner: '橫幅看板', video: '影片',
-  email_form: 'Email 表單', product: '數位商品', heading: '標題文字', social: '社群連結',
-  countdown: '倒數計時', faq: 'FAQ 問答', carousel: '圖片輪播', image_grid: '雙欄圖片',
-  feature_card: '圖文卡片',
-  map: '地圖嵌入', embed: 'HTML 嵌入',
-  calendar_event: '加入日曆',
 }
 
 interface Props {
@@ -42,6 +35,8 @@ interface Props {
 }
 
 export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, onSchedule, onPin, movePages, onMoveToPage }: Props) {
+  const { dict } = useDict()
+  const typeLabel = dict.admin.blockTypes[block.type]?.label ?? block.type
   const hasSchedule = !!(block.scheduleStart || block.scheduleEnd)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id })
@@ -81,10 +76,10 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
           shows readable text instead of "**bold**" / "[link](url)" syntax. */}
       <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEdit(block)}>
         <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>
-          {stripMarkdownForDisplay(block.title) || TYPE_LABELS[block.type]}
+          {stripMarkdownForDisplay(block.title) || typeLabel}
         </p>
         <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-          {TYPE_LABELS[block.type]}
+          {typeLabel}
           {block.views > 0 && (
             <span className="ml-2 cursor-help"
               title={`看過 ${block.views} 次 / 點過 ${block.clicks} 次\n資料即時更新,訪客動作後約 1 秒同步`}>
@@ -126,21 +121,21 @@ export function SortableBlock({ block, onToggle, onDelete, onEdit, onDuplicate, 
       {/* Kebab menu — collapses edit/pin/duplicate/schedule/move/delete (less-used actions) */}
       <KebabMenu
         items={[
-          { label: '編輯',     icon: Edit2, onClick: () => onEdit(block) },
-          { label: block.pinned ? '取消主推' : '設為主推', icon: Star, onClick: () => onPin?.(block.id, !block.pinned) },
-          { label: '複製',     icon: Copy, onClick: () => onDuplicate?.(block) },
-          { label: hasSchedule ? '修改排程' : '排程顯示', icon: Clock, onClick: () => onSchedule?.(block) },
+          { label: dict.common.edit,                                         icon: Edit2, onClick: () => onEdit(block) },
+          { label: block.pinned ? dict.admin.unpin : dict.admin.pin,         icon: Star,  onClick: () => onPin?.(block.id, !block.pinned) },
+          { label: dict.admin.duplicate,                                     icon: Copy,  onClick: () => onDuplicate?.(block) },
+          { label: hasSchedule ? dict.admin.modifySchedule : dict.admin.schedule, icon: Clock, onClick: () => onSchedule?.(block) },
           // Only render the "move to other page" entry when there ARE other
           // pages to move into. Single-page accounts wouldn't see this.
           ...(movePages && movePages.length > 0 && onMoveToPage ? [{
-            label: '移至其他分頁',
+            label: dict.admin.moveToPage,
             icon: FolderInput,
             submenu: movePages.map(p => ({
               label: p.name,
               onClick: () => onMoveToPage(block.id, p.id),
             })),
           }] : []),
-          { label: '刪除',     icon: Trash2, onClick: () => onDelete(block.id), danger: true },
+          { label: dict.common.delete, icon: Trash2, onClick: () => onDelete(block.id), danger: true },
         ]}
       />
     </div>
