@@ -40,8 +40,27 @@ function detectLocale(req: NextRequest): string {
   }
 }
 
+// Country-code aliases that Asian visitors commonly type by reflex even
+// though the language code is something else. We accept them as friendly
+// redirects to the canonical locale path. Keep this list TIGHT — every
+// alias also blocks that username from being claimed by a real creator.
+const LOCALE_ALIASES: Record<string, string> = {
+  jp: 'ja', // Japan country code → Japanese language (ISO 639-1)
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
+  // ── Locale alias redirect ──
+  // /jp → /ja  (and any future entries in LOCALE_ALIASES).
+  // Match BOTH /jp and /jp/anything-deeper to preserve sub-paths.
+  for (const [alias, canonical] of Object.entries(LOCALE_ALIASES)) {
+    if (pathname === `/${alias}` || pathname.startsWith(`/${alias}/`)) {
+      const url = req.nextUrl.clone()
+      url.pathname = pathname.replace(`/${alias}`, `/${canonical}`)
+      return NextResponse.redirect(url, 301)  // permanent — SEO friendly
+    }
+  }
 
   // ── Locale redirect on bare "/" ──
   // Only redirects EXACTLY "/" — never the locale paths themselves nor any
@@ -81,6 +100,10 @@ export const config = {
   matcher: [
     // Locale redirect on root
     '/',
+    // Locale aliases (jp → ja). Include both the bare alias and sub-paths
+    // so /jp and /jp/anything-deeper both hit the rewriter.
+    '/jp',
+    '/jp/:path*',
     // Existing auth gates
     '/admin/:path*',
     '/super-admin/:path*',
