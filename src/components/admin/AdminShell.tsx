@@ -7,14 +7,19 @@ import {
   Link2, Settings, BarChart2, ExternalLink, LogOut,
   ShoppingBag, Mail, Moon, Sun, Shield, Sparkles, Home,
 } from 'lucide-react'
+import { useDict } from '@/components/i18n/DictProvider'
 
-const NAV_ITEMS = [
-  { href: '/admin', label: '主頁', icon: Home },
-  { href: '/admin/analytics', label: '數據', icon: BarChart2 },
-  { href: '/admin/orders', label: '訂單', icon: ShoppingBag },
-  { href: '/admin/subscribers', label: '訂閱', icon: Mail },
-  { href: '/admin/settings', label: '設定', icon: Settings },
-]
+// Nav items defined as a function of dict so the labels stay locale-driven.
+// Build inside the component because hooks can't run at module scope.
+function buildNavItems(t: ReturnType<typeof useDict>['dict']['nav']) {
+  return [
+    { href: '/admin',             label: t.home,        icon: Home },
+    { href: '/admin/analytics',   label: t.analytics,   icon: BarChart2 },
+    { href: '/admin/orders',      label: t.orders,      icon: ShoppingBag },
+    { href: '/admin/subscribers', label: t.subscribers, icon: Mail },
+    { href: '/admin/settings',    label: t.settings,    icon: Settings },
+  ]
+}
 
 interface Props {
   username?: string
@@ -27,6 +32,8 @@ interface Props {
 export function AdminShell({ username, role, effectivePlan, trialDaysLeft, children }: Props) {
   const router = useRouter()
   const pathname = usePathname()
+  const { dict } = useDict()
+  const NAV_ITEMS = buildNavItems(dict.nav)
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('admin-dark-mode') === 'true'
     return false
@@ -119,7 +126,7 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
             {username && (
               <a href={`/${username}`} target="_blank" rel="noopener noreferrer"
                 style={{ ...navLinkStyle(), display: 'flex' }}>
-                <ExternalLink size={14} /><span className="hidden sm:inline">預覽</span>
+                <ExternalLink size={14} /><span className="hidden sm:inline">{dict.common.preview}</span>
               </a>
             )}
             <button onClick={toggleDark} style={navLinkStyle()} title={dark ? '淺色模式' : '深色模式'}>
