@@ -278,7 +278,31 @@
     "metaTitle": "Mia | Beam デモ",
     "metaDescription": "1ページで Beam の機能を全部紹介 — リンク・商品・動画・フォーム・Podcast・コラボ問い合わせ",
     "pageMain": "ホーム",
-    "pageCollab": "コラボ"
+    "pageCollab": "コラボ",
+    "profile": {
+      "name": "Mia",
+      "bio": "ライフスタイル × ファッション 🌸 IG 12万フォロワー ✦ YouTube 毎週更新 ✦ コラボDM歓迎 💌"
+    },
+    "main": [
+      { "title": "こんにちは、Mia です 💕",            "content": { "text": "ファッション × ビューティー × ライフスタイル — 一緒に素敵になろう" } },
+      { "title": "🎬 YouTube — Mia のスタイル日記",    "content": {} },
+      { "title": "🎧 Podcast — 女子トーク",            "content": {} },
+      { "title": "🌸 春夏コレクション — 1週間 10コーデ", "content": { "description": "NT$3,000 以下でハイクオリティ" } },
+      { "title": "Mia のスタイル公式 e-book",          "content": { "description": "30ページ:コーディネートの考え方 + 配色ガイド + カプセルワードローブ。1,200部以上販売!" } },
+      { "title": "Lightroom プリセットパック — ラテトーン", "content": { "description": "12種類のIGスタイルフィルター、ワンタップで写真がパッと変わる ✨" } },
+      { "title": "最新動画:ソウル3日間スタイル Vlog",  "content": {} },
+      { "title": "👗 Shopee おすすめアイテム",          "content": {} },
+      { "title": "💄 Xiaohongshu — ビューティーレビュー", "content": {} },
+      { "title": "💌 Mia のニュースレターを購読",       "content": { "placeholder": "メールアドレス", "buttonText": "無料で購読", "description": "毎週、お気に入り + スタイル提案 + メンバー限定クーポン。5,600+ 購読者!" } },
+      { "title": "☕ Buy Me a Coffee",                "content": {} }
+    ],
+    "collab": [
+      { "title": "ブランドコラボ",                     "content": { "text": "💼 ビューティー、ファッション、ライフスタイルブランドのコラボ歓迎" } },
+      { "title": "📊 リーチ — IG 12万 / YT 8万 / Podcast 2万", "content": {} },
+      { "title": "📄 メディアキットをダウンロード",     "content": {} },
+      { "title": "📸 過去のコラボ実績",                "content": {} },
+      { "title": "📧 コラボお問い合わせ — mia@example.com", "content": {} }
+    ]
   },
 
   "pricing": {

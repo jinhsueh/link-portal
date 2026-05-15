@@ -278,7 +278,31 @@
     "metaTitle": "Mia | Beam Demo",
     "metaDescription": "หน้าเดียวแสดงทุกสิ่งที่ Beam ทำได้ — ลิงก์ สินค้า วิดีโอ ฟอร์ม Podcast ติดต่อร่วมงาน",
     "pageMain": "หน้าหลัก",
-    "pageCollab": "ร่วมงาน"
+    "pageCollab": "ร่วมงาน",
+    "profile": {
+      "name": "Mia",
+      "bio": "ไลฟ์สไตล์ × แรงบันดาลใจการแต่งตัว 🌸 IG 120K ✦ YouTube รายสัปดาห์ ✦ DM มาคุยร่วมงานได้ 💌"
+    },
+    "main": [
+      { "title": "สวัสดีค่ะ ฉันคือ Mia 💕",            "content": { "text": "แฟชั่น × บิวตี้ × ไลฟ์สไตล์ — มาดีไปด้วยกันนะ" } },
+      { "title": "🎬 YouTube — ไดอารี่สไตล์ของ Mia",    "content": {} },
+      { "title": "🎧 Podcast — สาว ๆ คุยกัน",          "content": {} },
+      { "title": "🌸 คอลเลกชันใบไม้ผลิ-ร้อน — 10 ลุค ใน 1 สัปดาห์", "content": { "description": "มิกซ์แอนด์แมตช์สุดพรีเมียม ราคาไม่เกิน NT$3,000 ต่อชุด" } },
+      { "title": "e-book สูตรการแต่งตัวของ Mia",        "content": { "description": "30 หน้า: ตรรกะการแต่งตัว + คู่มือสี + แคปซูลตู้เสื้อผ้า ขายแล้ว 1,200+ ชุด!" } },
+      { "title": "พรีเซ็ต Lightroom — โทนนมโกโก้",     "content": { "description": "12 ฟิลเตอร์สไตล์ IG แตะเดียวเปลี่ยน ภาพดูดีขึ้นทันที ✨" } },
+      { "title": "วิดีโอล่าสุด: Vlog แต่งตัวที่โซล 3 วัน", "content": {} },
+      { "title": "👗 ลิสต์ของดีบน Shopee",              "content": {} },
+      { "title": "💄 Xiaohongshu — รีวิวเครื่องสำอางจริง", "content": {} },
+      { "title": "💌 สมัครรับจดหมายของ Mia",           "content": { "placeholder": "อีเมลของคุณ", "buttonText": "สมัครฟรี", "description": "ทุกสัปดาห์ ของลับเฉพาะ + แรงบันดาลใจสไตล์ + โค้ดส่วนลดสมาชิก ผู้สมัคร 5,600+ คน!" } },
+      { "title": "☕ Buy Me a Coffee",                  "content": {} }
+    ],
+    "collab": [
+      { "title": "ร่วมงานกับแบรนด์",                    "content": { "text": "💼 ยินดีร่วมงานกับแบรนด์บิวตี้ แฟชั่น ไลฟ์สไตล์" } },
+      { "title": "📊 รีช — IG 120K / YT 80K / Podcast 20K", "content": {} },
+      { "title": "📄 ดาวน์โหลด Media Kit",              "content": {} },
+      { "title": "📸 ผลงานร่วมงานที่ผ่านมา",            "content": {} },
+      { "title": "📧 ติดต่อร่วมงาน — mia@example.com",   "content": {} }
+    ]
   },
 
   "pricing": {

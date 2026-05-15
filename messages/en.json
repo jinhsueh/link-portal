@@ -278,7 +278,31 @@
     "metaTitle": "Mia | Beam Demo",
     "metaDescription": "A single page showing everything Beam can do — links, products, video, forms, podcast, collabs.",
     "pageMain": "Home",
-    "pageCollab": "Collabs"
+    "pageCollab": "Collabs",
+    "profile": {
+      "name": "Mia",
+      "bio": "Lifestyle × Style inspo 🌸 120K IG ✦ Weekly YouTube ✦ DMs open for collabs 💌"
+    },
+    "main": [
+      { "title": "Hi, I'm Mia 💕",                       "content": { "text": "Style × Beauty × Lifestyle — let's level up together" } },
+      { "title": "🎬 YouTube — Mia's style diary",       "content": {} },
+      { "title": "🎧 Podcast — Girl talk",               "content": {} },
+      { "title": "🌸 Spring/Summer collection — 10 outfits in a week", "content": { "description": "Mix-and-match style under NT$3,000 each" } },
+      { "title": "Mia's style formula e-book",           "content": { "description": "30 pages: style logic + color guide + capsule wardrobe checklist. 1,200+ sold!" } },
+      { "title": "Lightroom preset pack — Latte tones",  "content": { "description": "12 IG-style filters, one-tap apply, instant glow ✨" } },
+      { "title": "Latest video: 3-day Seoul style vlog", "content": {} },
+      { "title": "👗 Shopee curated picks",              "content": {} },
+      { "title": "💄 Xiaohongshu — honest beauty reviews", "content": {} },
+      { "title": "💌 Subscribe to Mia's weekly",         "content": { "placeholder": "Your email", "buttonText": "Subscribe (free)", "description": "Weekly hidden gems + style inspo + member discount codes. 5,600+ subscribers!" } },
+      { "title": "☕ Buy Me a Coffee",                   "content": {} }
+    ],
+    "collab": [
+      { "title": "Brand partnerships",                   "content": { "text": "💼 Beauty, fashion, lifestyle brand collabs welcome" } },
+      { "title": "📊 Reach — IG 120K / YT 80K / Podcast 20K", "content": {} },
+      { "title": "📄 Download media kit",                "content": {} },
+      { "title": "📸 Past collaboration portfolio",      "content": {} },
+      { "title": "📧 Collab inquiries — mia@example.com", "content": {} }
+    ]
   },
 
   "pricing": {
