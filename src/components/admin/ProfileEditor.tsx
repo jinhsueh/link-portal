@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { Camera, X, Save, Check, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
 import { SocialLinksEditor, type SocialLinksEditorHandle } from '@/components/admin/SocialLinksEditor'
 import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
@@ -197,8 +197,6 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
     socialEditorRef.current?.reset()
     setSocialDirty(false)
   }
-
-  const hasProfile = !!(avatarUrl || profile.bio || profile.socialLinks.length > 0)
 
   return (
     <div className="rounded-2xl overflow-hidden mb-5"

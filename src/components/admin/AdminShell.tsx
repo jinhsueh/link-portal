@@ -39,22 +39,21 @@ export function AdminShell({ username, role, effectivePlan, trialDaysLeft, child
     return false
   })
 
+  // Sync the <html data-theme> attribute with dark state. Runs on mount
+  // (restoring the persisted preference) and on every toggle — a genuine
+  // "sync external system with React state" effect, so deps = [dark].
   useEffect(() => {
     if (dark) {
       document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
     }
-  }, [])
+  }, [dark])
 
   const toggleDark = () => {
     const next = !dark
-    setDark(next)
-    if (next) {
-      document.documentElement.setAttribute('data-theme', 'dark')
-      localStorage.setItem('admin-dark-mode', 'true')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
-      localStorage.setItem('admin-dark-mode', 'false')
-    }
+    setDark(next)  // effect above applies the DOM change
+    localStorage.setItem('admin-dark-mode', String(next))
   }
 
   const handleLogout = async () => {

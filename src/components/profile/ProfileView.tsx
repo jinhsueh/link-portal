@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { AnimatedBlock } from '@/components/blocks/AnimatedBlock'
 import { SocialIcon } from '@/components/ui/SocialIcon'
@@ -148,7 +148,6 @@ export function ProfileView({
             : `linear-gradient(135deg, ${theme.primaryColor}30 0%, ${theme.primaryColor}10 50%, ${bg} 100%)`,
         }}>
           {bannerUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={bannerUrl} alt={`${displayName} banner`}
               style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
           )}
@@ -163,7 +162,6 @@ export function ProfileView({
             {/* Avatar — large (140px) so it reads strong against the banner */}
             <div className="relative flex-shrink-0" style={{ width: 140, height: 140 }}>
               {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatarUrl} alt={displayName}
                   className="w-full h-full rounded-full object-cover"
                   style={{
@@ -310,7 +308,6 @@ export function ProfileView({
         // Cap the container width on huge screens (max-w-5xl ≈ 1024px) so a
         // 3:1 banner doesn't dominate 4K monitors at 600+px tall.
         <div className="mx-auto" style={{ width: '100%', maxWidth: 1024, aspectRatio: '3 / 1', overflow: 'hidden', position: 'relative' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={bannerUrl} alt={`${displayName} banner`}
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
           <div aria-hidden style={{
@@ -355,7 +352,6 @@ export function ProfileView({
             <div aria-hidden className="absolute inset-0 rounded-full"
               style={{ background: haloGradient, transform: 'scale(1.6)', filter: 'blur(8px)', pointerEvents: 'none' }} />
             {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarUrl} alt={displayName}
                 className="relative w-full h-full rounded-full object-cover"
                 style={{

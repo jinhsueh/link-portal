@@ -83,21 +83,11 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [videoUrl, setVideoUrl] = useState((content.url as string) ?? (content.embedId as string) ?? '')
   const [videoDescription, setVideoDescription] = useState((content.description as string) ?? '')
 
-  // Upload
+  // Upload state. The actual upload happens through the cropper flow
+  // (setPendingBlockImage → ImageCropperModal → uploadCroppedBlockImage);
+  // `uploading` just drives the button spinner. The old direct-upload
+  // handler was removed when all block images moved to the crop pipeline.
   const [uploading, setUploading] = useState(false)
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (v: string) => void) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (data.url) setter(data.url)
-    } catch { /* silent */ }
-    setUploading(false)
-  }
 
   // Calendar event icon — goes through the cropper (1:1) before uploading,
   // so brand assets fit cleanly in the 52×52 tile without manual presizing.

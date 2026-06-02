@@ -119,7 +119,6 @@ export function ShareBar({ url, title }: Props) {
               </button>
             </div>
             <div style={{ background: '#F7F9FC', borderRadius: 16, padding: 16, marginBottom: 16 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={qrUrl} alt="QR Code" width={240} height={240}
                 style={{ display: 'block', margin: '0 auto' }} />
             </div>

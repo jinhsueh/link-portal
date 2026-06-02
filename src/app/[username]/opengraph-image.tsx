@@ -46,6 +46,7 @@ export default async function OGImage({
       {user.avatarUrl && !user.avatarUrl.startsWith('data:') ? (
         <img
           src={user.avatarUrl}
+          alt=""
           width={120}
           height={120}
           style={{ borderRadius: '50%', border: '4px solid rgba(255,255,255,0.2)' }}

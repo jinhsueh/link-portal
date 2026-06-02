@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { DollarSign, ChevronLeft, ChevronRight, ExternalLink, ShoppingBag, TrendingUp } from 'lucide-react'
-import { fromStripeAmount, formatAmount } from '@/lib/stripe'
+import { formatAmount } from '@/lib/stripe'
 import { useDict } from '@/components/i18n/DictProvider'
 
 interface Order {

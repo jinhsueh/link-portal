@@ -18,7 +18,6 @@ function overlayTextStyles(position: ImageOverlayPosition = 'bottom-left'): {
   text: React.CSSProperties
 } {
   // Vertical anchor + alignment derive from the chosen preset.
-  const isBottom = position !== 'center'
   const align: React.CSSProperties['textAlign'] = position === 'bottom-center'
     ? 'center' : position === 'center' ? 'center' : 'left'
   const justify: React.CSSProperties['justifyContent'] = position === 'bottom-center'

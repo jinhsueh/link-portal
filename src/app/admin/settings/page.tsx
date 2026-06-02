@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Save, Camera, X, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
+import { Save, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { PLAN_PRICING } from '@/lib/plan'
 import { useDict } from '@/components/i18n/DictProvider'
@@ -419,6 +419,10 @@ function PasswordTab({ hasPassword }: { hasPassword: boolean }) {
 }
 
 // ─── Tab 3: Team ───
+// Fully built (dict + /api/team wired) but not yet added to the TABS nav —
+// team collaboration ships behind Pro and the tab is gated for a later
+// release. Kept here so it's a one-line wire-up when we flip it on.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TeamTab() {
   const { dict } = useDict()
   const tm = dict.admin.settings.team

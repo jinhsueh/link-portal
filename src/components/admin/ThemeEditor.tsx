@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Check } from 'lucide-react'
-import { PRESET_THEMES, DEFAULT_THEME, type PageTheme } from '@/lib/theme'
+import { PRESET_THEMES, type PageTheme } from '@/lib/theme'
 import { useDict } from '@/components/i18n/DictProvider'
 
 interface Props {

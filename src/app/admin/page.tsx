@@ -20,7 +20,7 @@ import { SocialIcon } from '@/components/ui/SocialIcon'
 import { ProfileEditor } from '@/components/admin/ProfileEditor'
 import { ThemeEditor } from '@/components/admin/ThemeEditor'
 import { BlockData, BlockType } from '@/types'
-import { Plus, MoreHorizontal, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload, Copy, Check, Link2, LayoutDashboard, Palette } from 'lucide-react'
+import { Plus, Pencil, Trash2 as TrashIcon, Lock, Unlock, CheckSquare, EyeOff, Download, Upload, Copy, Check, Link2, LayoutDashboard, Palette } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 import { ImportModal } from '@/components/admin/ImportModal'
@@ -123,7 +123,7 @@ export default function AdminPage() {
     setLoading(false)
   }, [router])
 
-  useEffect(() => { loadUser() }, [loadUser]) // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { loadUser() }, [loadUser])
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event

@@ -28,22 +28,20 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
     return false
   })
 
+  // Sync <html data-theme> with dark state — mount (restore persisted pref)
+  // + every toggle. A genuine state→DOM sync effect, so deps = [dark].
   useEffect(() => {
     if (dark) {
       document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
     }
-  }, [])
+  }, [dark])
 
   const toggleDark = () => {
     const next = !dark
-    setDark(next)
-    if (next) {
-      document.documentElement.setAttribute('data-theme', 'dark')
-      localStorage.setItem('admin-dark-mode', 'true')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
-      localStorage.setItem('admin-dark-mode', 'false')
-    }
+    setDark(next)  // effect above applies the DOM change
+    localStorage.setItem('admin-dark-mode', String(next))
   }
 
   const handleLogout = async () => {
