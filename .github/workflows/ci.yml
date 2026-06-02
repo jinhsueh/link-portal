@@ -56,4 +56,6 @@ jobs:
         run: npx prisma validate
 
       - name: Check migration drift
-        run: npx prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --exit-code
+        # Prisma 7 dropped `--to-schema-datamodel` in favor of `--to-schema`.
+        # Exit codes: 0 = no diff, 2 = diff detected, 1 = error.
+        run: npx prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code
