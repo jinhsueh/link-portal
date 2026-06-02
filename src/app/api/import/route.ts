@@ -15,12 +15,11 @@ import type { ImportedProfile, ImportSource } from '@/lib/importers/types'
  *
  * Only allows linktr.ee, portaly.cc, and openlink.* hosts (SSRF guard).
  */
-// Hostnames OpenLink might serve from. The Thai market service ships from
-// several subdomains/TLDs depending on phase (.app for the marketing site,
-// .bio for profile pages, etc.) — we whitelist all plausible ones so a
-// creator pasting any of them gets a parse rather than a "not supported"
-// error. The actual parser is host-agnostic.
-const OPENLINK_HOSTS = ['openlink.app', 'openlink.cc', 'openlink.bio', 'openlink.io']
+// Hostnames OpenLink might serve from. The Thai service is at openlink.co
+// (verified 2026-06 against https://www.openlink.co/studioowy). The other
+// .app/.bio/.cc/.io variants are kept defensively in case OpenLink expands
+// to those TLDs or routes some traffic through them.
+const OPENLINK_HOSTS = ['openlink.co', 'openlink.app', 'openlink.cc', 'openlink.bio', 'openlink.io']
 function isOpenLinkHost(h: string): boolean {
   return OPENLINK_HOSTS.some(d => h === d || h.endsWith(`.${d}`))
 }

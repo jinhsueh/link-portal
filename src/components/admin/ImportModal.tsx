@@ -178,7 +178,7 @@ export function ImportModal({ pageId, onClose, onImported }: Props) {
                     const parts = t.urlHint
                       .replace('{linktree}', '\x01linktr.ee\x01')
                       .replace('{portaly}', '\x01portaly.cc\x01')
-                      .replace('{openlink}', '\x01openlink.app\x01')
+                      .replace('{openlink}', '\x01openlink.co\x01')
                       .split('\x01')
                     return parts.map((p, i) =>
                       i % 2 === 1 ? <code key={i}>{p}</code> : <span key={i}>{p}</span>

@@ -1,19 +1,28 @@
 /**
- * OpenLink importer. OpenLink is a Thai link-in-bio service used by
- * regional travel / lifestyle KOLs (see customer interview note in
- * ~/.claude/plans/hashed-drifting-cake.md).
+ * OpenLink importer. OpenLink (openlink.co) is a Thai-market link-in-bio
+ * service. Used by travel/lifestyle KOLs like Nong Tum / Nong U (see
+ * customer interview note in ~/.claude/plans/hashed-drifting-cake.md).
  *
- * Strategy mirrors the Portaly importer — these are structurally similar
- * Asian-market link-in-bio platforms, typically built on React/Next.js
- * with profiles rendered server-side via __NEXT_DATA__ payload:
- *   1. Try `__NEXT_DATA__` (covers the Next.js case).
- *   2. Fall back to DOM scraping: find anchor tags pointing off-host.
- *      Pre-strip <style>/<script> so CSS-in-JS payloads don't leak.
- *   3. Final fallback: OG meta tags so the user at least gets name/bio/avatar
- *      even if the link list is fully client-rendered and not in the HTML.
+ * KEY DIFFERENCE FROM Portaly importer:
+ * OpenLink is built on Next.js **App Router** (NOT Pages Router). The
+ * static HTML doesn't include `<script id="__NEXT_DATA__">` — instead the
+ * link/profile data is streamed via React Server Component payloads in
+ * many `self.__next_f.push([1, "..."])` script blocks.
  *
- * If we can't find anything we throw — better than silently importing
- * a half-broken profile.
+ * Strategy:
+ *   1. Concat all RSC payloads (each is a JSON-encoded string fragment)
+ *   2. Regex-extract flat JSON object literals containing both `"url"`
+ *      and `"name"` — that's the link/product shape OpenLink uses
+ *   3. Resolve relative `image` filenames against the OpenLink CDN
+ *      (`https://m.openlink.co/images/{username}/{filename}`)
+ *   4. Fall back to OG meta for profile name/bio/avatar if any field is
+ *      missing from the RSC stream
+ *
+ * Reference data shape from a real profile (https://www.openlink.co/studioowy):
+ *   { "url": "https://lin.ee/...", "name": "Line Official", "icon": "line" }
+ *   { "image": "studioowy_1770568564_orientation-N.jpg",
+ *     "url": "https://s.shopee.co.th/...", "name": "Valentine's Postcard",
+ *     "price_currency": "THB" }
  */
 
 import { detectPlatform } from '@/lib/social-platforms'
@@ -21,7 +30,11 @@ import type { ImportedProfile, ImportedBlock, ImportedSocialLink } from './types
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 
-/** Generic OG meta extractor — same shape as the Portaly importer. */
+/** OpenLink CDN base. All `image` filenames in the RSC stream are bare names
+ * — must be prefixed with this + the profile username to become absolute. */
+const OPENLINK_CDN = 'https://m.openlink.co/images'
+
+/** Generic OG meta extractor — used as a fallback when RSC parse comes up empty. */
 function extractOgMeta(html: string): { title?: string; description?: string; image?: string } {
   const grab = (prop: string): string | undefined => {
     const m = html.match(new RegExp(`<meta\\s+(?:property|name)=["']${prop}["']\\s+content=["']([^"']+)["']`, 'i'))
@@ -29,7 +42,6 @@ function extractOgMeta(html: string): { title?: string; description?: string; im
     return m?.[1]?.trim() || undefined
   }
   const t = grab('og:title') || grab('twitter:title')
-  // Skip generic OpenLink fallback titles (e.g. when hitting a 404 / landing page)
   if (t && /^(?:404|openlink|open\s*link)$/i.test(t)) return {}
   return {
     title: t && !/^open\s*link$/i.test(t) ? t : undefined,
@@ -38,108 +50,95 @@ function extractOgMeta(html: string): { title?: string; description?: string; im
   }
 }
 
-function extractNextData(html: string): unknown {
-  const match = html.match(/<script[^>]+id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/)
-  if (!match) return null
-  try { return JSON.parse(match[1]) } catch { return null }
-}
-
 /**
- * Walk a JSON tree looking for arrays of link-shaped objects. Same heuristic
- * as the Portaly importer — survives minor schema drift.
+ * Extract and concat all `self.__next_f.push([1, "<encoded-string>"])` RSC
+ * payloads. The encoded strings collectively form the React server-component
+ * stream; concatenated they're searchable as one big text blob.
  */
-function findLinkArrays(obj: unknown, acc: Array<Array<Record<string, unknown>>> = []): Array<Array<Record<string, unknown>>> {
-  if (!obj || typeof obj !== 'object') return acc
-  if (Array.isArray(obj)) {
-    if (obj.length > 0 && obj.every(v => v && typeof v === 'object' && !Array.isArray(v))) {
-      const items = obj as Array<Record<string, unknown>>
-      const looksLikeLinks = items.some(it => {
-        const urlKey = 'url' in it || 'link' in it || 'href' in it || 'targetUrl' in it
-        const titleKey = 'title' in it || 'name' in it || 'label' in it || 'text' in it
-        return urlKey && titleKey
-      })
-      if (looksLikeLinks) acc.push(items)
-    }
-    for (const v of obj) findLinkArrays(v, acc)
-    return acc
-  }
-  for (const v of Object.values(obj as Record<string, unknown>)) findLinkArrays(v, acc)
-  return acc
-}
-
-function pickString(o: Record<string, unknown>, keys: string[]): string | undefined {
-  for (const k of keys) {
-    const v = o[k]
-    if (typeof v === 'string' && v.trim()) return v.trim()
-  }
-  return undefined
-}
-
-function mapGenericLink(item: Record<string, unknown>): ImportedBlock | null {
-  const url = pickString(item, ['url', 'link', 'href', 'targetUrl'])
-  const title = pickString(item, ['title', 'name', 'label', 'text'])
-  if (!url) return null
-  return {
-    type: 'link',
-    title: title || url,
-    content: {
-      url,
-      ...(pickString(item, ['description', 'subtitle']) ? { description: pickString(item, ['description', 'subtitle']) } : {}),
-      ...(pickString(item, ['thumbnail', 'imageUrl', 'image']) ? { thumbnail: pickString(item, ['thumbnail', 'imageUrl', 'image']) } : {}),
-    },
-    sourceType: 'openlink-link',
-  }
-}
-
-/**
- * Strip <style>/<script>/comments entirely so their bodies don't leak into
- * anchor "text" when we run the regex tag-stripper. Same defensive cleanup
- * as Portaly because both platforms ship CSS-in-JS payloads inline.
- */
-function stripStyleAndScript(html: string): string {
-  return html
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '')
-}
-
-function decodeEntities(s: string): string {
-  return s
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
-}
-
-/** Last-resort: regex anchor scrape. Skips same-origin nav, mailto, anchors. */
-function fallbackExtractAnchors(html: string, sourceUrl: string): ImportedBlock[] {
-  const clean = stripStyleAndScript(html)
-  const blocks: ImportedBlock[] = []
-  const seen = new Set<string>()
-  const re = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi
-  const origin = (() => { try { return new URL(sourceUrl).origin } catch { return '' } })()
+function extractRscStream(html: string): string {
+  // Match: self.__next_f.push([<digit>, "<json-encoded string>"])
+  // The string is double-quoted JSON (so \" -> " etc when decoded).
+  const re = /self\.__next_f\.push\(\[\d+,\s*("(?:\\.|[^"\\])*")\s*\]\)/g
+  let all = ''
   let m: RegExpExecArray | null
-  while ((m = re.exec(clean))) {
-    const href = m[1]
-    if (!href || href.startsWith('#') || href.startsWith('mailto:')) continue
-    // Skip same-origin nav (back-to-OpenLink links etc.)
-    if (href.startsWith('/') || (origin && href.startsWith(origin))) continue
-    if (seen.has(href)) continue
-    seen.add(href)
-    const text = decodeEntities(m[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
-    // Defensive: skip if text looks like leftover CSS
-    if (!text || /^[.#]?[\w-]+\s*\{/.test(text)) continue
-    blocks.push({
-      type: 'link',
-      title: text,
-      content: { url: href },
-      sourceType: 'openlink-anchor',
-    })
+  while ((m = re.exec(html))) {
+    try {
+      const decoded = JSON.parse(m[1])
+      if (typeof decoded === 'string') all += decoded
+    } catch { /* skip malformed payload */ }
   }
-  return blocks
+  return all
+}
+
+/**
+ * Find flat JSON object literals in the RSC stream that look like OpenLink
+ * link/product items — must have BOTH `"url": "https?://..."` and `"name"` keys.
+ *
+ * Uses a brace-counting scanner (not a greedy regex) so we cleanly extract
+ * objects that contain `null` values, nested empty objects, or escaped
+ * quotes inside string values.
+ */
+function extractItems(rsc: string): Array<Record<string, unknown>> {
+  const items: Array<Record<string, unknown>> = []
+  // Quick filter: only attempt parsing on positions that start with `{"url":"http`
+  // or `{"image":"...","url":"http` — the two seen shapes in real OpenLink data.
+  const seedRe = /\{"(?:url|image)":"/g
+  let seed: RegExpExecArray | null
+  while ((seed = seedRe.exec(rsc))) {
+    const start = seed.index
+    // Walk forward, counting braces, respecting strings + escapes
+    let depth = 0
+    let inString = false
+    let escape = false
+    let end = -1
+    for (let i = start; i < rsc.length; i++) {
+      const c = rsc[i]
+      if (escape) { escape = false; continue }
+      if (c === '\\') { escape = true; continue }
+      if (c === '"') { inString = !inString; continue }
+      if (inString) continue
+      if (c === '{') depth++
+      else if (c === '}') {
+        depth--
+        if (depth === 0) { end = i + 1; break }
+      }
+    }
+    if (end < 0) continue
+    const slice = rsc.slice(start, end)
+    try {
+      const obj = JSON.parse(slice)
+      if (obj && typeof obj === 'object' && typeof obj.url === 'string' && /^https?:\/\//.test(obj.url) && typeof obj.name === 'string') {
+        items.push(obj)
+      }
+    } catch { /* invalid JSON slice — skip */ }
+    // Move regex past the closing brace so we don't re-scan inside this object
+    seedRe.lastIndex = end
+  }
+  return items
+}
+
+/** Profile picture lives in the RSC stream as a full URL like
+ *  `https://m.openlink.co/images/{username}/profile_*.jpg`. */
+function findAvatar(rsc: string): string | undefined {
+  const m = rsc.match(/https:\/\/m\.openlink\.co\/images\/[^"\\\s]+\/profile_[^"\\\s]+/)
+  return m?.[0]
+}
+
+/** Cover image — used as fallback when no separate profile picture exists. */
+function findCover(rsc: string): string | undefined {
+  const m = rsc.match(/https:\/\/m\.openlink\.co\/images\/[^"\\\s]+\/cover_[^"\\\s]+/)
+  return m?.[0]
+}
+
+function usernameFromUrl(sourceUrl: string): string {
+  try {
+    return new URL(sourceUrl).pathname.replace(/^\/+|\/+$/g, '').split('/')[0] ?? ''
+  } catch { return '' }
+}
+
+function resolveImage(image: string, username: string): string {
+  if (/^https?:\/\//.test(image)) return image
+  return `${OPENLINK_CDN}/${username}/${image}`
 }
 
 export async function importFromOpenLink(sourceUrl: string): Promise<ImportedProfile> {
@@ -149,8 +148,7 @@ export async function importFromOpenLink(sourceUrl: string): Promise<ImportedPro
     headers: {
       'User-Agent': USER_AGENT,
       'Accept': 'text/html,application/xhtml+xml',
-      // Thai-first since the platform's primary market is Thailand. Falls back
-      // to English so an English profile still parses cleanly.
+      // Thai-first; falls back to English so an English profile still parses cleanly.
       'Accept-Language': 'th-TH,th;q=0.9,en;q=0.8',
     },
     cache: 'no-store',
@@ -158,64 +156,47 @@ export async function importFromOpenLink(sourceUrl: string): Promise<ImportedPro
   if (!res.ok) throw new Error(`OpenLink fetch failed: ${res.status}`)
   const html = await res.text()
 
-  // ── Try __NEXT_DATA__ first ──
-  const data = extractNextData(html)
-  let blocks: ImportedBlock[] = []
-  let name: string | undefined
-  let bio: string | undefined
-  let avatarUrl: string | undefined
+  const username = usernameFromUrl(normalized)
+  const rsc = extractRscStream(html)
+  const items = extractItems(rsc)
+  const ogMeta = extractOgMeta(html)
 
-  if (data) {
-    const candidates = findLinkArrays(data)
-    const best = candidates.sort((a, b) => b.length - a.length)[0] ?? []
-    for (const item of best) {
-      const mapped = mapGenericLink(item)
-      if (mapped) blocks.push(mapped)
-    }
+  // ── Build blocks from RSC items ──
+  // OpenLink stores everything as a flat link list. Items with an `image`
+  // field are visually rendered as product cards on the source page; we map
+  // them to `link` blocks here too (with thumbnail) since Beam's product
+  // block requires price + checkoutUrl which OpenLink doesn't always supply.
+  // Users can re-categorize after import.
+  const blocks: ImportedBlock[] = []
+  for (const item of items) {
+    const url = item.url as string
+    const name = (item.name as string) || ''
+    const subtitle = (item.subtitle as string | undefined) || undefined
+    const image = item.image as string | undefined
+    const thumbnail = image ? resolveImage(image, username) : undefined
 
-    const walkForString = (o: unknown, keys: string[]): string | undefined => {
-      if (!o || typeof o !== 'object') return undefined
-      if (Array.isArray(o)) {
-        for (const v of o) {
-          const r = walkForString(v, keys)
-          if (r) return r
-        }
-        return undefined
-      }
-      const rec = o as Record<string, unknown>
-      for (const k of keys) {
-        const v = rec[k]
-        if (typeof v === 'string' && v.trim()) return v.trim()
-      }
-      for (const v of Object.values(rec)) {
-        const r = walkForString(v, keys)
-        if (r) return r
-      }
-      return undefined
-    }
-    name = walkForString(data, ['displayName', 'pageTitle', 'name', 'username'])
-    bio = walkForString(data, ['bio', 'description', 'tagline'])
-    avatarUrl = walkForString(data, ['avatarUrl', 'profilePictureUrl', 'avatar', 'image'])
+    blocks.push({
+      type: 'link',
+      title: name || url,
+      content: {
+        url,
+        ...(subtitle ? { description: subtitle } : {}),
+        ...(thumbnail ? { thumbnail } : {}),
+      },
+      sourceType: image ? 'openlink-card' : 'openlink-link',
+    })
   }
 
-  // ── Fallback: DOM anchor scrape ──
-  if (blocks.length === 0) {
-    blocks = fallbackExtractAnchors(html, normalized)
-  }
-
-  // ── Final fallback: OG meta tags ──
-  if (!name || !bio || !avatarUrl) {
-    const ogMeta = extractOgMeta(html)
-    name = name || ogMeta.title
-    bio = bio || ogMeta.description
-    avatarUrl = avatarUrl || ogMeta.image
-  }
+  // ── Profile fields: prefer RSC-found avatar, fall back to OG meta ──
+  const name = ogMeta.title  // e.g. "STUDIO.OWY" from og:title — RSC display name not consistently extractable
+  const bio = ogMeta.description
+  const avatarUrl = findAvatar(rsc) || ogMeta.image || findCover(rsc)
 
   if (blocks.length === 0 && !name && !bio && !avatarUrl) {
     throw new Error('Could not parse the OpenLink page — either the URL is wrong or OpenLink changed their structure.')
   }
 
-  // Split social-platform URLs out from regular blocks
+  // Split social-platform URLs out from regular blocks (LINE, IG, TikTok, etc.)
   const socialLinks: ImportedSocialLink[] = []
   const keptBlocks: ImportedBlock[] = []
   const seenSocial = new Set<string>()
