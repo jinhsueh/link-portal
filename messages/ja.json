@@ -44,6 +44,7 @@
     "placeholder": "プレースホルダー",
     "processing": "処理中…"
   },
+
   "nav": {
     "home": "ホーム",
     "analytics": "分析",
@@ -51,6 +52,7 @@
     "subscribers": "登録者",
     "settings": "設定"
   },
+
   "landing": {
     "hero": {
       "tag": "クリエイターは永久無料",
@@ -60,138 +62,56 @@
       "ctaSecondary": "ライブデモを見る",
       "ctaNote": "クレジットカード不要。30 秒で公開。"
     },
+
     "social": {
       "title": "すべてのチャンネルを 1 つの場所に",
       "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE など 30 種類以上 — 標準アイコン、ブランドカラー対応、ワンタップでフォロー。"
     },
+
     "features": [
-      {
-        "title": "必要なブロックすべて",
-        "description": "リンク、バナー、動画、商品、フォーム、カレンダー — ドラッグ&ドロップで、本当に自分だけのページを作れます。"
-      },
-      {
-        "title": "ブランドに合わせたテーマ",
-        "description": "8 種のプリセット、または完全カスタムカラー、グラデーション背景、ボタンスタイル。あなたのブランドを 1px も妥協なく。"
-      },
-      {
-        "title": "リアルタイム分析",
-        "description": "訪問者、クリック、人気ブロックを追跡 — 実際に効果のあるものを基に改善できます。"
-      },
-      {
-        "title": "デジタル商品を販売",
-        "description": "Stripe を標準搭載。コース、電子書籍、テンプレートをページから直接販売 — ストアフロント不要。"
-      },
-      {
-        "title": "メールリストを育てる",
-        "description": "メール収集フォームを埋め込み、自分のオーディエンスを所有。アルゴリズムに依存しない。"
-      },
-      {
-        "title": "1 つのアカウントで複数ページ",
-        "description": "1 アカウントで複数のページ。コース、コラボ、プライベートなど名前付きタブで分けられます。"
-      }
+      { "title": "必要なブロックすべて",                "description": "リンク、バナー、動画、商品、フォーム、カレンダー — ドラッグ&ドロップで、本当に自分だけのページを作れます。" },
+      { "title": "ブランドに合わせたテーマ",          "description": "8 種のプリセット、または完全カスタムカラー、グラデーション背景、ボタンスタイル。あなたのブランドを 1px も妥協なく。" },
+      { "title": "リアルタイム分析",                  "description": "訪問者、クリック、人気ブロックを追跡 — 実際に効果のあるものを基に改善できます。" },
+      { "title": "デジタル商品を販売",                "description": "Stripe を標準搭載。コース、電子書籍、テンプレートをページから直接販売 — ストアフロント不要。" },
+      { "title": "メールリストを育てる",              "description": "メール収集フォームを埋め込み、自分のオーディエンスを所有。アルゴリズムに依存しない。" },
+      { "title": "1 つのアカウントで複数ページ",      "description": "1 アカウントで複数のページ。コース、コラボ、プライベートなど名前付きタブで分けられます。" }
     ],
+
     "steps": [
-      {
-        "num": "1",
-        "title": "アカウントを作る",
-        "description": "ユーザー名を選ぶ。クレジットカード不要。30 秒で完了。"
-      },
-      {
-        "num": "2",
-        "title": "ブロックを追加",
-        "description": "ドラッグ、ドロップ、編集。作成中もプレビューが即座に更新されます。"
-      },
-      {
-        "num": "3",
-        "title": "1 つのリンクをシェア",
-        "description": "IG bio、YouTube、Threads、どこでも貼り付けるだけ。1 リンクですべてカバー。"
-      }
+      { "num": "1", "title": "アカウントを作る",  "description": "ユーザー名を選ぶ。クレジットカード不要。30 秒で完了。" },
+      { "num": "2", "title": "ブロックを追加",    "description": "ドラッグ、ドロップ、編集。作成中もプレビューが即座に更新されます。" },
+      { "num": "3", "title": "1 つのリンクをシェア", "description": "IG bio、YouTube、Threads、どこでも貼り付けるだけ。1 リンクですべてカバー。" }
     ],
+
     "useCases": {
       "title": "あらゆるクリエイターのために",
       "items": [
-        {
-          "title": "IG / YouTube クリエイター",
-          "description": "最新動画、PR リンク、グッズなどへファンを誘導 — すべて 1 ヶ所に。"
-        },
-        {
-          "title": "コース・商品の販売者",
-          "description": "Stripe でデジタル商品を販売。ローンチ前にメール獲得。限定オファーにカウントダウンを設置。"
-        },
-        {
-          "title": "ポッドキャスター",
-          "description": "Spotify、Apple Podcasts、YouTube を 1 タップで連携。リスナーがコーヒー 1 杯でサポートできます。"
-        }
+        { "title": "IG / YouTube クリエイター",      "description": "最新動画、PR リンク、グッズなどへファンを誘導 — すべて 1 ヶ所に。" },
+        { "title": "コース・商品の販売者",          "description": "Stripe でデジタル商品を販売。ローンチ前にメール獲得。限定オファーにカウントダウンを設置。" },
+        { "title": "ポッドキャスター",              "description": "Spotify、Apple Podcasts、YouTube を 1 タップで連携。リスナーがコーヒー 1 杯でサポートできます。" }
       ]
     },
+
     "pricing": {
       "title": "シンプルで誠実な料金",
       "subtitle": "無料で開始。必要になったらアップグレード。",
-      "free": {
-        "name": "Free",
-        "price": "$0",
-        "period": "/月",
-        "features": [
-          "1 ページ",
-          "10 ブロックまで",
-          "基本分析",
-          "メール収集",
-          "Beam ウォーターマーク"
-        ]
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "$5",
-        "period": "/月",
-        "features": [
-          "3 ページ",
-          "ブロック無制限",
-          "完全分析",
-          "商品販売 (Stripe)",
-          "ウォーターマーク除去",
-          "優先サポート"
-        ]
-      },
-      "premium": {
-        "name": "Premium",
-        "price": "$12",
-        "period": "/月",
-        "features": [
-          "ページ無制限",
-          "チームメンバー",
-          "独自ドメイン",
-          "高度なテーマ",
-          "低い手数料 (2%)",
-          "1on1 オンボーディング"
-        ]
-      },
+      "free":    { "name": "Free",    "price": "$0",  "period": "/月", "features": ["1 ページ", "10 ブロックまで", "基本分析", "メール収集", "Beam ウォーターマーク"] },
+      "pro":     { "name": "Pro",     "price": "$5",  "period": "/月", "features": ["3 ページ", "ブロック無制限", "完全分析", "商品販売 (Stripe)", "ウォーターマーク除去", "優先サポート"] },
+      "premium": { "name": "Premium", "price": "$12", "period": "/月", "features": ["ページ無制限", "チームメンバー", "独自ドメイン", "高度なテーマ", "低い手数料 (2%)", "1on1 オンボーディング"] },
       "cta": "無料ではじめる"
     },
+
     "faq": {
       "title": "よくある質問",
       "items": [
-        {
-          "q": "Beam は本当に無料ですか?",
-          "a": "はい。無料プランは永久無料です。Pro へのアップグレードは、ブロック無制限、ページ追加、ウォーターマーク除去が必要になった時だけで構いません。"
-        },
-        {
-          "q": "Linktree から移行できますか?",
-          "a": "はい。linktr.ee または portaly.cc の URL を貼り付けるだけで、リンク、ソーシャル、名前、紹介、アイコンを 30 秒で取り込みます。"
-        },
-        {
-          "q": "商品販売はどう動きますか?",
-          "a": "設定で Stripe アカウントを接続。商品ブロックを追加して価格を設定すると、顧客がページから直接購入できます。Beam はプランに応じて少額の手数料を受け取ります。"
-        },
-        {
-          "q": "独自ドメインは使えますか?",
-          "a": "はい、Premium プランで対応しています。ドメインを Beam に向けると、SSL は当方で処理します。"
-        },
-        {
-          "q": "メール登録者から手数料を取りますか?",
-          "a": "取りません。登録者はあなたのものです。いつでも CSV でエクスポートできます。"
-        }
+        { "q": "Beam は本当に無料ですか?",                  "a": "はい。無料プランは永久無料です。Pro へのアップグレードは、ブロック無制限、ページ追加、ウォーターマーク除去が必要になった時だけで構いません。" },
+        { "q": "Linktree から移行できますか?",              "a": "はい。linktr.ee または portaly.cc の URL を貼り付けるだけで、リンク、ソーシャル、名前、紹介、アイコンを 30 秒で取り込みます。" },
+        { "q": "商品販売はどう動きますか?",                 "a": "設定で Stripe アカウントを接続。商品ブロックを追加して価格を設定すると、顧客がページから直接購入できます。Beam はプランに応じて少額の手数料を受け取ります。" },
+        { "q": "独自ドメインは使えますか?",                 "a": "はい、Premium プランで対応しています。ドメインを Beam に向けると、SSL は当方で処理します。" },
+        { "q": "メール登録者から手数料を取りますか?",       "a": "取りません。登録者はあなたのものです。いつでも CSV でエクスポートできます。" }
       ]
     },
+
     "footer": {
       "tagline": "1つのリンクで、すべてのファンとつながる",
       "product": "プロダクト",
@@ -205,10 +125,12 @@
       "terms": "利用規約",
       "copyright": "© 2026 Beam. All rights reserved."
     },
+
     "langSwitcher": {
       "label": "言語"
     }
   },
+
   "profile": {
     "productNoPrice": "価格未設定",
     "watchVideo": "動画を見る",
@@ -229,6 +151,7 @@
       "applying": "処理中…",
       "apply": "クロップを適用"
     },
+
     "success": {
       "confirming": "決済確認中…",
       "title": "お支払いが完了しました!",
@@ -263,6 +186,7 @@
       "ics": ".ics をダウンロード"
     }
   },
+
   "terms": {
     "metaTitle": "利用規約",
     "metaDescriptionTpl": "{name} 利用規約 — 本サービス利用にあたっての権利と義務。",
@@ -272,61 +196,18 @@
     "lastUpdated": "最終更新:2026 年 4 月",
     "intro": "{name} へようこそ。本サービスをご利用になる前に、本規約をよくお読みください。{name} に登録・アクセス・利用された時点で、本規約に同意したものとみなされます。",
     "sections": [
-      {
-        "title": "1. サービス内容",
-        "body": "{name} は link-in-bio ページ作成、デジタル商品販売、メールリスト収集、分析などのツールを提供します。機能やプランは随時更新される場合があり、重要な変更はサイトまたはメールでお知らせします。"
-      },
-      {
-        "title": "2. アカウント登録",
-        "items": [
-          "登録時に正確かつ完全な情報を提供する必要があります。",
-          "アカウントとパスワードはご自身で管理してください。アカウント経由のすべての操作は本人の行為とみなされます。",
-          "原則として一人一アカウント。悪質な複数登録はアカウント停止となる場合があります。"
-        ]
-      },
-      {
-        "title": "3. 利用制限",
-        "body": "次の行為に {name} を使用しないことに同意します:",
-        "items": [
-          "違法、ヘイト、嫌がらせ、性的、または他者の権利を侵害するコンテンツの配布",
-          "違法、偽造、または無許可商品の販売",
-          "詐欺、マネーロンダリング、その他の犯罪活動",
-          "自動化ツールによる大量操作やスクレイピング",
-          "リバースエンジニアリング、クラッキング、または無許可アクセスの試み"
-        ]
-      },
-      {
-        "title": "4. 有料プランと返金",
-        "items": [
-          "Pro および Premium プランは月払いまたは年払いで、購読時に自動課金されます。",
-          "いつでもキャンセル可能。現在の期間終了時に自動更新が停止します。",
-          "プラットフォームの重大な不具合で利用不可となった場合を除き、返金は原則として行われません。",
-          "デジタル商品の販売時、プラットフォームはプランに応じた手数料を徴収します。"
-        ]
-      },
-      {
-        "title": "5. コンテンツ所有権",
-        "body": "{name} 上で作成したコンテンツ(ページ、商品、画像、テキスト)の著作権は作成者に帰属します。サービス提供に必要な範囲で {name} が使用・保存・表示する権利を許諾していただきます。"
-      },
-      {
-        "title": "6. サービス停止とアカウント終了",
-        "body": "本規約や法令違反があった場合、{name} はアカウントを停止または終了する権利を有し、既払い料金は返金されません。可能な限り事前通知しますが、セキュリティや法的リスクに関しては即時対応する場合があります。"
-      },
-      {
-        "title": "7. 免責事項",
-        "body": "{name} は「現状有姿」かつ「利用可能な範囲」でサービスを提供します。可用性、正確性、無中断性についていかなる保証もしません。本サービスの利用または利用不可によって生じた間接的損害について責任を負いません。"
-      },
-      {
-        "title": "8. 規約の変更",
-        "body": "本規約は随時更新される場合があります。重要な変更はサイトで告知し、メールで通知します。{name} の継続利用は改訂規約への同意とみなされます。"
-      },
-      {
-        "title": "9. お問い合わせ",
-        "body": "本規約に関するご質問は ",
-        "emailTrailer": " までメールでご連絡ください。"
-      }
+      { "title": "1. サービス内容", "body": "{name} は link-in-bio ページ作成、デジタル商品販売、メールリスト収集、分析などのツールを提供します。機能やプランは随時更新される場合があり、重要な変更はサイトまたはメールでお知らせします。" },
+      { "title": "2. アカウント登録", "items": ["登録時に正確かつ完全な情報を提供する必要があります。", "アカウントとパスワードはご自身で管理してください。アカウント経由のすべての操作は本人の行為とみなされます。", "原則として一人一アカウント。悪質な複数登録はアカウント停止となる場合があります。"] },
+      { "title": "3. 利用制限", "body": "次の行為に {name} を使用しないことに同意します:", "items": ["違法、ヘイト、嫌がらせ、性的、または他者の権利を侵害するコンテンツの配布", "違法、偽造、または無許可商品の販売", "詐欺、マネーロンダリング、その他の犯罪活動", "自動化ツールによる大量操作やスクレイピング", "リバースエンジニアリング、クラッキング、または無許可アクセスの試み"] },
+      { "title": "4. 有料プランと返金", "items": ["Pro および Premium プランは月払いまたは年払いで、購読時に自動課金されます。", "いつでもキャンセル可能。現在の期間終了時に自動更新が停止します。", "プラットフォームの重大な不具合で利用不可となった場合を除き、返金は原則として行われません。", "デジタル商品の販売時、プラットフォームはプランに応じた手数料を徴収します。"] },
+      { "title": "5. コンテンツ所有権", "body": "{name} 上で作成したコンテンツ(ページ、商品、画像、テキスト)の著作権は作成者に帰属します。サービス提供に必要な範囲で {name} が使用・保存・表示する権利を許諾していただきます。" },
+      { "title": "6. サービス停止とアカウント終了", "body": "本規約や法令違反があった場合、{name} はアカウントを停止または終了する権利を有し、既払い料金は返金されません。可能な限り事前通知しますが、セキュリティや法的リスクに関しては即時対応する場合があります。" },
+      { "title": "7. 免責事項", "body": "{name} は「現状有姿」かつ「利用可能な範囲」でサービスを提供します。可用性、正確性、無中断性についていかなる保証もしません。本サービスの利用または利用不可によって生じた間接的損害について責任を負いません。" },
+      { "title": "8. 規約の変更", "body": "本規約は随時更新される場合があります。重要な変更はサイトで告知し、メールで通知します。{name} の継続利用は改訂規約への同意とみなされます。" },
+      { "title": "9. お問い合わせ", "body": "本規約に関するご質問は ", "emailTrailer": " までメールでご連絡ください。" }
     ]
   },
+
   "privacy": {
     "metaTitle": "プライバシーポリシー",
     "metaDescriptionTpl": "{name} プライバシーポリシー — データの収集・利用・保護方法について。",
@@ -336,65 +217,21 @@
     "lastUpdated": "最終更新:2026 年 4 月",
     "intro": "{name}(以下「当社」)は、すべてのユーザーのプライバシーを尊重し保護します。本ポリシーでは、収集するデータ、その利用方法、ユーザーの権利について説明します。",
     "sections": [
-      {
-        "title": "1. 収集するデータ",
-        "items": [
-          {
-            "bold": "アカウントデータ:",
-            "rest": " 登録時に提供されるメール、ユーザー名、パスワード(ハッシュ化保存)。"
-          },
-          {
-            "bold": "コンテンツデータ:",
-            "rest": " {name} 上で作成したページ、ブロック、商品、フォーム送信。"
-          },
-          {
-            "bold": "利用データ:",
-            "rest": " 訪問者のクリック、表示、リファラー、デバイス種別などの匿名統計。"
-          },
-          {
-            "bold": "決済データ:",
-            "rest": " カード情報は Stripe が処理します。完全なカード番号は保存しません。"
-          }
-        ]
-      },
-      {
-        "title": "2. データの利用方法",
-        "items": [
-          "{name} の製品およびサービスの提供、運営、改善のため。",
-          "注文、請求書、返金、カスタマーサポートの処理のため。",
-          "製品アップデート、重要なお知らせ、マーケティングメールの送信(いつでも配信停止可能)。",
-          "詐欺、不正利用を検知し、プラットフォームのセキュリティを守るため。"
-        ]
-      },
-      {
-        "title": "3. データの共有",
-        "body": "個人データを販売することはありません。次の場合のみ第三者と共有します:",
-        "items": [
-          "決済処理(Stripe)",
-          "クラウドサービスプロバイダー(Vercel、データベース提供者)",
-          "法律または当局の要請による場合"
-        ]
-      },
-      {
-        "title": "4. ユーザーの権利",
-        "body": "個人データはいつでも閲覧・修正・ダウンロード・削除できます。これらの権利を行使するには ",
-        "emailTrailer": " までメールしてください。"
-      },
-      {
-        "title": "5. Cookie",
-        "body": "ログイン状態の維持、設定の保存、サイトトラフィックの分析のために Cookie および類似技術を使用します。ブラウザ設定で管理または無効化できます。"
-      },
-      {
-        "title": "6. ポリシーの更新",
-        "body": "本ポリシーは随時更新される場合があります。重要な変更はメールまたはサイト告知でお知らせします。{name} の継続利用は改訂ポリシーへの同意とみなされます。"
-      },
-      {
-        "title": "7. お問い合わせ",
-        "body": "本プライバシーポリシーに関するご質問は ",
-        "emailTrailer": " までメールでご連絡ください。"
-      }
+      { "title": "1. 収集するデータ", "items": [
+        { "bold": "アカウントデータ:", "rest": " 登録時に提供されるメール、ユーザー名、パスワード(ハッシュ化保存)。" },
+        { "bold": "コンテンツデータ:", "rest": " {name} 上で作成したページ、ブロック、商品、フォーム送信。" },
+        { "bold": "利用データ:", "rest": " 訪問者のクリック、表示、リファラー、デバイス種別などの匿名統計。" },
+        { "bold": "決済データ:", "rest": " カード情報は Stripe が処理します。完全なカード番号は保存しません。" }
+      ] },
+      { "title": "2. データの利用方法", "items": ["{name} の製品およびサービスの提供、運営、改善のため。", "注文、請求書、返金、カスタマーサポートの処理のため。", "製品アップデート、重要なお知らせ、マーケティングメールの送信(いつでも配信停止可能)。", "詐欺、不正利用を検知し、プラットフォームのセキュリティを守るため。"] },
+      { "title": "3. データの共有", "body": "個人データを販売することはありません。次の場合のみ第三者と共有します:", "items": ["決済処理(Stripe)", "クラウドサービスプロバイダー(Vercel、データベース提供者)", "法律または当局の要請による場合"] },
+      { "title": "4. ユーザーの権利", "body": "個人データはいつでも閲覧・修正・ダウンロード・削除できます。これらの権利を行使するには ", "emailTrailer": " までメールしてください。" },
+      { "title": "5. Cookie", "body": "ログイン状態の維持、設定の保存、サイトトラフィックの分析のために Cookie および類似技術を使用します。ブラウザ設定で管理または無効化できます。" },
+      { "title": "6. ポリシーの更新", "body": "本ポリシーは随時更新される場合があります。重要な変更はメールまたはサイト告知でお知らせします。{name} の継続利用は改訂ポリシーへの同意とみなされます。" },
+      { "title": "7. お問い合わせ", "body": "本プライバシーポリシーに関するご質問は ", "emailTrailer": " までメールでご連絡ください。" }
     ]
   },
+
   "about": {
     "metaTitle": "About",
     "metaDescription": "Beam はデザインにこだわるクリエイターのための link-in-bio。すべてのクリエイターに、ソーシャル・商品・ファンを一つに束ねる美しいページを。",
@@ -408,22 +245,10 @@
     "missionBody": "クリエイターが 30 秒でブランドページを公開できるように。デジタル商品販売、メール収集、分析機能が最初から組み込まれて、有料プランに加入しなくても基本機能が使える。",
     "whyTitle": "なぜ {name}?",
     "whyItems": [
-      {
-        "bold": "デザイン最優先。",
-        "rest": " テーマプリセット、カスタム色、グラデーション、コーナースタイル — テンプレでなく *あなたらしい* ページに。"
-      },
-      {
-        "bold": "永久無料プラン。",
-        "rest": " 基本機能はペイウォールの裏に隠れていません。Free プランでページ作成、12 ブロック、デジタル商品販売が可能。"
-      },
-      {
-        "bold": "決済とメールリストが組み込み済み。",
-        "rest": " 連携不要 — Stripe とメールフォームが最初から動きます。"
-      },
-      {
-        "bold": "分析がネイティブ。",
-        "rest": " クリック、表示、CTR、リファラー分析が全プランに含まれていて、本当にオーディエンスを理解できる。"
-      }
+      { "bold": "デザイン最優先。", "rest": " テーマプリセット、カスタム色、グラデーション、コーナースタイル — テンプレでなく *あなたらしい* ページに。" },
+      { "bold": "永久無料プラン。", "rest": " 基本機能はペイウォールの裏に隠れていません。Free プランでページ作成、12 ブロック、デジタル商品販売が可能。" },
+      { "bold": "決済とメールリストが組み込み済み。", "rest": " 連携不要 — Stripe とメールフォームが最初から動きます。" },
+      { "bold": "分析がネイティブ。", "rest": " クリック、表示、CTR、リファラー分析が全プランに含まれていて、本当にオーディエンスを理解できる。" }
     ],
     "nextTitle": "次のステップ",
     "nextBody": "始める準備はできた? ",
@@ -432,6 +257,7 @@
     "nextLink2": "プランを比較",
     "nextEnd": "。"
   },
+
   "contact": {
     "metaTitle": "お問い合わせ",
     "metaDescription": "{name} チームへのお問い合わせ。製品の質問、パートナーシップ、メディア取材は {email} まで。",
@@ -447,6 +273,7 @@
     "businessBody": "ブランドコラボ、クリエイタープログラム、メディア取材",
     "footer": "通常 1〜2 営業日以内にご返信します。"
   },
+
   "demo": {
     "metaTitle": "Mia | Beam デモ",
     "metaDescription": "1ページで Beam の機能を全部紹介 — リンク・商品・動画・フォーム・Podcast・コラボ問い合わせ",
@@ -457,88 +284,27 @@
       "bio": "ライフスタイル × ファッション 🌸 IG 12万フォロワー ✦ YouTube 毎週更新 ✦ コラボDM歓迎 💌"
     },
     "main": [
-      {
-        "title": "こんにちは、Mia です 💕",
-        "content": {
-          "text": "ファッション × ビューティー × ライフスタイル — 一緒に素敵になろう"
-        }
-      },
-      {
-        "title": "🎬 YouTube — Mia のスタイル日記",
-        "content": {}
-      },
-      {
-        "title": "🎧 Podcast — 女子トーク",
-        "content": {}
-      },
-      {
-        "title": "🌸 春夏コレクション — 1週間 10コーデ",
-        "content": {
-          "description": "NT$3,000 以下でハイクオリティ"
-        }
-      },
-      {
-        "title": "Mia のスタイル公式 e-book",
-        "content": {
-          "description": "30ページ:コーディネートの考え方 + 配色ガイド + カプセルワードローブ。1,200部以上販売!"
-        }
-      },
-      {
-        "title": "Lightroom プリセットパック — ラテトーン",
-        "content": {
-          "description": "12種類のIGスタイルフィルター、ワンタップで写真がパッと変わる ✨"
-        }
-      },
-      {
-        "title": "最新動画:ソウル3日間スタイル Vlog",
-        "content": {}
-      },
-      {
-        "title": "👗 Shopee おすすめアイテム",
-        "content": {}
-      },
-      {
-        "title": "💄 Xiaohongshu — ビューティーレビュー",
-        "content": {}
-      },
-      {
-        "title": "💌 Mia のニュースレターを購読",
-        "content": {
-          "placeholder": "メールアドレス",
-          "buttonText": "無料で購読",
-          "description": "毎週、お気に入り + スタイル提案 + メンバー限定クーポン。5,600+ 購読者!"
-        }
-      },
-      {
-        "title": "☕ Buy Me a Coffee",
-        "content": {}
-      }
+      { "title": "こんにちは、Mia です 💕",            "content": { "text": "ファッション × ビューティー × ライフスタイル — 一緒に素敵になろう" } },
+      { "title": "🎬 YouTube — Mia のスタイル日記",    "content": {} },
+      { "title": "🎧 Podcast — 女子トーク",            "content": {} },
+      { "title": "🌸 春夏コレクション — 1週間 10コーデ", "content": { "description": "NT$3,000 以下でハイクオリティ" } },
+      { "title": "Mia のスタイル公式 e-book",          "content": { "description": "30ページ:コーディネートの考え方 + 配色ガイド + カプセルワードローブ。1,200部以上販売!" } },
+      { "title": "Lightroom プリセットパック — ラテトーン", "content": { "description": "12種類のIGスタイルフィルター、ワンタップで写真がパッと変わる ✨" } },
+      { "title": "最新動画:ソウル3日間スタイル Vlog",  "content": {} },
+      { "title": "👗 Shopee おすすめアイテム",          "content": {} },
+      { "title": "💄 Xiaohongshu — ビューティーレビュー", "content": {} },
+      { "title": "💌 Mia のニュースレターを購読",       "content": { "placeholder": "メールアドレス", "buttonText": "無料で購読", "description": "毎週、お気に入り + スタイル提案 + メンバー限定クーポン。5,600+ 購読者!" } },
+      { "title": "☕ Buy Me a Coffee",                "content": {} }
     ],
     "collab": [
-      {
-        "title": "ブランドコラボ",
-        "content": {
-          "text": "💼 ビューティー、ファッション、ライフスタイルブランドのコラボ歓迎"
-        }
-      },
-      {
-        "title": "📊 リーチ — IG 12万 / YT 8万 / Podcast 2万",
-        "content": {}
-      },
-      {
-        "title": "📄 メディアキットをダウンロード",
-        "content": {}
-      },
-      {
-        "title": "📸 過去のコラボ実績",
-        "content": {}
-      },
-      {
-        "title": "📧 コラボお問い合わせ — mia@example.com",
-        "content": {}
-      }
+      { "title": "ブランドコラボ",                     "content": { "text": "💼 ビューティー、ファッション、ライフスタイルブランドのコラボ歓迎" } },
+      { "title": "📊 リーチ — IG 12万 / YT 8万 / Podcast 2万", "content": {} },
+      { "title": "📄 メディアキットをダウンロード",     "content": {} },
+      { "title": "📸 過去のコラボ実績",                "content": {} },
+      { "title": "📧 コラボお問い合わせ — mia@example.com", "content": {} }
     ]
   },
+
   "pricing": {
     "navSignIn": "ログイン / 新規登録 →",
     "heroTag": "あなたに合うプランを選ぼう",
@@ -595,164 +361,55 @@
       {
         "section": "コア機能",
         "items": [
-          {
-            "label": "ページ数",
-            "free": "1",
-            "pro": "10",
-            "premium": "無制限"
-          },
-          {
-            "label": "1ページあたりのブロック数",
-            "free": "12",
-            "pro": "20",
-            "premium": "無制限"
-          },
-          {
-            "label": "基本ブロック(リンク、動画、バナー、見出し、FAQ、カウントダウン)",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "高度なブロック(商品、メールフォーム、カルーセル、地図、HTML)",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "パスワード保護",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "テーマプリセット&カスタム色",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "公開スケジュール",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "ページ数",                                          "free": "1",      "pro": "10",    "premium": "無制限" },
+          { "label": "1ページあたりのブロック数",                          "free": "12",     "pro": "20",    "premium": "無制限" },
+          { "label": "基本ブロック(リンク、動画、バナー、見出し、FAQ、カウントダウン)", "free": true, "pro": true, "premium": true },
+          { "label": "高度なブロック(商品、メールフォーム、カルーセル、地図、HTML)",  "free": false, "pro": true, "premium": true },
+          { "label": "パスワード保護",                                     "free": true,     "pro": true,    "premium": true },
+          { "label": "テーマプリセット&カスタム色",                        "free": true,     "pro": true,    "premium": true },
+          { "label": "公開スケジュール",                                   "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "販売",
         "items": [
-          {
-            "label": "デジタル商品の販売",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "プラットフォーム手数料",
-            "free": "10%",
-            "pro": "5%",
-            "premium": "2%"
-          },
-          {
-            "label": "注文管理",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Stripe 連携",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "デジタル商品の販売",                                 "free": true,     "pro": true,    "premium": true },
+          { "label": "プラットフォーム手数料",                              "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "注文管理",                                            "free": true,     "pro": true,    "premium": true },
+          { "label": "Stripe 連携",                                         "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "分析",
         "items": [
-          {
-            "label": "データ保持期間",
-            "free": "30日",
-            "pro": "90日",
-            "premium": "無制限"
-          },
-          {
-            "label": "クリック / 表示 / CTR",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "UTM 経路追跡",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "リファラー分析",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "データ保持期間",                                     "free": "30日",   "pro": "90日",  "premium": "無制限" },
+          { "label": "クリック / 表示 / CTR",                              "free": true,     "pro": true,    "premium": true },
+          { "label": "UTM 経路追跡",                                       "free": false,    "pro": true,    "premium": true },
+          { "label": "リファラー分析",                                     "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "ブランドとドメイン",
         "items": [
-          {
-            "label": "Beam ウォーターマーク削除",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "カスタム favicon",
-            "free": false,
-            "pro": false,
-            "premium": true
-          },
-          {
-            "label": "カスタムドメイン(mybrand.com)",
-            "free": false,
-            "pro": false,
-            "premium": true
-          },
-          {
-            "label": "カスタム CSS",
-            "free": false,
-            "pro": false,
-            "premium": true
-          }
+          { "label": "Beam ウォーターマーク削除",                          "free": false,    "pro": true,    "premium": true },
+          { "label": "カスタム favicon",                                    "free": false,    "pro": false,   "premium": true },
+          { "label": "カスタムドメイン(mybrand.com)",                      "free": false,    "pro": false,   "premium": true },
+          { "label": "カスタム CSS",                                        "free": false,    "pro": false,   "premium": true }
         ]
       },
       {
         "section": "チームとサポート",
         "items": [
-          {
-            "label": "チームメンバー",
-            "free": "—",
-            "pro": "3人",
-            "premium": "無制限"
-          },
-          {
-            "label": "メールサポート",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "優先サポート",
-            "free": false,
-            "pro": false,
-            "premium": true
-          }
+          { "label": "チームメンバー",                                     "free": "—",      "pro": "3人",   "premium": "無制限" },
+          { "label": "メールサポート",                                     "free": true,     "pro": true,    "premium": true },
+          { "label": "優先サポート",                                       "free": false,    "pro": false,   "premium": true }
         ]
       }
     ],
     "ctaTitle": "始める準備はできた?",
     "ctaBtn": "ページを無料で作る"
   },
+
   "admin": {
     "addBlock": "ブロックを追加",
     "noBlocksTitle": "ページが空です",
@@ -801,24 +458,26 @@
       "removePassword": "パスワードを削除",
       "delete": "ページを削除"
     },
+
     "onboarding": {
       "title": "クイックスタート",
       "steps": {
-        "createAccount": "アカウント作成",
-        "addBlock": "最初のリンクを追加",
-        "setProfile": "アイコンと自己紹介を設定",
-        "pickStyle": "ビジュアルスタイルを選ぶ(角・アニメ・ブランドカラー)",
-        "share": "ページのリンクをシェア"
+        "createAccount":  "アカウント作成",
+        "addBlock":       "最初のリンクを追加",
+        "setProfile":     "アイコンと自己紹介を設定",
+        "pickStyle":      "ビジュアルスタイルを選ぶ(角・アニメ・ブランドカラー)",
+        "share":          "ページのリンクをシェア"
       },
-      "actionAdd": "ブロック追加",
+      "actionAdd":      "ブロック追加",
       "actionSettings": "設定へ",
       "actionAppearance": "外観へ",
-      "actionCopy": "リンクをコピー"
+      "actionCopy":     "リンクをコピー"
     },
     "trialBadge": "Pro トライアル残り{days}日",
     "darkMode": "ダークモード",
     "lightMode": "ライトモード",
     "shareThisPage": "このページをシェア",
+
     "profileEditor": {
       "header": "クリックしてプロフィールとソーシャルを編集",
       "banner": "ページバナー (任意)",
@@ -846,6 +505,7 @@
       "socialCountPlural": "{n} 件のリンク",
       "cropBannerTitle": "バナーをクロップ (3:1)"
     },
+
     "themeEditor": {
       "themeLabel": "テーマ",
       "presets": "プリセット",
@@ -907,26 +567,11 @@
       "solid": "単色",
       "gradient": "グラデーション",
       "layouts": {
-        "stacked": {
-          "label": "縦並び",
-          "desc": "1カラム、ナロー(既定)"
-        },
-        "horizontal": {
-          "label": "横並び",
-          "desc": "2カラム、ナロー"
-        },
-        "fullwidth": {
-          "label": "フル幅",
-          "desc": "1カラム、ワイド"
-        },
-        "cards": {
-          "label": "カード",
-          "desc": "2カラム、ワイド"
-        },
-        "heroBanner": {
-          "label": "Hero Banner ✨",
-          "desc": "大画像トップ + 2カラム(Portaly 風)"
-        }
+        "stacked":     { "label": "縦並び",   "desc": "1カラム、ナロー(既定)" },
+        "horizontal":  { "label": "横並び",   "desc": "2カラム、ナロー" },
+        "fullwidth":   { "label": "フル幅",   "desc": "1カラム、ワイド" },
+        "cards":       { "label": "カード",   "desc": "2カラム、ワイド" },
+        "heroBanner":  { "label": "Hero Banner ✨", "desc": "大画像トップ + 2カラム(Portaly 風)" }
       },
       "btnStyleOutline": "アウトライン",
       "btnStyleFilled": "塗りつぶし",
@@ -953,32 +598,18 @@
         "scale": "スケール"
       },
       "panelPresets": {
-        "none": {
-          "label": "なし",
-          "desc": "コンテンツを背景に直接表示"
-        },
-        "frosted-light": {
-          "label": "フロスト(白)",
-          "desc": "白い磨りガラス"
-        },
-        "frosted-dark": {
-          "label": "フロスト(黒)",
-          "desc": "暗い磨りガラス"
-        },
-        "brand": {
-          "label": "ブランド色",
-          "desc": "メインカラー 8% 着色"
-        },
-        "custom": {
-          "label": "カスタム",
-          "desc": "完全カスタム色"
-        }
+        "none":          { "label": "なし",       "desc": "コンテンツを背景に直接表示" },
+        "frosted-light": { "label": "フロスト(白)", "desc": "白い磨りガラス" },
+        "frosted-dark":  { "label": "フロスト(黒)", "desc": "暗い磨りガラス" },
+        "brand":         { "label": "ブランド色",  "desc": "メインカラー 8% 着色" },
+        "custom":        { "label": "カスタム",   "desc": "完全カスタム色" }
       },
       "panelColorLabel": "カラー",
       "panelOpacityLabel": "不透明度",
       "panelBorderThin": "細い枠線",
       "panelShadow": "浮き影"
     },
+
     "addBlockModal": {
       "title": "新規ブロック",
       "step1": "ブロックタイプを選択",
@@ -1003,6 +634,7 @@
       "bannerUrlFallback": "または画像 URL を貼り付け https://...",
       "platformDetected": "✓ {label} を検出"
     },
+
     "editBlockModal": {
       "editPrefix": "編集 — ",
       "livePreview": "リアルタイムプレビュー",
@@ -1205,6 +837,7 @@
         "carousel": "{n}枚目の画像をクロップ"
       }
     },
+
     "analytics": {
       "pageTitle": "分析",
       "metricClicks": "総クリック数",
@@ -1221,6 +854,7 @@
       "emptyState": "まだデータがありません",
       "viewsLabel": "表示"
     },
+
     "subscribers": {
       "pageTitle": "購読者リスト",
       "subtitle": "メールフォームから集まった購読者",
@@ -1236,6 +870,7 @@
       "colDate": "購読日時",
       "sourceForm": "フォーム"
     },
+
     "orders": {
       "pageTitle": "注文管理",
       "subtitle": "Stripe 経由のすべての注文履歴",
@@ -1260,6 +895,7 @@
       "statusFailed": "キャンセル",
       "statusRefunded": "返金"
     },
+
     "settings": {
       "pageTitle": "アカウント設定",
       "nav": {
@@ -1340,18 +976,9 @@
         "comingSoonTitle": "近日公開",
         "comingSoonHint": "メール通知機能は開発中です。お楽しみに。",
         "items": [
-          {
-            "label": "新規購読",
-            "desc": "メールフォーム経由で新規購読があるとお知らせ"
-          },
-          {
-            "label": "新規注文",
-            "desc": "デジタル商品の新規注文を受けたらお知らせ"
-          },
-          {
-            "label": "週次レポート",
-            "desc": "毎週月曜に過去7日間のサマリーを配信"
-          }
+          { "label": "新規購読", "desc": "メールフォーム経由で新規購読があるとお知らせ" },
+          { "label": "新規注文", "desc": "デジタル商品の新規注文を受けたらお知らせ" },
+          { "label": "週次レポート", "desc": "毎週月曜に過去7日間のサマリーを配信" }
         ]
       },
       "billing": {
@@ -1405,6 +1032,7 @@
         "deleting": "削除中..."
       }
     },
+
     "importer": {
       "title": "Linktree / Portaly からインポート",
       "subtitle": "ワンクリック移行、ブロックとソーシャルリンクを保持",
@@ -1446,6 +1074,7 @@
       "ctaTheme": "テーマ調整",
       "ctaShare": "リンクをコピー"
     },
+
     "scheduleModal": {
       "title": "予約表示",
       "description": "ブロック「{name}」の公開時間範囲を設定。範囲外では自動的に非表示。",
@@ -1456,6 +1085,7 @@
       "cancelBtn": "キャンセル",
       "saveBtn": "予約を保存"
     },
+
     "shareBar": {
       "copyLink": "リンクをコピー",
       "copied": "リンクをコピーしました",
@@ -1466,6 +1096,7 @@
       "copiedShort": "コピーしました",
       "copyShort": "リンクをコピー"
     },
+
     "superAdminNav": {
       "overview": "概要",
       "users": "ユーザー管理",
@@ -1476,234 +1107,78 @@
       "lightMode": "ライトモード",
       "backToAdminMobile": "ユーザー管理画面に戻る"
     },
+
     "templates": {
       "brand-site": {
         "name": "ブランドサイト風",
         "description": "Hero バナー + ストーリーカード。SaaS、コンサル、ブランド向け",
         "blocks": [
-          {
-            "title": "良いブランドは見つけられる価値がある",
-            "content": {
-              "caption": "デジタル変革のための戦略パートナー"
-            }
-          },
-          {
-            "title": "🤖 AI コンサルティング",
-            "content": {
-              "description": "戦略から実装まで一貫支援、AIを実際の売上に変える。200以上のブランドで実績。",
-              "ctaLabel": "詳しく見る"
-            }
-          },
-          {
-            "title": "✨ 自動化プラットフォーム",
-            "content": {
-              "description": "繰り返し作業はAIへ、創造の時間を取り戻そう。LINE / IG / Email 統合、ワンクリック起動。",
-              "ctaLabel": "プランを見る"
-            }
-          },
-          {
-            "title": "📊 アナリティクス",
-            "content": {
-              "description": "顧客行動分析、キャンペーン効果、リアルタイムダッシュボード。根拠ある意思決定を。",
-              "ctaLabel": "相談予約"
-            }
-          },
-          {
-            "title": "最新情報を購読",
-            "content": {
-              "placeholder": "メールアドレス",
-              "buttonText": "登録",
-              "description": "月1通、厳選事例 + 製品アップデート。"
-            }
-          }
+          { "title": "良いブランドは見つけられる価値がある", "content": { "caption": "デジタル変革のための戦略パートナー" } },
+          { "title": "🤖 AI コンサルティング", "content": { "description": "戦略から実装まで一貫支援、AIを実際の売上に変える。200以上のブランドで実績。",                  "ctaLabel": "詳しく見る" } },
+          { "title": "✨ 自動化プラットフォーム", "content": { "description": "繰り返し作業はAIへ、創造の時間を取り戻そう。LINE / IG / Email 統合、ワンクリック起動。", "ctaLabel": "プランを見る" } },
+          { "title": "📊 アナリティクス",       "content": { "description": "顧客行動分析、キャンペーン効果、リアルタイムダッシュボード。根拠ある意思決定を。",        "ctaLabel": "相談予約" } },
+          { "title": "最新情報を購読",          "content": { "placeholder": "メールアドレス", "buttonText": "登録", "description": "月1通、厳選事例 + 製品アップデート。" } }
         ]
       },
       "kol": {
         "name": "KOL / クリエイター風",
         "description": "大きな hero + 2カラム画像 + 動画 + 商品。作品集として展開",
         "blocks": [
-          {
-            "title": "ライフスタイル × スタイル",
-            "content": {
-              "caption": "IG 12万フォロワー ✦ YouTube 毎週更新 ✦ コラボ歓迎、DMください"
-            }
-          },
-          {
-            "title": "最近の作品",
-            "content": {
-              "cellTitles": [
-                "春夏コーデ",
-                "コーヒー日記",
-                "旅の記録",
-                "コスメ開封"
-              ]
-            }
-          },
-          {
-            "title": "🎬 YouTube チャンネル",
-            "content": {}
-          },
-          {
-            "title": "☕ コーヒーをおごる",
-            "content": {}
-          },
-          {
-            "title": "週報リストに参加",
-            "content": {
-              "placeholder": "メールアドレス",
-              "buttonText": "登録",
-              "description": "毎週、お気に入り + 期間限定クーポン"
-            }
-          }
+          { "title": "ライフスタイル × スタイル",  "content": { "caption": "IG 12万フォロワー ✦ YouTube 毎週更新 ✦ コラボ歓迎、DMください" } },
+          { "title": "最近の作品",                  "content": { "cellTitles": ["春夏コーデ", "コーヒー日記", "旅の記録", "コスメ開封"] } },
+          { "title": "🎬 YouTube チャンネル",       "content": {} },
+          { "title": "☕ コーヒーをおごる",         "content": {} },
+          { "title": "週報リストに参加",            "content": { "placeholder": "メールアドレス", "buttonText": "登録", "description": "毎週、お気に入り + 期間限定クーポン" } }
         ]
       },
       "portfolio": {
         "name": "ポートフォリオ / 写真",
         "description": "ミニマルカード + 多数の画像グリッド。デザイナー、写真家、アーティスト向け",
         "blocks": [
-          {
-            "title": "Selected Works",
-            "content": {
-              "text": "Selected Works"
-            }
-          },
-          {
-            "title": "",
-            "content": {
-              "cellTitles": [
-                "Project 01",
-                "Project 02",
-                "Project 03",
-                "Project 04"
-              ]
-            }
-          },
-          {
-            "title": "About",
-            "content": {
-              "description": "10年の視覚言語の蓄積、ブランドストーリーテリングと製品撮影に特化。\n\nクライアントには Apple、Nike、スターバックスを含む。",
-              "ctaLabel": "CV / Portfolio"
-            }
-          },
-          {
-            "title": "✉️ お問い合わせ",
-            "content": {}
-          }
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",                "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",          "content": { "description": "10年の視覚言語の蓄積、ブランドストーリーテリングと製品撮影に特化。\n\nクライアントには Apple、Nike、スターバックスを含む。", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ お問い合わせ",  "content": {} }
         ]
       },
       "creator": {
         "name": "IG / YouTube クリエイター",
         "description": "ソーシャルリンク + 最新動画 + コラボお問い合わせ",
         "blocks": [
-          {
-            "title": "メインコンテンツ",
-            "content": {
-              "text": "メインコンテンツ"
-            }
-          },
-          {
-            "title": "私の YouTube チャンネル",
-            "content": {}
-          },
-          {
-            "title": "最新コラボ / Sponsored",
-            "content": {}
-          },
-          {
-            "title": "お問い合わせ",
-            "content": {
-              "text": "お問い合わせ"
-            }
-          },
-          {
-            "title": "ニュースレター登録",
-            "content": {
-              "placeholder": "メールアドレス",
-              "buttonText": "登録"
-            }
-          },
-          {
-            "title": "ビジネスコラボのご相談",
-            "content": {}
-          }
+          { "title": "メインコンテンツ",       "content": { "text": "メインコンテンツ" } },
+          { "title": "私の YouTube チャンネル", "content": {} },
+          { "title": "最新コラボ / Sponsored",  "content": {} },
+          { "title": "お問い合わせ",            "content": { "text": "お問い合わせ" } },
+          { "title": "ニュースレター登録",       "content": { "placeholder": "メールアドレス", "buttonText": "登録" } },
+          { "title": "ビジネスコラボのご相談",    "content": {} }
         ]
       },
       "seller": {
         "name": "オンライン講座 / デジタル商品",
         "description": "商品リスト + 予約カウントダウン + メール収集",
         "blocks": [
-          {
-            "title": "🔥 期間限定オファー",
-            "content": {
-              "text": "🔥 期間限定オファー"
-            }
-          },
-          {
-            "title": "オファー終了まで",
-            "content": {
-              "label": "オファー終了まで"
-            }
-          },
-          {
-            "title": "メイン商品",
-            "content": {
-              "description": "あなたの商品紹介に書き換えてください"
-            }
-          },
-          {
-            "title": "その他リソース",
-            "content": {
-              "text": "その他リソース"
-            }
-          },
-          {
-            "title": "無料ダウンロード",
-            "content": {}
-          },
-          {
-            "title": "新商品通知を購読",
-            "content": {
-              "placeholder": "メールアドレス",
-              "buttonText": "登録"
-            }
-          }
+          { "title": "🔥 期間限定オファー", "content": { "text": "🔥 期間限定オファー" } },
+          { "title": "オファー終了まで",    "content": { "label": "オファー終了まで" } },
+          { "title": "メイン商品",          "content": { "description": "あなたの商品紹介に書き換えてください" } },
+          { "title": "その他リソース",      "content": { "text": "その他リソース" } },
+          { "title": "無料ダウンロード",     "content": {} },
+          { "title": "新商品通知を購読",     "content": { "placeholder": "メールアドレス", "buttonText": "登録" } }
         ]
       },
       "podcaster": {
         "name": "Podcast ホスト",
         "description": "再生プラットフォーム + 購読 + サポート",
         "blocks": [
-          {
-            "title": "再生プラットフォーム",
-            "content": {
-              "text": "再生プラットフォーム"
-            }
-          },
-          {
-            "title": "🎵 Spotify",
-            "content": {}
-          },
-          {
-            "title": "🎧 Apple Podcasts",
-            "content": {}
-          },
-          {
-            "title": "▶️ YouTube",
-            "content": {}
-          },
-          {
-            "title": "応援する",
-            "content": {
-              "text": "応援する"
-            }
-          },
-          {
-            "title": "☕ コーヒーをおごる",
-            "content": {}
-          }
+          { "title": "再生プラットフォーム", "content": { "text": "再生プラットフォーム" } },
+          { "title": "🎵 Spotify",          "content": {} },
+          { "title": "🎧 Apple Podcasts",   "content": {} },
+          { "title": "▶️ YouTube",          "content": {} },
+          { "title": "応援する",            "content": { "text": "応援する" } },
+          { "title": "☕ コーヒーをおごる",   "content": {} }
         ]
       }
     },
+
     "page": {
       "deleteBlockConfirm": "このブロックを削除しますか？",
       "duplicateSuffix": "（コピー）",
@@ -1729,111 +1204,66 @@
       "emptyStateSubtitle": "テンプレートを選んでスタート — あとから自由に変更できます",
       "recommendedTag": "おすすめ",
       "loading": "読み込み中…",
-      "themePreviewSamples": [
-        "私の YouTube チャンネル",
-        "最新の記事",
-        "お仕事のご相談"
-      ]
+      "themePreviewSamples": ["私の YouTube チャンネル", "最新の記事", "お仕事のご相談"]
     },
+
     "blockTypes": {
-      "link": {
-        "label": "リンクボタン",
-        "description": "IG、YouTube などのリンクを追加"
-      },
-      "product": {
-        "label": "デジタル商品",
-        "description": "コース、テンプレートなどを販売"
-      },
-      "calendar_event": {
-        "label": "カレンダー追加",
-        "description": "ポップアップ、ライブ、共同購入の締め切り"
-      },
-      "email_form": {
-        "label": "メールフォーム",
-        "description": "登録者リストを収集"
-      },
-      "banner": {
-        "label": "バナー",
-        "description": "ヒーロー画像バナー"
-      },
-      "heading": {
-        "label": "見出し",
-        "description": "セクションタイトル / 補足テキスト"
-      },
-      "video": {
-        "label": "動画",
-        "description": "YouTube / Spotify を埋め込み"
-      },
-      "countdown": {
-        "label": "カウントダウン",
-        "description": "イベント、期間限定オファー"
-      },
-      "faq": {
-        "label": "FAQ",
-        "description": "折りたたみ式 Q&A"
-      },
-      "carousel": {
-        "label": "カルーセル",
-        "description": "スライド式画像カルーセル"
-      },
-      "image_grid": {
-        "label": "2 列画像",
-        "description": "2 列レイアウト"
-      },
-      "feature_card": {
-        "label": "図文カード",
-        "description": "画像左 + テキスト右のストーリー型"
-      },
-      "map": {
-        "label": "地図埋込",
-        "description": "Google Maps"
-      },
-      "embed": {
-        "label": "HTML 埋込",
-        "description": "カスタム iframe / HTML"
-      },
-      "social": {
-        "label": "ソーシャル",
-        "description": "ソーシャルプラットフォーム"
-      }
+      "link":           { "label": "リンクボタン",   "description": "IG、YouTube などのリンクを追加" },
+      "product":        { "label": "デジタル商品",   "description": "コース、テンプレートなどを販売" },
+      "calendar_event": { "label": "カレンダー追加", "description": "ポップアップ、ライブ、共同購入の締め切り" },
+      "email_form":     { "label": "メールフォーム", "description": "登録者リストを収集" },
+      "banner":         { "label": "バナー",         "description": "ヒーロー画像バナー" },
+      "heading":        { "label": "見出し",         "description": "セクションタイトル / 補足テキスト" },
+      "video":          { "label": "動画",           "description": "YouTube / Spotify を埋め込み" },
+      "countdown":      { "label": "カウントダウン", "description": "イベント、期間限定オファー" },
+      "faq":            { "label": "FAQ",            "description": "折りたたみ式 Q&A" },
+      "carousel":       { "label": "カルーセル",     "description": "スライド式画像カルーセル" },
+      "image_grid":     { "label": "2 列画像",       "description": "2 列レイアウト" },
+      "feature_card":   { "label": "図文カード",     "description": "画像左 + テキスト右のストーリー型" },
+      "map":            { "label": "地図埋込",       "description": "Google Maps" },
+      "embed":          { "label": "HTML 埋込",      "description": "カスタム iframe / HTML" },
+      "social":         { "label": "ソーシャル",     "description": "ソーシャルプラットフォーム" }
     }
   },
+
   "auth": {
-    "loginTitle": "おかえりなさい",
-    "loginSubtitle": "ログインして Beam ページを管理",
-    "signupTitle": "Beam ページを作成",
-    "signupSubtitle": "ユーザー名を選ぶだけ — それだけで OK",
-    "emailLabel": "メールアドレス",
-    "passwordLabel": "パスワード",
-    "usernameLabel": "ユーザー名",
-    "usernameHelp": "ページの URL は beam.io/<username> になります",
-    "submitLogin": "ログイン",
-    "submitSignup": "アカウント作成",
-    "switchToSignup": "はじめての方?新規登録",
-    "switchToLogin": "アカウントをお持ちですか?ログイン",
-    "brandSubtitle": "あなたのページを作ろう",
-    "setPasswordTitle": "パスワードを設定",
-    "setPasswordSubtitle": "にはまだパスワードがありません。すぐに設定してください。",
-    "newPasswordLabel": "新しいパスワード",
-    "confirmPasswordLabel": "パスワード確認",
-    "passwordMin": "6 文字以上",
-    "passwordRetype": "もう一度入力",
-    "passwordMismatch": "パスワードが一致しません",
-    "genericError": "エラーが発生しました",
-    "submitSetPassword": "パスワードを設定してログイン",
-    "loginRegisterTitle": "ログイン / 新規登録",
-    "usernameLabelExt": "ユーザー名",
-    "usernameAllowedChars": "英数字、_、-、.",
-    "checking": "確認中…",
-    "usernameTakenSwitch": "このユーザー名は使用中です。あなたのものなら下記でログインを、そうでなければ別の名前を選んでください。",
-    "usernameReserved": "このユーザー名は予約済みです。",
-    "usernameRules": "英数字、_、-、. のみ。3〜30 文字。. は先頭・末尾・連続不可。",
-    "usernameAvailable": "✓ 使用可能",
-    "emailNote": "(新規登録用、ログイン時は省略可)",
-    "emailPlaceholder": "you@example.com",
-    "submitProceed": "管理画面へ",
-    "firstTimeHint": "はじめての方は、ユーザー名とパスワードを入力すると新規登録できます。"
+    "loginTitle":      "おかえりなさい",
+    "loginSubtitle":   "ログインして Beam ページを管理",
+    "signupTitle":     "Beam ページを作成",
+    "signupSubtitle":  "ユーザー名を選ぶだけ — それだけで OK",
+    "emailLabel":      "メールアドレス",
+    "passwordLabel":   "パスワード",
+    "usernameLabel":   "ユーザー名",
+    "usernameHelp":    "ページの URL は beam.io/<username> になります",
+    "submitLogin":     "ログイン",
+    "submitSignup":    "アカウント作成",
+    "switchToSignup":  "はじめての方?新規登録",
+    "switchToLogin":   "アカウントをお持ちですか?ログイン",
+
+    "brandSubtitle":            "あなたのページを作ろう",
+    "setPasswordTitle":         "パスワードを設定",
+    "setPasswordSubtitle":      "にはまだパスワードがありません。すぐに設定してください。",
+    "newPasswordLabel":         "新しいパスワード",
+    "confirmPasswordLabel":     "パスワード確認",
+    "passwordMin":              "6 文字以上",
+    "passwordRetype":           "もう一度入力",
+    "passwordMismatch":         "パスワードが一致しません",
+    "genericError":             "エラーが発生しました",
+    "submitSetPassword":        "パスワードを設定してログイン",
+    "loginRegisterTitle":       "ログイン / 新規登録",
+    "usernameLabelExt":         "ユーザー名",
+    "usernameAllowedChars":     "英数字、_、-、.",
+    "checking":                 "確認中…",
+    "usernameTakenSwitch":      "このユーザー名は使用中です。あなたのものなら下記でログインを、そうでなければ別の名前を選んでください。",
+    "usernameReserved":         "このユーザー名は予約済みです。",
+    "usernameRules":            "英数字、_、-、. のみ。3〜30 文字。. は先頭・末尾・連続不可。",
+    "usernameAvailable":        "✓ 使用可能",
+    "emailNote":                "(新規登録用、ログイン時は省略可)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "管理画面へ",
+    "firstTimeHint":            "はじめての方は、ユーザー名とパスワードを入力すると新規登録できます。"
   },
+
   "toast": {
     "saved": "保存しました",
     "deleted": "削除しました",
@@ -1849,6 +1279,7 @@
     "saveFailedRetry": "保存失敗、もう一度お試しください",
     "duplicateSocial": "この URL はすでに追加されています"
   },
+
   "superAdmin": {
     "overviewTitle": "プラットフォーム概要",
     "users": "ユーザー数",
@@ -1930,21 +1361,23 @@
     "colCustomerEmail": "顧客メール",
     "colDate": "日付"
   },
+
   "notFound": {
     "heading": "ページが見つかりません",
     "subheading": "この URL はまだ誰も使っていません — 先に確保しましょう!",
     "ctaSignup": "無料登録",
     "ctaHome": "ホームへ"
   },
+
   "errors": {
-    "unauthorized": "ログインしてください",
-    "notFound": "見つかりません",
-    "networkError": "ネットワークエラーです。もう一度お試しください",
-    "uploadFailed": "アップロードに失敗しました",
-    "saveFailed": "保存に失敗しました",
-    "usernameTaken": "このユーザー名はすでに使用されています",
-    "usernameInvalid": "ユーザー名の形式が正しくありません",
-    "duplicateSocial": "この URL はすでに追加されています",
-    "checkoutFailed": "決済に失敗しました。後ほど再試行してください"
+    "unauthorized":     "ログインしてください",
+    "notFound":         "見つかりません",
+    "networkError":     "ネットワークエラーです。もう一度お試しください",
+    "uploadFailed":     "アップロードに失敗しました",
+    "saveFailed":       "保存に失敗しました",
+    "usernameTaken":    "このユーザー名はすでに使用されています",
+    "usernameInvalid":  "ユーザー名の形式が正しくありません",
+    "duplicateSocial":  "この URL はすでに追加されています",
+    "checkoutFailed":   "決済に失敗しました。後ほど再試行してください"
   }
 }

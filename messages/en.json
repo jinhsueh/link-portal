@@ -44,6 +44,7 @@
     "placeholder": "Placeholder",
     "processing": "Processing…"
   },
+
   "nav": {
     "home": "Home",
     "analytics": "Analytics",
@@ -51,6 +52,7 @@
     "subscribers": "Subscribers",
     "settings": "Settings"
   },
+
   "landing": {
     "hero": {
       "tag": "The creator income platform",
@@ -60,142 +62,57 @@
       "ctaSecondary": "See a creator demo",
       "ctaNote": "No credit card. Live in 30 seconds. Analytics included free."
     },
+
     "social": {
       "title": "Every channel, one home",
       "subtitle": "Instagram, YouTube, TikTok, Threads, Spotify, LINE, and 30+ more — consolidate your audience so you can convert attention into income."
     },
+
     "features": [
-      {
-        "title": "Income dashboard",
-        "description": "See what's earning — top products, top affiliate links, top traffic sources. Cut what doesn't pay, double down on what does."
-      },
-      {
-        "title": "Sell your own products",
-        "description": "Stripe built-in. Courses, e-books, presets, coaching — keep up to 98% of every sale. No Shopify, no extra integrations."
-      },
-      {
-        "title": "Build an audience you own",
-        "description": "Email subscribe forms + your own subscriber database. Stop renting attention from the algorithm — own the relationship."
-      },
-      {
-        "title": "Every block you need",
-        "description": "Links, banners, videos, products, forms, countdowns — drag and drop a page that converts."
-      },
-      {
-        "title": "Multi-page funnels",
-        "description": "Separate fans, agencies, courses, and partnerships. Each audience gets its own page with its own analytics."
-      },
-      {
-        "title": "Design your brand",
-        "description": "8 presets or fully custom colors, gradients, and button styles. Trust drives purchase — your brand needs to look the part."
-      }
+      { "title": "Income dashboard",            "description": "See what's earning — top products, top affiliate links, top traffic sources. Cut what doesn't pay, double down on what does." },
+      { "title": "Sell your own products",      "description": "Stripe built-in. Courses, e-books, presets, coaching — keep up to 98% of every sale. No Shopify, no extra integrations." },
+      { "title": "Build an audience you own",   "description": "Email subscribe forms + your own subscriber database. Stop renting attention from the algorithm — own the relationship." },
+      { "title": "Every block you need",        "description": "Links, banners, videos, products, forms, countdowns — drag and drop a page that converts." },
+      { "title": "Multi-page funnels",          "description": "Separate fans, agencies, courses, and partnerships. Each audience gets its own page with its own analytics." },
+      { "title": "Design your brand",           "description": "8 presets or fully custom colors, gradients, and button styles. Trust drives purchase — your brand needs to look the part." }
     ],
+
     "steps": [
-      {
-        "num": "1",
-        "title": "Sign up free",
-        "description": "Pick a username. No credit card. Done in 30 seconds."
-      },
-      {
-        "num": "2",
-        "title": "Add your income streams",
-        "description": "Affiliate links, your own products, sponsorship inquiries, email capture. Drag, drop, edit."
-      },
-      {
-        "num": "3",
-        "title": "Watch the dashboard",
-        "description": "See what's earning. Cut what isn't. Iterate to a page that pays."
-      }
+      { "num": "1", "title": "Sign up free",          "description": "Pick a username. No credit card. Done in 30 seconds." },
+      { "num": "2", "title": "Add your income streams", "description": "Affiliate links, your own products, sponsorship inquiries, email capture. Drag, drop, edit." },
+      { "num": "3", "title": "Watch the dashboard",   "description": "See what's earning. Cut what isn't. Iterate to a page that pays." }
     ],
+
     "useCases": {
       "title": "Built for every way creators earn",
       "items": [
-        {
-          "title": "Affiliate creators",
-          "description": "Trip.com, Shopee, Amazon — see which links earn and prune the dead ones. Surface your top-converting affiliates above the fold."
-        },
-        {
-          "title": "Digital product sellers",
-          "description": "Sell courses, e-books, presets, mini-coaching with Stripe. No storefront, no Shopify — just a low-commission checkout right on your bio page."
-        },
-        {
-          "title": "Sponsorship pros",
-          "description": "Separate fan-facing and agency-facing pages. Per-page analytics turn into negotiation leverage — real engagement data, not just follower counts."
-        }
+        { "title": "Affiliate creators",          "description": "Trip.com, Shopee, Amazon — see which links earn and prune the dead ones. Surface your top-converting affiliates above the fold." },
+        { "title": "Digital product sellers",     "description": "Sell courses, e-books, presets, mini-coaching with Stripe. No storefront, no Shopify — just a low-commission checkout right on your bio page." },
+        { "title": "Sponsorship pros",            "description": "Separate fan-facing and agency-facing pages. Per-page analytics turn into negotiation leverage — real engagement data, not just follower counts." }
       ]
     },
+
     "pricing": {
       "title": "Pay only when you're earning more",
       "subtitle": "Free includes dashboard, analytics, and selling. Upgrade when one extra brand deal or product sale a month covers the cost.",
-      "free": {
-        "name": "Free",
-        "price": "$0",
-        "period": "/month",
-        "features": [
-          "1 page",
-          "Up to 10 blocks",
-          "Basic analytics",
-          "Email capture",
-          "Beam watermark"
-        ]
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "$5",
-        "period": "/month",
-        "features": [
-          "3 pages",
-          "Unlimited blocks",
-          "Full analytics",
-          "Sell products (Stripe)",
-          "Remove watermark",
-          "Priority support"
-        ]
-      },
-      "premium": {
-        "name": "Premium",
-        "price": "$12",
-        "period": "/month",
-        "features": [
-          "Unlimited pages",
-          "Team members",
-          "Custom domain",
-          "Advanced theming",
-          "Lower commission (2%)",
-          "1-on-1 onboarding"
-        ]
-      },
+      "free":    { "name": "Free",    "price": "$0",     "period": "/month", "features": ["1 page", "Up to 10 blocks", "Basic analytics", "Email capture", "Beam watermark"] },
+      "pro":     { "name": "Pro",     "price": "$5",     "period": "/month", "features": ["3 pages", "Unlimited blocks", "Full analytics", "Sell products (Stripe)", "Remove watermark", "Priority support"] },
+      "premium": { "name": "Premium", "price": "$12",    "period": "/month", "features": ["Unlimited pages", "Team members", "Custom domain", "Advanced theming", "Lower commission (2%)", "1-on-1 onboarding"] },
       "cta": "Start free"
     },
+
     "faq": {
       "title": "Questions, answered",
       "items": [
-        {
-          "q": "How does Beam help me make more money?",
-          "a": "Three ways: (1) the dashboard shows which links and products actually earn, so you can cut dead ones and double down on winners; (2) Stripe is built in, so you can sell your own digital products from the bio page directly; (3) email forms grow a subscriber list you fully own — so you're not at the mercy of platform algorithms."
-        },
-        {
-          "q": "Is Beam really free?",
-          "a": "Yes. Dashboard, analytics, selling products, and email capture are all on the Free plan. Upgrade to Pro only when you need multiple pages, unlimited blocks, or lower commission on sales."
-        },
-        {
-          "q": "Can I import from Linktree?",
-          "a": "Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls your links, socials, name, bio, and avatar in 30 seconds."
-        },
-        {
-          "q": "How does selling products work?",
-          "a": "Connect a Stripe account in settings, add a product block, set a price. Customers buy directly from your page. Beam takes a small commission (10% Free / 5% Pro / 2% Premium). Funds settle straight to your Stripe account."
-        },
-        {
-          "q": "Can I use a custom domain?",
-          "a": "Yes, on the Premium plan. Point your domain at Beam and we handle SSL."
-        },
-        {
-          "q": "Do you take a cut of my email subscribers?",
-          "a": "Never. Subscribers belong to you. Export the list anytime as CSV."
-        }
+        { "q": "How does Beam help me make more money?",      "a": "Three ways: (1) the dashboard shows which links and products actually earn, so you can cut dead ones and double down on winners; (2) Stripe is built in, so you can sell your own digital products from the bio page directly; (3) email forms grow a subscriber list you fully own — so you're not at the mercy of platform algorithms." },
+        { "q": "Is Beam really free?",                        "a": "Yes. Dashboard, analytics, selling products, and email capture are all on the Free plan. Upgrade to Pro only when you need multiple pages, unlimited blocks, or lower commission on sales." },
+        { "q": "Can I import from Linktree?",                 "a": "Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls your links, socials, name, bio, and avatar in 30 seconds." },
+        { "q": "How does selling products work?",             "a": "Connect a Stripe account in settings, add a product block, set a price. Customers buy directly from your page. Beam takes a small commission (10% Free / 5% Pro / 2% Premium). Funds settle straight to your Stripe account." },
+        { "q": "Can I use a custom domain?",                  "a": "Yes, on the Premium plan. Point your domain at Beam and we handle SSL." },
+        { "q": "Do you take a cut of my email subscribers?",  "a": "Never. Subscribers belong to you. Export the list anytime as CSV." }
       ]
     },
+
     "footer": {
       "tagline": "Turn every click into income.",
       "product": "Product",
@@ -209,10 +126,12 @@
       "terms": "Terms",
       "copyright": "© 2026 Beam. All rights reserved."
     },
+
     "langSwitcher": {
       "label": "Language"
     }
   },
+
   "profile": {
     "productNoPrice": "Price not set yet",
     "watchVideo": "Watch video",
@@ -233,6 +152,7 @@
       "applying": "Processing…",
       "apply": "Apply crop"
     },
+
     "success": {
       "confirming": "Confirming payment…",
       "title": "Payment successful!",
@@ -267,6 +187,7 @@
       "ics": "Download .ics"
     }
   },
+
   "terms": {
     "metaTitle": "Terms of service",
     "metaDescriptionTpl": "{name} terms of service — your rights and responsibilities when using the platform.",
@@ -276,61 +197,18 @@
     "lastUpdated": "Last updated: April 2026",
     "intro": "Welcome to {name}. Please read these terms carefully before using the service. By registering, accessing, or using {name}, you agree to be bound by these terms.",
     "sections": [
-      {
-        "title": "1. Service description",
-        "body": "{name} provides tools for building link-in-bio pages, selling digital products, collecting email lists, and viewing analytics. Features and plans may change over time. We'll notify you of major changes via the site or email."
-      },
-      {
-        "title": "2. Account registration",
-        "items": [
-          "You must provide accurate and complete information when registering.",
-          "You are responsible for safeguarding your account and password. Any action through your account is treated as your own.",
-          "One person should register one account; abusive multi-registration may lead to suspension."
-        ]
-      },
-      {
-        "title": "3. Restrictions",
-        "body": "You agree not to use {name} for any of the following:",
-        "items": [
-          "Distributing illegal, hateful, harassing, sexual, or rights-infringing content",
-          "Selling illegal, counterfeit, or unlicensed goods",
-          "Fraud, money laundering, or other criminal activity",
-          "Operating the platform via automated tools or scraping at scale",
-          "Reverse engineering, cracking, or attempting unauthorized access"
-        ]
-      },
-      {
-        "title": "4. Paid plans and refunds",
-        "items": [
-          "Pro and Premium plans are billed monthly or annually; charges are automatic at subscription.",
-          "You may cancel anytime; paid fees stop renewing at the end of the current period.",
-          "Refunds are generally not offered, except for serious platform defects that prevent use.",
-          "When selling digital products, the platform takes a percentage commission per your plan."
-        ]
-      },
-      {
-        "title": "5. Content ownership",
-        "body": "Copyright in content you create on {name} (pages, products, images, text) belongs to you. You grant {name} the rights necessary to use, store, and display that content while providing the service."
-      },
-      {
-        "title": "6. Service suspension and account termination",
-        "body": "If you violate these terms or applicable laws, {name} may suspend or terminate your account without refund. We will attempt to give advance notice, but immediate action may be taken for security or legal reasons."
-      },
-      {
-        "title": "7. Disclaimers",
-        "body": "{name} provides the service \"as is\" and \"as available.\" We make no warranties as to availability, accuracy, or uninterrupted operation. We are not liable for any indirect damages arising from use or inability to use the service."
-      },
-      {
-        "title": "8. Changes to terms",
-        "body": "We may update these terms from time to time. Major changes will be announced on the site and notified via email. Continued use of {name} constitutes acceptance of revised terms."
-      },
-      {
-        "title": "9. Contact us",
-        "body": "Any questions about these terms? Email ",
-        "emailTrailer": "."
-      }
+      { "title": "1. Service description", "body": "{name} provides tools for building link-in-bio pages, selling digital products, collecting email lists, and viewing analytics. Features and plans may change over time. We'll notify you of major changes via the site or email." },
+      { "title": "2. Account registration", "items": ["You must provide accurate and complete information when registering.", "You are responsible for safeguarding your account and password. Any action through your account is treated as your own.", "One person should register one account; abusive multi-registration may lead to suspension."] },
+      { "title": "3. Restrictions", "body": "You agree not to use {name} for any of the following:", "items": ["Distributing illegal, hateful, harassing, sexual, or rights-infringing content", "Selling illegal, counterfeit, or unlicensed goods", "Fraud, money laundering, or other criminal activity", "Operating the platform via automated tools or scraping at scale", "Reverse engineering, cracking, or attempting unauthorized access"] },
+      { "title": "4. Paid plans and refunds", "items": ["Pro and Premium plans are billed monthly or annually; charges are automatic at subscription.", "You may cancel anytime; paid fees stop renewing at the end of the current period.", "Refunds are generally not offered, except for serious platform defects that prevent use.", "When selling digital products, the platform takes a percentage commission per your plan."] },
+      { "title": "5. Content ownership", "body": "Copyright in content you create on {name} (pages, products, images, text) belongs to you. You grant {name} the rights necessary to use, store, and display that content while providing the service." },
+      { "title": "6. Service suspension and account termination", "body": "If you violate these terms or applicable laws, {name} may suspend or terminate your account without refund. We will attempt to give advance notice, but immediate action may be taken for security or legal reasons." },
+      { "title": "7. Disclaimers", "body": "{name} provides the service \"as is\" and \"as available.\" We make no warranties as to availability, accuracy, or uninterrupted operation. We are not liable for any indirect damages arising from use or inability to use the service." },
+      { "title": "8. Changes to terms", "body": "We may update these terms from time to time. Major changes will be announced on the site and notified via email. Continued use of {name} constitutes acceptance of revised terms." },
+      { "title": "9. Contact us", "body": "Any questions about these terms? Email ", "emailTrailer": "." }
     ]
   },
+
   "privacy": {
     "metaTitle": "Privacy policy",
     "metaDescriptionTpl": "{name} privacy policy — how we collect, use, and protect your data.",
@@ -340,65 +218,21 @@
     "lastUpdated": "Last updated: April 2026",
     "intro": "{name} (\"we\") respects and protects every user's privacy. This policy explains what data we collect, how we use it, and the rights you have.",
     "sections": [
-      {
-        "title": "1. Data we collect",
-        "items": [
-          {
-            "bold": "Account data:",
-            "rest": " Email, username, and password (stored hashed) provided at registration."
-          },
-          {
-            "bold": "Content data:",
-            "rest": " Pages, blocks, products, and form submissions you create on {name}."
-          },
-          {
-            "bold": "Usage data:",
-            "rest": " Anonymous statistics like visitor clicks, views, referrers, and device type."
-          },
-          {
-            "bold": "Payment data:",
-            "rest": " Card details are handled by Stripe — we do not store full card numbers."
-          }
-        ]
-      },
-      {
-        "title": "2. How we use data",
-        "items": [
-          "To provide, operate, and improve {name}'s products and services.",
-          "To process orders, invoices, refunds, and customer support.",
-          "To send product updates, important announcements, and marketing (you can unsubscribe anytime).",
-          "To detect fraud, abuse, and protect platform security."
-        ]
-      },
-      {
-        "title": "3. Data sharing",
-        "body": "We do not sell your personal data. We share data with third parties only in these cases:",
-        "items": [
-          "Payment processing (Stripe)",
-          "Cloud service providers (Vercel, database providers)",
-          "When required by law or government request"
-        ]
-      },
-      {
-        "title": "4. Your rights",
-        "body": "You can access, correct, download, or delete your personal data at any time. To exercise these rights, email ",
-        "emailTrailer": "."
-      },
-      {
-        "title": "5. Cookies",
-        "body": "We use cookies and similar technologies to maintain login state, store preferences, and analyze site traffic. You can manage or disable cookies via your browser settings."
-      },
-      {
-        "title": "6. Policy updates",
-        "body": "We may update this policy from time to time. Major changes will be communicated via email or site announcement. Continued use of {name} constitutes acceptance of the revised policy."
-      },
-      {
-        "title": "7. Contact us",
-        "body": "Questions about this privacy policy? Email ",
-        "emailTrailer": "."
-      }
+      { "title": "1. Data we collect", "items": [
+        { "bold": "Account data:", "rest": " Email, username, and password (stored hashed) provided at registration." },
+        { "bold": "Content data:", "rest": " Pages, blocks, products, and form submissions you create on {name}." },
+        { "bold": "Usage data:", "rest": " Anonymous statistics like visitor clicks, views, referrers, and device type." },
+        { "bold": "Payment data:", "rest": " Card details are handled by Stripe — we do not store full card numbers." }
+      ] },
+      { "title": "2. How we use data", "items": ["To provide, operate, and improve {name}'s products and services.", "To process orders, invoices, refunds, and customer support.", "To send product updates, important announcements, and marketing (you can unsubscribe anytime).", "To detect fraud, abuse, and protect platform security."] },
+      { "title": "3. Data sharing", "body": "We do not sell your personal data. We share data with third parties only in these cases:", "items": ["Payment processing (Stripe)", "Cloud service providers (Vercel, database providers)", "When required by law or government request"] },
+      { "title": "4. Your rights", "body": "You can access, correct, download, or delete your personal data at any time. To exercise these rights, email ", "emailTrailer": "." },
+      { "title": "5. Cookies", "body": "We use cookies and similar technologies to maintain login state, store preferences, and analyze site traffic. You can manage or disable cookies via your browser settings." },
+      { "title": "6. Policy updates", "body": "We may update this policy from time to time. Major changes will be communicated via email or site announcement. Continued use of {name} constitutes acceptance of the revised policy." },
+      { "title": "7. Contact us", "body": "Questions about this privacy policy? Email ", "emailTrailer": "." }
     ]
   },
+
   "about": {
     "metaTitle": "About us",
     "metaDescription": "Beam is the link-in-bio built for creators who care about design. We believe every creator deserves a beautiful page that unites their socials, products, and audience.",
@@ -412,22 +246,10 @@
     "missionBody": "Help creators launch a branded page in 30 seconds — with selling digital products, capturing emails, and tracking analytics built in from day one. Without needing to pay a subscription to unlock the basics.",
     "whyTitle": "Why {name}",
     "whyItems": [
-      {
-        "bold": "Design-first.",
-        "rest": " Theme presets, custom colors, gradient backgrounds, and corner styles — your page should look like *yours*, not a template."
-      },
-      {
-        "bold": "Forever-free plan.",
-        "rest": " Core features aren't behind a paywall. The Free plan lets you build a page, add 12 blocks, and sell digital products."
-      },
-      {
-        "bold": "Built-in payments and email list.",
-        "rest": " No third-party integrations needed — Stripe and email forms work out of the box."
-      },
-      {
-        "bold": "Analytics-native.",
-        "rest": " Clicks, views, CTR, and referrer analysis are in every plan, so you actually understand your audience."
-      }
+      { "bold": "Design-first.", "rest": " Theme presets, custom colors, gradient backgrounds, and corner styles — your page should look like *yours*, not a template." },
+      { "bold": "Forever-free plan.", "rest": " Core features aren't behind a paywall. The Free plan lets you build a page, add 12 blocks, and sell digital products." },
+      { "bold": "Built-in payments and email list.", "rest": " No third-party integrations needed — Stripe and email forms work out of the box." },
+      { "bold": "Analytics-native.", "rest": " Clicks, views, CTR, and referrer analysis are in every plan, so you actually understand your audience." }
     ],
     "nextTitle": "Next step",
     "nextBody": "Ready to start? ",
@@ -436,6 +258,7 @@
     "nextLink2": "compare plans",
     "nextEnd": "."
   },
+
   "contact": {
     "metaTitle": "Contact us",
     "metaDescription": "Contact the {name} team. Product questions, partnerships, press inquiries — email {email}.",
@@ -451,6 +274,7 @@
     "businessBody": "Brand collaborations, creator programs, media inquiries",
     "footer": "We typically reply within 1–2 business days."
   },
+
   "demo": {
     "metaTitle": "Mia | Beam Demo",
     "metaDescription": "A single page showing everything Beam can do — links, products, video, forms, podcast, collabs.",
@@ -461,88 +285,27 @@
       "bio": "Lifestyle × Style inspo 🌸 120K IG ✦ Weekly YouTube ✦ DMs open for collabs 💌"
     },
     "main": [
-      {
-        "title": "Hi, I'm Mia 💕",
-        "content": {
-          "text": "Style × Beauty × Lifestyle — let's level up together"
-        }
-      },
-      {
-        "title": "🎬 YouTube — Mia's style diary",
-        "content": {}
-      },
-      {
-        "title": "🎧 Podcast — Girl talk",
-        "content": {}
-      },
-      {
-        "title": "🌸 Spring/Summer collection — 10 outfits in a week",
-        "content": {
-          "description": "Mix-and-match style under NT$3,000 each"
-        }
-      },
-      {
-        "title": "Mia's style formula e-book",
-        "content": {
-          "description": "30 pages: style logic + color guide + capsule wardrobe checklist. 1,200+ sold!"
-        }
-      },
-      {
-        "title": "Lightroom preset pack — Latte tones",
-        "content": {
-          "description": "12 IG-style filters, one-tap apply, instant glow ✨"
-        }
-      },
-      {
-        "title": "Latest video: 3-day Seoul style vlog",
-        "content": {}
-      },
-      {
-        "title": "👗 Shopee curated picks",
-        "content": {}
-      },
-      {
-        "title": "💄 Xiaohongshu — honest beauty reviews",
-        "content": {}
-      },
-      {
-        "title": "💌 Subscribe to Mia's weekly",
-        "content": {
-          "placeholder": "Your email",
-          "buttonText": "Subscribe (free)",
-          "description": "Weekly hidden gems + style inspo + member discount codes. 5,600+ subscribers!"
-        }
-      },
-      {
-        "title": "☕ Buy Me a Coffee",
-        "content": {}
-      }
+      { "title": "Hi, I'm Mia 💕",                       "content": { "text": "Style × Beauty × Lifestyle — let's level up together" } },
+      { "title": "🎬 YouTube — Mia's style diary",       "content": {} },
+      { "title": "🎧 Podcast — Girl talk",               "content": {} },
+      { "title": "🌸 Spring/Summer collection — 10 outfits in a week", "content": { "description": "Mix-and-match style under NT$3,000 each" } },
+      { "title": "Mia's style formula e-book",           "content": { "description": "30 pages: style logic + color guide + capsule wardrobe checklist. 1,200+ sold!" } },
+      { "title": "Lightroom preset pack — Latte tones",  "content": { "description": "12 IG-style filters, one-tap apply, instant glow ✨" } },
+      { "title": "Latest video: 3-day Seoul style vlog", "content": {} },
+      { "title": "👗 Shopee curated picks",              "content": {} },
+      { "title": "💄 Xiaohongshu — honest beauty reviews", "content": {} },
+      { "title": "💌 Subscribe to Mia's weekly",         "content": { "placeholder": "Your email", "buttonText": "Subscribe (free)", "description": "Weekly hidden gems + style inspo + member discount codes. 5,600+ subscribers!" } },
+      { "title": "☕ Buy Me a Coffee",                   "content": {} }
     ],
     "collab": [
-      {
-        "title": "Brand partnerships",
-        "content": {
-          "text": "💼 Beauty, fashion, lifestyle brand collabs welcome"
-        }
-      },
-      {
-        "title": "📊 Reach — IG 120K / YT 80K / Podcast 20K",
-        "content": {}
-      },
-      {
-        "title": "📄 Download media kit",
-        "content": {}
-      },
-      {
-        "title": "📸 Past collaboration portfolio",
-        "content": {}
-      },
-      {
-        "title": "📧 Collab inquiries — mia@example.com",
-        "content": {}
-      }
+      { "title": "Brand partnerships",                   "content": { "text": "💼 Beauty, fashion, lifestyle brand collabs welcome" } },
+      { "title": "📊 Reach — IG 120K / YT 80K / Podcast 20K", "content": {} },
+      { "title": "📄 Download media kit",                "content": {} },
+      { "title": "📸 Past collaboration portfolio",      "content": {} },
+      { "title": "📧 Collab inquiries — mia@example.com", "content": {} }
     ]
   },
+
   "pricing": {
     "navSignIn": "Sign in / Sign up →",
     "heroTag": "Pick the plan that fits you",
@@ -599,164 +362,55 @@
       {
         "section": "Core",
         "items": [
-          {
-            "label": "Pages",
-            "free": "1",
-            "pro": "10",
-            "premium": "Unlimited"
-          },
-          {
-            "label": "Blocks per page",
-            "free": "12",
-            "pro": "20",
-            "premium": "Unlimited"
-          },
-          {
-            "label": "Basic blocks (link, video, banner, heading, FAQ, countdown)",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Advanced blocks (product, email form, carousel, map, HTML)",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Password-protected pages",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Theme presets & custom colors",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Scheduled publishing",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "Pages",                                            "free": "1",      "pro": "10",    "premium": "Unlimited" },
+          { "label": "Blocks per page",                                  "free": "12",     "pro": "20",    "premium": "Unlimited" },
+          { "label": "Basic blocks (link, video, banner, heading, FAQ, countdown)", "free": true, "pro": true, "premium": true },
+          { "label": "Advanced blocks (product, email form, carousel, map, HTML)", "free": false, "pro": true, "premium": true },
+          { "label": "Password-protected pages",                         "free": true,     "pro": true,    "premium": true },
+          { "label": "Theme presets & custom colors",                    "free": true,     "pro": true,    "premium": true },
+          { "label": "Scheduled publishing",                             "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "Selling",
         "items": [
-          {
-            "label": "Sell digital products",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Platform commission",
-            "free": "10%",
-            "pro": "5%",
-            "premium": "2%"
-          },
-          {
-            "label": "Order management",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Stripe integration",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "Sell digital products",                            "free": true,     "pro": true,    "premium": true },
+          { "label": "Platform commission",                              "free": "10%",    "pro": "5%",    "premium": "2%" },
+          { "label": "Order management",                                 "free": true,     "pro": true,    "premium": true },
+          { "label": "Stripe integration",                               "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "Analytics",
         "items": [
-          {
-            "label": "Data retention",
-            "free": "30 days",
-            "pro": "90 days",
-            "premium": "Unlimited"
-          },
-          {
-            "label": "Click / view / CTR",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "UTM source tracking",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Referrer analytics",
-            "free": true,
-            "pro": true,
-            "premium": true
-          }
+          { "label": "Data retention",                                   "free": "30 days", "pro": "90 days", "premium": "Unlimited" },
+          { "label": "Click / view / CTR",                               "free": true,     "pro": true,    "premium": true },
+          { "label": "UTM source tracking",                              "free": false,    "pro": true,    "premium": true },
+          { "label": "Referrer analytics",                               "free": true,     "pro": true,    "premium": true }
         ]
       },
       {
         "section": "Branding & domain",
         "items": [
-          {
-            "label": "Remove Beam watermark",
-            "free": false,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Custom favicon",
-            "free": false,
-            "pro": false,
-            "premium": true
-          },
-          {
-            "label": "Custom domain (mybrand.com)",
-            "free": false,
-            "pro": false,
-            "premium": true
-          },
-          {
-            "label": "Custom CSS",
-            "free": false,
-            "pro": false,
-            "premium": true
-          }
+          { "label": "Remove Beam watermark",                            "free": false,    "pro": true,    "premium": true },
+          { "label": "Custom favicon",                                   "free": false,    "pro": false,   "premium": true },
+          { "label": "Custom domain (mybrand.com)",                      "free": false,    "pro": false,   "premium": true },
+          { "label": "Custom CSS",                                       "free": false,    "pro": false,   "premium": true }
         ]
       },
       {
         "section": "Team & support",
         "items": [
-          {
-            "label": "Team members",
-            "free": "—",
-            "pro": "3",
-            "premium": "Unlimited"
-          },
-          {
-            "label": "Email support",
-            "free": true,
-            "pro": true,
-            "premium": true
-          },
-          {
-            "label": "Priority support",
-            "free": false,
-            "pro": false,
-            "premium": true
-          }
+          { "label": "Team members",                                     "free": "—",      "pro": "3",     "premium": "Unlimited" },
+          { "label": "Email support",                                    "free": true,     "pro": true,    "premium": true },
+          { "label": "Priority support",                                 "free": false,    "pro": false,   "premium": true }
         ]
       }
     ],
     "ctaTitle": "Ready to start?",
     "ctaBtn": "Build your page — free"
   },
+
   "admin": {
     "addBlock": "Add block",
     "noBlocksTitle": "Your page is empty",
@@ -805,24 +459,26 @@
       "removePassword": "Remove password",
       "delete": "Delete page"
     },
+
     "onboarding": {
       "title": "Quick start",
       "steps": {
-        "createAccount": "Sign up",
-        "addBlock": "Add your first link",
-        "setProfile": "Set avatar + bio",
-        "pickStyle": "Pick a visual style (corners / animation / brand color)",
-        "share": "Share your page link"
+        "createAccount":  "Sign up",
+        "addBlock":       "Add your first link",
+        "setProfile":     "Set avatar + bio",
+        "pickStyle":      "Pick a visual style (corners / animation / brand color)",
+        "share":          "Share your page link"
       },
-      "actionAdd": "Add block",
+      "actionAdd":      "Add block",
       "actionSettings": "Go to settings",
       "actionAppearance": "Go to appearance",
-      "actionCopy": "Copy link"
+      "actionCopy":     "Copy link"
     },
     "trialBadge": "Pro Trial {days}d",
     "darkMode": "Dark mode",
     "lightMode": "Light mode",
     "shareThisPage": "Share this page",
+
     "profileEditor": {
       "header": "Click to edit profile + socials",
       "banner": "Page banner (optional)",
@@ -850,6 +506,7 @@
       "socialCountPlural": "{n} links",
       "cropBannerTitle": "Crop banner (3:1)"
     },
+
     "themeEditor": {
       "themeLabel": "Theme",
       "presets": "Quick presets",
@@ -911,26 +568,11 @@
       "solid": "Solid",
       "gradient": "Gradient",
       "layouts": {
-        "stacked": {
-          "label": "Stacked",
-          "desc": "Single column, narrow (default)"
-        },
-        "horizontal": {
-          "label": "Horizontal",
-          "desc": "Two columns, narrow"
-        },
-        "fullwidth": {
-          "label": "Full width",
-          "desc": "Single column, wide"
-        },
-        "cards": {
-          "label": "Cards",
-          "desc": "Two columns, wide"
-        },
-        "heroBanner": {
-          "label": "Hero Banner ✨",
-          "desc": "Hero image + 2-col (Portaly style)"
-        }
+        "stacked":     { "label": "Stacked",     "desc": "Single column, narrow (default)" },
+        "horizontal":  { "label": "Horizontal",  "desc": "Two columns, narrow" },
+        "fullwidth":   { "label": "Full width",  "desc": "Single column, wide" },
+        "cards":       { "label": "Cards",       "desc": "Two columns, wide" },
+        "heroBanner":  { "label": "Hero Banner ✨", "desc": "Hero image + 2-col (Portaly style)" }
       },
       "btnStyleOutline": "Outline",
       "btnStyleFilled": "Filled",
@@ -957,32 +599,18 @@
         "scale": "Scale"
       },
       "panelPresets": {
-        "none": {
-          "label": "None",
-          "desc": "Content directly on the background"
-        },
-        "frosted-light": {
-          "label": "Frosted (light)",
-          "desc": "White frosted glass"
-        },
-        "frosted-dark": {
-          "label": "Frosted (dark)",
-          "desc": "Dark frosted glass"
-        },
-        "brand": {
-          "label": "Brand-tinted",
-          "desc": "Primary color 8% tint"
-        },
-        "custom": {
-          "label": "Custom",
-          "desc": "Fully custom color"
-        }
+        "none":          { "label": "None",         "desc": "Content directly on the background" },
+        "frosted-light": { "label": "Frosted (light)", "desc": "White frosted glass" },
+        "frosted-dark":  { "label": "Frosted (dark)",  "desc": "Dark frosted glass" },
+        "brand":         { "label": "Brand-tinted",   "desc": "Primary color 8% tint" },
+        "custom":        { "label": "Custom",         "desc": "Fully custom color" }
       },
       "panelColorLabel": "Color",
       "panelOpacityLabel": "Opacity",
       "panelBorderThin": "Thin border",
       "panelShadow": "Lift shadow"
     },
+
     "addBlockModal": {
       "title": "Add a new block",
       "step1": "Pick a block type",
@@ -1007,6 +635,7 @@
       "bannerUrlFallback": "Or paste an image URL https://...",
       "platformDetected": "✓ Detected {label}"
     },
+
     "editBlockModal": {
       "editPrefix": "Edit ",
       "livePreview": "Live preview",
@@ -1209,6 +838,7 @@
         "carousel": "Crop image {n}"
       }
     },
+
     "analytics": {
       "pageTitle": "Analytics",
       "metricClicks": "Total clicks",
@@ -1225,6 +855,7 @@
       "emptyState": "No data yet",
       "viewsLabel": "views"
     },
+
     "subscribers": {
       "pageTitle": "Subscribers",
       "subtitle": "Subscribers collected via Email form blocks",
@@ -1240,6 +871,7 @@
       "colDate": "Subscribed at",
       "sourceForm": "Form"
     },
+
     "orders": {
       "pageTitle": "Orders",
       "subtitle": "All orders generated through Stripe checkout",
@@ -1264,6 +896,7 @@
       "statusFailed": "Cancelled",
       "statusRefunded": "Refunded"
     },
+
     "settings": {
       "pageTitle": "Account settings",
       "nav": {
@@ -1344,18 +977,9 @@
         "comingSoonTitle": "Coming soon",
         "comingSoonHint": "Email notifications are in development. Stay tuned.",
         "items": [
-          {
-            "label": "New subscriber",
-            "desc": "Get notified when someone subscribes via your Email form"
-          },
-          {
-            "label": "New order",
-            "desc": "Get notified when a new digital product order comes in"
-          },
-          {
-            "label": "Weekly digest",
-            "desc": "Get a Monday email summarising the past 7 days"
-          }
+          { "label": "New subscriber", "desc": "Get notified when someone subscribes via your Email form" },
+          { "label": "New order", "desc": "Get notified when a new digital product order comes in" },
+          { "label": "Weekly digest", "desc": "Get a Monday email summarising the past 7 days" }
         ]
       },
       "billing": {
@@ -1409,6 +1033,7 @@
         "deleting": "Deleting…"
       }
     },
+
     "importer": {
       "title": "Import from Linktree / Portaly",
       "subtitle": "One-click migration — keeps your blocks and social links",
@@ -1450,6 +1075,7 @@
       "ctaTheme": "Theme",
       "ctaShare": "Copy link"
     },
+
     "scheduleModal": {
       "title": "Schedule visibility",
       "description": "Set when block \"{name}\" shows on the public page. Outside this range, the block auto-hides.",
@@ -1460,6 +1086,7 @@
       "cancelBtn": "Cancel",
       "saveBtn": "Save schedule"
     },
+
     "shareBar": {
       "copyLink": "Copy link",
       "copied": "Link copied",
@@ -1470,6 +1097,7 @@
       "copiedShort": "Copied",
       "copyShort": "Copy link"
     },
+
     "superAdminNav": {
       "overview": "Overview",
       "users": "Users",
@@ -1480,234 +1108,78 @@
       "lightMode": "Light mode",
       "backToAdminMobile": "Back to admin"
     },
+
     "templates": {
       "brand-site": {
         "name": "Brand site",
         "description": "Hero banner + storytelling cards. For SaaS, consultants, brands.",
         "blocks": [
-          {
-            "title": "Great brands deserve to be seen",
-            "content": {
-              "caption": "Your strategic partner for digital transformation"
-            }
-          },
-          {
-            "title": "🤖 AI advisory",
-            "content": {
-              "description": "Strategy to execution, end-to-end — turning AI into real revenue. 200+ brands shipped.",
-              "ctaLabel": "Learn more"
-            }
-          },
-          {
-            "title": "✨ Automation platform",
-            "content": {
-              "description": "Hand off repetitive work to AI, get your creative time back. LINE / IG / Email integrations, one-click setup.",
-              "ctaLabel": "See plans"
-            }
-          },
-          {
-            "title": "📊 Analytics",
-            "content": {
-              "description": "Customer behavior analysis, campaign performance, real-time dashboards. Decisions backed by data.",
-              "ctaLabel": "Book a call"
-            }
-          },
-          {
-            "title": "Subscribe to updates",
-            "content": {
-              "placeholder": "Your email",
-              "buttonText": "Subscribe",
-              "description": "One email a month. Curated case studies and product updates."
-            }
-          }
+          { "title": "Great brands deserve to be seen", "content": { "caption": "Your strategic partner for digital transformation" } },
+          { "title": "🤖 AI advisory",        "content": { "description": "Strategy to execution, end-to-end — turning AI into real revenue. 200+ brands shipped.",                   "ctaLabel": "Learn more" } },
+          { "title": "✨ Automation platform", "content": { "description": "Hand off repetitive work to AI, get your creative time back. LINE / IG / Email integrations, one-click setup.", "ctaLabel": "See plans" } },
+          { "title": "📊 Analytics",          "content": { "description": "Customer behavior analysis, campaign performance, real-time dashboards. Decisions backed by data.",          "ctaLabel": "Book a call" } },
+          { "title": "Subscribe to updates",  "content": { "placeholder": "Your email", "buttonText": "Subscribe", "description": "One email a month. Curated case studies and product updates." } }
         ]
       },
       "kol": {
         "name": "KOL / Creator",
         "description": "Big hero + 2-column image grid + video + product. Showcase your work.",
         "blocks": [
-          {
-            "title": "Lifestyle × Style inspo",
-            "content": {
-              "caption": "120K IG followers ✦ Weekly YouTube ✦ Open to collabs"
-            }
-          },
-          {
-            "title": "Recent work",
-            "content": {
-              "cellTitles": [
-                "Spring style",
-                "Coffee diaries",
-                "Travel notes",
-                "Beauty unboxing"
-              ]
-            }
-          },
-          {
-            "title": "🎬 YouTube channel",
-            "content": {}
-          },
-          {
-            "title": "☕ Buy me a coffee",
-            "content": {}
-          },
-          {
-            "title": "Join my newsletter",
-            "content": {
-              "placeholder": "Your email",
-              "buttonText": "Subscribe",
-              "description": "Weekly: hidden gems + members-only discount codes"
-            }
-          }
+          { "title": "Lifestyle × Style inspo",  "content": { "caption": "120K IG followers ✦ Weekly YouTube ✦ Open to collabs" } },
+          { "title": "Recent work",              "content": { "cellTitles": ["Spring style", "Coffee diaries", "Travel notes", "Beauty unboxing"] } },
+          { "title": "🎬 YouTube channel",  "content": {} },
+          { "title": "☕ Buy me a coffee",  "content": {} },
+          { "title": "Join my newsletter",  "content": { "placeholder": "Your email", "buttonText": "Subscribe", "description": "Weekly: hidden gems + members-only discount codes" } }
         ]
       },
       "portfolio": {
         "name": "Portfolio / Photo",
         "description": "Minimal cards + image grid. For designers, photographers, artists.",
         "blocks": [
-          {
-            "title": "Selected Works",
-            "content": {
-              "text": "Selected Works"
-            }
-          },
-          {
-            "title": "",
-            "content": {
-              "cellTitles": [
-                "Project 01",
-                "Project 02",
-                "Project 03",
-                "Project 04"
-              ]
-            }
-          },
-          {
-            "title": "About",
-            "content": {
-              "description": "A decade of visual language, focused on brand storytelling and product photography.\n\nClients include Apple, Nike, Starbucks.",
-              "ctaLabel": "CV / Portfolio"
-            }
-          },
-          {
-            "title": "✉️ Inquiries",
-            "content": {}
-          }
+          { "title": "Selected Works", "content": { "text": "Selected Works" } },
+          { "title": "",               "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
+          { "title": "About",           "content": { "description": "A decade of visual language, focused on brand storytelling and product photography.\n\nClients include Apple, Nike, Starbucks.", "ctaLabel": "CV / Portfolio" } },
+          { "title": "✉️ Inquiries",   "content": {} }
         ]
       },
       "creator": {
         "name": "IG / YouTube creator",
         "description": "Social links + latest video + collab inquiries.",
         "blocks": [
-          {
-            "title": "Main content",
-            "content": {
-              "text": "Main content"
-            }
-          },
-          {
-            "title": "My YouTube channel",
-            "content": {}
-          },
-          {
-            "title": "Latest collab / Sponsored",
-            "content": {}
-          },
-          {
-            "title": "Contact",
-            "content": {
-              "text": "Contact"
-            }
-          },
-          {
-            "title": "Newsletter",
-            "content": {
-              "placeholder": "Your email",
-              "buttonText": "Subscribe"
-            }
-          },
-          {
-            "title": "Brand collabs",
-            "content": {}
-          }
+          { "title": "Main content",        "content": { "text": "Main content" } },
+          { "title": "My YouTube channel",  "content": {} },
+          { "title": "Latest collab / Sponsored", "content": {} },
+          { "title": "Contact",             "content": { "text": "Contact" } },
+          { "title": "Newsletter",          "content": { "placeholder": "Your email", "buttonText": "Subscribe" } },
+          { "title": "Brand collabs",       "content": {} }
         ]
       },
       "seller": {
         "name": "Course / Product",
         "description": "Product list + countdown + email capture.",
         "blocks": [
-          {
-            "title": "🔥 Limited offer",
-            "content": {
-              "text": "🔥 Limited offer"
-            }
-          },
-          {
-            "title": "Offer ends in",
-            "content": {
-              "label": "Offer ends in"
-            }
-          },
-          {
-            "title": "Headline product",
-            "content": {
-              "description": "Replace with your product description"
-            }
-          },
-          {
-            "title": "More resources",
-            "content": {
-              "text": "More resources"
-            }
-          },
-          {
-            "title": "Free download",
-            "content": {}
-          },
-          {
-            "title": "Get launch alerts",
-            "content": {
-              "placeholder": "Your email",
-              "buttonText": "Subscribe"
-            }
-          }
+          { "title": "🔥 Limited offer", "content": { "text": "🔥 Limited offer" } },
+          { "title": "Offer ends in",    "content": { "label": "Offer ends in" } },
+          { "title": "Headline product", "content": { "description": "Replace with your product description" } },
+          { "title": "More resources",   "content": { "text": "More resources" } },
+          { "title": "Free download",    "content": {} },
+          { "title": "Get launch alerts", "content": { "placeholder": "Your email", "buttonText": "Subscribe" } }
         ]
       },
       "podcaster": {
         "name": "Podcaster",
         "description": "Listen platforms + subscribe + tip jar.",
         "blocks": [
-          {
-            "title": "Listen on",
-            "content": {
-              "text": "Listen on"
-            }
-          },
-          {
-            "title": "🎵 Spotify",
-            "content": {}
-          },
-          {
-            "title": "🎧 Apple Podcasts",
-            "content": {}
-          },
-          {
-            "title": "▶️ YouTube",
-            "content": {}
-          },
-          {
-            "title": "Support us",
-            "content": {
-              "text": "Support us"
-            }
-          },
-          {
-            "title": "☕ Buy us a coffee",
-            "content": {}
-          }
+          { "title": "Listen on",       "content": { "text": "Listen on" } },
+          { "title": "🎵 Spotify",      "content": {} },
+          { "title": "🎧 Apple Podcasts", "content": {} },
+          { "title": "▶️ YouTube",      "content": {} },
+          { "title": "Support us",       "content": { "text": "Support us" } },
+          { "title": "☕ Buy us a coffee", "content": {} }
         ]
       }
     },
+
     "page": {
       "deleteBlockConfirm": "Delete this block?",
       "duplicateSuffix": " (copy)",
@@ -1733,111 +1205,66 @@
       "emptyStateSubtitle": "Pick a template to start — you can change anything later",
       "recommendedTag": "Recommended",
       "loading": "Loading…",
-      "themePreviewSamples": [
-        "My YouTube channel",
-        "Latest blog post",
-        "Sponsorship inquiries"
-      ]
+      "themePreviewSamples": ["My YouTube channel", "Latest blog post", "Sponsorship inquiries"]
     },
+
     "blockTypes": {
-      "link": {
-        "label": "Link button",
-        "description": "Add IG, YouTube, and other links"
-      },
-      "product": {
-        "label": "Digital product",
-        "description": "Sell courses, templates, etc."
-      },
-      "calendar_event": {
-        "label": "Add to calendar",
-        "description": "Pop-up, livestream, group-buy deadlines"
-      },
-      "email_form": {
-        "label": "Email form",
-        "description": "Collect subscriber list"
-      },
-      "banner": {
-        "label": "Banner",
-        "description": "Hero image banner"
-      },
-      "heading": {
-        "label": "Heading",
-        "description": "Section title or sub-text"
-      },
-      "video": {
-        "label": "Video",
-        "description": "Embed YouTube / Spotify"
-      },
-      "countdown": {
-        "label": "Countdown",
-        "description": "Event or limited offer"
-      },
-      "faq": {
-        "label": "FAQ",
-        "description": "Collapsible Q&A"
-      },
-      "carousel": {
-        "label": "Carousel",
-        "description": "Sliding image carousel"
-      },
-      "image_grid": {
-        "label": "Image grid",
-        "description": "Two-column image layout"
-      },
-      "feature_card": {
-        "label": "Feature card",
-        "description": "Image-left + text-right storytelling"
-      },
-      "map": {
-        "label": "Map embed",
-        "description": "Google Maps"
-      },
-      "embed": {
-        "label": "HTML embed",
-        "description": "Custom iframe / HTML"
-      },
-      "social": {
-        "label": "Social link",
-        "description": "Social platform link"
-      }
+      "link":           { "label": "Link button",     "description": "Add IG, YouTube, and other links" },
+      "product":        { "label": "Digital product", "description": "Sell courses, templates, etc." },
+      "calendar_event": { "label": "Add to calendar", "description": "Pop-up, livestream, group-buy deadlines" },
+      "email_form":     { "label": "Email form",      "description": "Collect subscriber list" },
+      "banner":         { "label": "Banner",          "description": "Hero image banner" },
+      "heading":        { "label": "Heading",         "description": "Section title or sub-text" },
+      "video":          { "label": "Video",           "description": "Embed YouTube / Spotify" },
+      "countdown":      { "label": "Countdown",       "description": "Event or limited offer" },
+      "faq":            { "label": "FAQ",             "description": "Collapsible Q&A" },
+      "carousel":       { "label": "Carousel",        "description": "Sliding image carousel" },
+      "image_grid":     { "label": "Image grid",      "description": "Two-column image layout" },
+      "feature_card":   { "label": "Feature card",    "description": "Image-left + text-right storytelling" },
+      "map":            { "label": "Map embed",       "description": "Google Maps" },
+      "embed":          { "label": "HTML embed",      "description": "Custom iframe / HTML" },
+      "social":         { "label": "Social link",     "description": "Social platform link" }
     }
   },
+
   "auth": {
-    "loginTitle": "Welcome back",
-    "loginSubtitle": "Sign in to manage your Beam page",
-    "signupTitle": "Create your Beam page",
-    "signupSubtitle": "Pick a username — that's all we need",
-    "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "usernameLabel": "Username",
-    "usernameHelp": "Your page lives at beam.io/<username>",
-    "submitLogin": "Sign in",
-    "submitSignup": "Create account",
-    "switchToSignup": "New here? Create an account",
-    "switchToLogin": "Already have an account? Sign in",
-    "brandSubtitle": "Build your personal Beam page",
-    "setPasswordTitle": "Set password",
-    "setPasswordSubtitle": "doesn't have a password yet. Set one now.",
-    "newPasswordLabel": "New password",
-    "confirmPasswordLabel": "Confirm password",
-    "passwordMin": "At least 6 characters",
-    "passwordRetype": "Re-enter",
-    "passwordMismatch": "Passwords don't match",
-    "genericError": "Something went wrong",
-    "submitSetPassword": "Set password and sign in",
-    "loginRegisterTitle": "Sign in / Sign up",
-    "usernameLabelExt": "Username",
-    "usernameAllowedChars": "letters, numbers, _, -, .",
-    "checking": "Checking…",
-    "usernameTakenSwitch": "This username is taken — if it's yours, sign in below. Otherwise pick another.",
-    "usernameReserved": "This username is reserved.",
-    "usernameRules": "Letters, numbers, _, -, . only. 3–30 chars. Dots can't lead, trail, or repeat.",
-    "usernameAvailable": "✓ Available",
-    "emailNote": "(for signup, optional for login)",
-    "emailPlaceholder": "you@example.com",
-    "submitProceed": "Continue to admin",
-    "firstTimeHint": "First time? Just enter a username and password to sign up."
+    "loginTitle":      "Welcome back",
+    "loginSubtitle":   "Sign in to manage your Beam page",
+    "signupTitle":     "Create your Beam page",
+    "signupSubtitle":  "Pick a username — that's all we need",
+    "emailLabel":      "Email",
+    "passwordLabel":   "Password",
+    "usernameLabel":   "Username",
+    "usernameHelp":    "Your page lives at beam.io/<username>",
+    "submitLogin":     "Sign in",
+    "submitSignup":    "Create account",
+    "switchToSignup":  "New here? Create an account",
+    "switchToLogin":   "Already have an account? Sign in",
+
+    "brandSubtitle":            "Build your personal Beam page",
+    "setPasswordTitle":         "Set password",
+    "setPasswordSubtitle":      "doesn't have a password yet. Set one now.",
+    "newPasswordLabel":         "New password",
+    "confirmPasswordLabel":     "Confirm password",
+    "passwordMin":              "At least 6 characters",
+    "passwordRetype":           "Re-enter",
+    "passwordMismatch":         "Passwords don't match",
+    "genericError":             "Something went wrong",
+    "submitSetPassword":        "Set password and sign in",
+    "loginRegisterTitle":       "Sign in / Sign up",
+    "usernameLabelExt":         "Username",
+    "usernameAllowedChars":     "letters, numbers, _, -, .",
+    "checking":                 "Checking…",
+    "usernameTakenSwitch":      "This username is taken — if it's yours, sign in below. Otherwise pick another.",
+    "usernameReserved":         "This username is reserved.",
+    "usernameRules":            "Letters, numbers, _, -, . only. 3–30 chars. Dots can't lead, trail, or repeat.",
+    "usernameAvailable":        "✓ Available",
+    "emailNote":                "(for signup, optional for login)",
+    "emailPlaceholder":         "you@example.com",
+    "submitProceed":            "Continue to admin",
+    "firstTimeHint":            "First time? Just enter a username and password to sign up."
   },
+
   "toast": {
     "saved": "Saved",
     "deleted": "Deleted",
@@ -1853,6 +1280,7 @@
     "saveFailedRetry": "Save failed, please try again",
     "duplicateSocial": "That URL is already added"
   },
+
   "superAdmin": {
     "overviewTitle": "Platform overview",
     "users": "Users",
@@ -1934,21 +1362,23 @@
     "colCustomerEmail": "Customer email",
     "colDate": "Date"
   },
+
   "notFound": {
     "heading": "Page not found",
     "subheading": "This URL isn't taken yet — claim it before someone else does!",
     "ctaSignup": "Sign up free",
     "ctaHome": "Home"
   },
+
   "errors": {
-    "unauthorized": "Please sign in",
-    "notFound": "Not found",
-    "networkError": "Network error, please try again",
-    "uploadFailed": "Upload failed, please try again",
-    "saveFailed": "Save failed, please try again",
-    "usernameTaken": "That username is taken",
-    "usernameInvalid": "Username format is invalid",
-    "duplicateSocial": "That URL is already added",
-    "checkoutFailed": "Checkout failed, please try again later"
+    "unauthorized":     "Please sign in",
+    "notFound":         "Not found",
+    "networkError":     "Network error, please try again",
+    "uploadFailed":     "Upload failed, please try again",
+    "saveFailed":       "Save failed, please try again",
+    "usernameTaken":    "That username is taken",
+    "usernameInvalid":  "Username format is invalid",
+    "duplicateSocial":  "That URL is already added",
+    "checkoutFailed":   "Checkout failed, please try again later"
   }
 }
