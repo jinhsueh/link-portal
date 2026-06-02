@@ -55,46 +55,46 @@
 
   "landing": {
     "hero": {
-      "tag": "Free forever for creators",
-      "title": "One link.\nEvery fan touchpoint.",
-      "subtitle": "Beam is the link-in-bio built for creators who care about design. Unite Instagram, YouTube, podcasts, products, and your email list on one beautiful page.",
-      "ctaPrimary": "Build your page — free",
-      "ctaSecondary": "See a live demo",
-      "ctaNote": "No credit card. 30 seconds to live."
+      "tag": "The creator income platform",
+      "title": "Turn every fan click\ninto income.",
+      "subtitle": "Beam shows you what's earning, lets you sell your own products, and grows an audience you actually own — all from one bio link.",
+      "ctaPrimary": "Start earning — free",
+      "ctaSecondary": "See a creator demo",
+      "ctaNote": "No credit card. Live in 30 seconds. Analytics included free."
     },
 
     "social": {
       "title": "Every channel, one home",
-      "subtitle": "Instagram, YouTube, TikTok, Threads, Spotify, LINE, and 30+ more — built-in icons, your brand color, one tap to follow."
+      "subtitle": "Instagram, YouTube, TikTok, Threads, Spotify, LINE, and 30+ more — consolidate your audience so you can convert attention into income."
     },
 
     "features": [
-      { "title": "Every block you need",        "description": "Links, banners, videos, products, forms, calendars — drag and drop to build a page that's truly yours." },
-      { "title": "Theme your brand",            "description": "8 presets or fully custom colors, gradient backgrounds, and button styles. Your brand, pixel-perfect." },
-      { "title": "Real-time analytics",         "description": "Track visitors, clicks, and top-performing blocks — and iterate on what actually works." },
-      { "title": "Sell digital products",       "description": "Stripe built-in. Sell courses, e-books, and templates directly from your page — no storefront needed." },
-      { "title": "Grow your email list",        "description": "Embed email capture forms, own your audience, and stop renting attention from the algorithm." },
-      { "title": "Multiple pages, one account", "description": "One account, many pages. Split by topic — courses, partnerships, personal — with named tabs." }
+      { "title": "Income dashboard",            "description": "See what's earning — top products, top affiliate links, top traffic sources. Cut what doesn't pay, double down on what does." },
+      { "title": "Sell your own products",      "description": "Stripe built-in. Courses, e-books, presets, coaching — keep up to 98% of every sale. No Shopify, no extra integrations." },
+      { "title": "Build an audience you own",   "description": "Email subscribe forms + your own subscriber database. Stop renting attention from the algorithm — own the relationship." },
+      { "title": "Every block you need",        "description": "Links, banners, videos, products, forms, countdowns — drag and drop a page that converts." },
+      { "title": "Multi-page funnels",          "description": "Separate fans, agencies, courses, and partnerships. Each audience gets its own page with its own analytics." },
+      { "title": "Design your brand",           "description": "8 presets or fully custom colors, gradients, and button styles. Trust drives purchase — your brand needs to look the part." }
     ],
 
     "steps": [
-      { "num": "1", "title": "Create an account", "description": "Pick a username. No credit card. Done in 30 seconds." },
-      { "num": "2", "title": "Add your blocks",   "description": "Drag, drop, and edit. Preview updates instantly as you build." },
-      { "num": "3", "title": "Share one link",    "description": "Drop it in your IG bio, YouTube, Threads, or anywhere else. One link to rule them all." }
+      { "num": "1", "title": "Sign up free",          "description": "Pick a username. No credit card. Done in 30 seconds." },
+      { "num": "2", "title": "Add your income streams", "description": "Affiliate links, your own products, sponsorship inquiries, email capture. Drag, drop, edit." },
+      { "num": "3", "title": "Watch the dashboard",   "description": "See what's earning. Cut what isn't. Iterate to a page that pays." }
     ],
 
     "useCases": {
-      "title": "Built for every kind of creator",
+      "title": "Built for every way creators earn",
       "items": [
-        { "title": "IG / YouTube creators",   "description": "Send fans to your latest video, sponsorship link, or merch — all in one place." },
-        { "title": "Course & product sellers","description": "Sell digital products with Stripe. Capture emails before launch. Run countdowns for limited offers." },
-        { "title": "Podcasters",              "description": "Link Spotify, Apple Podcasts, and YouTube in one tap. Let listeners support you with a coffee." }
+        { "title": "Affiliate creators",          "description": "Trip.com, Shopee, Amazon — see which links earn and prune the dead ones. Surface your top-converting affiliates above the fold." },
+        { "title": "Digital product sellers",     "description": "Sell courses, e-books, presets, mini-coaching with Stripe. No storefront, no Shopify — just a low-commission checkout right on your bio page." },
+        { "title": "Sponsorship pros",            "description": "Separate fan-facing and agency-facing pages. Per-page analytics turn into negotiation leverage — real engagement data, not just follower counts." }
       ]
     },
 
     "pricing": {
-      "title": "Simple, honest pricing",
-      "subtitle": "Start free. Upgrade when you need more.",
+      "title": "Pay only when you're earning more",
+      "subtitle": "Free includes dashboard, analytics, and selling. Upgrade when one extra brand deal or product sale a month covers the cost.",
       "free":    { "name": "Free",    "price": "$0",     "period": "/month", "features": ["1 page", "Up to 10 blocks", "Basic analytics", "Email capture", "Beam watermark"] },
       "pro":     { "name": "Pro",     "price": "$5",     "period": "/month", "features": ["3 pages", "Unlimited blocks", "Full analytics", "Sell products (Stripe)", "Remove watermark", "Priority support"] },
       "premium": { "name": "Premium", "price": "$12",    "period": "/month", "features": ["Unlimited pages", "Team members", "Custom domain", "Advanced theming", "Lower commission (2%)", "1-on-1 onboarding"] },
@@ -104,16 +104,17 @@
     "faq": {
       "title": "Questions, answered",
       "items": [
-        { "q": "Is Beam really free?",                       "a": "Yes. The free plan stays free forever. Upgrade to Pro only when you need unlimited blocks, more pages, or to remove the watermark." },
-        { "q": "Can I import from Linktree?",                "a": "Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls your links, socials, name, bio, and avatar in 30 seconds." },
-        { "q": "How does selling products work?",            "a": "Connect a Stripe account in settings. Add a product block, set a price, and customers buy directly from your page. Beam takes a small commission depending on plan." },
-        { "q": "Can I use a custom domain?",                 "a": "Yes, on the Premium plan. Point your domain at Beam and we handle SSL." },
-        { "q": "Do you take a cut of my email subscribers?", "a": "Never. Subscribers belong to you. Export the list anytime as CSV." }
+        { "q": "How does Beam help me make more money?",      "a": "Three ways: (1) the dashboard shows which links and products actually earn, so you can cut dead ones and double down on winners; (2) Stripe is built in, so you can sell your own digital products from the bio page directly; (3) email forms grow a subscriber list you fully own — so you're not at the mercy of platform algorithms." },
+        { "q": "Is Beam really free?",                        "a": "Yes. Dashboard, analytics, selling products, and email capture are all on the Free plan. Upgrade to Pro only when you need multiple pages, unlimited blocks, or lower commission on sales." },
+        { "q": "Can I import from Linktree?",                 "a": "Yes. Paste your linktr.ee or portaly.cc URL and Beam pulls your links, socials, name, bio, and avatar in 30 seconds." },
+        { "q": "How does selling products work?",             "a": "Connect a Stripe account in settings, add a product block, set a price. Customers buy directly from your page. Beam takes a small commission (10% Free / 5% Pro / 2% Premium). Funds settle straight to your Stripe account." },
+        { "q": "Can I use a custom domain?",                  "a": "Yes, on the Premium plan. Point your domain at Beam and we handle SSL." },
+        { "q": "Do you take a cut of my email subscribers?",  "a": "Never. Subscribers belong to you. Export the list anytime as CSV." }
       ]
     },
 
     "footer": {
-      "tagline": "One link. Every fan touchpoint.",
+      "tagline": "Turn every click into income.",
       "product": "Product",
       "company": "Company",
       "legal": "Legal",

@@ -55,46 +55,46 @@
 
   "landing": {
     "hero": {
-      "tag": "創作者永久免費",
-      "title": "一個連結,\n串起所有粉絲互動",
-      "subtitle": "Beam 是專為注重設計的創作者打造的 link-in-bio。把 Instagram、YouTube、Podcast、商品、訂閱名單整合在一個美麗的頁面上。",
-      "ctaPrimary": "免費建立你的頁面",
-      "ctaSecondary": "看 live demo",
-      "ctaNote": "不需信用卡,30 秒上線。"
+      "tag": "創作者變現平台",
+      "title": "每一個粉絲點擊,\n都該變成收入。",
+      "subtitle": "Beam 幫你看清楚什麼在賺錢、賣自己的數位商品、累積真正屬於你的名單 — 全部從一個 bio 連結開始。",
+      "ctaPrimary": "免費開始賺錢",
+      "ctaSecondary": "看一個創作者範例",
+      "ctaNote": "不需信用卡,30 秒上線。Analytics 免費內建。"
     },
 
     "social": {
       "title": "每個社群,一個家",
-      "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE 等 30 多個平台 — 內建圖示、跟著你的品牌色、一鍵追蹤。"
+      "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE 等 30 多個平台 — 把分散的注意力整合起來,才能轉換成實際收入。"
     },
 
     "features": [
-      { "title": "你需要的所有區塊",          "description": "連結、橫幅、影片、商品、表單、行事曆 — 拖放就能打造真正屬於你的頁面。" },
-      { "title": "為你的品牌設計主題",       "description": "8 種預設或完全自訂顏色、漸層背景、按鈕樣式。你的品牌,像素級完美。" },
-      { "title": "即時分析數據",             "description": "追蹤訪客、點擊次數、最熱門區塊 — 然後根據真正有效的數據迭代。" },
-      { "title": "販售數位商品",             "description": "內建 Stripe。直接從你的頁面販售課程、電子書、模板 — 不需開店。" },
-      { "title": "經營你的 Email 名單",      "description": "嵌入 Email 收集表單,擁有屬於你的受眾,擺脫向演算法租流量的循環。" },
-      { "title": "一個帳號多個分頁",         "description": "一個帳號,多個分頁。依主題分開 — 課程、合作、個人 — 各自有名字。" }
+      { "title": "收入儀表板",                "description": "看清楚什麼在賺錢 — 哪個商品熱賣、哪個 affiliate 連結最會轉換、流量從哪來。砍掉不賺的,放大會賺的。" },
+      { "title": "賣自己的數位商品",          "description": "內建 Stripe。課程、電子書、預設包、教練課 — 每筆銷售保留高達 98%。不用 Shopify,不用額外整合。" },
+      { "title": "經營真正屬於你的名單",      "description": "Email 訂閱表單 + 訂閱者後台。擺脫向演算法租流量的循環 — 名單是你的,關係是你的。" },
+      { "title": "你需要的所有區塊",          "description": "連結、橫幅、影片、商品、表單、倒數 — 拖放打造一個會轉換的頁面。" },
+      { "title": "多分頁漏斗",                "description": "粉絲、agency、課程、合作各自一頁。每個受眾走自己的漏斗,各自有自己的數據。" },
+      { "title": "為你的品牌設計主題",        "description": "8 種預設或完全自訂顏色、漸層、按鈕樣式。信任驅動購買 — 你的品牌得長得像那回事。" }
     ],
 
     "steps": [
-      { "num": "1", "title": "建立帳號",       "description": "選一個用戶名。不需信用卡。30 秒搞定。" },
-      { "num": "2", "title": "加入你的區塊",   "description": "拖放、編輯。建立過程中即時預覽。" },
-      { "num": "3", "title": "分享一個連結",   "description": "放在 IG bio、YouTube、Threads 或任何地方。一個連結通吃。" }
+      { "num": "1", "title": "免費註冊",          "description": "選一個用戶名。不需信用卡。30 秒搞定。" },
+      { "num": "2", "title": "加入你的收入來源",  "description": "Affiliate 連結、你自己的商品、合作邀約、Email 收集。拖放、編輯。" },
+      { "num": "3", "title": "看儀表板做決策",    "description": "看什麼在賺錢、砍掉不賺的、迭代成一個會付你錢的頁面。" }
     ],
 
     "useCases": {
-      "title": "為每種創作者打造",
+      "title": "為每一種變現方式打造",
       "items": [
-        { "title": "IG / YouTube 創作者",   "description": "把粉絲導向你的最新影片、業配連結、周邊商品 — 一個地方搞定。" },
-        { "title": "課程 / 商品銷售者",      "description": "用 Stripe 賣數位商品。上線前先收 Email。限時優惠跑倒數計時。" },
-        { "title": "Podcast 主持人",        "description": "Spotify、Apple Podcasts、YouTube 一鍵連結。讓聽眾用一杯咖啡支持你。" }
+        { "title": "Affiliate 創作者",          "description": "Trip.com、Shopee、Amazon — 看清楚哪個連結會賺,把死連結砍掉。把轉換最高的 affiliate 推到最上面。" },
+        { "title": "數位商品銷售者",            "description": "用 Stripe 賣課程、電子書、預設包、教練課。不用開店、不用 Shopify — 直接在 bio 頁面結帳,低抽成。" },
+        { "title": "業配 / 合作創作者",         "description": "粉絲頁面 + agency 頁面分開做。每頁獨立分析數據變成談判籌碼 — 不是只有粉絲數,而是真實互動數字。" }
       ]
     },
 
     "pricing": {
-      "title": "簡單、透明的價格",
-      "subtitle": "免費開始。需要更多時再升級。",
+      "title": "賺得更多才需要付費",
+      "subtitle": "Free 方案就有儀表板、analytics、商品販售。當每月多接一個合作或多賣一個商品就能 cover 升級費用時,再升級。",
       "free":    { "name": "免費版",  "price": "$0",  "period": "/月", "features": ["1 個分頁", "最多 10 個區塊", "基本分析", "Email 收集", "Beam 浮水印"] },
       "pro":     { "name": "Pro",     "price": "$5",  "period": "/月", "features": ["3 個分頁", "無限區塊", "完整分析", "販售商品 (Stripe)", "移除浮水印", "優先客服"] },
       "premium": { "name": "Premium", "price": "$12", "period": "/月", "features": ["無限分頁", "團隊成員", "自訂網域", "進階主題", "更低抽成 (2%)", "1 對 1 onboarding"] },
@@ -104,16 +104,17 @@
     "faq": {
       "title": "你想問的,我們都答了",
       "items": [
-        { "q": "Beam 真的免費嗎?",                      "a": "對。免費方案永久免費。只有你需要無限區塊、更多分頁、或移除浮水印時才需要升級 Pro。" },
+        { "q": "Beam 怎麼幫我多賺錢?",                  "a": "3 個機制:(1) 儀表板告訴你哪個連結 / 商品真的在賺錢,你才知道砍什麼、推什麼;(2) 內建 Stripe,直接從 bio 頁面賣自己的數位商品;(3) Email 表單累積真正屬於你的訂閱名單 — 不受平台演算法控制。" },
+        { "q": "Beam 真的免費嗎?",                      "a": "對。儀表板、analytics、商品販售、Email 收集這些核心功能全部在 Free 方案。只有你需要多分頁、無限區塊、或更低抽成的時候才升級 Pro。" },
         { "q": "可以從 Linktree 匯入嗎?",               "a": "可以。貼上你的 linktr.ee 或 portaly.cc 網址,Beam 會在 30 秒內把連結、社群、名稱、簡介、頭像全部抓過來。" },
-        { "q": "商品販售怎麼運作?",                     "a": "在設定裡連接 Stripe 帳號。新增商品區塊、設定價格,顧客就能直接從你的頁面購買。Beam 收取小額抽成,依方案不同。" },
+        { "q": "商品販售怎麼運作?",                     "a": "在設定裡連接 Stripe,新增商品區塊、設定價格,顧客直接從你的頁面結帳。Beam 抽 10% (Free) / 5% (Pro) / 2% (Premium),金額直接結算到你的 Stripe 帳號。" },
         { "q": "可以使用自訂網域嗎?",                   "a": "可以,Premium 方案。把網域指向 Beam,我們處理 SSL。" },
         { "q": "Email 訂閱者會被你們抽成嗎?",           "a": "絕不。訂閱者完全屬於你。隨時可以匯出 CSV。" }
       ]
     },
 
     "footer": {
-      "tagline": "一個連結,串起所有粉絲互動",
+      "tagline": "每一個點擊,都該變成收入。",
       "product": "產品",
       "company": "公司",
       "legal": "法律",
