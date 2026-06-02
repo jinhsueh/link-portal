@@ -154,9 +154,14 @@ export function ProfileEditor({ profile, onUpdate, onLiveChange, onSocialLinksCh
     setSocialDirty(dirty)
   }
   // When the profile prop refreshes (after a save), reset the dirty flag.
-  useEffect(() => {
+  // "Store info from previous renders" pattern (per react.dev) — checking the
+  // prop ref during render avoids the setState-in-effect anti-pattern. Safe
+  // because socialLinks is a stable array reference from the parent.
+  const [prevSocialLinks, setPrevSocialLinks] = useState(profile.socialLinks)
+  if (prevSocialLinks !== profile.socialLinks) {
+    setPrevSocialLinks(profile.socialLinks)
     setSocialDirty(false)
-  }, [profile.socialLinks])
+  }
   const isDirty = isProfileDirty || socialDirty
 
   const handleSaveAll = async () => {

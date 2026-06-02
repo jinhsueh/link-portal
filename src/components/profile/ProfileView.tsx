@@ -74,11 +74,16 @@ export function ProfileView({
   // Customer feedback: 主頁 ↔ 產品介紹 換頁要等整頁重 load,體驗很卡。
   const [activeSlug, setActiveSlug] = useState(initialSlug)
 
-  // Keep state in sync if the slug prop changes (e.g. browser back/forward
-  // or someone shares a URL that routes to a different tab).
-  useEffect(() => {
+  // "Store info from previous renders" pattern (per react.dev) — sync state
+  // with the prop without a useEffect. Triggers when the slug prop changes
+  // (browser back/forward, or someone shares a URL routing to a different
+  // tab). Setting state during render is allowed when bounded and
+  // conditional — React will re-render with the new value before painting.
+  const [prevPropSlug, setPrevPropSlug] = useState(activePageSlug)
+  if (prevPropSlug !== activePageSlug) {
+    setPrevPropSlug(activePageSlug)
     if (activePageSlug !== undefined) setActiveSlug(activePageSlug)
-  }, [activePageSlug])
+  }
 
   const activePage =
     pages.find(p => p.slug === activeSlug) ??

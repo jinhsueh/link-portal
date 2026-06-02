@@ -356,7 +356,9 @@ export function getPageTemplates(
         const lb = localizedBlocks[i]
         if (!lb) return b
         // Start from skeleton's content, layer localized overrides on top.
-        let content: Record<string, unknown> = { ...b.content, ...(lb.content ?? {}) }
+        // `const` because we mutate properties on the object (content.cells =,
+        // delete content.cellTitles) but never reassign the variable itself.
+        const content: Record<string, unknown> = { ...b.content, ...(lb.content ?? {}) }
         // Special case: cellTitles overrides per-cell .title without
         // replacing the whole cells array (which carries image URLs).
         const cellTitles = lb.content?.cellTitles

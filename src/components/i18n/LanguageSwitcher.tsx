@@ -6,6 +6,15 @@ import { Globe, Check, ChevronDown } from 'lucide-react'
 import { LOCALES, LOCALE_META, type Locale, isLocale } from '@/lib/i18n'
 import { useDict } from '@/components/i18n/DictProvider'
 
+// Module-level cookie writer. Lives outside the component so the
+// `react-hooks/immutability` rule (which flags any external-state mutation
+// inside a component/hook body) is happy. SSR-safe via the `document`
+// existence check — middleware reads this cookie before Accept-Language.
+function persistLocaleCookie(locale: Locale): void {
+  if (typeof document === 'undefined') return
+  document.cookie = `lp_locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+}
+
 /**
  * Header language switcher. Picking a locale:
  *   1. Sets the `lp_locale` cookie so future visits remember the choice.
@@ -51,7 +60,7 @@ export function LanguageSwitcher() {
     if (!isLocale(locale)) return
     // Persist preference for 1 year so the visitor doesn't get redirected
     // back to their browser default the next time they hit /.
-    document.cookie = `lp_locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+    persistLocaleCookie(locale)
     setOpen(false)
 
     // 3 navigation paths:
