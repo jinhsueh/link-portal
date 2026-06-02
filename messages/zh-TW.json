@@ -44,7 +44,6 @@
     "placeholder": "提示文字",
     "processing": "處理中…"
   },
-
   "nav": {
     "home": "主頁",
     "analytics": "數據",
@@ -52,7 +51,6 @@
     "subscribers": "訂閱",
     "settings": "設定"
   },
-
   "landing": {
     "hero": {
       "tag": "創作者變現平台",
@@ -62,57 +60,142 @@
       "ctaSecondary": "看一個創作者範例",
       "ctaNote": "不需信用卡,30 秒上線。Analytics 免費內建。"
     },
-
     "social": {
       "title": "每個社群,一個家",
       "subtitle": "Instagram、YouTube、TikTok、Threads、Spotify、LINE 等 30 多個平台 — 把分散的注意力整合起來,才能轉換成實際收入。"
     },
-
     "features": [
-      { "title": "收入儀表板",                "description": "看清楚什麼在賺錢 — 哪個商品熱賣、哪個 affiliate 連結最會轉換、流量從哪來。砍掉不賺的,放大會賺的。" },
-      { "title": "賣自己的數位商品",          "description": "內建 Stripe。課程、電子書、預設包、教練課 — 每筆銷售保留高達 98%。不用 Shopify,不用額外整合。" },
-      { "title": "經營真正屬於你的名單",      "description": "Email 訂閱表單 + 訂閱者後台。擺脫向演算法租流量的循環 — 名單是你的,關係是你的。" },
-      { "title": "你需要的所有區塊",          "description": "連結、橫幅、影片、商品、表單、倒數 — 拖放打造一個會轉換的頁面。" },
-      { "title": "多分頁漏斗",                "description": "粉絲、agency、課程、合作各自一頁。每個受眾走自己的漏斗,各自有自己的數據。" },
-      { "title": "為你的品牌設計主題",        "description": "8 種預設或完全自訂顏色、漸層、按鈕樣式。信任驅動購買 — 你的品牌得長得像那回事。" }
+      {
+        "title": "收入儀表板",
+        "description": "看清楚什麼在賺錢 — 哪個商品熱賣、哪個 affiliate 連結最會轉換、流量從哪來。砍掉不賺的,放大會賺的。"
+      },
+      {
+        "title": "賣自己的數位商品",
+        "description": "內建 Stripe。課程、電子書、預設包、教練課 — 每筆銷售保留高達 98%。不用 Shopify,不用額外整合。"
+      },
+      {
+        "title": "經營真正屬於你的名單",
+        "description": "Email 訂閱表單 + 訂閱者後台。擺脫向演算法租流量的循環 — 名單是你的,關係是你的。"
+      },
+      {
+        "title": "你需要的所有區塊",
+        "description": "連結、橫幅、影片、商品、表單、倒數 — 拖放打造一個會轉換的頁面。"
+      },
+      {
+        "title": "多分頁漏斗",
+        "description": "粉絲、agency、課程、合作各自一頁。每個受眾走自己的漏斗,各自有自己的數據。"
+      },
+      {
+        "title": "為你的品牌設計主題",
+        "description": "8 種預設或完全自訂顏色、漸層、按鈕樣式。信任驅動購買 — 你的品牌得長得像那回事。"
+      }
     ],
-
     "steps": [
-      { "num": "1", "title": "免費註冊",          "description": "選一個用戶名。不需信用卡。30 秒搞定。" },
-      { "num": "2", "title": "加入你的收入來源",  "description": "Affiliate 連結、你自己的商品、合作邀約、Email 收集。拖放、編輯。" },
-      { "num": "3", "title": "看儀表板做決策",    "description": "看什麼在賺錢、砍掉不賺的、迭代成一個會付你錢的頁面。" }
+      {
+        "num": "1",
+        "title": "免費註冊",
+        "description": "選一個用戶名。不需信用卡。30 秒搞定。"
+      },
+      {
+        "num": "2",
+        "title": "加入你的收入來源",
+        "description": "Affiliate 連結、你自己的商品、合作邀約、Email 收集。拖放、編輯。"
+      },
+      {
+        "num": "3",
+        "title": "看儀表板做決策",
+        "description": "看什麼在賺錢、砍掉不賺的、迭代成一個會付你錢的頁面。"
+      }
     ],
-
     "useCases": {
       "title": "為每一種變現方式打造",
       "items": [
-        { "title": "Affiliate 創作者",          "description": "Trip.com、Shopee、Amazon — 看清楚哪個連結會賺,把死連結砍掉。把轉換最高的 affiliate 推到最上面。" },
-        { "title": "數位商品銷售者",            "description": "用 Stripe 賣課程、電子書、預設包、教練課。不用開店、不用 Shopify — 直接在 bio 頁面結帳,低抽成。" },
-        { "title": "業配 / 合作創作者",         "description": "粉絲頁面 + agency 頁面分開做。每頁獨立分析數據變成談判籌碼 — 不是只有粉絲數,而是真實互動數字。" }
+        {
+          "title": "Affiliate 創作者",
+          "description": "Trip.com、Shopee、Amazon — 看清楚哪個連結會賺,把死連結砍掉。把轉換最高的 affiliate 推到最上面。"
+        },
+        {
+          "title": "數位商品銷售者",
+          "description": "用 Stripe 賣課程、電子書、預設包、教練課。不用開店、不用 Shopify — 直接在 bio 頁面結帳,低抽成。"
+        },
+        {
+          "title": "業配 / 合作創作者",
+          "description": "粉絲頁面 + agency 頁面分開做。每頁獨立分析數據變成談判籌碼 — 不是只有粉絲數,而是真實互動數字。"
+        }
       ]
     },
-
     "pricing": {
       "title": "賺得更多才需要付費",
       "subtitle": "Free 方案就有儀表板、analytics、商品販售。當每月多接一個合作或多賣一個商品就能 cover 升級費用時,再升級。",
-      "free":    { "name": "免費版",  "price": "$0",  "period": "/月", "features": ["1 個分頁", "最多 10 個區塊", "基本分析", "Email 收集", "Beam 浮水印"] },
-      "pro":     { "name": "Pro",     "price": "$5",  "period": "/月", "features": ["3 個分頁", "無限區塊", "完整分析", "販售商品 (Stripe)", "移除浮水印", "優先客服"] },
-      "premium": { "name": "Premium", "price": "$12", "period": "/月", "features": ["無限分頁", "團隊成員", "自訂網域", "進階主題", "更低抽成 (2%)", "1 對 1 onboarding"] },
+      "free": {
+        "name": "免費版",
+        "price": "$0",
+        "period": "/月",
+        "features": [
+          "1 個分頁",
+          "最多 10 個區塊",
+          "基本分析",
+          "Email 收集",
+          "Beam 浮水印"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$5",
+        "period": "/月",
+        "features": [
+          "3 個分頁",
+          "無限區塊",
+          "完整分析",
+          "販售商品 (Stripe)",
+          "移除浮水印",
+          "優先客服"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$12",
+        "period": "/月",
+        "features": [
+          "無限分頁",
+          "團隊成員",
+          "自訂網域",
+          "進階主題",
+          "更低抽成 (2%)",
+          "1 對 1 onboarding"
+        ]
+      },
       "cta": "免費開始"
     },
-
     "faq": {
       "title": "你想問的,我們都答了",
       "items": [
-        { "q": "Beam 怎麼幫我多賺錢?",                  "a": "3 個機制:(1) 儀表板告訴你哪個連結 / 商品真的在賺錢,你才知道砍什麼、推什麼;(2) 內建 Stripe,直接從 bio 頁面賣自己的數位商品;(3) Email 表單累積真正屬於你的訂閱名單 — 不受平台演算法控制。" },
-        { "q": "Beam 真的免費嗎?",                      "a": "對。儀表板、analytics、商品販售、Email 收集這些核心功能全部在 Free 方案。只有你需要多分頁、無限區塊、或更低抽成的時候才升級 Pro。" },
-        { "q": "可以從 Linktree 匯入嗎?",               "a": "可以。貼上你的 linktr.ee 或 portaly.cc 網址,Beam 會在 30 秒內把連結、社群、名稱、簡介、頭像全部抓過來。" },
-        { "q": "商品販售怎麼運作?",                     "a": "在設定裡連接 Stripe,新增商品區塊、設定價格,顧客直接從你的頁面結帳。Beam 抽 10% (Free) / 5% (Pro) / 2% (Premium),金額直接結算到你的 Stripe 帳號。" },
-        { "q": "可以使用自訂網域嗎?",                   "a": "可以,Premium 方案。把網域指向 Beam,我們處理 SSL。" },
-        { "q": "Email 訂閱者會被你們抽成嗎?",           "a": "絕不。訂閱者完全屬於你。隨時可以匯出 CSV。" }
+        {
+          "q": "Beam 怎麼幫我多賺錢?",
+          "a": "3 個機制:(1) 儀表板告訴你哪個連結 / 商品真的在賺錢,你才知道砍什麼、推什麼;(2) 內建 Stripe,直接從 bio 頁面賣自己的數位商品;(3) Email 表單累積真正屬於你的訂閱名單 — 不受平台演算法控制。"
+        },
+        {
+          "q": "Beam 真的免費嗎?",
+          "a": "對。儀表板、analytics、商品販售、Email 收集這些核心功能全部在 Free 方案。只有你需要多分頁、無限區塊、或更低抽成的時候才升級 Pro。"
+        },
+        {
+          "q": "可以從 Linktree 匯入嗎?",
+          "a": "可以。貼上你的 linktr.ee 或 portaly.cc 網址,Beam 會在 30 秒內把連結、社群、名稱、簡介、頭像全部抓過來。"
+        },
+        {
+          "q": "商品販售怎麼運作?",
+          "a": "在設定裡連接 Stripe,新增商品區塊、設定價格,顧客直接從你的頁面結帳。Beam 抽 10% (Free) / 5% (Pro) / 2% (Premium),金額直接結算到你的 Stripe 帳號。"
+        },
+        {
+          "q": "可以使用自訂網域嗎?",
+          "a": "可以,Premium 方案。把網域指向 Beam,我們處理 SSL。"
+        },
+        {
+          "q": "Email 訂閱者會被你們抽成嗎?",
+          "a": "絕不。訂閱者完全屬於你。隨時可以匯出 CSV。"
+        }
       ]
     },
-
     "footer": {
       "tagline": "每一個點擊,都該變成收入。",
       "product": "產品",
@@ -126,12 +209,10 @@
       "terms": "條款",
       "copyright": "© 2026 Beam. All rights reserved."
     },
-
     "langSwitcher": {
       "label": "語言"
     }
   },
-
   "profile": {
     "productNoPrice": "商品尚未設定價格",
     "watchVideo": "觀看影片",
@@ -152,7 +233,6 @@
       "applying": "處理中…",
       "apply": "套用裁切"
     },
-
     "success": {
       "confirming": "確認付款中…",
       "title": "付款成功!",
@@ -187,7 +267,6 @@
       "ics": "下載 .ics"
     }
   },
-
   "terms": {
     "metaTitle": "服務條款",
     "metaDescriptionTpl": "{name} 服務條款,說明使用本平台的權利與義務。",
@@ -197,18 +276,61 @@
     "lastUpdated": "最後更新:2026 年 4 月",
     "intro": "歡迎使用 {name}。使用本服務前,請仔細閱讀以下條款。當你註冊、存取或使用 {name},即表示同意遵守本條款。",
     "sections": [
-      { "title": "1. 服務說明", "body": "{name} 提供 Link in Bio 頁面建立、數位商品販售、Email 名單蒐集與數據分析等工具。功能與方案內容可能會隨時更新,我們會透過網站公告或 Email 通知重大變更。" },
-      { "title": "2. 帳號註冊", "items": ["註冊時你需提供真實且完整的資料", "帳號與密碼由你自行保管,任何經由你的帳號進行的操作視為你本人行為", "一人原則上僅註冊一個帳號,惡意重複註冊可能被停權"] },
-      { "title": "3. 使用限制", "body": "你同意不會使用 {name} 進行以下行為:", "items": ["散布違法、仇恨、騷擾、色情或侵犯他人權益的內容", "販售違法、仿冒或未授權的商品", "從事詐騙、洗錢或其他犯罪活動", "以自動化工具大量操作平台或進行爬蟲", "逆向工程、破解或嘗試取得未授權的系統存取"] },
-      { "title": "4. 付費方案與退款", "items": ["Pro 與 Premium 方案採月繳或年繳制,費用於訂閱時自動扣款", "你可隨時取消訂閱,已繳付的費用於當期結束後停止續扣", "除因本平台重大瑕疵無法使用外,原則上不提供退款", "販售數位商品時,平台依方案抽取對應比例手續費"] },
-      { "title": "5. 內容所有權", "body": "你在 {name} 上建立的內容(頁面、商品、圖片、文字)其著作權歸你所有。你授權 {name} 在提供服務所必要的範圍內使用、儲存、顯示這些內容。" },
-      { "title": "6. 服務中止與帳號終止", "body": "若違反本條款或法律規定,{name} 有權暫停或終止你的帳號,且不退還已繳費用。我們會盡可能事先通知,但涉及平台安全或法律風險時得立即處置。" },
-      { "title": "7. 免責聲明", "body": "{name} 依「現狀」與「可用時」提供服務。我們對服務的可用性、正確性與無中斷性不作任何擔保。因使用或無法使用服務所產生的間接損失,我們不負賠償責任。" },
-      { "title": "8. 條款變更", "body": "我們可能不時更新本條款。重大變更會在網站公告並透過 Email 通知。繼續使用 {name} 即視為同意修訂後的條款。" },
-      { "title": "9. 聯絡我們", "body": "關於本條款的任何問題,請來信 ", "emailTrailer": "。" }
+      {
+        "title": "1. 服務說明",
+        "body": "{name} 提供 Link in Bio 頁面建立、數位商品販售、Email 名單蒐集與數據分析等工具。功能與方案內容可能會隨時更新,我們會透過網站公告或 Email 通知重大變更。"
+      },
+      {
+        "title": "2. 帳號註冊",
+        "items": [
+          "註冊時你需提供真實且完整的資料",
+          "帳號與密碼由你自行保管,任何經由你的帳號進行的操作視為你本人行為",
+          "一人原則上僅註冊一個帳號,惡意重複註冊可能被停權"
+        ]
+      },
+      {
+        "title": "3. 使用限制",
+        "body": "你同意不會使用 {name} 進行以下行為:",
+        "items": [
+          "散布違法、仇恨、騷擾、色情或侵犯他人權益的內容",
+          "販售違法、仿冒或未授權的商品",
+          "從事詐騙、洗錢或其他犯罪活動",
+          "以自動化工具大量操作平台或進行爬蟲",
+          "逆向工程、破解或嘗試取得未授權的系統存取"
+        ]
+      },
+      {
+        "title": "4. 付費方案與退款",
+        "items": [
+          "Pro 與 Premium 方案採月繳或年繳制,費用於訂閱時自動扣款",
+          "你可隨時取消訂閱,已繳付的費用於當期結束後停止續扣",
+          "除因本平台重大瑕疵無法使用外,原則上不提供退款",
+          "販售數位商品時,平台依方案抽取對應比例手續費"
+        ]
+      },
+      {
+        "title": "5. 內容所有權",
+        "body": "你在 {name} 上建立的內容(頁面、商品、圖片、文字)其著作權歸你所有。你授權 {name} 在提供服務所必要的範圍內使用、儲存、顯示這些內容。"
+      },
+      {
+        "title": "6. 服務中止與帳號終止",
+        "body": "若違反本條款或法律規定,{name} 有權暫停或終止你的帳號,且不退還已繳費用。我們會盡可能事先通知,但涉及平台安全或法律風險時得立即處置。"
+      },
+      {
+        "title": "7. 免責聲明",
+        "body": "{name} 依「現狀」與「可用時」提供服務。我們對服務的可用性、正確性與無中斷性不作任何擔保。因使用或無法使用服務所產生的間接損失,我們不負賠償責任。"
+      },
+      {
+        "title": "8. 條款變更",
+        "body": "我們可能不時更新本條款。重大變更會在網站公告並透過 Email 通知。繼續使用 {name} 即視為同意修訂後的條款。"
+      },
+      {
+        "title": "9. 聯絡我們",
+        "body": "關於本條款的任何問題,請來信 ",
+        "emailTrailer": "。"
+      }
     ]
   },
-
   "privacy": {
     "metaTitle": "隱私權政策",
     "metaDescriptionTpl": "{name} 隱私權政策,說明我們如何蒐集、使用與保護你的個人資料。",
@@ -218,21 +340,65 @@
     "lastUpdated": "最後更新:2026 年 4 月",
     "intro": "{name}(以下簡稱「我們」)尊重並保護所有使用者的個人隱私權。本政策說明我們蒐集哪些資料、如何使用,以及你擁有的權利。",
     "sections": [
-      { "title": "1. 我們蒐集的資料", "items": [
-        { "bold": "帳號資料:", "rest": "註冊時提供的 Email、使用者名稱、密碼(加密儲存)。" },
-        { "bold": "內容資料:", "rest": "你在 {name} 上建立的頁面、區塊、商品與表單內容。" },
-        { "bold": "使用資料:", "rest": "訪客點擊、曝光、來源、裝置類型等匿名統計資料。" },
-        { "bold": "金流資料:", "rest": "信用卡資料由 Stripe 處理,我們不儲存完整卡號。" }
-      ] },
-      { "title": "2. 資料的使用方式", "items": ["提供、維運並改善 {name} 的產品與服務", "處理訂單、發票、退款與客戶支援", "傳送產品更新、重要公告與行銷訊息(可隨時取消訂閱)", "偵測詐欺、濫用行為並維護平台安全"] },
-      { "title": "3. 資料分享", "body": "我們不會販售你的個人資料。僅在以下情況會與第三方分享資料:", "items": ["金流處理(Stripe)", "雲端服務商(Vercel、資料庫供應商)", "法律要求或主管機關依法請求時"] },
-      { "title": "4. 你的權利", "body": "你可以隨時查閱、更正、下載或刪除你的個人資料。如需行使上述權利,請來信 ", "emailTrailer": "。" },
-      { "title": "5. Cookie 使用", "body": "我們使用 Cookie 與類似技術來維持登入狀態、記錄使用者偏好以及分析網站流量。你可以透過瀏覽器設定管理或停用 Cookie。" },
-      { "title": "6. 政策更新", "body": "我們可能會不時更新本政策。重大變更會透過 Email 或網站公告通知。繼續使用 {name} 即視為同意修訂後的條款。" },
-      { "title": "7. 聯絡我們", "body": "若對本隱私權政策有任何疑問,請來信 ", "emailTrailer": "。" }
+      {
+        "title": "1. 我們蒐集的資料",
+        "items": [
+          {
+            "bold": "帳號資料:",
+            "rest": "註冊時提供的 Email、使用者名稱、密碼(加密儲存)。"
+          },
+          {
+            "bold": "內容資料:",
+            "rest": "你在 {name} 上建立的頁面、區塊、商品與表單內容。"
+          },
+          {
+            "bold": "使用資料:",
+            "rest": "訪客點擊、曝光、來源、裝置類型等匿名統計資料。"
+          },
+          {
+            "bold": "金流資料:",
+            "rest": "信用卡資料由 Stripe 處理,我們不儲存完整卡號。"
+          }
+        ]
+      },
+      {
+        "title": "2. 資料的使用方式",
+        "items": [
+          "提供、維運並改善 {name} 的產品與服務",
+          "處理訂單、發票、退款與客戶支援",
+          "傳送產品更新、重要公告與行銷訊息(可隨時取消訂閱)",
+          "偵測詐欺、濫用行為並維護平台安全"
+        ]
+      },
+      {
+        "title": "3. 資料分享",
+        "body": "我們不會販售你的個人資料。僅在以下情況會與第三方分享資料:",
+        "items": [
+          "金流處理(Stripe)",
+          "雲端服務商(Vercel、資料庫供應商)",
+          "法律要求或主管機關依法請求時"
+        ]
+      },
+      {
+        "title": "4. 你的權利",
+        "body": "你可以隨時查閱、更正、下載或刪除你的個人資料。如需行使上述權利,請來信 ",
+        "emailTrailer": "。"
+      },
+      {
+        "title": "5. Cookie 使用",
+        "body": "我們使用 Cookie 與類似技術來維持登入狀態、記錄使用者偏好以及分析網站流量。你可以透過瀏覽器設定管理或停用 Cookie。"
+      },
+      {
+        "title": "6. 政策更新",
+        "body": "我們可能會不時更新本政策。重大變更會透過 Email 或網站公告通知。繼續使用 {name} 即視為同意修訂後的條款。"
+      },
+      {
+        "title": "7. 聯絡我們",
+        "body": "若對本隱私權政策有任何疑問,請來信 ",
+        "emailTrailer": "。"
+      }
     ]
   },
-
   "about": {
     "metaTitle": "關於我們",
     "metaDescription": "Beam 是專為中文創作者打造的 Link in Bio 工具。我們相信每位創作者都值得擁有一個能整合社群、販售商品、經營粉絲關係的專屬頁面。",
@@ -246,10 +412,22 @@
     "missionBody": "讓中文創作者可以在 30 秒內建立屬於自己的品牌頁面,並且從一開始就具備販售數位商品、蒐集名單、追蹤數據的完整能力——而不需要付費訂閱就能享用核心功能。",
     "whyTitle": "為什麼選擇 {name}?",
     "whyItems": [
-      { "bold": "中文原生體驗。", "rest": "介面、客服、金流、發票全部在地化,不用為了一個 bio 連結頁面跟美國客服用英文吵。" },
-      { "bold": "永久免費方案。", "rest": "核心功能不藏在付費牆後。Free 方案就能建立頁面、加上 12 個區塊、販售數位商品。" },
-      { "bold": "內建金流與 Email 名單。", "rest": "無需整合第三方服務,開箱即用 Stripe 金流與 Email 訂閱表單。" },
-      { "bold": "為數據而生。", "rest": "點擊、曝光、CTR、來源分析內建在每個方案裡,讓你真正了解粉絲行為。" }
+      {
+        "bold": "中文原生體驗。",
+        "rest": "介面、客服、金流、發票全部在地化,不用為了一個 bio 連結頁面跟美國客服用英文吵。"
+      },
+      {
+        "bold": "永久免費方案。",
+        "rest": "核心功能不藏在付費牆後。Free 方案就能建立頁面、加上 12 個區塊、販售數位商品。"
+      },
+      {
+        "bold": "內建金流與 Email 名單。",
+        "rest": "無需整合第三方服務,開箱即用 Stripe 金流與 Email 訂閱表單。"
+      },
+      {
+        "bold": "為數據而生。",
+        "rest": "點擊、曝光、CTR、來源分析內建在每個方案裡,讓你真正了解粉絲行為。"
+      }
     ],
     "nextTitle": "下一步",
     "nextBody": "準備好開始了嗎?",
@@ -258,7 +436,6 @@
     "nextLink2": "比較方案功能",
     "nextEnd": "。"
   },
-
   "contact": {
     "metaTitle": "聯絡我們",
     "metaDescription": "聯絡 {name} 團隊。產品問題、合作提案、媒體邀約,歡迎來信 {email}。",
@@ -274,7 +451,6 @@
     "businessBody": "合作提案、創作者計畫、媒體採訪邀約",
     "footer": "我們通常會在 1–2 個工作天內回覆所有來信。"
   },
-
   "demo": {
     "metaTitle": "Mia 米亞 | Beam Demo",
     "metaDescription": "一頁展示 Beam 能做的所有事 — 連結、商品、影片、表單、Podcast、合作邀約。",
@@ -285,27 +461,88 @@
       "bio": "生活美學 × 穿搭靈感 🌸 IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作邀約歡迎私訊 💌"
     },
     "main": [
-      { "title": "嗨,我是米亞 💕",                  "content": { "text": "穿搭 × 美妝 × 生活美學,陪你變成更好的自己" } },
-      { "title": "🎬 YouTube — 米亞的穿搭日記",      "content": {} },
-      { "title": "🎧 Podcast — 女生聊心事",          "content": {} },
-      { "title": "🌸 春夏穿搭企劃 — 10 套一週 Look",  "content": { "description": "平價混搭高質感,每套不超過 NT$3,000" } },
-      { "title": "米亞的穿搭公式電子書",              "content": { "description": "30 頁穿搭邏輯 + 配色指南 + 膠囊衣櫥清單。已賣出 1,200+ 份!" } },
-      { "title": "Lightroom 濾鏡預設包 — 奶茶色系",   "content": { "description": "12 款 IG 風格濾鏡,一鍵套用,讓你的照片質感 UP ✨" } },
-      { "title": "最新影片:韓國首爾 3 天穿搭 Vlog",  "content": {} },
-      { "title": "👗 蝦皮精選好物清單",               "content": {} },
-      { "title": "💄 小紅書 — 美妝真實評測",          "content": {} },
-      { "title": "💌 訂閱米亞週報",                   "content": { "placeholder": "輸入你的 Email", "buttonText": "免費訂閱", "description": "每週分享私藏好物、穿搭靈感、限時折扣碼。已有 5,600+ 訂閱者!" } },
-      { "title": "☕ Buy Me a Coffee",                "content": {} }
+      {
+        "title": "嗨,我是米亞 💕",
+        "content": {
+          "text": "穿搭 × 美妝 × 生活美學,陪你變成更好的自己"
+        }
+      },
+      {
+        "title": "🎬 YouTube — 米亞的穿搭日記",
+        "content": {}
+      },
+      {
+        "title": "🎧 Podcast — 女生聊心事",
+        "content": {}
+      },
+      {
+        "title": "🌸 春夏穿搭企劃 — 10 套一週 Look",
+        "content": {
+          "description": "平價混搭高質感,每套不超過 NT$3,000"
+        }
+      },
+      {
+        "title": "米亞的穿搭公式電子書",
+        "content": {
+          "description": "30 頁穿搭邏輯 + 配色指南 + 膠囊衣櫥清單。已賣出 1,200+ 份!"
+        }
+      },
+      {
+        "title": "Lightroom 濾鏡預設包 — 奶茶色系",
+        "content": {
+          "description": "12 款 IG 風格濾鏡,一鍵套用,讓你的照片質感 UP ✨"
+        }
+      },
+      {
+        "title": "最新影片:韓國首爾 3 天穿搭 Vlog",
+        "content": {}
+      },
+      {
+        "title": "👗 蝦皮精選好物清單",
+        "content": {}
+      },
+      {
+        "title": "💄 小紅書 — 美妝真實評測",
+        "content": {}
+      },
+      {
+        "title": "💌 訂閱米亞週報",
+        "content": {
+          "placeholder": "輸入你的 Email",
+          "buttonText": "免費訂閱",
+          "description": "每週分享私藏好物、穿搭靈感、限時折扣碼。已有 5,600+ 訂閱者!"
+        }
+      },
+      {
+        "title": "☕ Buy Me a Coffee",
+        "content": {}
+      }
     ],
     "collab": [
-      { "title": "品牌合作",                          "content": { "text": "💼 歡迎美妝、服飾、生活品牌合作洽詢" } },
-      { "title": "📊 合作數據 — IG 12 萬 / YT 8 萬 / Podcast 2 萬", "content": {} },
-      { "title": "📄 下載媒體資料包 (Media Kit)",     "content": {} },
-      { "title": "📸 過往合作案例集",                  "content": {} },
-      { "title": "📧 合作信箱 — mia@example.com",     "content": {} }
+      {
+        "title": "品牌合作",
+        "content": {
+          "text": "💼 歡迎美妝、服飾、生活品牌合作洽詢"
+        }
+      },
+      {
+        "title": "📊 合作數據 — IG 12 萬 / YT 8 萬 / Podcast 2 萬",
+        "content": {}
+      },
+      {
+        "title": "📄 下載媒體資料包 (Media Kit)",
+        "content": {}
+      },
+      {
+        "title": "📸 過往合作案例集",
+        "content": {}
+      },
+      {
+        "title": "📧 合作信箱 — mia@example.com",
+        "content": {}
+      }
     ]
   },
-
   "pricing": {
     "navSignIn": "登入 / 註冊 →",
     "heroTag": "選擇最適合你的方案",
@@ -362,55 +599,164 @@
       {
         "section": "核心功能",
         "items": [
-          { "label": "頁面數量",                                          "free": "1",      "pro": "10",    "premium": "無限" },
-          { "label": "每頁區塊數",                                        "free": "12",     "pro": "20",    "premium": "無限" },
-          { "label": "基本區塊(連結、影片、橫幅、標題、FAQ、倒數)",     "free": true,     "pro": true,    "premium": true },
-          { "label": "進階區塊(商品、Email 表單、輪播、地圖、HTML)",    "free": false,    "pro": true,    "premium": true },
-          { "label": "密碼保護頁面",                                       "free": true,     "pro": true,    "premium": true },
-          { "label": "主題預設與自訂色彩",                                 "free": true,     "pro": true,    "premium": true },
-          { "label": "排程發佈",                                            "free": true,     "pro": true,    "premium": true }
+          {
+            "label": "頁面數量",
+            "free": "1",
+            "pro": "10",
+            "premium": "無限"
+          },
+          {
+            "label": "每頁區塊數",
+            "free": "12",
+            "pro": "20",
+            "premium": "無限"
+          },
+          {
+            "label": "基本區塊(連結、影片、橫幅、標題、FAQ、倒數)",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "進階區塊(商品、Email 表單、輪播、地圖、HTML)",
+            "free": false,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "密碼保護頁面",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "主題預設與自訂色彩",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "排程發佈",
+            "free": true,
+            "pro": true,
+            "premium": true
+          }
         ]
       },
       {
         "section": "商品販售",
         "items": [
-          { "label": "可販售數位商品",                                     "free": true,     "pro": true,    "premium": true },
-          { "label": "平台抽成",                                            "free": "10%",    "pro": "5%",    "premium": "2%" },
-          { "label": "訂單管理後台",                                       "free": true,     "pro": true,    "premium": true },
-          { "label": "Stripe 金流串接",                                     "free": true,     "pro": true,    "premium": true }
+          {
+            "label": "可販售數位商品",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "平台抽成",
+            "free": "10%",
+            "pro": "5%",
+            "premium": "2%"
+          },
+          {
+            "label": "訂單管理後台",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "Stripe 金流串接",
+            "free": true,
+            "pro": true,
+            "premium": true
+          }
         ]
       },
       {
         "section": "數據分析",
         "items": [
-          { "label": "分析資料保留",                                       "free": "30 天",  "pro": "90 天", "premium": "無限" },
-          { "label": "點擊 / 曝光 / CTR",                                  "free": true,     "pro": true,    "premium": true },
-          { "label": "來源追蹤(UTM)",                                     "free": false,    "pro": true,    "premium": true },
-          { "label": "Referrer 分析",                                      "free": true,     "pro": true,    "premium": true }
+          {
+            "label": "分析資料保留",
+            "free": "30 天",
+            "pro": "90 天",
+            "premium": "無限"
+          },
+          {
+            "label": "點擊 / 曝光 / CTR",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "來源追蹤(UTM)",
+            "free": false,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "Referrer 分析",
+            "free": true,
+            "pro": true,
+            "premium": true
+          }
         ]
       },
       {
         "section": "品牌與網域",
         "items": [
-          { "label": "移除 Beam 浮水印",                                    "free": false,    "pro": true,    "premium": true },
-          { "label": "自訂 Favicon",                                        "free": false,    "pro": false,   "premium": true },
-          { "label": "自訂網域(mybrand.com)",                              "free": false,    "pro": false,   "premium": true },
-          { "label": "自訂 CSS",                                            "free": false,    "pro": false,   "premium": true }
+          {
+            "label": "移除 Beam 浮水印",
+            "free": false,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "自訂 Favicon",
+            "free": false,
+            "pro": false,
+            "premium": true
+          },
+          {
+            "label": "自訂網域(mybrand.com)",
+            "free": false,
+            "pro": false,
+            "premium": true
+          },
+          {
+            "label": "自訂 CSS",
+            "free": false,
+            "pro": false,
+            "premium": true
+          }
         ]
       },
       {
         "section": "團隊與支援",
         "items": [
-          { "label": "團隊協作成員",                                       "free": "—",      "pro": "3 人",  "premium": "無限" },
-          { "label": "電子郵件支援",                                       "free": true,     "pro": true,    "premium": true },
-          { "label": "優先客服",                                            "free": false,    "pro": false,   "premium": true }
+          {
+            "label": "團隊協作成員",
+            "free": "—",
+            "pro": "3 人",
+            "premium": "無限"
+          },
+          {
+            "label": "電子郵件支援",
+            "free": true,
+            "pro": true,
+            "premium": true
+          },
+          {
+            "label": "優先客服",
+            "free": false,
+            "pro": false,
+            "premium": true
+          }
         ]
       }
     ],
     "ctaTitle": "準備好開始了嗎?",
     "ctaBtn": "免費建立你的頁面"
   },
-
   "admin": {
     "addBlock": "新增區塊",
     "noBlocksTitle": "你的頁面是空的",
@@ -459,26 +805,24 @@
       "removePassword": "移除密碼",
       "delete": "刪除分頁"
     },
-
     "onboarding": {
       "title": "快速開始",
       "steps": {
-        "createAccount":  "建立帳號",
-        "addBlock":       "加入你的第一個連結",
-        "setProfile":     "設定大頭照和自我介紹",
-        "pickStyle":      "選一個視覺風格(切角 / 動畫 / 主題色)",
-        "share":          "分享你的頁面連結"
+        "createAccount": "建立帳號",
+        "addBlock": "加入你的第一個連結",
+        "setProfile": "設定大頭照和自我介紹",
+        "pickStyle": "選一個視覺風格(切角 / 動畫 / 主題色)",
+        "share": "分享你的頁面連結"
       },
-      "actionAdd":      "新增區塊",
+      "actionAdd": "新增區塊",
       "actionSettings": "前往設定",
       "actionAppearance": "前往外觀",
-      "actionCopy":     "複製連結"
+      "actionCopy": "複製連結"
     },
     "trialBadge": "Pro Trial {days}天",
     "darkMode": "深色模式",
     "lightMode": "淺色模式",
     "shareThisPage": "分享此頁面",
-
     "profileEditor": {
       "header": "點擊編輯個人資料與社群連結",
       "banner": "頁面橫幅(選填)",
@@ -506,7 +850,6 @@
       "socialCountPlural": "{n} 個連結",
       "cropBannerTitle": "裁切橫幅(3:1)"
     },
-
     "themeEditor": {
       "themeLabel": "主題",
       "presets": "快速套用",
@@ -568,11 +911,26 @@
       "solid": "純色",
       "gradient": "漸層",
       "layouts": {
-        "stacked":     { "label": "直式",     "desc": "單欄、窄版(預設)" },
-        "horizontal":  { "label": "橫式",     "desc": "雙欄、窄版" },
-        "fullwidth":   { "label": "滿版",     "desc": "單欄、寬版" },
-        "cards":       { "label": "小卡",     "desc": "雙欄、寬版" },
-        "heroBanner":  { "label": "Hero Banner ✨", "desc": "大圖頂版 + 雙欄(Portaly 風)" }
+        "stacked": {
+          "label": "直式",
+          "desc": "單欄、窄版(預設)"
+        },
+        "horizontal": {
+          "label": "橫式",
+          "desc": "雙欄、窄版"
+        },
+        "fullwidth": {
+          "label": "滿版",
+          "desc": "單欄、寬版"
+        },
+        "cards": {
+          "label": "小卡",
+          "desc": "雙欄、寬版"
+        },
+        "heroBanner": {
+          "label": "Hero Banner ✨",
+          "desc": "大圖頂版 + 雙欄(Portaly 風)"
+        }
       },
       "btnStyleOutline": "線框",
       "btnStyleFilled": "填滿",
@@ -599,18 +957,32 @@
         "scale": "縮放"
       },
       "panelPresets": {
-        "none":          { "label": "無底版", "desc": "內容直接在背景上" },
-        "frosted-light": { "label": "霧白",   "desc": "白色霧面玻璃" },
-        "frosted-dark":  { "label": "霧深",   "desc": "深色霧面玻璃" },
-        "brand":         { "label": "品牌色", "desc": "主色 8% 暈染" },
-        "custom":        { "label": "自訂",   "desc": "完全自訂顏色" }
+        "none": {
+          "label": "無底版",
+          "desc": "內容直接在背景上"
+        },
+        "frosted-light": {
+          "label": "霧白",
+          "desc": "白色霧面玻璃"
+        },
+        "frosted-dark": {
+          "label": "霧深",
+          "desc": "深色霧面玻璃"
+        },
+        "brand": {
+          "label": "品牌色",
+          "desc": "主色 8% 暈染"
+        },
+        "custom": {
+          "label": "自訂",
+          "desc": "完全自訂顏色"
+        }
       },
       "panelColorLabel": "顏色",
       "panelOpacityLabel": "不透明度",
       "panelBorderThin": "細邊",
       "panelShadow": "浮起陰影"
     },
-
     "addBlockModal": {
       "title": "新增區塊",
       "step1": "選擇區塊類型",
@@ -635,7 +1007,6 @@
       "bannerUrlFallback": "或貼上圖片網址 https://...",
       "platformDetected": "✓ 偵測到 {label}"
     },
-
     "editBlockModal": {
       "editPrefix": "編輯",
       "livePreview": "即時預覽",
@@ -838,7 +1209,6 @@
         "carousel": "裁切第 {n} 張圖片"
       }
     },
-
     "analytics": {
       "pageTitle": "數據分析",
       "metricClicks": "總點擊數",
@@ -855,7 +1225,6 @@
       "emptyState": "還沒有任何數據",
       "viewsLabel": "曝光"
     },
-
     "subscribers": {
       "pageTitle": "訂閱名單",
       "subtitle": "透過 Email 表單蒐集的訂閱者",
@@ -871,7 +1240,6 @@
       "colDate": "訂閱時間",
       "sourceForm": "表單"
     },
-
     "orders": {
       "pageTitle": "訂單管理",
       "subtitle": "所有透過 Stripe 金流產生的訂單記錄",
@@ -896,7 +1264,6 @@
       "statusFailed": "已取消",
       "statusRefunded": "已退款"
     },
-
     "settings": {
       "pageTitle": "帳號設定",
       "nav": {
@@ -977,9 +1344,18 @@
         "comingSoonTitle": "即將推出",
         "comingSoonHint": "Email 通知功能正在開發中,敬請期待。",
         "items": [
-          { "label": "新訂閱通知", "desc": "有人透過 Email 表單訂閱時通知你" },
-          { "label": "新訂單通知", "desc": "收到新的數位商品訂單時通知你" },
-          { "label": "每週報告", "desc": "每週一寄送過去 7 天的數據摘要" }
+          {
+            "label": "新訂閱通知",
+            "desc": "有人透過 Email 表單訂閱時通知你"
+          },
+          {
+            "label": "新訂單通知",
+            "desc": "收到新的數位商品訂單時通知你"
+          },
+          {
+            "label": "每週報告",
+            "desc": "每週一寄送過去 7 天的數據摘要"
+          }
         ]
       },
       "billing": {
@@ -1033,12 +1409,11 @@
         "deleting": "刪除中..."
       }
     },
-
     "importer": {
       "title": "從 Linktree / Portaly 匯入",
       "subtitle": "一鍵搬家,保留原有區塊與社群連結",
       "urlLabel": "貼上原本的 Linktree / Portaly 網址",
-      "urlHint": "目前支援 {linktree} 與 {portaly}",
+      "urlHint": "目前支援 {linktree}、{portaly} 與 {openlink}",
       "fetchingTitle": "正在抓取公開資料…",
       "fetchingHint": "這通常需要 3–5 秒",
       "applying": "正在匯入…",
@@ -1075,7 +1450,6 @@
       "ctaTheme": "調整外觀",
       "ctaShare": "複製連結"
     },
-
     "scheduleModal": {
       "title": "排程設定",
       "description": "設定區塊「{name}」的顯示時間範圍。在此範圍外,區塊將自動隱藏。",
@@ -1086,7 +1460,6 @@
       "cancelBtn": "取消",
       "saveBtn": "儲存排程"
     },
-
     "shareBar": {
       "copyLink": "複製連結",
       "copied": "已複製連結",
@@ -1097,7 +1470,6 @@
       "copiedShort": "已複製",
       "copyShort": "複製連結"
     },
-
     "superAdminNav": {
       "overview": "總覽",
       "users": "用戶管理",
@@ -1108,78 +1480,234 @@
       "lightMode": "淺色模式",
       "backToAdminMobile": "返回用戶後台"
     },
-
     "templates": {
       "brand-site": {
         "name": "品牌官網風",
         "description": "Hero banner + 圖文卡片 storytelling,適合 SaaS / 顧問 / 品牌",
         "blocks": [
-          { "title": "我們相信好品牌,值得被看見", "content": { "caption": "專注於數位轉型的策略合作夥伴" } },
-          { "title": "🤖 AI 顧問服務",       "content": { "description": "從策略到落地一條龍,協助你把 AI 變成真實營收。已幫 200+ 品牌成功導入。",                "ctaLabel": "了解更多" } },
-          { "title": "✨ 自動化平台",        "content": { "description": "把重複工作交給 AI,把時間還給創造力。整合 LINE / IG / Email,一鍵啟動。",            "ctaLabel": "查看方案" } },
-          { "title": "📊 數據分析",          "content": { "description": "顧客行為分析、活動成效追蹤、即時 dashboard。讓決策有根據。",                          "ctaLabel": "預約諮詢" } },
-          { "title": "訂閱我們的最新動態",    "content": { "placeholder": "輸入 Email", "buttonText": "訂閱", "description": "每月一封,精選案例 + 產品更新。" } }
+          {
+            "title": "我們相信好品牌,值得被看見",
+            "content": {
+              "caption": "專注於數位轉型的策略合作夥伴"
+            }
+          },
+          {
+            "title": "🤖 AI 顧問服務",
+            "content": {
+              "description": "從策略到落地一條龍,協助你把 AI 變成真實營收。已幫 200+ 品牌成功導入。",
+              "ctaLabel": "了解更多"
+            }
+          },
+          {
+            "title": "✨ 自動化平台",
+            "content": {
+              "description": "把重複工作交給 AI,把時間還給創造力。整合 LINE / IG / Email,一鍵啟動。",
+              "ctaLabel": "查看方案"
+            }
+          },
+          {
+            "title": "📊 數據分析",
+            "content": {
+              "description": "顧客行為分析、活動成效追蹤、即時 dashboard。讓決策有根據。",
+              "ctaLabel": "預約諮詢"
+            }
+          },
+          {
+            "title": "訂閱我們的最新動態",
+            "content": {
+              "placeholder": "輸入 Email",
+              "buttonText": "訂閱",
+              "description": "每月一封,精選案例 + 產品更新。"
+            }
+          }
         ]
       },
       "kol": {
         "name": "KOL / 創作者風",
         "description": "大圖片 hero + 雙欄圖片組合,影片 + 商品,展現作品集",
         "blocks": [
-          { "title": "生活美學 × 穿搭靈感", "content": { "caption": "IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作歡迎私訊" } },
-          { "title": "近期作品",            "content": { "cellTitles": ["春夏穿搭", "咖啡日常", "旅行紀錄", "美妝開箱"] } },
-          { "title": "🎬 YouTube 頻道",     "content": {} },
-          { "title": "☕ 請我喝杯咖啡",      "content": {} },
-          { "title": "加入我的週報名單",     "content": { "placeholder": "輸入 Email", "buttonText": "訂閱", "description": "每週分享私藏好物 + 限時折扣碼" } }
+          {
+            "title": "生活美學 × 穿搭靈感",
+            "content": {
+              "caption": "IG 12 萬追蹤 ✦ YouTube 週更 ✦ 合作歡迎私訊"
+            }
+          },
+          {
+            "title": "近期作品",
+            "content": {
+              "cellTitles": [
+                "春夏穿搭",
+                "咖啡日常",
+                "旅行紀錄",
+                "美妝開箱"
+              ]
+            }
+          },
+          {
+            "title": "🎬 YouTube 頻道",
+            "content": {}
+          },
+          {
+            "title": "☕ 請我喝杯咖啡",
+            "content": {}
+          },
+          {
+            "title": "加入我的週報名單",
+            "content": {
+              "placeholder": "輸入 Email",
+              "buttonText": "訂閱",
+              "description": "每週分享私藏好物 + 限時折扣碼"
+            }
+          }
         ]
       },
       "portfolio": {
         "name": "作品集 / 攝影風",
         "description": "極簡卡片 + 大量圖片格,適合設計師、攝影師、藝術家",
         "blocks": [
-          { "title": "Selected Works", "content": { "text": "Selected Works" } },
-          { "title": "",                "content": { "cellTitles": ["Project 01", "Project 02", "Project 03", "Project 04"] } },
-          { "title": "About",          "content": { "description": "十年累積的視覺語言,專注於品牌敘事與產品攝影。\n\n服務客戶包含 Apple、Nike、星巴克。", "ctaLabel": "CV / Portfolio" } },
-          { "title": "✉️ 合作洽詢",     "content": {} }
+          {
+            "title": "Selected Works",
+            "content": {
+              "text": "Selected Works"
+            }
+          },
+          {
+            "title": "",
+            "content": {
+              "cellTitles": [
+                "Project 01",
+                "Project 02",
+                "Project 03",
+                "Project 04"
+              ]
+            }
+          },
+          {
+            "title": "About",
+            "content": {
+              "description": "十年累積的視覺語言,專注於品牌敘事與產品攝影。\n\n服務客戶包含 Apple、Nike、星巴克。",
+              "ctaLabel": "CV / Portfolio"
+            }
+          },
+          {
+            "title": "✉️ 合作洽詢",
+            "content": {}
+          }
         ]
       },
       "creator": {
         "name": "IG / YouTube 創作者",
         "description": "社群連結 + 最新影片 + 合作邀約",
         "blocks": [
-          { "title": "主要內容",           "content": { "text": "主要內容" } },
-          { "title": "我的 YouTube 頻道",  "content": {} },
-          { "title": "最新合作 / Sponsored", "content": {} },
-          { "title": "聯絡我",             "content": { "text": "聯絡我" } },
-          { "title": "訂閱電子報",         "content": { "placeholder": "輸入你的 Email", "buttonText": "訂閱" } },
-          { "title": "商業合作邀約",       "content": {} }
+          {
+            "title": "主要內容",
+            "content": {
+              "text": "主要內容"
+            }
+          },
+          {
+            "title": "我的 YouTube 頻道",
+            "content": {}
+          },
+          {
+            "title": "最新合作 / Sponsored",
+            "content": {}
+          },
+          {
+            "title": "聯絡我",
+            "content": {
+              "text": "聯絡我"
+            }
+          },
+          {
+            "title": "訂閱電子報",
+            "content": {
+              "placeholder": "輸入你的 Email",
+              "buttonText": "訂閱"
+            }
+          },
+          {
+            "title": "商業合作邀約",
+            "content": {}
+          }
         ]
       },
       "seller": {
         "name": "線上課程 / 數位商品",
         "description": "商品列表 + 預購倒數 + 名單蒐集",
         "blocks": [
-          { "title": "🔥 限時優惠", "content": { "text": "🔥 限時優惠" } },
-          { "title": "優惠結束倒數", "content": { "label": "優惠結束倒數" } },
-          { "title": "主打商品",     "content": { "description": "替換成你的商品介紹" } },
-          { "title": "更多資源",     "content": { "text": "更多資源" } },
-          { "title": "免費資源下載",  "content": {} },
-          { "title": "訂閱新品通知",  "content": { "placeholder": "輸入 Email", "buttonText": "訂閱" } }
+          {
+            "title": "🔥 限時優惠",
+            "content": {
+              "text": "🔥 限時優惠"
+            }
+          },
+          {
+            "title": "優惠結束倒數",
+            "content": {
+              "label": "優惠結束倒數"
+            }
+          },
+          {
+            "title": "主打商品",
+            "content": {
+              "description": "替換成你的商品介紹"
+            }
+          },
+          {
+            "title": "更多資源",
+            "content": {
+              "text": "更多資源"
+            }
+          },
+          {
+            "title": "免費資源下載",
+            "content": {}
+          },
+          {
+            "title": "訂閱新品通知",
+            "content": {
+              "placeholder": "輸入 Email",
+              "buttonText": "訂閱"
+            }
+          }
         ]
       },
       "podcaster": {
         "name": "Podcast 主持人",
         "description": "收聽平台 + 訂閱 + 贊助",
         "blocks": [
-          { "title": "收聽平台",        "content": { "text": "收聽平台" } },
-          { "title": "🎵 Spotify",      "content": {} },
-          { "title": "🎧 Apple Podcasts", "content": {} },
-          { "title": "▶️ YouTube",       "content": {} },
-          { "title": "支持我們",         "content": { "text": "支持我們" } },
-          { "title": "☕ 請我們喝杯咖啡",  "content": {} }
+          {
+            "title": "收聽平台",
+            "content": {
+              "text": "收聽平台"
+            }
+          },
+          {
+            "title": "🎵 Spotify",
+            "content": {}
+          },
+          {
+            "title": "🎧 Apple Podcasts",
+            "content": {}
+          },
+          {
+            "title": "▶️ YouTube",
+            "content": {}
+          },
+          {
+            "title": "支持我們",
+            "content": {
+              "text": "支持我們"
+            }
+          },
+          {
+            "title": "☕ 請我們喝杯咖啡",
+            "content": {}
+          }
         ]
       }
     },
-
     "page": {
       "deleteBlockConfirm": "確定刪除此區塊？",
       "duplicateSuffix": "（副本）",
@@ -1205,66 +1733,111 @@
       "emptyStateSubtitle": "選一個範本快速開始 — 之後想改什麼都可以",
       "recommendedTag": "推薦",
       "loading": "載入中…",
-      "themePreviewSamples": ["我的 YouTube 頻道", "最新文章", "合作洽詢"]
+      "themePreviewSamples": [
+        "我的 YouTube 頻道",
+        "最新文章",
+        "合作洽詢"
+      ]
     },
-
     "blockTypes": {
-      "link":           { "label": "連結按鈕",   "description": "加入 IG、YouTube 等連結" },
-      "product":        { "label": "數位商品",   "description": "販售課程、模板等產品" },
-      "calendar_event": { "label": "加入日曆",   "description": "快閃、直播、團購結單" },
-      "email_form":     { "label": "Email 表單", "description": "蒐集粉絲名單" },
-      "banner":         { "label": "橫幅看板",   "description": "圖片橫幅區塊" },
-      "heading":        { "label": "標題文字",   "description": "分頁標題或說明" },
-      "video":          { "label": "影片",       "description": "嵌入 YouTube / Spotify" },
-      "countdown":      { "label": "倒數計時",   "description": "活動或限時優惠" },
-      "faq":            { "label": "FAQ 問答",   "description": "常見問題摺疊" },
-      "carousel":       { "label": "圖片輪播",   "description": "多張圖滑動展示" },
-      "image_grid":     { "label": "雙欄圖片",   "description": "兩欄式並排展示" },
-      "feature_card":   { "label": "圖文卡片",   "description": "圖左文右,storytelling 風" },
-      "map":            { "label": "地圖嵌入",   "description": "Google Maps" },
-      "embed":          { "label": "HTML 嵌入",  "description": "自訂 iframe / HTML" },
-      "social":         { "label": "社群連結",   "description": "社群平台連結" }
+      "link": {
+        "label": "連結按鈕",
+        "description": "加入 IG、YouTube 等連結"
+      },
+      "product": {
+        "label": "數位商品",
+        "description": "販售課程、模板等產品"
+      },
+      "calendar_event": {
+        "label": "加入日曆",
+        "description": "快閃、直播、團購結單"
+      },
+      "email_form": {
+        "label": "Email 表單",
+        "description": "蒐集粉絲名單"
+      },
+      "banner": {
+        "label": "橫幅看板",
+        "description": "圖片橫幅區塊"
+      },
+      "heading": {
+        "label": "標題文字",
+        "description": "分頁標題或說明"
+      },
+      "video": {
+        "label": "影片",
+        "description": "嵌入 YouTube / Spotify"
+      },
+      "countdown": {
+        "label": "倒數計時",
+        "description": "活動或限時優惠"
+      },
+      "faq": {
+        "label": "FAQ 問答",
+        "description": "常見問題摺疊"
+      },
+      "carousel": {
+        "label": "圖片輪播",
+        "description": "多張圖滑動展示"
+      },
+      "image_grid": {
+        "label": "雙欄圖片",
+        "description": "兩欄式並排展示"
+      },
+      "feature_card": {
+        "label": "圖文卡片",
+        "description": "圖左文右,storytelling 風"
+      },
+      "map": {
+        "label": "地圖嵌入",
+        "description": "Google Maps"
+      },
+      "embed": {
+        "label": "HTML 嵌入",
+        "description": "自訂 iframe / HTML"
+      },
+      "social": {
+        "label": "社群連結",
+        "description": "社群平台連結"
+      }
     }
   },
-
   "auth": {
-    "loginTitle":      "歡迎回來",
-    "loginSubtitle":   "登入管理你的 Beam 頁面",
-    "signupTitle":     "建立你的 Beam 頁面",
-    "signupSubtitle":  "選一個用戶名,我們需要的就這樣",
-    "emailLabel":      "Email",
-    "passwordLabel":   "密碼",
-    "usernameLabel":   "用戶名",
-    "usernameHelp":    "你的頁面網址會在 beam.io/<username>",
-    "submitLogin":     "登入",
-    "submitSignup":    "建立帳號",
-    "switchToSignup":  "新來的?註冊一個",
-    "switchToLogin":   "已有帳號?登入",
-
-    "brandSubtitle":            "建立你的個人傳送門",
-    "setPasswordTitle":         "設定密碼",
-    "setPasswordSubtitle":      "尚未設定密碼,請立即設定。",
-    "newPasswordLabel":         "新密碼",
-    "confirmPasswordLabel":     "確認密碼",
-    "passwordMin":              "至少 6 個字元",
-    "passwordRetype":           "再輸入一次",
-    "passwordMismatch":         "兩次密碼不一致",
-    "genericError":             "發生錯誤",
-    "submitSetPassword":        "設定密碼並登入",
-    "loginRegisterTitle":       "登入 / 註冊",
-    "usernameLabelExt":         "用戶名稱",
-    "usernameAllowedChars":     "英數字、底線、減號、點",
-    "checking":                 "檢查中…",
-    "usernameTakenSwitch":      "此用戶名已被使用 — 若是你的帳號,可繼續登入;否則請換一個",
-    "usernameReserved":         "此用戶名為系統保留,請換一個",
-    "usernameRules":            "只能使用英數、底線、減號、點,3-30 字。點不能在開頭/結尾或連續",
-    "usernameAvailable":        "✓ 可以使用",
-    "emailNote":                "(註冊用,登入可略)",
-    "emailPlaceholder":         "you@example.com",
-    "submitProceed":            "進入後台",
-    "firstTimeHint":            "首次使用?輸入用戶名和密碼即可註冊"
+    "loginTitle": "歡迎回來",
+    "loginSubtitle": "登入管理你的 Beam 頁面",
+    "signupTitle": "建立你的 Beam 頁面",
+    "signupSubtitle": "選一個用戶名,我們需要的就這樣",
+    "emailLabel": "Email",
+    "passwordLabel": "密碼",
+    "usernameLabel": "用戶名",
+    "usernameHelp": "你的頁面網址會在 beam.io/<username>",
+    "submitLogin": "登入",
+    "submitSignup": "建立帳號",
+    "switchToSignup": "新來的?註冊一個",
+    "switchToLogin": "已有帳號?登入",
+    "brandSubtitle": "建立你的個人傳送門",
+    "setPasswordTitle": "設定密碼",
+    "setPasswordSubtitle": "尚未設定密碼,請立即設定。",
+    "newPasswordLabel": "新密碼",
+    "confirmPasswordLabel": "確認密碼",
+    "passwordMin": "至少 6 個字元",
+    "passwordRetype": "再輸入一次",
+    "passwordMismatch": "兩次密碼不一致",
+    "genericError": "發生錯誤",
+    "submitSetPassword": "設定密碼並登入",
+    "loginRegisterTitle": "登入 / 註冊",
+    "usernameLabelExt": "用戶名稱",
+    "usernameAllowedChars": "英數字、底線、減號、點",
+    "checking": "檢查中…",
+    "usernameTakenSwitch": "此用戶名已被使用 — 若是你的帳號,可繼續登入;否則請換一個",
+    "usernameReserved": "此用戶名為系統保留,請換一個",
+    "usernameRules": "只能使用英數、底線、減號、點,3-30 字。點不能在開頭/結尾或連續",
+    "usernameAvailable": "✓ 可以使用",
+    "emailNote": "(註冊用,登入可略)",
+    "emailPlaceholder": "you@example.com",
+    "submitProceed": "進入後台",
+    "firstTimeHint": "首次使用?輸入用戶名和密碼即可註冊"
   },
-
   "toast": {
     "saved": "已儲存",
     "deleted": "已刪除",
@@ -1280,7 +1853,6 @@
     "saveFailedRetry": "儲存失敗,請再試一次",
     "duplicateSocial": "這個網址已經加過了,不能重複新增"
   },
-
   "superAdmin": {
     "overviewTitle": "平台總覽",
     "users": "總用戶數",
@@ -1362,23 +1934,21 @@
     "colCustomerEmail": "客戶 Email",
     "colDate": "日期"
   },
-
   "notFound": {
     "heading": "找不到頁面",
     "subheading": "這個網址還沒有人使用,趕快來搶佔吧!",
     "ctaSignup": "免費註冊",
     "ctaHome": "回首頁"
   },
-
   "errors": {
-    "unauthorized":     "請先登入",
-    "notFound":         "找不到",
-    "networkError":     "網路錯誤,請再試一次",
-    "uploadFailed":     "上傳失敗,請再試一次",
-    "saveFailed":       "儲存失敗,請再試一次",
-    "usernameTaken":    "此用戶名已被使用",
-    "usernameInvalid":  "用戶名格式不正確",
-    "duplicateSocial":  "這個網址已經加過了,不能重複新增",
-    "checkoutFailed":   "結帳失敗,請稍後再試"
+    "unauthorized": "請先登入",
+    "notFound": "找不到",
+    "networkError": "網路錯誤,請再試一次",
+    "uploadFailed": "上傳失敗,請再試一次",
+    "saveFailed": "儲存失敗,請再試一次",
+    "usernameTaken": "此用戶名已被使用",
+    "usernameInvalid": "用戶名格式不正確",
+    "duplicateSocial": "這個網址已經加過了,不能重複新增",
+    "checkoutFailed": "結帳失敗,請稍後再試"
   }
 }

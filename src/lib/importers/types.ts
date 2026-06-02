@@ -8,7 +8,7 @@
 
 import type { BlockType } from '@/types'
 
-export type ImportSource = 'linktree' | 'portaly'
+export type ImportSource = 'linktree' | 'portaly' | 'openlink'
 
 export interface ImportedProfile {
   source: ImportSource

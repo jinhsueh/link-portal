@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { importFromLinktree } from '@/lib/importers/linktree'
 import { importFromPortaly } from '@/lib/importers/portaly'
+import { importFromOpenLink } from '@/lib/importers/openlink'
 import type { ImportedProfile, ImportSource } from '@/lib/importers/types'
 
 /**
@@ -12,8 +13,17 @@ import type { ImportedProfile, ImportSource } from '@/lib/importers/types'
  * Returns an `ImportedProfile` without writing anything. The frontend shows
  * the preview to the user who then confirms via POST /api/import/apply.
  *
- * Only allows linktr.ee and portaly.cc hosts (SSRF guard).
+ * Only allows linktr.ee, portaly.cc, and openlink.* hosts (SSRF guard).
  */
+// Hostnames OpenLink might serve from. The Thai market service ships from
+// several subdomains/TLDs depending on phase (.app for the marketing site,
+// .bio for profile pages, etc.) — we whitelist all plausible ones so a
+// creator pasting any of them gets a parse rather than a "not supported"
+// error. The actual parser is host-agnostic.
+const OPENLINK_HOSTS = ['openlink.app', 'openlink.cc', 'openlink.bio', 'openlink.io']
+function isOpenLinkHost(h: string): boolean {
+  return OPENLINK_HOSTS.some(d => h === d || h.endsWith(`.${d}`))
+}
 export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -37,15 +47,17 @@ export async function POST(req: NextRequest) {
   let source: ImportSource | null = null
   if (host === 'linktr.ee' || host.endsWith('.linktr.ee')) source = 'linktree'
   else if (host === 'portaly.cc' || host.endsWith('.portaly.cc')) source = 'portaly'
+  else if (isOpenLinkHost(host)) source = 'openlink'
 
   if (!source) {
-    return NextResponse.json({ error: 'Only linktr.ee and portaly.cc are supported.' }, { status: 400 })
+    return NextResponse.json({ error: 'Only linktr.ee, portaly.cc, and openlink.* are supported.' }, { status: 400 })
   }
 
   try {
     let profile: ImportedProfile
     if (source === 'linktree') profile = await importFromLinktree(parsed.toString())
-    else profile = await importFromPortaly(parsed.toString())
+    else if (source === 'portaly') profile = await importFromPortaly(parsed.toString())
+    else profile = await importFromOpenLink(parsed.toString())
     return NextResponse.json(profile)
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Import failed.'
