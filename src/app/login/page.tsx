@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Link2, ArrowRight, Lock, Check, X } from 'lucide-react'
 import { useDict } from '@/components/i18n/DictProvider'
+import { SITE_HOST } from '@/lib/site'
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'reserved'
 
@@ -164,7 +165,7 @@ export default function LoginPage() {
                     borderRadius: 12,
                   }}>
                     <span className="px-3 py-3 text-xs border-r" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
-                      beam.io/
+                      {SITE_HOST}/
                     </span>
                     <input type="text" value={username}
                       onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}

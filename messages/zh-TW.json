@@ -1201,8 +1201,8 @@
       "selectedCount": "已選取 {n} 個區塊",
       "batchHide": "隱藏",
       "batchDelete": "刪除",
-      "emptyStateTitle": "30 秒上線你的頁面",
-      "emptyStateSubtitle": "選一個範本快速開始 — 之後想改什麼都可以",
+      "emptyStateTitle": "你想怎麼賺?",
+      "emptyStateSubtitle": "選一個對應你變現方式的起點 — 聯盟行銷、自己的商品、或品牌合作。之後都能改。",
       "recommendedTag": "推薦",
       "loading": "載入中…",
       "themePreviewSamples": ["我的 YouTube 頻道", "最新文章", "合作洽詢"]

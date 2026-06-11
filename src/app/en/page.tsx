@@ -71,13 +71,15 @@ export const metadata: Metadata = {
  * Pricing numbers come from `PLAN_PRICING` so both pages stay in sync.
  */
 
+// Income-first ordering: the three ways creators make money lead, then the
+// page-building tools that support them.
 const FEATURES = [
-  { icon: Layers,    title: 'Every block you need',     description: 'Links, banners, videos, products, forms, calendars — drag and drop to build a page that\'s truly yours.' },
-  { icon: Palette,   title: 'Theme your brand',         description: '8 presets or fully custom colors, gradient backgrounds, and button styles. Your brand, pixel-perfect.' },
-  { icon: BarChart2, title: 'Real-time analytics',      description: 'Track visitors, clicks, and top-performing blocks — and iterate on what actually works.' },
-  { icon: ShoppingBag, title: 'Sell digital products',  description: 'Stripe built-in. Sell courses, e-books, and templates directly from your page — no storefront needed.' },
-  { icon: Mail,      title: 'Grow your email list',     description: 'Embed email capture forms, own your audience, and stop renting attention from the algorithm.' },
-  { icon: FileStack, title: 'Multiple pages, one account', description: 'One account, many pages. Split by topic — courses, partnerships, personal — with named tabs.' },
+  { icon: BarChart2, title: 'Know what earns',          description: 'See which links, products, and traffic sources actually make money — cut what doesn\'t, double down on what does.' },
+  { icon: ShoppingBag, title: 'Sell your own products', description: 'Stripe built-in. Sell courses, e-books, and templates straight from your page — keep up to 98% of every sale.' },
+  { icon: Mail,      title: 'Own your audience',        description: 'Email capture forms + your own subscriber list. Stop renting attention from the algorithm — own the relationship.' },
+  { icon: FileStack, title: 'One audience per page',    description: 'Separate fans, agencies, and partnerships — each gets its own page with its own analytics. Pitch with real numbers.' },
+  { icon: Layers,    title: 'Every block you need',     description: 'Links, banners, videos, products, forms, calendars — drag and drop to build a page that converts.' },
+  { icon: Palette,   title: 'Theme your brand',         description: '8 presets or fully custom colors, gradients, and button styles. Trust drives purchase — look the part.' },
 ]
 
 const STEPS = [
@@ -225,11 +227,11 @@ export default function LandingPageEn() {
             </div>
             <h1 className="font-extrabold mb-5 leading-tight animate-fade-in-up"
               style={{ fontSize: 'clamp(32px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)', animationDelay: '0.1s' }}>
-              One link.<br />
-              <span className="text-gradient">Every fan touchpoint.</span>
+              Turn your audience<br />
+              <span className="text-gradient">into income.</span>
             </h1>
             <p className="mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in-up" style={{ fontSize: 'clamp(15px, 1.6vw, 18px)', color: 'var(--color-text-secondary)', lineHeight: 1.7, animationDelay: '0.2s' }}>
-              Bring your Instagram, YouTube, podcast, digital products, and email list together on one page. Turn attention into income.
+              The link-in-bio that helps creators make money — sell your own products, see what actually converts, and own your audience. All from one page.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/login" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px', boxShadow: '0 8px 24px rgba(80,144,255,0.3)' }}>
@@ -463,10 +465,10 @@ export default function LandingPageEn() {
           <div className="text-center mb-14">
             <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs" style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>FEATURES</span>
             <h2 className="font-bold" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-              Everything creators need
+              Everything creators need to earn
             </h2>
             <p className="mt-4 max-w-lg mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-              Not just a link page — your personal brand hub.
+              Not just a link page — a system for turning your audience into income.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1200,8 +1200,8 @@
       "selectedCount": "เลือก {n} บล็อก",
       "batchHide": "ซ่อน",
       "batchDelete": "ลบ",
-      "emptyStateTitle": "ทำให้หน้าพร้อมใช้ใน 30 วินาที",
-      "emptyStateSubtitle": "เลือกเทมเพลตเพื่อเริ่มต้น — แก้ไขทุกอย่างได้ในภายหลัง",
+      "emptyStateTitle": "คุณอยากหารายได้แบบไหน?",
+      "emptyStateSubtitle": "เลือกจุดเริ่มต้นตามวิธีหารายได้ของคุณ — affiliate, สินค้าของตัวเอง, หรือร่วมงานแบรนด์ แก้ไขทีหลังได้",
       "recommendedTag": "แนะนำ",
       "loading": "กำลังโหลด…",
       "themePreviewSamples": ["ช่อง YouTube ของฉัน", "บทความล่าสุด", "ติดต่อร่วมงาน"]

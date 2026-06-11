@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Save, Download, User, Lock, Bell, AlertTriangle, Trash2, Plus, Users, ChevronDown, CreditCard, Sparkles } from 'lucide-react'
 import { AdminShell } from '@/components/admin/AdminShell'
 import { PLAN_PRICING } from '@/lib/plan'
+import { SITE_URL, SITE_HOST } from '@/lib/site'
 import { useDict } from '@/components/i18n/DictProvider'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 
@@ -130,7 +131,7 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
   const [saved, setSaved] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [qrReady, setQrReady] = useState(false)
-  const pageUrl = `https://link-portal-eight.vercel.app/${user.username}`
+  const pageUrl = `${SITE_URL}/${user.username}`
 
   // Username editing — kept separate from email save because changing the
   // URL has bigger consequences (old links 404, share images cached).
@@ -240,7 +241,7 @@ function AccountTab({ user, onUpdate }: { user: UserData; onUpdate: (u: UserData
                 }}>
                   <span className="px-2 py-1.5 text-xs border-r"
                     style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
-                    beam.io/
+                    {SITE_HOST}/
                   </span>
                   <input value={newUsername}
                     onChange={e => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}

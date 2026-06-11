@@ -46,13 +46,14 @@ export const metadata: Metadata = {
   },
 }
 
+// 變現優先排序:三種賺錢方式擺最前,再來才是支撐它們的頁面工具。
 const FEATURES = [
-  { icon: Layers,      title: '十二種區塊類型',     description: '連結、橫幅、影片、商品、表單、日曆⋯⋯ 拖放排列,做出真正屬於你的頁面。' },
-  { icon: Palette,     title: '主題自訂',           description: '8 款預設主題一鍵套用,或自訂色彩、漸層背景、按鈕風格。品牌風格,逐像素掌控。' },
-  { icon: BarChart2,   title: '即時數據追蹤',       description: '掌握訪客數、點擊率、熱門連結 — 用數據優化你的每一個區塊。' },
-  { icon: ShoppingBag, title: '販售數位商品',       description: '內建 Stripe 金流,直接在頁面上販售課程、電子書、模板,不用架站、免抽成上限。' },
-  { icon: Mail,        title: '蒐集粉絲名單',       description: '嵌入 Email 訂閱表單,擁有自己的私域流量,擺脫平台演算法束縛。' },
-  { icon: FileStack,   title: '多分頁管理',         description: '一個帳號多個頁面,用分頁標籤分類內容 — 課程、合作、個人,一次管好。' },
+  { icon: BarChart2,   title: '看清什麼在賺錢',     description: '哪些連結、商品、流量來源真的有賺 — 砍掉沒效的,加碼有效的。' },
+  { icon: ShoppingBag, title: '賣你自己的商品',     description: '內建 Stripe,直接在頁面賣課程、電子書、模板 — 每筆最高留存 98%,不用架站。' },
+  { icon: Mail,        title: '擁有你的受眾',       description: 'Email 訂閱表單 + 自己的名單。擺脫向演算法租流量,把粉絲關係握在自己手裡。' },
+  { icon: FileStack,   title: '一個受眾一個分頁',   description: '粉絲、agency、合作分開 — 各自有頁面、各自有數據。談合作時拿得出真實數字。' },
+  { icon: Layers,      title: '你需要的所有區塊',   description: '連結、橫幅、影片、商品、表單、日曆 — 拖放做出會轉換的頁面。' },
+  { icon: Palette,     title: '為品牌設計',         description: '8 款預設或完全自訂色彩、漸層、按鈕風格。信任帶動購買,門面要對。' },
 ]
 
 const STEPS = [
@@ -200,11 +201,11 @@ export default function LandingPage() {
             </div>
             <h1 className="font-extrabold mb-5 leading-tight animate-fade-in-up"
               style={{ fontSize: 'clamp(28px, 6vw, 60px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)', animationDelay: '0.1s', wordBreak: 'keep-all' }}>
-              一個連結,<br />
-              <span className="text-gradient">整合所有粉絲觸點</span>
+              把你的受眾,<br />
+              <span className="text-gradient">變成收入</span>
             </h1>
             <p className="mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in-up" style={{ fontSize: 'clamp(15px, 1.6vw, 18px)', color: 'var(--color-text-secondary)', lineHeight: 1.7, animationDelay: '0.2s' }}>
-              把 IG Bio、YouTube、Podcast、數位商品、粉絲名單,全部整合在一個頁面。讓粉絲找到你,讓流量變現金。
+              幫創作者賺錢的 link-in-bio — 賣自己的商品、看清什麼真的有轉換、擁有自己的受眾。全部在一個頁面搞定。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/login" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px', boxShadow: '0 8px 24px rgba(80,144,255,0.3)' }}>
@@ -438,10 +439,10 @@ export default function LandingPage() {
           <div className="text-center mb-14">
             <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs" style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>FEATURES</span>
             <h2 className="font-bold" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display), var(--font-cjk)' }}>
-              一站式創作者工具
+              創作者賺錢需要的一切
             </h2>
             <p className="mt-4 max-w-lg mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-              不只是連結頁面,更是你的個人品牌中心。
+              不只是連結頁面,而是把受眾變成收入的系統。
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

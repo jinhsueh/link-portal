@@ -65,13 +65,14 @@ export const metadata: Metadata = {
  * `PLAN_PRICING` so all locale pages stay in sync.
  */
 
+// เรียงแบบรายได้มาก่อน: 3 วิธีหาเงินอยู่บนสุด ตามด้วยเครื่องมือสร้างหน้า
 const FEATURES = [
-  { icon: Layers,    title: 'บล็อกครบทุกแบบที่ต้องใช้', description: 'ลิงก์ แบนเนอร์ วิดีโอ สินค้า ฟอร์ม ปฏิทิน — ลากวางเพื่อสร้างหน้าที่เป็นคุณจริง ๆ' },
-  { icon: Palette,   title: 'ปรับธีมให้ตรงแบรนด์',     description: '8 พรีเซ็ตหรือคัสตอมสีได้ทั้งหมด พื้นหลังไล่เฉด สไตล์ปุ่ม แบรนด์ของคุณ pixel-perfect' },
-  { icon: BarChart2, title: 'วิเคราะห์เรียลไทม์',       description: 'ติดตามผู้เข้าชม คลิก บล็อกยอดนิยม — ปรับตามข้อมูลจริงที่เวิร์ค' },
-  { icon: ShoppingBag, title: 'ขายสินค้าดิจิทัล',       description: 'Stripe ในตัว ขายคอร์ส e-book และเทมเพลตจากหน้าคุณตรง ๆ ไม่ต้องเปิดร้านค้า' },
-  { icon: Mail,      title: 'สร้าง email list',         description: 'ฝังฟอร์มเก็บอีเมล เป็นเจ้าของผู้ติดตามของคุณ เลิกเช่าความสนใจจาก algorithm' },
-  { icon: FileStack, title: 'หลายหน้า บัญชีเดียว',       description: 'บัญชีเดียว หลายหน้า แบ่งตามหัวข้อ — คอร์ส คอลแลบ ส่วนตัว ด้วย tab ที่ตั้งชื่อได้' },
+  { icon: BarChart2, title: 'รู้ว่าอะไรทำเงิน',         description: 'ดูว่าลิงก์ สินค้า และที่มาของทราฟฟิกไหนทำเงินจริง — ตัดที่ไม่เวิร์ค ทุ่มกับที่เวิร์ค' },
+  { icon: ShoppingBag, title: 'ขายสินค้าของตัวเอง',     description: 'Stripe ในตัว ขายคอร์ส e-book เทมเพลตจากหน้าคุณตรง ๆ เก็บได้สูงสุด 98% ทุกการขาย' },
+  { icon: Mail,      title: 'เป็นเจ้าของผู้ติดตาม',     description: 'ฟอร์มเก็บอีเมล + รายชื่อของคุณเอง เลิกเช่าความสนใจจาก algorithm เป็นเจ้าของความสัมพันธ์' },
+  { icon: FileStack, title: 'หนึ่งกลุ่มหนึ่งหน้า',       description: 'แยกแฟน เอเจนซี่ และคอลแลบ — แต่ละหน้ามีข้อมูลวิเคราะห์ของตัวเอง เสนองานด้วยตัวเลขจริง' },
+  { icon: Layers,    title: 'บล็อกครบทุกแบบ',           description: 'ลิงก์ แบนเนอร์ วิดีโอ สินค้า ฟอร์ม ปฏิทิน — ลากวางสร้างหน้าที่เปลี่ยนเป็นยอดขาย' },
+  { icon: Palette,   title: 'ออกแบบให้ตรงแบรนด์',       description: '8 พรีเซ็ตหรือคัสตอมสี ไล่เฉด สไตล์ปุ่ม ความน่าเชื่อถือนำไปสู่การซื้อ หน้าต้องดูดี' },
 ]
 
 const STEPS = [
@@ -219,11 +220,11 @@ export default function LandingPageTh() {
             </div>
             <h1 className="font-extrabold mb-5 leading-tight animate-fade-in-up"
               style={{ fontSize: 'clamp(32px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)', animationDelay: '0.1s' }}>
-              ลิงก์เดียว<br />
-              <span className="text-gradient">เชื่อมทุก touchpoint กับแฟน</span>
+              เปลี่ยนผู้ติดตาม<br />
+              <span className="text-gradient">ให้เป็นรายได้</span>
             </h1>
             <p className="mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in-up" style={{ fontSize: 'clamp(15px, 1.6vw, 18px)', color: 'var(--color-text-secondary)', lineHeight: 1.7, animationDelay: '0.2s' }}>
-              รวม Instagram, YouTube, podcast, สินค้าดิจิทัล และ email list มาไว้ในหน้าเดียว เปลี่ยน attention เป็นรายได้
+              link-in-bio ที่ช่วยครีเอเตอร์หาเงิน — ขายสินค้าของตัวเอง ดูว่าอะไรเปลี่ยนเป็นยอดขายจริง และเป็นเจ้าของผู้ติดตาม ทั้งหมดในหน้าเดียว
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/login" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px', boxShadow: '0 8px 24px rgba(80,144,255,0.3)' }}>
@@ -457,10 +458,10 @@ export default function LandingPageTh() {
           <div className="text-center mb-14">
             <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs" style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>ฟีเจอร์</span>
             <h2 className="font-bold" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-              ทุกอย่างที่ครีเอเตอร์ต้องการ
+              ทุกอย่างที่ครีเอเตอร์ต้องใช้เพื่อหาเงิน
             </h2>
             <p className="mt-4 max-w-lg mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-              ไม่ใช่แค่หน้า link — แต่เป็นบ้านของแบรนด์ส่วนตัวของคุณ
+              ไม่ใช่แค่หน้า link — แต่เป็นระบบที่เปลี่ยนผู้ติดตามให้เป็นรายได้
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
