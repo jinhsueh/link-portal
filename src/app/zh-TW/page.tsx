@@ -10,6 +10,7 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
+import { SITE_HOST } from '@/lib/site'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 
 /**
@@ -116,7 +117,7 @@ const FAQS = [
   { q: 'Beam 跟 Linktree 比起來價格如何?', a: 'Beam Pro 月費 NT$' + PLAN_PRICING.pro.monthly + ',跟 Linktree Starter 差不多 — 但你還能販售商品(5% 抽成)、3 位團隊成員、加入日曆區塊。' },
   { q: '可以販售數位商品嗎?', a: '可以,所有方案皆可。免費方案 10% 抽成、Pro 5%、Premium 2%。Stripe 處理金流,款項直接進你的帳戶。' },
   { q: '需要懂程式嗎?', a: '完全不用。所有設定都是拖放 + 即時預覽。如果你想要自訂 CSS 或 iframe,Premium 方案的 HTML 嵌入區塊都支援。' },
-  { q: '可以用自己的網域嗎?', a: 'Pro 方案會給你乾淨的 beam.io/yourname 網址。Premium 方案支援自訂網域,把你自己的域名指向你的頁面。' },
+  { q: '可以用自己的網域嗎?', a: `Pro 方案會給你乾淨的 ${SITE_HOST}/yourname 網址。Premium 方案支援自訂網域,把你自己的域名指向你的頁面。` },
 ]
 
 const COMPARISON = [
@@ -141,7 +142,7 @@ function MiniPagePreview({ name, handle, blocks, accent = '#5090FF' }: { name: s
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#EF4444' }} />
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#F59E0B' }} />
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#10B981' }} />
-        <span className="ml-2 text-[10px] font-mono" style={{ color: 'var(--color-text-muted)' }}>beam.io/{handle.replace('@', '')}</span>
+        <span className="ml-2 text-[10px] font-mono" style={{ color: 'var(--color-text-muted)' }}>{SITE_HOST}/{handle.replace('@', '')}</span>
       </div>
       <div className="p-4 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, rgba(80,144,255,0.06) 0%, transparent 60%)' }}>
         <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-2" style={{ background: accent }}>
@@ -772,7 +773,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto">
             <div className="flex items-center rounded-xl overflow-hidden w-full" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <span className="pl-4 text-sm whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>beam.io/</span>
+              <span className="pl-4 text-sm whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>{SITE_HOST}/</span>
               <input type="text" placeholder="你的名字" className="flex-1 bg-transparent border-none outline-none py-3.5 pr-4 text-white placeholder:text-white/30" style={{ fontSize: 15 }} />
             </div>
             <Link href="/login" className="btn-primary whitespace-nowrap" style={{ fontSize: 15, padding: '14px 28px', boxShadow: '0 8px 32px rgba(80,144,255,0.4)' }}>

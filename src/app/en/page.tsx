@@ -11,6 +11,7 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
+import { SITE_HOST } from '@/lib/site'
 
 // Override the Chinese metadata inherited from the root layout. Without
 // this, sharing /en on Telegram / X / FB unfurls with the Chinese title
@@ -142,7 +143,7 @@ const FAQS = [
   { q: 'How do you compare to Linktree on price?', a: 'Our Pro plan starts at NT$' + PLAN_PRICING.pro.monthly + '/mo, which is comparable to Linktree Starter — but you also get product sales (5% platform fee), team members, and the Add-to-Calendar block.' },
   { q: 'Can I sell digital products?', a: 'On every plan. Free pages can sell with a 10% platform fee. Pro drops it to 5%, Premium to 2%. Stripe handles checkout — payouts go straight to your account.' },
   { q: 'Do I need to know any code?', a: 'No. Everything is drag-and-drop with live preview. If you do want custom CSS or iframes, the HTML Embed block on Premium has you covered.' },
-  { q: 'Can I use my own domain?', a: 'Pro plans get a clean beam.io/yourname URL. Premium adds custom domain support — point your own domain at your portal.' },
+  { q: 'Can I use my own domain?', a: `Pro plans get a clean ${SITE_HOST}/yourname URL. Premium adds custom domain support — point your own domain at your portal.` },
 ]
 
 const COMPARISON = [
@@ -167,7 +168,7 @@ function MiniPagePreview({ name, handle, blocks, accent = '#5090FF' }: { name: s
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#EF4444' }} />
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#F59E0B' }} />
         <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#10B981' }} />
-        <span className="ml-2 text-[10px] font-mono" style={{ color: 'var(--color-text-muted)' }}>beam.io/{handle.replace('@', '')}</span>
+        <span className="ml-2 text-[10px] font-mono" style={{ color: 'var(--color-text-muted)' }}>{SITE_HOST}/{handle.replace('@', '')}</span>
       </div>
       <div className="p-4 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, rgba(80,144,255,0.06) 0%, transparent 60%)' }}>
         <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-2" style={{ background: accent }}>
@@ -798,7 +799,7 @@ export default function LandingPageEn() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto">
             <div className="flex items-center rounded-xl overflow-hidden w-full" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <span className="pl-4 text-sm whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>beam.io/</span>
+              <span className="pl-4 text-sm whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>{SITE_HOST}/</span>
               <input type="text" placeholder="yourname" className="flex-1 bg-transparent border-none outline-none py-3.5 pr-4 text-white placeholder:text-white/30" style={{ fontSize: 15 }} />
             </div>
             <Link href="/login" className="btn-primary whitespace-nowrap" style={{ fontSize: 15, padding: '14px 28px', boxShadow: '0 8px 32px rgba(80,144,255,0.4)' }}>
