@@ -158,11 +158,23 @@ export default function AdminPage() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user.id, pageId: activePageId, type, title, content }),
     })
-    const newBlock = await res.json()
+    // Guard the error paths BEFORE parsing — a failed POST (plan/block-limit
+    // 403, expired-session 401, 5xx) returns an { error } body with no
+    // `content` field, and the old code's JSON.parse(undefined) crashed the
+    // whole admin into the error boundary. Surface a friendly message instead.
+    if (res.status === 401) { router.push('/login'); return }
+    let newBlock: { id?: string; type?: string; title?: string; content?: string; order?: number; active?: boolean; clicks?: number; views?: number; error?: string } = {}
+    try { newBlock = await res.json() } catch { /* non-JSON body */ }
+    if (!res.ok || !newBlock.id || typeof newBlock.content !== 'string') {
+      toast.error(newBlock.error ?? '新增區塊失敗，請稍後再試')
+      return
+    }
+    let parsedContent: Record<string, unknown> = {}
+    try { parsedContent = JSON.parse(newBlock.content) } catch { /* keep empty */ }
     setBlocks(prev => [...prev, {
-      id: newBlock.id, type: newBlock.type as BlockType, title: newBlock.title,
-      content: JSON.parse(newBlock.content), order: newBlock.order,
-      active: newBlock.active, clicks: newBlock.clicks, views: newBlock.views,
+      id: newBlock.id!, type: newBlock.type as BlockType, title: newBlock.title ?? '',
+      content: parsedContent, order: newBlock.order ?? prev.length,
+      active: newBlock.active ?? true, clicks: newBlock.clicks ?? 0, views: newBlock.views ?? 0,
     }])
   }
 
@@ -211,11 +223,22 @@ export default function AdminPage() {
         content: block.content,
       }),
     })
-    const newBlock = await res.json()
+    // Same guard as handleAdd — a failed POST (plan/block-limit 403, expired
+    // session 401, 5xx) has no `content`, so JSON.parse(undefined) used to
+    // crash the whole admin. Show a friendly message instead.
+    if (res.status === 401) { router.push('/login'); return }
+    let newBlock: { id?: string; type?: string; title?: string; content?: string; order?: number; active?: boolean; error?: string } = {}
+    try { newBlock = await res.json() } catch { /* non-JSON body */ }
+    if (!res.ok || !newBlock.id || typeof newBlock.content !== 'string') {
+      toast.error(newBlock.error ?? '複製區塊失敗，請稍後再試')
+      return
+    }
+    let parsedContent: Record<string, unknown> = {}
+    try { parsedContent = JSON.parse(newBlock.content) } catch { /* keep empty */ }
     setBlocks(prev => [...prev, {
-      id: newBlock.id, type: newBlock.type as BlockType, title: newBlock.title,
-      content: JSON.parse(newBlock.content), order: newBlock.order,
-      active: newBlock.active, clicks: 0, views: 0,
+      id: newBlock.id!, type: newBlock.type as BlockType, title: newBlock.title ?? '',
+      content: parsedContent, order: newBlock.order ?? prev.length,
+      active: newBlock.active ?? true, clicks: 0, views: 0,
     }])
   }
 
