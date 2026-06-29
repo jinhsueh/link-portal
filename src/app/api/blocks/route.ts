@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   // Plan-based block limits
   const user = await prisma.user.findUnique({
     where: { id: session.id },
-    select: { plan: true, trialEndsAt: true },
+    select: { plan: true, trialEndsAt: true, username: true },
   })
   const limits = getPlanLimits(user!)
   const effectivePlan = getEffectivePlan(user!)

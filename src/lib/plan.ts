@@ -1,8 +1,18 @@
 export type PlanStatus = 'free' | 'pro_trial' | 'pro' | 'premium'
 export type EffectivePlan = 'free' | 'pro' | 'premium'
 
+/**
+ * Platform owner / flagship accounts that are always treated as premium,
+ * regardless of the `plan` column in the DB. Lets the team run their own
+ * page without a paid plan row — no production DB access needed to grant it.
+ * Callers must `select` username for this to apply (it's optional below, so
+ * call sites that don't pass it keep the plain plan-based behaviour).
+ */
+export const OWNER_USERNAMES = new Set<string>(['crescendo.lab'])
+
 /** Returns the effective plan: 'premium', 'pro' (paid or active trial), or 'free' */
-export function getEffectivePlan(user: { plan: string; trialEndsAt: Date | null }): EffectivePlan {
+export function getEffectivePlan(user: { plan: string; trialEndsAt: Date | null; username?: string }): EffectivePlan {
+  if (user.username && OWNER_USERNAMES.has(user.username)) return 'premium'
   if (user.plan === 'premium') return 'premium'
   if (user.plan === 'pro') return 'pro'
   if (user.plan === 'pro_trial' && user.trialEndsAt && new Date() < user.trialEndsAt) return 'pro'
@@ -78,7 +88,7 @@ export const PLAN_LIMITS: Record<EffectivePlan, PlanLimits> = {
 }
 
 /** Convenience helper: get limits for a user */
-export function getPlanLimits(user: { plan: string; trialEndsAt: Date | null }): PlanLimits {
+export function getPlanLimits(user: { plan: string; trialEndsAt: Date | null; username?: string }): PlanLimits {
   return PLAN_LIMITS[getEffectivePlan(user)]
 }
 
