@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 
 // 變現優先排序:三種賺錢方式擺最前,再來才是支撐它們的頁面工具。
 const FEATURES = [
-  { icon: BarChart2,   title: '看清什麼在賺錢',     description: '哪些連結、商品、流量來源真的有賺 — 砍掉沒效的,加碼有效的。' },
+  { icon: BarChart2,   title: '看清什麼在賺錢',     description: '哪些連結被點、哪些商品成交、買家從哪來 — 砍掉沒效的,加碼有效的。' },
   { icon: ShoppingBag, title: '賣你自己的商品',     description: '內建 Stripe,直接在頁面賣課程、電子書、模板 — 每筆最高留存 98%,不用架站。' },
   { icon: Mail,        title: '擁有你的受眾',       description: 'Email 訂閱表單 + 自己的名單。擺脫向演算法租流量,把粉絲關係握在自己手裡。' },
   { icon: FileStack,   title: '一個受眾一個分頁',   description: '粉絲、agency、合作分開 — 各自有頁面、各自有數據。談合作時拿得出真實數字。' },
@@ -60,7 +60,7 @@ const FEATURES = [
 const STEPS = [
   { icon: UserPlus, num: '1', title: '建立帳號',   description: '輸入用戶名,不需要信用卡,30 秒內完成註冊。' },
   { icon: Plus,     num: '2', title: '新增區塊',   description: '拖放、編輯、即時預覽,所見即所得。' },
-  { icon: Share2,   num: '3', title: '分享連結',   description: '把連結放到 IG Bio、YouTube、Threads,一個連結搞定全部。' },
+  { icon: Share2,   num: '3', title: '分享連結',   description: '把連結放到 IG Bio、YouTube、Threads — 點擊、訂單、名單,通通匯進同一個地方。' },
 ]
 
 const USE_CASES = [
@@ -112,8 +112,8 @@ const TESTIMONIALS = [
 ]
 
 const FAQS = [
-  { q: '真的有永久免費方案嗎?', a: '是的,免費方案永久可用。1 個頁面、12 個區塊、6 種核心區塊類型、商品販售(10% 平台抽成)。不需要信用卡。' },
-  { q: '可以從 Linktree 匯入嗎?', a: '可以。貼上你的 linktr.ee 或 portaly.cc 網址,Beam 會自動把你的連結、社群圖標、名稱、簡介、頭像全部抓過來,整個過程約 30 秒。' },
+  { q: '真的有永久免費方案嗎?', a: '是的,免費方案永久可用。1 個頁面、12 個區塊、8 種核心區塊類型(含商品販售與 Email 蒐集),商品販售 10% 平台抽成。不需要信用卡。' },
+  { q: '可以從 Linktree 匯入嗎?', a: '可以。貼上你的 linktr.ee、portaly.cc 或 openlink.co 網址,Beam 會自動把你的連結、社群圖標、名稱、簡介、頭像全部抓過來,整個過程約 30 秒。' },
   { q: 'Beam 跟 Linktree 比起來價格如何?', a: 'Beam Pro 月費 NT$' + PLAN_PRICING.pro.monthly + ',跟 Linktree Starter 差不多 — 但你還能販售商品(5% 抽成)、3 位團隊成員、加入日曆區塊。' },
   { q: '可以販售數位商品嗎?', a: '可以,所有方案皆可。免費方案 10% 抽成、Pro 5%、Premium 2%。Stripe 處理金流,款項直接進你的帳戶。' },
   { q: '需要懂程式嗎?', a: '完全不用。所有設定都是拖放 + 即時預覽。如果你想要自訂 CSS 或 iframe,Premium 方案的 HTML 嵌入區塊都支援。' },
@@ -126,7 +126,7 @@ const COMPARISON = [
   { feature: '販售數位商品',          us: '所有方案',       them: '需付費方案' },
   { feature: 'Email 名單蒐集',        us: '所有方案',       them: '需付費方案' },
   { feature: '加入日曆區塊',          us: true,             them: false },
-  { feature: 'Linktree / Portaly 匯入', us: true,           them: false },
+  { feature: 'Linktree / Portaly / OpenLink 匯入', us: true, them: false },
   { feature: '多分頁(Tabs)',         us: '最高無限',       them: '不支援' },
   { feature: '團隊協作成員',          us: '最高無限',       them: '受限' },
   { feature: '自訂網域',              us: 'Premium',        them: '頂級方案才有' },
@@ -651,7 +651,7 @@ export default function LandingPage() {
                 NT$0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ 永久</span>
               </p>
               <div className="flex flex-col gap-2.5 mb-6">
-                {['1 個分頁、12 個區塊', '30 天數據分析', '6 種核心區塊類型', '商品販售(10% 抽成)', 'Beam 浮水印'].map(item => (
+                {['1 個分頁、12 個區塊', '30 天數據分析', '8 種核心區塊類型', '商品販售(10% 抽成)', 'Email 名單蒐集', 'Beam 浮水印'].map(item => (
                   <div key={item} className="flex items-center gap-2">
                     <Check size={14} style={{ color: 'var(--color-primary)' }} />
                     <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
@@ -769,7 +769,7 @@ export default function LandingPage() {
             30 秒建立你的頁面
           </h2>
           <p className="mb-10" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17, lineHeight: 1.6 }}>
-            輸入你的用戶名,立即搶佔你的專屬網址。
+            搶佔你的專屬網址 — 今天就開始收訂單、收名單。
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto">
             <div className="flex items-center rounded-xl overflow-hidden w-full" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>

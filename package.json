@@ -23,6 +23,7 @@
     "@stripe/stripe-js": "^9.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/qrcode": "^1.5.6",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.3.2",
     "@vercel/og": "^0.11.1",
     "bcryptjs": "^3.0.3",

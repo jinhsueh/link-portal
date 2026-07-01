@@ -75,7 +75,7 @@ export const metadata: Metadata = {
 // Income-first ordering: the three ways creators make money lead, then the
 // page-building tools that support them.
 const FEATURES = [
-  { icon: BarChart2, title: 'Know what earns',          description: 'See which links, products, and traffic sources actually make money — cut what doesn\'t, double down on what does.' },
+  { icon: BarChart2, title: 'Know what earns',          description: 'See which links get clicked, which products sell, and where your buyers come from — cut what doesn\'t work, double down on what does.' },
   { icon: ShoppingBag, title: 'Sell your own products', description: 'Stripe built-in. Sell courses, e-books, and templates straight from your page — keep up to 98% of every sale.' },
   { icon: Mail,      title: 'Own your audience',        description: 'Email capture forms + your own subscriber list. Stop renting attention from the algorithm — own the relationship.' },
   { icon: FileStack, title: 'One audience per page',    description: 'Separate fans, agencies, and partnerships — each gets its own page with its own analytics. Pitch with real numbers.' },
@@ -86,7 +86,7 @@ const FEATURES = [
 const STEPS = [
   { icon: UserPlus, num: '1', title: 'Create an account', description: 'Pick a username. No credit card. Done in 30 seconds.' },
   { icon: Plus,     num: '2', title: 'Add your blocks',   description: 'Drag, drop, and edit. Preview updates instantly as you build.' },
-  { icon: Share2,   num: '3', title: 'Share one link',    description: 'Drop it in your IG bio, YouTube, Threads, or anywhere else. One link to rule them all.' },
+  { icon: Share2,   num: '3', title: 'Share one link',    description: 'Drop it in your IG bio, YouTube, Threads, or anywhere else. Clicks, sales, and signups start flowing to one place.' },
 ]
 
 const USE_CASES = [
@@ -138,8 +138,8 @@ const TESTIMONIALS = [
 ]
 
 const FAQS = [
-  { q: 'Is there really a free plan?', a: 'Yes — free forever. 1 page, 12 blocks, 6 core block types, and product sales with a 10% platform fee. No credit card required.' },
-  { q: 'Can I import my existing Linktree?', a: 'Yes. Paste your linktr.ee or portaly.cc URL, we pull over your links, social icons, profile name, bio, and avatar. The whole thing takes about 30 seconds.' },
+  { q: 'Is there really a free plan?', a: 'Yes — free forever. 1 page, 12 blocks, 8 core block types including product sales and email capture, with a 10% platform fee on sales. No credit card required.' },
+  { q: 'Can I import my existing Linktree?', a: 'Yes. Paste your linktr.ee, portaly.cc, or openlink.co URL, we pull over your links, social icons, profile name, bio, and avatar. The whole thing takes about 30 seconds.' },
   { q: 'How do you compare to Linktree on price?', a: 'Our Pro plan starts at NT$' + PLAN_PRICING.pro.monthly + '/mo, which is comparable to Linktree Starter — but you also get product sales (5% platform fee), team members, and the Add-to-Calendar block.' },
   { q: 'Can I sell digital products?', a: 'On every plan. Free pages can sell with a 10% platform fee. Pro drops it to 5%, Premium to 2%. Stripe handles checkout — payouts go straight to your account.' },
   { q: 'Do I need to know any code?', a: 'No. Everything is drag-and-drop with live preview. If you do want custom CSS or iframes, the HTML Embed block on Premium has you covered.' },
@@ -152,7 +152,7 @@ const COMPARISON = [
   { feature: 'Sell digital products',     us: 'All plans',         them: 'Paid only' },
   { feature: 'Email list capture',        us: 'All plans',         them: 'Paid only' },
   { feature: 'Add-to-Calendar block',     us: true,                them: false },
-  { feature: 'Linktree / Portaly import', us: true,                them: false },
+  { feature: 'Linktree / Portaly / OpenLink import', us: true,     them: false },
   { feature: 'Multi-page (tabs)',         us: 'Up to unlimited',   them: 'No' },
   { feature: 'Team members',              us: 'Up to unlimited',   them: 'Limited' },
   { feature: 'Custom domain',             us: 'Premium',           them: 'Top tier only' },
@@ -677,7 +677,7 @@ export default function LandingPageEn() {
                 NT$0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ forever</span>
               </p>
               <div className="flex flex-col gap-2.5 mb-6">
-                {['1 page, 12 blocks', '30-day analytics', '6 core block types', 'Sell products (10% fee)', 'Beam branding'].map(item => (
+                {['1 page, 12 blocks', '30-day analytics', '8 core block types', 'Sell products (10% fee)', 'Email capture', 'Beam branding'].map(item => (
                   <div key={item} className="flex items-center gap-2">
                     <Check size={14} style={{ color: 'var(--color-primary)' }} />
                     <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
@@ -795,7 +795,7 @@ export default function LandingPageEn() {
             Your page in 30 seconds
           </h2>
           <p className="mb-10" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17, lineHeight: 1.6 }}>
-            Grab your username and claim your URL today.
+            Claim your username — and start taking orders and collecting emails today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto">
             <div className="flex items-center rounded-xl overflow-hidden w-full" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>

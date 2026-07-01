@@ -21,7 +21,7 @@ import { SITE_HOST } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Beam — link-in-bio ฟรีสำหรับครีเอเตอร์',
   description:
-    'ลิงก์เดียวรวมโซเชียล สินค้า และ email list สร้างหน้าครีเอเตอร์ใน 30 วินาที ฟรี ไม่ต้องใช้บัตรเครดิต ทางเลือกของ Linktree สำหรับครีเอเตอร์ที่ใส่ใจดีไซน์',
+    'ลิงก์เดียวรวมโซเชียล สินค้า และ email list สร้างหน้าครีเอเตอร์ใน 30 วินาที ฟรี ไม่ต้องใช้บัตรเครดิต ทางเลือกของ OpenLink และ Linktree สำหรับครีเอเตอร์ที่อยากทำเงิน',
   keywords: [
     'link in bio',
     'linktree alternative',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
 
 // เรียงแบบรายได้มาก่อน: 3 วิธีหาเงินอยู่บนสุด ตามด้วยเครื่องมือสร้างหน้า
 const FEATURES = [
-  { icon: BarChart2, title: 'รู้ว่าอะไรทำเงิน',         description: 'ดูว่าลิงก์ สินค้า และที่มาของทราฟฟิกไหนทำเงินจริง — ตัดที่ไม่เวิร์ค ทุ่มกับที่เวิร์ค' },
+  { icon: BarChart2, title: 'รู้ว่าอะไรทำเงิน',         description: 'ดูว่าลิงก์ไหนถูกคลิก สินค้าไหนขายได้ และลูกค้ามาจากไหน — ตัดที่ไม่เวิร์ค ทุ่มกับที่เวิร์ค' },
   { icon: ShoppingBag, title: 'ขายสินค้าของตัวเอง',     description: 'Stripe ในตัว ขายคอร์ส e-book เทมเพลตจากหน้าคุณตรง ๆ เก็บได้สูงสุด 98% ทุกการขาย' },
   { icon: Mail,      title: 'เป็นเจ้าของผู้ติดตาม',     description: 'ฟอร์มเก็บอีเมล + รายชื่อของคุณเอง เลิกเช่าความสนใจจาก algorithm เป็นเจ้าของความสัมพันธ์' },
   { icon: FileStack, title: 'หนึ่งกลุ่มหนึ่งหน้า',       description: 'แยกแฟน เอเจนซี่ และคอลแลบ — แต่ละหน้ามีข้อมูลวิเคราะห์ของตัวเอง เสนองานด้วยตัวเลขจริง' },
@@ -79,7 +79,7 @@ const FEATURES = [
 const STEPS = [
   { icon: UserPlus, num: '1', title: 'สร้างบัญชี',     description: 'เลือก username ไม่ต้องใช้บัตรเครดิต เสร็จใน 30 วินาที' },
   { icon: Plus,     num: '2', title: 'เพิ่มบล็อกของคุณ', description: 'ลาก วาง แก้ไข พรีวิวอัปเดตทันทีระหว่างที่สร้าง' },
-  { icon: Share2,   num: '3', title: 'แชร์ลิงก์เดียว',  description: 'ใส่ใน IG bio, YouTube, Threads หรือที่ไหนก็ได้ ลิงก์เดียวจบ' },
+  { icon: Share2,   num: '3', title: 'แชร์ลิงก์เดียว',  description: 'ใส่ใน IG bio, YouTube, Threads หรือที่ไหนก็ได้ — คลิก ยอดขาย และรายชื่ออีเมลไหลรวมมาที่เดียว' },
 ]
 
 const USE_CASES = [
@@ -89,7 +89,7 @@ const USE_CASES = [
     pain: 'ลิงก์เดียวใน bio ไม่พอ — แฟนพลาดคอนเทนต์ดี ๆ',
     solution: 'รวมทุกโซเชียล วิดีโอล่าสุด และฟอร์มติดต่อไว้ในลิงก์เดียวที่พอดีกับ bio',
     cta: 'สร้างหน้าครีเอเตอร์',
-    sample: { name: 'Mia Chen', handle: '@miachen.cooks', blocks: ['วิดีโอ YouTube ล่าสุด', 'E-book สูตรอาหาร', 'ติดต่อร่วมงาน'] },
+    sample: { name: 'มิ้นท์', handle: '@mint.cooks', blocks: ['วิดีโอ YouTube ล่าสุด', 'E-book สูตรอาหาร', 'ติดต่อร่วมงาน'] },
   },
   {
     icon: ShoppingBag,
@@ -97,7 +97,7 @@ const USE_CASES = [
     pain: 'เว็บไซต์เต็มรูปแบบเกินไป ในเมื่อแค่อยากขาย',
     solution: 'ขายคอร์ส e-book เทมเพลต ด้วย Stripe checkout ในตัว ไม่ต้องสร้างเว็บ ไม่ต้องล็อกกับแพลตฟอร์ม',
     cta: 'เริ่มขาย',
-    sample: { name: 'Alex Wong', handle: '@alexcoaches', blocks: ['Notion Templates — $29', 'Coaching Call 60 นาที', 'จดหมายข่าวฟรี'] },
+    sample: { name: 'โค้ชเบส', handle: '@bas.coaches', blocks: ['Notion Templates — ฿990', 'Coaching Call 60 นาที', 'จดหมายข่าวฟรี'] },
   },
   {
     icon: Headphones,
@@ -105,7 +105,7 @@ const USE_CASES = [
     pain: 'ผู้ฟังกระจายอยู่ทั้ง Apple, Spotify, YouTube — ไม่มีบ้านที่เดียว',
     solution: 'หน้าเดียวรวมทุกแพลตฟอร์ม podcast ลิงก์สนับสนุน และสมัครรับอีเมล เจอผู้ฟังที่ไหนก็ได้',
     cta: 'สร้างหน้า podcast',
-    sample: { name: 'The Drift Show', handle: '@thedriftshow', blocks: ['ฟังบน Spotify', 'ฟังบน Apple Podcasts', 'เลี้ยงกาแฟพวกเรา'] },
+    sample: { name: 'พอดแคสต์ดริฟท์', handle: '@driftshow.th', blocks: ['ฟังบน Spotify', 'ฟังบน Apple Podcasts', 'เลี้ยงกาแฟพวกเรา'] },
   },
 ]
 
@@ -125,14 +125,14 @@ const BLOCK_TYPES = [
 ]
 
 const TESTIMONIALS = [
-  { name: 'Sarah K.',    role: 'ครีเอเตอร์ความสวยงาม ผู้ติดตาม 280K', quote: 'ย้ายจาก Linktree ใน 30 วินาทีจริง ๆ บล็อกเพิ่มในปฏิทินทำให้คนเข้าดู livestream เพิ่มประมาณ 22%', gradient: 'linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)' },
-  { name: 'Marcus L.',   role: 'ครีเอเตอร์คอร์สออนไลน์',              quote: 'ตอนนี้ทำเงินจากหน้าเพจได้มากกว่าตอนใช้ Shopify ค่าธรรมเนียม 5% บน Pro คุ้มแค่เรื่อง conversion ที่ดีขึ้น', gradient: 'linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%)' },
-  { name: 'The Bao Pod', role: 'Podcast ผู้ฟัง 45K',                    quote: 'หน้าเดียว ทุกแพลตฟอร์ม podcast พร้อมฟอร์ม newsletter ทิปสนับสนุนเพิ่มในสัปดาห์ที่เราย้ายมา', gradient: 'linear-gradient(135deg, #F6D365 0%, #FDA085 100%)' },
+  { name: 'น้องปันปัน',    role: 'บิวตี้ครีเอเตอร์ ผู้ติดตาม 280K', quote: 'ย้ายจาก OpenLink ใน 30 วินาทีจริง ๆ บล็อกเพิ่มในปฏิทินทำให้คนเข้าดู livestream เพิ่มประมาณ 22%', gradient: 'linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)' },
+  { name: 'ครูโอ๊ต',       role: 'ครีเอเตอร์คอร์สออนไลน์',              quote: 'ตอนนี้ทำเงินจากหน้าเพจได้มากกว่าตอนใช้ Shopify ค่าธรรมเนียม 5% บน Pro คุ้มแค่เรื่อง conversion ที่ดีขึ้น', gradient: 'linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%)' },
+  { name: 'พอดแคสต์ BKK', role: 'Podcast ผู้ฟัง 45K',                    quote: 'หน้าเดียว ทุกแพลตฟอร์ม podcast พร้อมฟอร์ม newsletter ทิปสนับสนุนเพิ่มในสัปดาห์ที่เราย้ายมา', gradient: 'linear-gradient(135deg, #F6D365 0%, #FDA085 100%)' },
 ]
 
 const FAQS = [
-  { q: 'มีแพ็กเกจฟรีจริง ๆ ไหม?', a: 'ใช่ — ฟรีตลอด 1 หน้า 12 บล็อก 6 ประเภทบล็อกหลัก และขายสินค้าได้ด้วยค่าธรรมเนียม 10% ไม่ต้องใช้บัตรเครดิต' },
-  { q: 'นำเข้าจาก Linktree เดิมได้ไหม?', a: 'ได้ วาง URL linktr.ee หรือ portaly.cc แล้วเราจะดึงลิงก์ ไอคอนโซเชียล ชื่อโปรไฟล์ bio และรูปอวตารมาให้ทั้งหมดในประมาณ 30 วินาที' },
+  { q: 'มีแพ็กเกจฟรีจริง ๆ ไหม?', a: 'ใช่ — ฟรีตลอด 1 หน้า 12 บล็อก 8 ประเภทบล็อกหลัก รวมขายสินค้า (ค่าธรรมเนียม 10%) และเก็บอีเมล ไม่ต้องใช้บัตรเครดิต' },
+  { q: 'นำเข้าจาก OpenLink หรือ Linktree เดิมได้ไหม?', a: 'ได้ วาง URL openlink.co, linktr.ee หรือ portaly.cc แล้วเราจะดึงลิงก์ ไอคอนโซเชียล ชื่อโปรไฟล์ bio และรูปอวตารมาให้ทั้งหมดในประมาณ 30 วินาที' },
   { q: 'ราคาเทียบกับ Linktree อย่างไร?', a: 'แพ็กเกจ Pro ของเราเริ่มที่ NT$' + PLAN_PRICING.pro.monthly + '/เดือน เทียบเท่ากับ Linktree Starter — แต่ได้ขายสินค้าด้วย (ค่าธรรมเนียม 5%) สมาชิกทีม และบล็อกเพิ่มในปฏิทิน' },
   { q: 'ขายสินค้าดิจิทัลได้ไหม?', a: 'ได้ทุกแพ็กเกจ Free ขายได้ด้วยค่าธรรมเนียม 10% Pro ลดเหลือ 5% Premium 2% Stripe จัดการ checkout เงินเข้าบัญชีคุณตรง ๆ' },
   { q: 'ต้องเขียนโค้ดเป็นไหม?', a: 'ไม่ต้อง ทุกอย่างลากวางพร้อมพรีวิวสด ถ้าอยากใส่ CSS หรือ iframe เอง บล็อก HTML Embed ใน Premium รองรับ' },
@@ -145,7 +145,7 @@ const COMPARISON = [
   { feature: 'ขายสินค้าดิจิทัล',           us: 'ทุกแพ็กเกจ',       them: 'แพ็กเกจเสียเงินเท่านั้น' },
   { feature: 'เก็บ email list',            us: 'ทุกแพ็กเกจ',       them: 'แพ็กเกจเสียเงินเท่านั้น' },
   { feature: 'บล็อกเพิ่มในปฏิทิน',         us: true,             them: false },
-  { feature: 'นำเข้าจาก Linktree / Portaly', us: true,            them: false },
+  { feature: 'นำเข้าจาก OpenLink / Linktree / Portaly', us: true, them: false },
   { feature: 'หลายหน้า (tab)',             us: 'สูงสุดไม่จำกัด',  them: 'ไม่มี' },
   { feature: 'สมาชิกทีม',                  us: 'สูงสุดไม่จำกัด',  them: 'จำกัด' },
   { feature: 'โดเมนเอง',                   us: 'Premium',         them: 'เฉพาะ tier บนสุด' },
@@ -217,7 +217,7 @@ export default function LandingPageTh() {
             <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs sm:text-sm font-semibold animate-fade-in-up"
               style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
               <Sparkles size={14} />
-              ใหม่: นำเข้าจาก Linktree &amp; เพิ่มในปฏิทิน
+              ใหม่: นำเข้าจาก OpenLink &amp; Linktree ใน 30 วินาที
             </div>
             <h1 className="font-extrabold mb-5 leading-tight animate-fade-in-up"
               style={{ fontSize: 'clamp(32px, 6vw, 64px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)', animationDelay: '0.1s' }}>
@@ -322,10 +322,10 @@ export default function LandingPageTh() {
           <div className="text-center mb-14">
             <span className="inline-block font-bold uppercase tracking-widest mb-3 text-xs" style={{ color: 'var(--color-primary)', letterSpacing: '0.15em' }}>เพิ่งเปิดตัว</span>
             <h2 className="font-bold mb-3" style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-              ย้ายจาก Linktree ใน 30 วินาที
+              ย้ายจาก OpenLink ใน 30 วินาที
             </h2>
             <p className="max-w-xl mx-auto" style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-              วาง URL เดิม เราดึงทุกลิงก์ ไอคอนโซเชียล และข้อมูลโปรไฟล์มาให้ คุณยืนยัน เสร็จ
+              วาง URL เดิมของคุณ — OpenLink, Linktree หรือ Portaly — เราดึงทุกลิงก์ ไอคอนโซเชียล และข้อมูลโปรไฟล์มาให้ คุณยืนยัน เสร็จ
             </p>
           </div>
 
@@ -339,7 +339,7 @@ export default function LandingPageTh() {
               </div>
               <div className="rounded-lg flex items-center gap-2 px-3 py-2.5 mb-3" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                 <Link2 size={14} style={{ color: 'var(--color-text-muted)' }} />
-                <span className="text-sm font-mono truncate" style={{ color: 'var(--color-text-primary)' }}>linktr.ee/yourname</span>
+                <span className="text-sm font-mono truncate" style={{ color: 'var(--color-text-primary)' }}>openlink.co/yourname</span>
               </div>
               <button className="text-xs font-bold w-full rounded-lg py-2" style={{ background: 'var(--color-primary)', color: '#fff', border: 'none' }}>
                 ดูตัวอย่างเนื้อหา →
@@ -670,7 +670,7 @@ export default function LandingPageTh() {
                 NT$0 <span className="font-normal text-sm" style={{ color: 'var(--color-text-muted)' }}>/ ตลอดไป</span>
               </p>
               <div className="flex flex-col gap-2.5 mb-6">
-                {['1 หน้า 12 บล็อก', 'วิเคราะห์ 30 วัน', 'บล็อกหลัก 6 ประเภท', 'ขายสินค้า (ค่าธรรมเนียม 10%)', 'มี watermark Beam'].map(item => (
+                {['1 หน้า 12 บล็อก', 'วิเคราะห์ 30 วัน', 'บล็อกหลัก 8 ประเภท', 'ขายสินค้า (ค่าธรรมเนียม 10%)', 'เก็บอีเมลผู้ติดตาม', 'มี watermark Beam'].map(item => (
                   <div key={item} className="flex items-center gap-2">
                     <Check size={14} style={{ color: 'var(--color-primary)' }} />
                     <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{item}</span>
@@ -788,7 +788,7 @@ export default function LandingPageTh() {
             หน้าของคุณใน 30 วินาที
           </h2>
           <p className="mb-10" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17, lineHeight: 1.6 }}>
-            จอง username และ URL ของคุณวันนี้
+            จอง username ของคุณ — แล้วเริ่มรับออเดอร์และเก็บรายชื่ออีเมลได้วันนี้
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto">
             <div className="flex items-center rounded-xl overflow-hidden w-full" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>

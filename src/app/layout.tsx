@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
+import { Analytics } from '@vercel/analytics/next'
 import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL } from '@/lib/site'
 import { ToastHost } from '@/components/ui/Toast'
 
@@ -205,6 +206,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {children}
         <ToastHost />
+        <Analytics />
       </body>
     </html>
   )

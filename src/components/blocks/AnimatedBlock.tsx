@@ -50,21 +50,22 @@ interface Props {
  */
 export function AnimatedBlock({ index, children, className, animation = 'slide-up', hover = 'lift' }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  // Skip the observer entirely when animation is off OR the browser doesn't
-  // support IntersectionObserver (very old browsers, SSR replay). Block renders
-  // fully visible from the start.
-  const skipObserver =
-    animation === 'none' || (typeof IntersectionObserver === 'undefined')
-  // Tracks whether the observer has fired. Derived `visible` below short-
-  // circuits to true when we're skipping the observer — so the effect never
-  // does the "setState to sync with an early return" anti-pattern.
-  const [observedVisible, setObservedVisible] = useState(false)
-  const visible = skipObserver || observedVisible
+  // Initial visibility must be identical on the server and the first client
+  // render (only props may influence it) or hydration mismatches. Environment
+  // checks like IntersectionObserver support happen inside the effect only.
+  const [visible, setVisible] = useState(animation === 'none')
 
   useEffect(() => {
-    if (skipObserver) return
+    if (animation === 'none') return
     const el = ref.current
     if (!el) return
+
+    if (typeof IntersectionObserver === 'undefined') {
+      // Very old browsers: reveal on the next tick (async keeps the
+      // set-state-in-effect lint rule happy).
+      const t = setTimeout(() => setVisible(true), 0)
+      return () => clearTimeout(t)
+    }
 
     const observer = new IntersectionObserver(
       entries => {
@@ -76,7 +77,7 @@ export function AnimatedBlock({ index, children, className, animation = 'slide-u
             const delay = index * 60
             // setState inside a setTimeout callback is fine — the lint rule
             // only flags synchronous setState in effect bodies.
-            const t = setTimeout(() => setObservedVisible(true), delay)
+            const t = setTimeout(() => setVisible(true), delay)
             observer.disconnect()
             // Capture the timer so the cleanup can clear it if the block
             // unmounts mid-stagger.
@@ -95,7 +96,7 @@ export function AnimatedBlock({ index, children, className, animation = 'slide-u
       const timer = (el as HTMLElement & { _entranceTimer?: ReturnType<typeof setTimeout> })._entranceTimer
       if (timer) clearTimeout(timer)
     }
-  }, [skipObserver, index])
+  }, [animation, index])
 
   // Compose the class: base (for the resting hidden state) + is-visible
   // when triggered. The CSS file owns what `block-anim-slide-up` etc. mean.
