@@ -43,6 +43,12 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [linkAnimation, setLinkAnimation] = useState<'none' | 'bounce' | 'scale'>(
     (content.animation as 'none' | 'bounce' | 'scale') ?? 'none'
   )
+  const [linkSpotlight, setLinkSpotlight] = useState(Boolean(content.spotlight))
+  const [linkBadge, setLinkBadge] = useState((content.badge as string) ?? '')
+
+  // Stat (outcome / proof card)
+  const [statValue, setStatValue] = useState((content.value as string) ?? '')
+  const [statLabel, setStatLabel] = useState((content.label as string) ?? '')
 
   // Banner
   const [imageUrl, setImageUrl] = useState((content.imageUrl as string) ?? '')
@@ -168,6 +174,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkBorderColor ? { borderColor: linkBorderColor } : {}),
           ...(linkBorderWidth !== 1 ? { borderWidth: linkBorderWidth } : {}),
           ...(linkAnimation !== 'none' ? { animation: linkAnimation } : {}),
+          ...(linkSpotlight ? { spotlight: true } : {}),
+          ...(linkSpotlight && linkBadge ? { badge: linkBadge } : {}),
         }
         break
       case 'banner':
@@ -216,6 +224,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(carouselCaption ? { caption: carouselCaption } : {}),
           ...(carouselOverlay ? { overlayText: true } : {}),
           ...(carouselOverlay && carouselOverlayPos !== 'bottom-left' ? { overlayPosition: carouselOverlayPos } : {}),
+          ...(carouselAutoplay ? { autoplay: true } : {}),
         }
         break
       case 'image_grid':
@@ -264,6 +273,9 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
         }
         break
       }
+      case 'stat':
+        newContent = { value: statValue, ...(statLabel ? { label: statLabel } : {}) }
+        break
       default:
         newContent = content
     }
@@ -302,6 +314,34 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
   const [carouselOverlayPos, setCarouselOverlayPos] = useState<'bottom-left' | 'bottom-center' | 'center'>(
     (content.overlayPosition as 'bottom-left' | 'bottom-center' | 'center') ?? 'bottom-left'
   )
+  const [carouselAutoplay, setCarouselAutoplay] = useState<boolean>(Boolean(content.autoplay))
+  // Index of the slide whose link is currently being scraped (for the
+  // "抓取" button spinner). -1 = none in flight.
+  const [carouselFetching, setCarouselFetching] = useState(-1)
+
+  // Paste a URL on a slide → pull its og:image + og:title via /api/scrape-image
+  // (same endpoint the product block uses). Fills the image and, when the
+  // caption is still empty, the title — manual edits are never overwritten.
+  const fetchCarouselMeta = async (i: number, rawUrl: string) => {
+    const link = rawUrl.trim()
+    if (!link) return
+    setCarouselFetching(i)
+    try {
+      const res = await fetch(`/api/scrape-image?url=${encodeURIComponent(link)}`)
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error ?? '抓不到這個網址的預覽'); return }
+      setCarouselImages(prev => prev.map((im, j) => j === i ? {
+        ...im,
+        url: data.image ?? im.url,
+        caption: im.caption?.trim() ? im.caption : (data.title ?? im.caption),
+      } : im))
+      toast.success('已抓取圖片與標題')
+    } catch {
+      toast.error('抓取失敗，請稍後再試')
+    } finally {
+      setCarouselFetching(-1)
+    }
+  }
 
   // Image Grid (2-column) — array of { url, linkUrl?, alt?, title? } + overlay flag
   const [gridCells, setGridCells] = useState<Array<{ url: string; linkUrl?: string; alt?: string; title?: string }>>(
@@ -364,6 +404,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     map:            dict.admin.blockTypes.map.label,
     embed:          dict.admin.blockTypes.embed.label,
     calendar_event: dict.admin.blockTypes.calendar_event.label,
+    stat:           dict.admin.blockTypes.stat.label,
   }
 
   // ── Inline preview ──
@@ -388,6 +429,8 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           ...(linkBorderColor ? { borderColor: linkBorderColor } : {}),
           ...(linkBorderWidth !== 1 ? { borderWidth: linkBorderWidth } : {}),
           ...(linkAnimation !== 'none' ? { animation: linkAnimation } : {}),
+          ...(linkSpotlight ? { spotlight: true } : {}),
+          ...(linkSpotlight && linkBadge ? { badge: linkBadge } : {}),
         }
         break
       case 'banner':
@@ -446,6 +489,7 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
             ...(carouselCaption ? { caption: carouselCaption } : {}),
             ...(carouselOverlay ? { overlayText: true } : {}),
             ...(carouselOverlay ? { overlayPosition: carouselOverlayPos } : {}),
+            ...(carouselAutoplay ? { autoplay: true } : {}),
           }
         }
         break
@@ -473,6 +517,9 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
           }
         }
         break
+      case 'stat':
+        if (statValue) previewContent = { value: statValue, ...(statLabel ? { label: statLabel } : {}) }
+        break
     }
     if (!previewContent) return null
     return {
@@ -495,9 +542,10 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
     price, currency, productDesc, productImg, productCheckoutUrl,
     targetDate, countdownLabel,
     calStart, calEnd, calTimezone, calAllDay, calLocation, calDescription, calIconUrl,
-    carouselImages, carouselCaption, carouselOverlay, carouselOverlayPos,
+    carouselImages, carouselCaption, carouselOverlay, carouselOverlayPos, carouselAutoplay,
     gridCells, gridOverlay, gridOverlayPos,
     fcImageUrl, fcDescription, fcCtaLabel, fcCtaUrl, fcImagePosition,
+    linkSpotlight, linkBadge, statValue, statLabel,
   ])
 
   return (
@@ -551,6 +599,30 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 <input value={linkDesc} onChange={e => setLinkDesc(e.target.value)}
                   placeholder={t.fields.shortDescPlaceholder} style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               </Field>
+
+              {/* Spotlight — render this link as the big gradient hero CTA.
+                  Highlighted box so it reads as a distinct "make this the star"
+                  decision rather than a buried checkbox. */}
+              <div className="space-y-3 rounded-xl p-4"
+                style={{ background: 'rgba(80,144,255,0.06)', border: '1px solid rgba(80,144,255,0.25)' }}>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={linkSpotlight}
+                    onChange={e => setLinkSpotlight(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                  <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                    設為主打卡（大型漸層 CTA）✨
+                  </span>
+                </label>
+                {linkSpotlight && (
+                  <div>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                      角標文字（選填）
+                    </label>
+                    <input value={linkBadge} onChange={e => setLinkBadge(e.target.value)}
+                      placeholder="例如：限時免費、HOT" style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                )}
+              </div>
 
               {/* Customization — flat instead of hidden in <details> because
                   these are core decisions: many users want them and burying
@@ -1064,8 +1136,18 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                         className="text-xs" style={{ color: '#E53E3E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
                     )}
                   </div>
-                  <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
-                    placeholder={t.carousel.linkPlaceholder} style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                  <div className="flex gap-2">
+                    <input value={img.linkUrl ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, linkUrl: e.target.value } : im))}
+                      placeholder={t.carousel.linkPlaceholder} style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
+                    <button type="button"
+                      onClick={() => fetchCarouselMeta(i, img.linkUrl ?? '')}
+                      disabled={!img.linkUrl?.trim() || carouselFetching === i}
+                      className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      title="從連結網址抓取圖片與標題"
+                      style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)', border: '1px solid var(--color-border)', cursor: img.linkUrl?.trim() ? 'pointer' : 'default', opacity: img.linkUrl?.trim() ? 1 : 0.5 }}>
+                      {carouselFetching === i ? '抓取中…' : '抓取圖片標題'}
+                    </button>
+                  </div>
                   <input value={img.caption ?? ''} onChange={e => setCarouselImages(prev => prev.map((im, j) => j === i ? { ...im, caption: e.target.value } : im))}
                     placeholder={t.carousel.perImageCaptionPlaceholder} style={{ ...inputStyle, padding: '8px 12px', fontSize: 13 }} onFocus={focusIn} onBlur={focusOut} />
                   {img.url && (
@@ -1085,6 +1167,14 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
                 onValueChange={setCarouselOverlay}
                 onPositionChange={setCarouselOverlayPos}
               />
+              <label className="flex items-center gap-2 cursor-pointer pt-1">
+                <input type="checkbox" checked={carouselAutoplay}
+                  onChange={e => setCarouselAutoplay(e.target.checked)}
+                  style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }} />
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  自動輪播（每 4.5 秒換一張）
+                </span>
+              </label>
             </>
           )}
 
@@ -1346,6 +1436,23 @@ export function EditBlockModal({ block, onSave, onClose }: Props) {
               <Field label={t.embed.heightLabel}>
                 <input type="number" min="100" max="800" value={embedHeight} onChange={e => setEmbedHeight(e.target.value)}
                   style={{ ...inputStyle, width: 120 }} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+            </>
+          )}
+
+          {/* ── STAT (outcome / proof card) ── */}
+          {block.type === 'stat' && (
+            <>
+              <Field label="數字 / 成效">
+                <input value={statValue} onChange={e => setStatValue(e.target.value)}
+                  required placeholder="例如：5 年、數十億＋、APAC #1、+250%"
+                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
+              </Field>
+              <Field label="說明文字（選填）">
+                <textarea value={statLabel} onChange={e => setStatLabel(e.target.value)}
+                  placeholder="例如：蟬聯 LINE 官方帳號金級技術夥伴" rows={2}
+                  style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+                  onFocus={focusIn} onBlur={focusOut} />
               </Field>
             </>
           )}

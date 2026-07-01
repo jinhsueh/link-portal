@@ -1222,7 +1222,8 @@
       "feature_card":   { "label": "図文カード",     "description": "画像左 + テキスト右のストーリー型" },
       "map":            { "label": "地図埋込",       "description": "Google Maps" },
       "embed":          { "label": "HTML 埋込",      "description": "カスタム iframe / HTML" },
-      "social":         { "label": "ソーシャル",     "description": "ソーシャルプラットフォーム" }
+      "social":         { "label": "ソーシャル",     "description": "ソーシャルプラットフォーム" },
+      "stat":           { "label": "実績数値",       "description": "主要な数字を強調" }
     }
   },
 

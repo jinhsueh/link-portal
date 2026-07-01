@@ -1223,7 +1223,8 @@
       "feature_card":   { "label": "Feature card",    "description": "Image-left + text-right storytelling" },
       "map":            { "label": "Map embed",       "description": "Google Maps" },
       "embed":          { "label": "HTML embed",      "description": "Custom iframe / HTML" },
-      "social":         { "label": "Social link",     "description": "Social platform link" }
+      "social":         { "label": "Social link",     "description": "Social platform link" },
+      "stat":           { "label": "Stat",            "description": "Highlight a key number" }
     }
   },
 

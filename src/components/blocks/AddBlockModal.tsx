@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { BlockType } from '@/types'
-import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2, CalendarPlus, LayoutGrid, Newspaper } from 'lucide-react'
+import { X, ExternalLink, Image, Video, Mail, ShoppingBag, AlignLeft, ChevronDown, Upload, Timer, HelpCircle, Images, MapPin, Code, Plus, Trash2, CalendarPlus, LayoutGrid, Newspaper, TrendingUp } from 'lucide-react'
 import { detectPlatform, getPlatformConfig } from '@/lib/social-platforms'
 import { PLATFORM_ICONS } from '@/components/ui/SocialIcon'
 import { POPULAR_TIMEZONES, detectBrowserTimezone, localToUtcIso } from '@/lib/calendar'
@@ -29,6 +29,7 @@ const MORE_TYPES: { type: BlockType; icon: React.ElementType }[] = [
   { type: 'feature_card', icon: Newspaper },
   { type: 'map',          icon: MapPin },
   { type: 'embed',        icon: Code },
+  { type: 'stat',         icon: TrendingUp },
 ]
 
 const CURRENCIES = ['NT$', 'USD', 'EUR', 'JPY', 'HKD']
@@ -118,6 +119,7 @@ export function AddBlockModal({ onAdd, onClose }: Props) {
     if (selected === 'feature_card') content = { imageUrl: '', description: '', imagePosition: 'left' }
     if (selected === 'map')        content = { query: url || title, zoom: 15 }
     if (selected === 'embed')      content = { html: url, height: 300 }
+    if (selected === 'stat')       content = { value: title }
     if (selected === 'product') {
       content = {
         price: parseFloat(price) || 0,

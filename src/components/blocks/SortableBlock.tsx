@@ -8,7 +8,7 @@ import {
   GripVertical, Trash2, Eye, EyeOff, Edit2, Copy, ExternalLink, ShoppingBag,
   Mail, Video, AlignLeft, Image, Clock, Timer, HelpCircle, Images, MapPin,
   Code, CalendarPlus, MoreHorizontal, Star, FolderInput, ChevronRight, LayoutGrid,
-  Newspaper,
+  Newspaper, TrendingUp,
 } from 'lucide-react'
 import { useDict } from '@/components/i18n/DictProvider'
 
@@ -19,6 +19,7 @@ const TYPE_ICONS: Record<BlockType, React.ElementType> = {
   feature_card: Newspaper,
   map: MapPin, embed: Code,
   calendar_event: CalendarPlus,
+  stat: TrendingUp,
 }
 
 interface Props {

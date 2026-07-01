@@ -14,6 +14,7 @@ export type BlockType =
   | 'map'
   | 'embed'
   | 'calendar_event'
+  | 'stat'
 
 /**
  * Feature card — Portaly's "image-left, text-right" horizontal layout.
@@ -85,6 +86,14 @@ export interface LinkContent {
   borderWidth?: number
   /** Hover animation. 'none' (default), 'bounce', 'scale'. */
   animation?: 'none' | 'bounce' | 'scale'
+  /**
+   * Render as a large gradient "spotlight" hero card instead of a plain link
+   * button — for the single primary CTA you want above-the-fold. Uses the
+   * theme primary colour for the gradient so it stays on-brand.
+   */
+  spotlight?: boolean
+  /** Optional pill label shown above the title on a spotlight card (e.g. "限時免費"). */
+  badge?: string
 }
 
 export interface BannerContent {
@@ -152,6 +161,8 @@ export interface CarouselContent {
   overlayText?: boolean
   /** Where the overlay text sits within each slide. Default bottom-left. */
   overlayPosition?: ImageOverlayPosition
+  /** Auto-advance slides (~4.5s). Honours prefers-reduced-motion at render. */
+  autoplay?: boolean
 }
 
 export interface MapContent {
@@ -177,8 +188,21 @@ export interface CalendarEventContent {
   iconUrl?: string
 }
 
+/**
+ * Outcome / proof "stat" card — a big number with a supporting line, used in
+ * the B2B bento layout to interleave proof points ("5 年｜LINE 金級夥伴")
+ * between product cards. `value` is freeform so it carries units and symbols
+ * (年, ＋, #1, %, x) without a separate field.
+ */
+export interface StatContent {
+  value: string
+  /** Supporting caption under the number. Supports newlines. */
+  label?: string
+}
+
 export type BlockContent =
   | LinkContent
+  | StatContent
   | BannerContent
   | VideoContent
   | EmailFormContent

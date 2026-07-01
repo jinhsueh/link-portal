@@ -181,6 +181,43 @@ export function ThemeEditor({ initialTheme, onThemeChange }: Props) {
           })}
         </div>
 
+        {/* Social-icon placement — top (header) vs bottom (after blocks). Keeps
+            above-the-fold space for the primary CTA instead of bouncing
+            visitors back out to other platforms. i18n keys fall back to zh-TW
+            until added to all locale files. */}
+        {(() => {
+          const tt = t as typeof t & {
+            socialPositionLabel?: string; socialPositionTop?: string; socialPositionBottom?: string
+          }
+          return (
+            <div className="mb-3">
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                {tt.socialPositionLabel ?? '社群圖示位置'}
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {([
+                  { value: 'top',    label: tt.socialPositionTop ?? '頂部（名稱下方）' },
+                  { value: 'bottom', label: tt.socialPositionBottom ?? '底部（連結之後）' },
+                ] as const).map(({ value, label }) => {
+                  const active = (theme.socialPosition ?? 'top') === value
+                  return (
+                    <button key={value} onClick={() => updateTheme({ socialPosition: value })}
+                      className="py-2.5 px-3 rounded-xl text-sm transition-all text-center"
+                      style={{
+                        background: active ? theme.primaryColor : 'white',
+                        color: active ? 'white' : 'var(--color-text-secondary)',
+                        border: `2px solid ${active ? theme.primaryColor : 'var(--color-border)'}`,
+                        cursor: 'pointer',
+                      }}>
+                      <span className="font-semibold">{label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Bg panel — 5 modes: 4 presets + custom. Boolean legacy values are
             normalised to strings via parseTheme, but updateTheme always writes
             string values from here on. */}

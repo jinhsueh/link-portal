@@ -1,6 +1,6 @@
 'use client'
 
-import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent, ImageOverlayPosition, FeatureCardContent } from '@/types'
+import { BlockData, CalendarEventContent, LinkContent, BannerContent, CarouselContent, VideoContent, ImageOverlayPosition, FeatureCardContent, StatContent } from '@/types'
 import { ChevronRight, ShoppingBag, Loader2, CalendarPlus, MapPin as MapPinIcon, Download } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { buildGoogleCalendarUrl, downloadIcs, formatEventDisplay } from '@/lib/calendar'
@@ -134,6 +134,50 @@ function LinkBlock({ block, pageId, btnStyle = 'outline' }: { block: BlockData; 
   const borderColor = customBorderColor
     ?? ((btnStyle === 'filled' || hasCustomBg) ? 'transparent' : 'var(--theme-border, var(--color-border))')
   const hoverBorderColor = customBorderColor ?? 'var(--theme-primary, var(--color-primary))'
+
+  // ── Spotlight: a large gradient hero card for the single primary CTA. The
+  // gradient is derived from the theme primary so it stays on-brand whatever
+  // colour the creator picks. Placed after all hooks above so hook order stays
+  // stable regardless of the spotlight flag.
+  if (content.spotlight) {
+    return (
+      <a href={ensureUrl(content.url)} target="_blank" rel="noopener noreferrer"
+        onClick={() => trackClick(block.id, pageId)}
+        className="flex items-center gap-4 w-full transition-all link-block"
+        style={{
+          padding: '18px 18px',
+          color: '#fff',
+          textDecoration: 'none',
+          ...themeShape,
+          background: 'linear-gradient(150deg, var(--theme-primary, #5090FF) 0%, color-mix(in srgb, var(--theme-primary, #5090FF) 62%, #fff) 100%)',
+          boxShadow: '0 12px 32px color-mix(in srgb, var(--theme-primary, #5090FF) 38%, transparent), inset 0 -2px 6px rgba(255,255,255,0.22)',
+          border: '1px solid rgba(255,255,255,0.4)',
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none' }}>
+        <div className="flex-1 min-w-0">
+          {content.badge && (
+            <span className="inline-block text-xs font-bold"
+              style={{ letterSpacing: '0.06em', background: 'rgba(255,255,255,0.22)', padding: '3px 10px', borderRadius: 999 }}>
+              {content.badge}
+            </span>
+          )}
+          <p className="font-bold" style={{ fontSize: 17, lineHeight: 1.35, margin: content.badge ? '8px 0 2px' : '0 0 2px' }}>
+            {block.title}
+          </p>
+          {content.description && (
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.5 }}>
+              {content.description}
+            </p>
+          )}
+        </div>
+        <span className="flex-none flex items-center justify-center"
+          style={{ width: 38, height: 38, borderRadius: '50%', background: '#fff' }}>
+          <ChevronRight size={20} style={{ color: 'var(--theme-primary, #5090FF)' }} />
+        </span>
+      </a>
+    )
+  }
 
   return (
     <a href={ensureUrl(content.url)} target="_blank" rel="noopener noreferrer"
@@ -633,6 +677,15 @@ function CarouselBlock({ block }: { block: BlockData }) {
   const content = block.content as CarouselContent
   const [current, setCurrent] = useState(0)
   const images = content.images ?? []
+  // Auto-advance when enabled. Guard on reduced-motion so we respect the
+  // visitor's OS setting. Effect sits before the early return so hook order
+  // stays stable regardless of image count.
+  useEffect(() => {
+    if (!content.autoplay || images.length <= 1) return
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => setCurrent(c => (c + 1) % images.length), 4500)
+    return () => clearInterval(id)
+  }, [content.autoplay, images.length])
   if (images.length === 0) return null
 
   const goTo = (i: number) => setCurrent((i + images.length) % images.length)
@@ -1096,6 +1149,39 @@ function CalendarEventBlock({ block, pageId }: { block: BlockData; pageId?: stri
   )
 }
 
+// Outcome / proof "stat" card — big number + supporting line on a brand-tinted
+// surface. Compact (sits in a grid cell), so in the bento layout it interleaves
+// with link/product cards. Colours derive from the theme primary so it stays
+// on-brand whatever the creator picks.
+function StatBlock({ block }: { block: BlockData }) {
+  const content = block.content as StatContent
+  if (!content.value) return null
+  return (
+    <div className="w-full h-full flex flex-col justify-center" style={{
+      ...themeShape,
+      background: 'color-mix(in srgb, var(--theme-primary, #5090FF) 10%, white)',
+      border: '1px solid color-mix(in srgb, var(--theme-primary, #5090FF) 22%, transparent)',
+      padding: '16px 16px',
+      minHeight: 112,
+    }}>
+      <div style={{
+        fontSize: 28, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.02em',
+        color: 'var(--theme-primary, #5090FF)', fontVariantNumeric: 'tabular-nums',
+      }}>
+        {content.value}
+      </div>
+      {content.label && (
+        <div className="mt-1.5" style={{
+          fontSize: 12.5, lineHeight: 1.4, whiteSpace: 'pre-line',
+          color: 'var(--theme-text-secondary, var(--color-text-secondary))',
+        }}>
+          {content.label}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; pageId?: string; btnStyle?: string }) {
   if (!block.active) return null
   switch (block.type) {
@@ -1113,6 +1199,7 @@ export function BlockRenderer({ block, pageId, btnStyle }: { block: BlockData; p
     case 'map': return <MapBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
     case 'calendar_event': return <CalendarEventBlock block={block} pageId={pageId} />
+    case 'stat': return <StatBlock block={block} />
     default: return null
   }
 }

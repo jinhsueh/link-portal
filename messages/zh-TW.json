@@ -1223,7 +1223,8 @@
       "feature_card":   { "label": "圖文卡片",   "description": "圖左文右,storytelling 風" },
       "map":            { "label": "地圖嵌入",   "description": "Google Maps" },
       "embed":          { "label": "HTML 嵌入",  "description": "自訂 iframe / HTML" },
-      "social":         { "label": "社群連結",   "description": "社群平台連結" }
+      "social":         { "label": "社群連結",   "description": "社群平台連結" },
+      "stat":           { "label": "成效數字",   "description": "亮眼數據 / 證明卡" }
     }
   },
 

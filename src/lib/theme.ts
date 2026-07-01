@@ -89,6 +89,15 @@ export interface PageTheme {
    *   notched      — top + bottom centre notch (門票 / ticket stub)
    */
   cornerStyle?: 'rounded' | 'pill' | 'square' | 'cut-tr' | 'cut-tl' | 'cut-br' | 'cut-bl' | 'cut-diagonal' | 'notched'
+
+  /**
+   * Where the social-icon row sits on the public profile.
+   *   top    — under the name/avatar in the header (default, original behaviour)
+   *   bottom — after all blocks, just above the watermark
+   * Lets creators keep the above-the-fold space for their primary CTA instead
+   * of sending visitors straight back out to other social platforms.
+   */
+  socialPosition?: 'top' | 'bottom'
 }
 
 export const DEFAULT_THEME: PageTheme = {
@@ -104,6 +113,7 @@ export const DEFAULT_THEME: PageTheme = {
   entranceAnimation: 'slide-up',
   cornerStyle: 'rounded',
   hoverAnimation: 'lift',
+  socialPosition: 'top',
 }
 
 /**

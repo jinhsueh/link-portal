@@ -1222,7 +1222,8 @@
       "feature_card":   { "label": "การ์ดภาพ+ข้อความ", "description": "ภาพซ้าย ข้อความขวา" },
       "map":            { "label": "แผนที่",           "description": "Google Maps" },
       "embed":          { "label": "HTML ฝัง",         "description": "iframe / HTML กำหนดเอง" },
-      "social":         { "label": "โซเชียล",          "description": "ลิงก์แพลตฟอร์มโซเชียล" }
+      "social":         { "label": "โซเชียล",          "description": "ลิงก์แพลตฟอร์มโซเชียล" },
+      "stat":           { "label": "ตัวเลขเด่น",          "description": "เน้นตัวเลขสำคัญ" }
     }
   },
 

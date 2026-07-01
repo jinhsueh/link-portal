@@ -107,6 +107,18 @@ export function ProfileView({
   const displayName = name ?? username
   const shareUrl = isDemo ? `https://link-portal.vercel.app/demo` : `https://link-portal.vercel.app/${username}`
 
+  // Social-icon placement (theme.socialPosition). 'top' keeps the original
+  // header row; 'bottom' moves the row below all blocks so the above-the-fold
+  // space stays reserved for the creator's primary CTA. Rendered via a single
+  // helper so the markup stays identical wherever it lands.
+  const socialPosition = theme.socialPosition ?? 'top'
+  const renderSocials = (className: string) =>
+    socialLinks.length > 0 ? (
+      <div className={className}>
+        {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
+      </div>
+    ) : null
+
   // ── Layout preset → Tailwind classes ──
   // Two axes: container width (narrow vs wide) and block grid (1-col vs 2-col).
   // Each preset is just a class string we apply at the right spot.
@@ -193,11 +205,7 @@ export function ProfileView({
               }}>
                 {displayName}
               </h1>
-              {socialLinks.length > 0 && (
-                <div className="flex flex-wrap justify-center lg:justify-start gap-2 mt-3">
-                  {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
-                </div>
-              )}
+              {socialPosition === 'top' && renderSocials('flex flex-wrap justify-center lg:justify-start gap-2 mt-3')}
             </div>
 
             {/* Share controls — hidden on mobile (we render below); on desktop
@@ -264,7 +272,11 @@ export function ProfileView({
           {/* Blocks — 2-col grid on lg with rich blocks spanning full width */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-8 pb-16">
             {blocks.map((block, i) => {
-              const fullSpan = RICH_BLOCK_TYPES.has(block.type)
+              // Headings span the full row so section labels read as dividers
+              // across the bento rather than getting stuck in one grid cell.
+              // Spotlight links are the hero CTA — never squeeze them to half.
+              const fullSpan = RICH_BLOCK_TYPES.has(block.type) || block.type === 'heading'
+                || (block.type === 'link' && !!(block.content as { spotlight?: boolean }).spotlight)
               return (
                 <AnimatedBlock key={block.id} index={i}
                   animation={theme.entranceAnimation}
@@ -275,6 +287,8 @@ export function ProfileView({
               )
             })}
           </div>
+
+          {socialPosition === 'bottom' && renderSocials('flex flex-wrap justify-center gap-2.5 mb-10')}
 
           {showWatermark && (
             <div className="pb-12 text-center">
@@ -386,12 +400,8 @@ export function ProfileView({
           )}
         </div>
 
-        {/* Social icons */}
-        {socialLinks.length > 0 && (
-          <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mb-7">
-            {socialLinks.map(l => <SocialIcon key={l.id} platform={l.platform} url={l.url} iconUrl={l.iconUrl} label={l.label} />)}
-          </div>
-        )}
+        {/* Social icons — header placement (theme.socialPosition === 'top') */}
+        {socialPosition === 'top' && renderSocials('flex flex-wrap justify-center lg:justify-start gap-2.5 mb-7')}
 
         {/* Share tools — on desktop, lives in the sidebar so the share affordance
             stays close to the profile identity. */}
@@ -455,7 +465,8 @@ export function ProfileView({
             videos/banners/carousels don't get crushed at half-width. */}
         <div className={blocksContainerClass}>
           {blocks.map((block, i) => {
-            const fullSpan = isGrid && RICH_BLOCK_TYPES.has(block.type)
+            const fullSpan = isGrid && (RICH_BLOCK_TYPES.has(block.type) || block.type === 'heading'
+              || (block.type === 'link' && !!(block.content as { spotlight?: boolean }).spotlight))
             return (
               <AnimatedBlock key={block.id} index={i}
                 animation={theme.entranceAnimation}
@@ -466,6 +477,8 @@ export function ProfileView({
             )
           })}
         </div>
+
+        {socialPosition === 'bottom' && renderSocials('flex flex-wrap justify-center gap-2.5 mt-10')}
 
         {/* Watermark */}
         {showWatermark && (
