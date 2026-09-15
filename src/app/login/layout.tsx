@@ -2,6 +2,8 @@ import { cookies, headers } from 'next/headers'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
 import { DictProvider } from '@/components/i18n/DictProvider'
+import { isGoogleEnabled } from '@/lib/oauth-google'
+import { SocialLoginProvider } from './social-login-context'
 import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 /**
@@ -28,5 +30,12 @@ async function resolveLocale(): Promise<Locale> {
 export default async function LoginLayout({ children }: { children: React.ReactNode }) {
   const locale = await resolveLocale()
   const dict = await getDictionary(locale)
-  return <DictProvider value={{ dict, locale }}>{children}</DictProvider>
+  // Runtime (not build-time) gate: the Google button only renders when the
+  // server actually has OAuth credentials configured.
+  const googleEnabled = isGoogleEnabled()
+  return (
+    <DictProvider value={{ dict, locale }}>
+      <SocialLoginProvider value={{ google: googleEnabled }}>{children}</SocialLoginProvider>
+    </DictProvider>
+  )
 }

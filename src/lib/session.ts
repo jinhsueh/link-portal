@@ -29,6 +29,15 @@ export function verifySession(token: string): string | null {
   return username
 }
 
+/** Cookie options for the login session (30 days). */
+export const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  secure: process.env.NODE_ENV === 'production',
+  path: '/',
+  maxAge: 60 * 60 * 24 * 30,
+}
+
 export async function getSession() {
   const cookieStore = await cookies()
   const token = cookieStore.get(SESSION_COOKIE)?.value

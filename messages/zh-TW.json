@@ -1264,7 +1264,15 @@
     "emailNote":                "(註冊用,登入可略)",
     "emailPlaceholder":         "you@example.com",
     "submitProceed":            "進入後台",
-    "firstTimeHint":            "首次使用?輸入用戶名和密碼即可註冊"
+    "firstTimeHint":            "首次使用?輸入用戶名和密碼即可註冊",
+    "continueWithGoogle": "使用 Google 繼續",
+    "orDivider": "或",
+    "pickUsernameTitle": "選擇你的用戶名",
+    "pickUsernameSubtitle": "已用 Google 登入：",
+    "submitPickUsername": "建立我的 Beam 頁面",
+    "oauthErrorGeneric": "Google 登入未完成，請再試一次。",
+    "oauthErrorDenied": "已取消 Google 登入。",
+    "oauthErrorBanned": "此帳號已被停用。"
   },
 
   "toast": {

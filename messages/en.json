@@ -1264,7 +1264,15 @@
     "emailNote":                "(for signup, optional for login)",
     "emailPlaceholder":         "you@example.com",
     "submitProceed":            "Continue to admin",
-    "firstTimeHint":            "First time? Just enter a username and password to sign up."
+    "firstTimeHint":            "First time? Just enter a username and password to sign up.",
+    "continueWithGoogle": "Continue with Google",
+    "orDivider": "or",
+    "pickUsernameTitle": "Pick your username",
+    "pickUsernameSubtitle": "Signed in with Google as",
+    "submitPickUsername": "Create my Beam page",
+    "oauthErrorGeneric": "Google sign-in didn't complete. Please try again.",
+    "oauthErrorDenied": "Google sign-in was cancelled.",
+    "oauthErrorBanned": "This account has been suspended."
   },
 
   "toast": {

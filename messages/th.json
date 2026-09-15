@@ -1263,7 +1263,15 @@
     "emailNote":                "(สำหรับสมัครใหม่ ลงชื่อข้ามได้)",
     "emailPlaceholder":         "you@example.com",
     "submitProceed":            "เข้าหลังบ้าน",
-    "firstTimeHint":            "ครั้งแรก? กรอก username และรหัสผ่านเพื่อสมัครใหม่"
+    "firstTimeHint":            "ครั้งแรก? กรอก username และรหัสผ่านเพื่อสมัครใหม่",
+    "continueWithGoogle": "ดำเนินการต่อด้วย Google",
+    "orDivider": "หรือ",
+    "pickUsernameTitle": "เลือก username ของคุณ",
+    "pickUsernameSubtitle": "เข้าสู่ระบบด้วย Google ในชื่อ",
+    "submitPickUsername": "สร้างเพจ Beam ของฉัน",
+    "oauthErrorGeneric": "การเข้าสู่ระบบด้วย Google ไม่สำเร็จ กรุณาลองอีกครั้ง",
+    "oauthErrorDenied": "ยกเลิกการเข้าสู่ระบบด้วย Google",
+    "oauthErrorBanned": "บัญชีนี้ถูกระงับ"
   },
 
   "toast": {

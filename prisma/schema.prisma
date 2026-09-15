@@ -36,6 +36,22 @@ model User {
   orders      Order[]
   subscribers Subscriber[]
   teamMembers TeamMember[]
+  oauthAccounts OAuthAccount[]
+}
+
+/// Social-login identity linked to a User (Google today; provider-agnostic).
+model OAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String   // "google"
+  providerAccountId String   // provider's stable subject id (Google `sub`)
+  email             String?
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model TeamMember {

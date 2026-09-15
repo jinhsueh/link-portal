@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateUsername } from '@/lib/username'
 
 /**
  * GET /api/auth/check-username?username=xxx
@@ -18,20 +19,9 @@ export async function GET(req: NextRequest) {
   if (!username) {
     return NextResponse.json({ available: false, reason: 'empty' })
   }
-  // Allow letters, digits, dot, underscore, hyphen — matches Instagram-style
-  // handles like "crescendo.lab" so users can keep brand consistency.
-  // Disallow leading/trailing/consecutive dots to keep URLs sensible.
-  if (!/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*$/.test(username) || username.length < 3 || username.length > 30) {
-    return NextResponse.json({ available: false, reason: 'invalid' })
-  }
-  // Reserved usernames — would conflict with our own routes.
-  const RESERVED = new Set([
-    'admin', 'api', 'login', 'logout', 'signup', 'register',
-    'about', 'contact', 'pricing', 'privacy', 'terms', 'demo',
-    'super-admin', 'en', 'settings', 'dashboard',
-  ])
-  if (RESERVED.has(username)) {
-    return NextResponse.json({ available: false, reason: 'reserved' })
+  const problem = validateUsername(username)
+  if (problem) {
+    return NextResponse.json({ available: false, reason: problem })
   }
 
   const existing = await prisma.user.findUnique({

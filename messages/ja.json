@@ -1263,7 +1263,15 @@
     "emailNote":                "(新規登録用、ログイン時は省略可)",
     "emailPlaceholder":         "you@example.com",
     "submitProceed":            "管理画面へ",
-    "firstTimeHint":            "はじめての方は、ユーザー名とパスワードを入力すると新規登録できます。"
+    "firstTimeHint":            "はじめての方は、ユーザー名とパスワードを入力すると新規登録できます。",
+    "continueWithGoogle": "Google で続ける",
+    "orDivider": "または",
+    "pickUsernameTitle": "ユーザー名を選択",
+    "pickUsernameSubtitle": "Google でログイン中：",
+    "submitPickUsername": "Beam ページを作成",
+    "oauthErrorGeneric": "Google ログインが完了しませんでした。もう一度お試しください。",
+    "oauthErrorDenied": "Google ログインがキャンセルされました。",
+    "oauthErrorBanned": "このアカウントは停止されています。"
   },
 
   "toast": {
