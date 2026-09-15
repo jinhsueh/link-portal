@@ -10,7 +10,7 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
-import { SITE_HOST } from '@/lib/site'
+import { SITE_HOST, OG_IMAGE } from '@/lib/site'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 
 /**
@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam — 免費 Link in Bio 工具｜創作者社群連結整合',
     description: '一個連結整合所有社群、商品、名單蒐集。免費建立,30 秒上線。',
     url: '/zh-TW',
@@ -41,6 +42,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
+    images: [OG_IMAGE],
     card: 'summary_large_image',
     title: 'Beam — 免費 Link in Bio 工具',
     description: '一個連結整合所有社群、商品、名單蒐集。免費建立,30 秒上線。',

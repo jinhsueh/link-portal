@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
 import { Analytics } from '@vercel/analytics/next'
-import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL } from '@/lib/site'
+import { SITE_URL, SITE_NAME, SOCIAL_LINKS, CONTACT_EMAIL, OG_IMAGE } from '@/lib/site'
 import { ToastHost } from '@/components/ui/Toast'
 
 const inter = Inter({
@@ -47,6 +47,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam — Free link-in-bio for creators',
     description: 'One link for every fan touchpoint. Social, products, email list — built free. 30 seconds to live.',
     url: '/',
@@ -55,6 +56,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
+    images: [OG_IMAGE],
     card: 'summary_large_image',
     title: 'Beam — Free link-in-bio for creators',
     description: 'One link for every fan touchpoint. Built free. 30 seconds to live.',

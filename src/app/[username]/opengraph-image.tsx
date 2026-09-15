@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { prisma } from '@/lib/prisma'
+import { SITE_HOST } from '@/lib/site'
 
 export const alt = 'Beam'
 export const size = { width: 1200, height: 630 }
@@ -29,6 +30,16 @@ export default async function OGImage({
   const displayName = user.name || user.username
   const initial = displayName.charAt(0).toUpperCase()
 
+  // Only embed the avatar if it's actually fetchable — a dead URL would
+  // otherwise render as an empty circle in the share card.
+  let avatarSrc: string | null = null
+  if (user.avatarUrl && /^https?:\/\//.test(user.avatarUrl)) {
+    try {
+      const head = await fetch(user.avatarUrl, { method: 'HEAD', signal: AbortSignal.timeout(2500) })
+      if (head.ok && (head.headers.get('content-type') ?? '').startsWith('image/')) avatarSrc = user.avatarUrl
+    } catch { /* fall back to initial */ }
+  }
+
   return new ImageResponse(
     <div
       style={{
@@ -43,9 +54,9 @@ export default async function OGImage({
       }}
     >
       {/* Avatar circle */}
-      {user.avatarUrl && !user.avatarUrl.startsWith('data:') ? (
+      {avatarSrc ? (
         <img
-          src={user.avatarUrl}
+          src={avatarSrc}
           alt=""
           width={120}
           height={120}
@@ -104,8 +115,13 @@ export default async function OGImage({
         </span>
       )}
 
+      {/* Profile URL */}
+      <span style={{ fontSize: 22, color: '#5090FF', fontWeight: 600, marginTop: 4 }}>
+        {SITE_HOST}/{user.username}
+      </span>
+
       {/* Branding */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
         <div
           style={{
             display: 'flex',

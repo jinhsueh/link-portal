@@ -11,7 +11,7 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
-import { SITE_HOST } from '@/lib/site'
+import { SITE_HOST, OG_IMAGE } from '@/lib/site'
 
 // Override the Chinese metadata inherited from the root layout. Without
 // this, sharing /en on Telegram / X / FB unfurls with the Chinese title
@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam — Free link-in-bio for creators',
     description:
       'One link for all your socials, products, and email list. Build it in 30 seconds — free, no credit card.',
@@ -54,6 +55,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
+    images: [OG_IMAGE],
     card: 'summary_large_image',
     title: 'Beam — Free link-in-bio for creators',
     description:

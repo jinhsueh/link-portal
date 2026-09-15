@@ -11,7 +11,7 @@ import {
   TrendingUp, ChevronDown,
 } from 'lucide-react'
 import { PLAN_PRICING } from '@/lib/plan'
-import { SITE_HOST } from '@/lib/site'
+import { SITE_HOST, OG_IMAGE } from '@/lib/site'
 
 // Thai landing page metadata — overrides root layout's English defaults so
 // that /th unfurls correctly on Telegram / X / FB with Thai title +
@@ -42,6 +42,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam — link-in-bio ฟรีสำหรับครีเอเตอร์',
     description:
       'ลิงก์เดียวรวมโซเชียล สินค้า และ email list สร้างใน 30 วินาที ฟรี ไม่ต้องใช้บัตรเครดิต',
@@ -50,6 +51,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
+    images: [OG_IMAGE],
     card: 'summary_large_image',
     title: 'Beam — link-in-bio ฟรีสำหรับครีเอเตอร์',
     description:

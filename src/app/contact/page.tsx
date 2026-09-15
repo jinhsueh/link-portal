@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { cookies, headers } from 'next/headers'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
-import { SITE_URL, SITE_NAME, CONTACT_EMAIL } from '@/lib/site'
+import { SITE_URL, SITE_NAME, CONTACT_EMAIL, OG_IMAGE } from '@/lib/site'
 import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 async function resolveLocale(): Promise<Locale> {
@@ -31,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: c.metaDescription.replace('{name}', SITE_NAME).replace('{email}', CONTACT_EMAIL),
     alternates: { canonical: '/contact' },
     openGraph: {
+      images: [OG_IMAGE],
       title: c.ogTitle.replace('{name}', SITE_NAME),
       description: c.ogDescription,
       url: '/contact',

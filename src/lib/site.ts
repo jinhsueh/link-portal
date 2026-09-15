@@ -8,10 +8,22 @@
  * never hard-code the domain.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://beam.io'
+  process.env.NEXT_PUBLIC_SITE_URL
+  // On Vercel, fall back to the project's production URL so absolute URLs in
+  // OG tags / sitemap resolve to a live host until beam.io is wired up.
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined)
+  ?? 'https://beam.io'
 ).replace(/\/$/, '')
 
 export const SITE_NAME = 'Beam'
+
+/**
+ * Brand OG image (rendered by app/opengraph-image.tsx). Pages that define
+ * their own `openGraph` object must reference this explicitly — Next.js
+ * shallow-merges `openGraph`, so a child override drops the parent's
+ * file-convention image.
+ */
+export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: 'Beam — Free link-in-bio for creators' }
 
 /** Bare host shown to users for their public profile URL (e.g. beam.io/yourname). */
 export const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST ?? 'beam.io'

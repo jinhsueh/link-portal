@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OG_IMAGE } from '@/lib/site'
 import { getDictionary } from '@/lib/i18n'
 import { LandingSimple } from '@/components/i18n/LandingSimple'
 
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam — クリエイターのための無料 link-in-bio',
     description: '1つのリンクで全SNS・商品・メールリストを集約。30秒で完成、クレカ不要。',
     url: '/ja',
@@ -30,6 +32,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
+    images: [OG_IMAGE],
     card: 'summary_large_image',
     title: 'Beam — クリエイターのための無料 link-in-bio',
     description: '1つのリンクで全SNS・商品・メールリストを集約。30秒で完成、クレカ不要。',

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
-import { SITE_URL, SITE_NAME } from '@/lib/site'
+import { SITE_URL, SITE_NAME, OG_IMAGE } from '@/lib/site'
 import { PLAN_PRICING } from '@/lib/plan'
 import { DictProvider } from '@/components/i18n/DictProvider'
 import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@/lib/i18n'
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     'Beam offers a forever-free plan, Pro at NT$159/mo, and Premium at NT$249/mo. Compare features across three plans and pick the right Link in Bio for you.',
   alternates: { canonical: '/pricing' },
   openGraph: {
+    images: [OG_IMAGE],
     title: 'Beam Pricing — Free forever',
     description: 'Free / Pro NT$159 / Premium NT$249 — compare features across the three plans.',
     url: '/pricing',
