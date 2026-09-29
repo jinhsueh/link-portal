@@ -17,7 +17,7 @@ const UA = {
   googlebot: 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
 }
 
-test('vendored module is v1.2.3', () => assert.equal(VERSION, '1.2.3'))
+test('vendored module is v1.2.4', () => assert.equal(VERSION, '1.2.4'))
 
 test('IG iOS: named app, Google blocked, not heuristic', () => {
   const i = detectInApp(UA.igIos, null)
