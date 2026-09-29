@@ -1,4 +1,4 @@
-// Types for the vendored, unmodified inapp-escape.js (v1.2.3, source of truth: ~/inapp-escape).
+// Types for the vendored, unmodified inapp-escape.js (v1.2.4, source of truth: ~/inapp-escape).
 // Update this file together with the .js whenever the module is re-vendored.
 
 export const VERSION: string;

@@ -1,10 +1,10 @@
-// inapp-escape.js v1.2.3 - detect in-app browsers where Google sign-in is blocked (403 disallowed_useragent) and
+// inapp-escape.js v1.2.4 - detect in-app browsers where Google sign-in is blocked (403 disallowed_useragent) and
 // help the user reopen the page in a real browser BEFORE OAuth starts. Dependency-free; detectInApp/buildEscapeUrl/
 // encodeCarry/decodeCarry are server-safe (buildEscapeUrl needs an absolute target or opts.currentUrl there).
 // Never spoofs the UA. One-tap schemes only where evidence is high/medium (research 2026-09-29); the rest gets
 // manual steps + copy link. Auto-redirect: opt-in, LINE only, one attempt per tab.
 
-export const VERSION = '1.2.3';
+export const VERSION = '1.2.4';
 // Query keys copied onto a custom escape target so attribution / return-to survive the browser switch.
 export const PRESERVE_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid',
   'gbraid', 'wbraid', 'fbclid', 'ref', 'partner', 'src', 'sk', 'sid', 'next', 'return_to', 'lang', 'feed', 'stay'];
@@ -148,8 +148,16 @@ function handleLanding(info, emit) {
   if (guard) pendingGuard = true;
   STRIP.forEach((k) => q.delete(k));
   if (h && !u.hash) u.hash = h;
-  try { history.replaceState(history.state, '', u.pathname + u.search + u.hash); } catch { /* ignore */ }
-  if (src && !info.inApp) { landing = { from: src, method }; ss('ia_landed', src); emit('escape_landed', { from: src, method, os: info.os }); }
+  // Next.js App Router patches replaceState and skips its router sync when the state carries Next's own `__NA` marker, so
+  // the router kept the ia_* URL and re-pushed it on the next Server Action / refresh. Drop the marker: Next re-adds its
+  // internals and syncs canonicalUrl to the stripped URL. Non-Next hosts keep their state untouched.
+  const st = history.state && typeof history.state === 'object' && history.state.__NA ? { ...history.state } : history.state;
+  if (st && st !== history.state) delete st.__NA;
+  try { history.replaceState(st, '', u.pathname + u.search + u.hash); } catch { /* ignore */ }
+  if (src && !info.inApp) {
+    const first = !ss('ia_landed'); landing = { from: src, method }; ss('ia_landed', src);
+    if (first) emit('escape_landed', { from: src, method, os: info.os }); // once per tab: reloads don't double-count
+  }
   else if (src && (from || info.app === 'line')) { failed = !!from; ss('ia_tried', '1'); emit('escape_failed', { from: src, method, still: info.app, os: info.os }); }
   return guard;
 }
