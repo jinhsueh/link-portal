@@ -5,6 +5,7 @@ import {
   GOOGLE_STATE_COOKIE, OAUTH_PENDING_COOKIE, exchangeCodeForProfile, isGoogleEnabled,
   pendingCookieOptions, requestOrigin, signPending,
 } from '@/lib/oauth-google'
+import { detectInApp } from '@/lib/inapp-escape'
 
 // GET /api/auth/google/callback — Google redirects here with ?code&state
 export async function GET(req: NextRequest) {
@@ -22,7 +23,16 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code')
   const state = searchParams.get('state')
   const expectedState = req.cookies.get(GOOGLE_STATE_COOKIE)?.value
-  if (!code || !state || !expectedState || state !== expectedState) return fail('bad_state')
+  if (!code || !state || !expectedState || state !== expectedState) {
+    // Attribute state mismatches to in-app browsers (a browser switch between
+    // /start and /callback always loses the state cookie). Booleans only.
+    const ia = detectInApp(req.headers.get('user-agent'), null)
+    console.warn(JSON.stringify({
+      tag: 'google_oauth_bad_state', app: ia.app ?? 'none', os: ia.os, heuristic: ia.heuristic,
+      hasCookie: !!expectedState, hasState: !!state, hasCode: !!code,
+    }))
+    return fail('bad_state')
+  }
 
   let profile
   try {

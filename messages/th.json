@@ -1271,7 +1271,8 @@
     "submitPickUsername": "สร้างเพจ Beam ของฉัน",
     "oauthErrorGeneric": "การเข้าสู่ระบบด้วย Google ไม่สำเร็จ กรุณาลองอีกครั้ง",
     "oauthErrorDenied": "ยกเลิกการเข้าสู่ระบบด้วย Google",
-    "oauthErrorBanned": "บัญชีนี้ถูกระงับ"
+    "oauthErrorBanned": "บัญชีนี้ถูกระงับ",
+    "inAppUsePassword": "สมัครด้วยชื่อผู้ใช้และรหัสผ่านแทน"
   },
 
   "toast": {

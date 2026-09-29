@@ -1,11 +1,38 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Link2, ArrowRight, Lock, Check, X } from 'lucide-react'
 import { useDict } from '@/components/i18n/DictProvider'
 import { SITE_HOST } from '@/lib/site'
+import { detectInApp, initInAppEscape, renderOpenInBrowserSheet, type SheetOpts } from '@/lib/inapp-escape'
+import { sendInAppEvent, toSheetLang } from '@/lib/inapp'
 import { useSocialLogin } from './social-login-context'
+
+const GOOGLE_START = '/api/auth/google/start'
+const startGoogle = () => window.location.assign(GOOGLE_START)
+
+/**
+ * Options shared by the tap-triggered sheet and the ?ia_google=1 (server guard)
+ * sheet opened by initInAppEscape. Escape target is bare /login (never the
+ * Google start route: the OAuth state cookie can't cross browsers); lang rides
+ * the URL as the Beam locale (zh-TW), the module's UI lang is mapped separately.
+ */
+function escapeSheetOpts(o: {
+  locale: string; altLabel: string; disabledMethods: string[]; usernameRef: RefObject<HTMLInputElement | null>
+}): SheetOpts {
+  return {
+    lang: toSheetLang(o.locale),
+    theme: 'light', // /login is light-only; don't drop a dark sheet on it
+    target: '/login',
+    params: { lang: o.locale },
+    disabledMethods: o.disabledMethods,
+    alternative: { id: 'password', label: o.altLabel, onClick: () => o.usernameRef.current?.focus() },
+    // Soft mode only (WhatsApp / Telegram / generic webview guesses): "try Google here anyway".
+    onContinue: startGoogle,
+    onEvent: sendInAppEvent,
+  }
+}
 
 function GoogleIcon() {
   return (
@@ -23,9 +50,10 @@ type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { dict } = useDict()
-  const { google: googleEnabled } = useSocialLogin()
+  const { dict, locale } = useDict()
+  const { google: googleEnabled, inAppInfo: serverInApp, disabledMethods } = useSocialLogin()
   const t = dict.auth
+  const usernameRef = useRef<HTMLInputElement>(null)
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -57,6 +85,35 @@ export default function LoginPage() {
       })
       .catch(() => setError(t.oauthErrorGeneric))
   }, [searchParams, t])
+
+  // In-app browser escape (dormant until Google is configured): reports
+  // escape_landed when the page reopens in Safari/Chrome, strips ia_* params,
+  // and opens the sheet when /api/auth/google/start bounced us here (?ia_google=1).
+  // Keyed on strings, not the array, so re-renders don't re-init. (A remount or
+  // StrictMode's mount -> cleanup -> mount is fine: since v1.2.2 the module keeps
+  // the ?ia_google=1 sheet pending until the user closes it.)
+  const altLabel = t.inAppUsePassword
+  const disabledKey = disabledMethods.join(',')
+  useEffect(() => {
+    if (!googleEnabled) return
+    const escape = initInAppEscape(escapeSheetOpts({
+      locale, altLabel, disabledMethods: disabledKey ? disabledKey.split(',') : [], usernameRef,
+    }))
+    return escape.destroy
+  }, [googleEnabled, locale, altLabel, disabledKey])
+
+  const handleGoogle = () => {
+    // Client re-check is authoritative (it also sees Telegram, iPad desktop mode
+    // and home-screen apps). Fall back to the server's NAMED-app verdict so the
+    // button can't loop against the /start guard if the two UAs ever disagree.
+    const live = detectInApp()
+    const info = live.inApp || !serverInApp?.inApp || serverInApp.heuristic ? live : serverInApp
+    if (info.inApp && info.googleBlocked !== false) {
+      renderOpenInBrowserSheet({ ...escapeSheetOpts({ locale, altLabel, disabledMethods, usernameRef }), info })
+      return
+    }
+    startGoogle()
+  }
 
   // Live availability check — debounced 350ms after the user stops typing.
   // Only useful for signup (i.e. login mode); shows whether the entered
@@ -159,7 +216,7 @@ export default function LoginPage() {
         <span className="px-3 py-3 text-xs border-r" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
           {SITE_HOST}/
         </span>
-        <input type="text" value={username}
+        <input ref={usernameRef} type="text" value={username}
           onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ''))}
           required minLength={3} maxLength={30} placeholder="username"
           className="flex-1 px-3 py-3 text-sm focus:outline-none"
@@ -271,7 +328,7 @@ export default function LoginPage() {
               <h2 className="font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>{t.loginRegisterTitle}</h2>
               {googleEnabled && (
                 <>
-                  <button type="button" onClick={() => window.location.assign('/api/auth/google/start')}
+                  <button type="button" onClick={handleGoogle}
                     className="flex items-center justify-center gap-2 w-full text-sm font-semibold cursor-pointer"
                     style={{ padding: '11px 16px', border: '1px solid var(--color-border)', borderRadius: 12, color: 'var(--color-text-primary)', background: 'white' }}>
                     <GoogleIcon /> {t.continueWithGoogle}

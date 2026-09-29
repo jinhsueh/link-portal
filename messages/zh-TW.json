@@ -1272,7 +1272,8 @@
     "submitPickUsername": "建立我的 Beam 頁面",
     "oauthErrorGeneric": "Google 登入未完成，請再試一次。",
     "oauthErrorDenied": "已取消 Google 登入。",
-    "oauthErrorBanned": "此帳號已被停用。"
+    "oauthErrorBanned": "此帳號已被停用。",
+    "inAppUsePassword": "改用帳號密碼註冊"
   },
 
   "toast": {

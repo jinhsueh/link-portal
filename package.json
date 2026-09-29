@@ -8,6 +8,7 @@
     "migrate:turso": "npx tsx scripts/migrate-turso.ts",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test src/lib/inapp.test.mjs",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:migrate": "npx prisma migrate dev",
     "db:reset": "npx prisma migrate reset --force && npm run db:seed"

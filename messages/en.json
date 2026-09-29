@@ -1272,7 +1272,8 @@
     "submitPickUsername": "Create my Beam page",
     "oauthErrorGeneric": "Google sign-in didn't complete. Please try again.",
     "oauthErrorDenied": "Google sign-in was cancelled.",
-    "oauthErrorBanned": "This account has been suspended."
+    "oauthErrorBanned": "This account has been suspended.",
+    "inAppUsePassword": "Sign up with username & password instead"
   },
 
   "toast": {

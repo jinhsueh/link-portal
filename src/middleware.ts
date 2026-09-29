@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
-import { LOCALES, DEFAULT_LOCALE } from '@/lib/i18n'
+import { LOCALES, DEFAULT_LOCALE, LOCALE_OVERRIDE_HEADER, isLocale } from '@/lib/i18n'
 
 const PUBLIC_API_ROUTES = [
   '/api/auth',
@@ -72,6 +72,26 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // ── /login?lang=<locale> ──
+  // An explicit, validated language wins over cookie / Accept-Language. The
+  // in-app-browser escape URL and the Google start guard carry it so a creator
+  // who reopens /login in Safari/Chrome keeps the language they had in IG/LINE.
+  // Layouts can't read searchParams, so forward it as a request header, and
+  // make it sticky the same way the language switcher does.
+  if (pathname === '/login') {
+    const lang = req.nextUrl.searchParams.get('lang')
+    const valid = isLocale(lang)
+    if (!valid && !req.headers.has(LOCALE_OVERRIDE_HEADER)) return NextResponse.next()
+    const requestHeaders = new Headers(req.headers)
+    requestHeaders.delete(LOCALE_OVERRIDE_HEADER) // never trust a client-sent copy
+    if (valid) requestHeaders.set(LOCALE_OVERRIDE_HEADER, lang)
+    const res = NextResponse.next({ request: { headers: requestHeaders } })
+    if (valid && req.cookies.get('lp_locale')?.value !== lang) {
+      res.cookies.set('lp_locale', lang, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+    }
+    return res
+  }
+
   // Admin + Super Admin pages: require session cookie
   if (pathname.startsWith('/admin') || pathname.startsWith('/super-admin')) {
     const session = req.cookies.get('lp_session')
@@ -104,6 +124,8 @@ export const config = {
     // so /jp and /jp/anything-deeper both hit the rewriter.
     '/jp',
     '/jp/:path*',
+    // Validated ?lang= override for the login page
+    '/login',
     // Existing auth gates
     '/admin/:path*',
     '/super-admin/:path*',

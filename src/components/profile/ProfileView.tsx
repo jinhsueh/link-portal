@@ -85,6 +85,11 @@ export function ProfileView({
     if (activePageSlug !== undefined) setActiveSlug(activePageSlug)
   }
 
+  // Watermark → Beam landing. Attribution rides the URL (not document.referrer,
+  // which is lost if the visitor later reopens the page in another browser).
+  // Just a link: no in-app escape logic ever runs on public profiles.
+  const watermarkHref = `/?${new URLSearchParams({ ref: username, utm_source: 'beam_watermark' })}`
+
   const activePage =
     pages.find(p => p.slug === activeSlug) ??
     pages.find(p => p.isDefault) ??
@@ -292,7 +297,7 @@ export function ProfileView({
 
           {showWatermark && (
             <div className="pb-12 text-center">
-              <Link href="/" className="inline-flex items-center gap-1.5 text-xs"
+              <Link href={watermarkHref} className="inline-flex items-center gap-1.5 text-xs"
                 style={{
                   color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--color-text-muted)',
                   textDecoration: 'none',
@@ -483,7 +488,7 @@ export function ProfileView({
         {/* Watermark */}
         {showWatermark && (
           <div className="mt-12 text-center">
-            <Link href="/" className="inline-flex items-center gap-1.5 text-xs"
+            <Link href={watermarkHref} className="inline-flex items-center gap-1.5 text-xs"
               style={{
                 color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--color-text-muted)',
                 textDecoration: 'none',

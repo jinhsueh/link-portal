@@ -19,6 +19,13 @@ export type Locale = (typeof LOCALES)[number]
 /** Default when Accept-Language detection finds no match. English-first. */
 export const DEFAULT_LOCALE: Locale = 'en'
 
+/**
+ * Request header carrying a validated `/login?lang=` from middleware to the
+ * login layout (layouts can't read searchParams). Middleware always strips any
+ * client-sent copy first.
+ */
+export const LOCALE_OVERRIDE_HEADER = 'x-lp-locale'
+
 /** Type guard — narrow an unknown string to Locale. */
 export function isLocale(s: string | null | undefined): s is Locale {
   return !!s && (LOCALES as readonly string[]).includes(s)

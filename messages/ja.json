@@ -1271,7 +1271,8 @@
     "submitPickUsername": "Beam ページを作成",
     "oauthErrorGeneric": "Google ログインが完了しませんでした。もう一度お試しください。",
     "oauthErrorDenied": "Google ログインがキャンセルされました。",
-    "oauthErrorBanned": "このアカウントは停止されています。"
+    "oauthErrorBanned": "このアカウントは停止されています。",
+    "inAppUsePassword": "ユーザー名とパスワードで登録する"
   },
 
   "toast": {
