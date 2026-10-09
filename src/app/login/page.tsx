@@ -54,7 +54,9 @@ export default function LoginPage() {
   const { google: googleEnabled, inAppInfo: serverInApp, disabledMethods } = useSocialLogin()
   const t = dict.auth
   const usernameRef = useRef<HTMLInputElement>(null)
-  const [username, setUsername] = useState('')
+  // Landing "claim your username" forms GET /login?username=… — prefill it so
+  // the availability check runs immediately.
+  const [username, setUsername] = useState(() => (searchParams.get('username') ?? '').trim().slice(0, 30))
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
