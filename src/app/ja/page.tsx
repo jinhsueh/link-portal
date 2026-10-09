@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { OG_IMAGE } from '@/lib/site'
-import { getDictionary } from '@/lib/i18n'
-import { LandingSimple } from '@/components/i18n/LandingSimple'
+import { Landing } from '@/components/landing/Landing'
+import { ja } from '@/components/landing/copy/ja'
 
 export const metadata: Metadata = {
   title: 'Beam — クリエイターのための無料 link-in-bio',
   description:
-    '1つのリンクでInstagram、YouTube、ポッドキャスト、デジタル商品、メールリストを集約。30秒で完成、クレジットカード不要。Linktreeに代わるデザイン重視のクリエイター向けツール。',
+    'フォロワーで稼ぎたいクリエイターのための link-in-bio。商品販売・ブランド案件・自分のメールリストを 1 つのリンクに。30秒で完成、クレジットカード不要。',
   keywords: [
     'link in bio',
     'リンクインバイオ',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function JapaneseLanding() {
-  const dict = await getDictionary('ja')
-  return <LandingSimple dict={dict} locale="ja" />
+// Layout + design live in the shared <Landing>; this locale only supplies copy.
+export default function LandingPageJa() {
+  return <Landing c={ja} />
 }

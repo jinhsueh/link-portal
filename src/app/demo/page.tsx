@@ -16,7 +16,10 @@ import { LOCALES, DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from '@
 // pulled from dict.demo.{main,collab}[i] so the demo reads in the visitor's
 // chosen locale.
 
-async function resolveLocale(): Promise<Locale> {
+// `?lang=` (used by the landing pages' phone iframe) wins so each locale's
+// landing shows its own demo regardless of the visitor's browser language.
+async function resolveLocale(lang?: string): Promise<Locale> {
+  if (isLocale(lang)) return lang
   const c = await cookies()
   const cookieLocale = c.get('lp_locale')?.value
   if (isLocale(cookieLocale)) return cookieLocale
@@ -237,12 +240,12 @@ function hydrate(
 }
 
 interface DemoPageProps {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; lang?: string }>
 }
 
 export default async function DemoPage({ searchParams }: DemoPageProps) {
-  const { page: pageSlug } = await searchParams
-  const locale = await resolveLocale()
+  const { page: pageSlug, lang } = await searchParams
+  const locale = await resolveLocale(lang)
   const dict = await getDictionary(locale)
   const d = dict.demo
 

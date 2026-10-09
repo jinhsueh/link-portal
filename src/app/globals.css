@@ -392,3 +392,11 @@ body {
 .lp-faq-icon { transition: transform .2s; }
 
 .lp-dark { background: var(--lp-ink); color: #fff; }
+
+/* Landing v2.1 — image-first rows + non-Latin locales */
+.lp-h2-sm { font-size: clamp(26px, 3vw, 38px); }
+.lp-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.lp-scroll-x::-webkit-scrollbar { display: none; }
+/* Outfit has no CJK/Thai glyphs and tight tracking crushes them — loosen for those locales */
+.lp:not(:lang(en)) :is(.lp-display, .lp-h2, .lp-h3) { letter-spacing: 0; line-height: 1.22; }
+.lp:lang(th) :is(.lp-lead, .lp-body) { line-height: 1.75; }
